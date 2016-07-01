@@ -159,7 +159,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (StaticVariables.GamePaused == false)
 			WhichControllerFunctions ();
-		
 
 		if(bumped == true)
 		{
@@ -191,28 +190,14 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(holdingMovable == true)
 		{
-			if(mouseControl == true && Input.GetMouseButtonUp(1))
-			{
-				Shoot ();
-			}
-			else if(mouseControl == false && XCI.GetAxisRaw(XboxAxis.RightTrigger, controllerNumber) == 0)
+			if(player.GetButtonUp("Attract"))
 			{
 				Shoot ();
 			}
 		}
 
-
-		if(mouseControl == true)
-		{
-			movement = new Vector3(Input.GetAxisRaw("HorizontalPlayer"), 0f, Input.GetAxisRaw("VerticalPlayer"));
-			movement = movement.normalized * speed * Time.deltaTime;
-		}
-
-		else
-		{
-			movement = new Vector3(XCI.GetAxisRaw(XboxAxis.LeftStickX, controllerNumber), 0f, XCI.GetAxisRaw(XboxAxis.LeftStickY, controllerNumber));
-			movement = movement.normalized * speed * Time.deltaTime;
-		}
+		movement = new Vector3(player.GetAxis("Move Horizontal"), 0f, player.GetAxis("Move Vertical"));
+		movement = movement.normalized * speed * Time.deltaTime;
 
 
 		if(mouseControl == true && Input.GetKeyDown(KeyCode.Space))
@@ -333,7 +318,27 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		if(controllerNumber != -1)
-			player = ReInput.players.GetPlayer(controllerNumber);
+		{
+			switch (controllerNumber)
+			{
+			case 0:
+				player = ReInput.players.GetPlayer(4);
+				break;
+			case 1:
+				player = ReInput.players.GetPlayer(0);
+				break;
+			case 2:
+				player = ReInput.players.GetPlayer(1);
+				break;
+			case 3:
+				player = ReInput.players.GetPlayer(2);
+				break;
+			case 4:
+				player = ReInput.players.GetPlayer(3);
+				break;
+			}
+
+		}
 	}
 
 	public void Attraction ()
