@@ -1,95 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
 using XboxCtrlrInput;
+using Rewired;
 
 public class MagnetZoneScript : MonoBehaviour 
 {
 	public float rayLength;
 
-	private Transform player;
+	private Transform character;
 
 	private RaycastHit objectHit;
 
-	[HideInInspector]
-	public bool mouseControl;
-
-	private bool enableCollisions = false;
+	private Player player;
 
 	// Use this for initialization
 	void Start () 
 	{
-		player = gameObject.transform.parent;
-
-		mouseControl = player.GetComponent<PlayersGameplay>().mouseControl;
+		character = gameObject.transform.parent;
 	}
 
 	void Update ()
 	{
-		if (!enableCollisions)
-			enableCollisions = true;
-
-		mouseControl = player.GetComponent<PlayersGameplay>().mouseControl;
+		player = character.GetComponent<PlayersGameplay> ().player;
 	}
 
 	void OnTriggerStay (Collider other)
 	{
-		if(enableCollisions)
+		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().holdingMovable == false && character.GetComponent<PlayersGameplay>().bumped == false || other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().holdingMovable == false && character.GetComponent<PlayersGameplay>().bumped == false)
 		{
-			if(other.tag == "Movable" && player.GetComponent<PlayersGameplay>().holdingMovable == false && player.GetComponent<PlayersGameplay>().bumped == false || other.tag == "Fluff" && player.GetComponent<PlayersGameplay>().holdingMovable == false && player.GetComponent<PlayersGameplay>().bumped == false)
+			if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out objectHit, rayLength))
 			{
+				Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
 
 
-				if(Physics.Raycast(player.transform.position, other.transform.position - player.transform.position, out objectHit, rayLength))
+				if(StaticVariables.GamePaused == false && player != null)
 				{
-					Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
-
-					player.GetComponent<PlayersGameplay>().objectHit = objectHit;
-
-
-
-					if(mouseControl == true && StaticVariables.GamePaused == false)
+					if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
 					{
-						if(objectHit.transform.tag == "Movable" && Input.GetMouseButton(1))
-						{
-							player.GetComponent<PlayersGameplay>().Attraction ();
-						}
-
-						if(objectHit.transform.tag == "Movable" && Input.GetMouseButton(0))
-						{
-							player.GetComponent<PlayersGameplay>().Repulsion ();
-						}
-
-						if(objectHit.transform.tag == "Fluff" && Input.GetMouseButton(0))
-						{
-							player.GetComponent<PlayersGameplay>().Repulsion ();
-						}
+						character.GetComponent<PlayersGameplay>().Attraction (objectHit.collider.gameObject);
 					}
 
-
-
-					else if(mouseControl == false && StaticVariables.GamePaused == false)
+					if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
 					{
-
-						if(objectHit.transform.tag == "Movable" && XCI.GetAxisRaw(XboxAxis.RightTrigger, player.GetComponent<PlayersGameplay>().controllerNumber) != 0)
-						{
-							player.GetComponent<PlayersGameplay>().Attraction ();
-						}
-
-						if(objectHit.transform.tag == "Movable" && XCI.GetAxisRaw(XboxAxis.LeftTrigger, player.GetComponent<PlayersGameplay>().controllerNumber) != 0)
-						{
-							player.GetComponent<PlayersGameplay>().Repulsion ();
-						}
-
-						if(objectHit.transform.tag == "Fluff" && XCI.GetAxisRaw(XboxAxis.LeftTrigger, player.GetComponent<PlayersGameplay>().controllerNumber) != 0)
-						{
-							player.GetComponent<PlayersGameplay>().Repulsion ();
-						}
+						character.GetComponent<PlayersGameplay>().Repulsion (objectHit.collider.gameObject);
 					}
 
+					if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
+					{
+						character.GetComponent<PlayersGameplay>().Repulsion (objectHit.collider.gameObject);
+					}
 				}
 			}
 		}
-
 
 	}
 }

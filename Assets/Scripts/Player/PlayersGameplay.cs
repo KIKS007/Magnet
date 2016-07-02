@@ -17,7 +17,7 @@ public class PlayersGameplay : MonoBehaviour
 	public float speed = 15;
 	public float maxVelocityChange = 10f;
 	public float bumpedSpeed = 8;
-	public float gamepadDeadZone;
+	//public float gamepadDeadZone;
 	public float velocity;
 
 	[Header ("Forces")]
@@ -85,7 +85,7 @@ public class PlayersGameplay : MonoBehaviour
 	//private GameObject playerDestroyParticles;
 
 	[HideInInspector]
-	public Rigidbody holdMovable;
+	public Rigidbody holdMovableRB;
 	[HideInInspector]
 	public Transform holdMovableTransform;
 	[HideInInspector]
@@ -102,18 +102,6 @@ public class PlayersGameplay : MonoBehaviour
 	public bool dead;
 	[HideInInspector]
 	public Transform boxThatHitPlayer;
-
-	//private float lerpRotation = 0.9f;
-	//private Vector3 playerWorldToScreen;
-	//private Camera cameraComponent;
-
-	private float screenWidthEdge = 8.5f;
-	private float screenHeightEdge = 7f;
-
-	public bool rightBlocked;
-	public bool leftBlocked;
-	public bool topBlocked;
-	public bool bottomBlocked;
 
 	private MainMenuManagerScript mainMenuScript;
 
@@ -145,11 +133,6 @@ public class PlayersGameplay : MonoBehaviour
 		magnetPoint = transform.GetChild (1).transform;
 		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 
-		//cameraComponent = mainCamera.GetComponent<Camera>();
-
-		screenWidthEdge = screenWidthEdge / 100 * Screen.width;
-		screenHeightEdge = screenHeightEdge / 100 * Screen.height;
-
 		StartSounds ();
 	}
 	
@@ -171,8 +154,6 @@ public class PlayersGameplay : MonoBehaviour
 			transform.Rotate(0, bumpedRotation * Time.deltaTime, 0, Space.World);
 		}
 
-		//SlowMotionDebug ();
-
 		TrailLength ();
 
 		StatsButton ();
@@ -191,49 +172,23 @@ public class PlayersGameplay : MonoBehaviour
 			TurningGamepad ();
 
 
-		if(holdingMovable == true)
+		if(holdingMovable == true && player.GetButtonUp("Attract"))
 		{
-			if(player.GetButtonUp("Attract"))
-			{
-				Shoot ();
-			}
+			Shoot ();
 		}
 
-		movement = new Vector3(player.GetAxis("Move Horizontal"), 0f, player.GetAxis("Move Vertical"));
+		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
 		movement = movement.normalized * speed * Time.deltaTime;
 
 
-		if(mouseControl == true && Input.GetKeyDown(KeyCode.Space))
+		if(player.GetButtonDown("Dash") && dashCoroutineRunning == false)
 		{
-			if(dashCoroutineRunning == false)
-			{
-				StartCoroutine("Dash");
-			}
-		}
-
-		else if(mouseControl == false && XCI.GetButtonDown(XboxButton.LeftStick, controllerNumber))
-		{
-			if(dashCoroutineRunning == false)
-			{
-				StartCoroutine("Dash");
-			}
+			StartCoroutine("Dash");
 		}
 	}
 	
 	void FixedUpdate ()
 	{
-		if (leftBlocked && movement.x < 0)
-			movement.x = 0;
-
-		if(rightBlocked && movement.x > 0)
-			movement.x = 0;
-
-		if(topBlocked && movement.z > 0)
-			movement.z = 0;
-
-		if(bottomBlocked && movement.z < 0)
-			movement.z = 0;
-
 		rigidbodyPlayer.MovePosition(transform.position + movement);
 
 		//rigidbodyPlayer.velocity = movement;
@@ -256,19 +211,6 @@ public class PlayersGameplay : MonoBehaviour
 		velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 		velocityChange.y = 0;
-
-		if (leftBlocked && velocityChange.x < 0)
-			velocityChange.x = 0;
-
-		if(rightBlocked && velocityChange.x > 0)
-			velocityChange.x = 0;
-
-		if(topBlocked && velocityChange.z > 0)
-			velocityChange.x = 0;
-
-		if(bottomBlocked && velocityChange.z < 0)
-			velocityChange.x = 0;
-
 
 		rigidbodyPlayer.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
@@ -344,39 +286,35 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	public void Attraction ()
+	public void Attraction (GameObject movable)
 	{
-		Vector3 movableAttraction = transform.position - objectHit.collider.gameObject.transform.position;
-		Rigidbody movable = objectHit.collider.gameObject.GetComponent<Rigidbody>();
-		movable.AddForce(movableAttraction * attractionForce, ForceMode.Force);
-		//Debug.Log(movable.velocity.magnitude);
+		Vector3 movableAttraction = transform.position - movable.transform.position;
+		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
 	}
 		
 	public void Shoot ()
 	{
+		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
+
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
 		holdingMovable = false;
 		holdMovableTransform.transform.parent = null;
 		holdMovableTransform.transform.parent = movableParent;
 		holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-		holdMovable = holdMovableTransform.GetComponent<Rigidbody>();
+		holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
 		holdMovableTransform.gameObject.tag = "ThrownMovable";
 		holdMovableTransform.GetComponent<MovableScript> ().currentVelocity = 200;
-		holdMovable.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
+		holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
-		rigidbodyPlayer.AddForce(transform.forward * -holdMovable.mass * 5, ForceMode.VelocityChange);
-
-		slowMotionDetection.GetComponent<SlowMotionDetectionScript>().detectingSlowMotion = true;
-		slowMotionDetection.GetComponent<SlowMotionDetectionScript>().holdMovableTransform = holdMovableTransform;
+		rigidbodyPlayer.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
 
 		MasterAudio.PlaySound3DAtTransformAndForget (shootSound, transform);
 	}
 
-	public void Repulsion ()
+	public void Repulsion (GameObject movable)
 	{
-		Vector3 movableRepulsion = objectHit.collider.gameObject.transform.position - transform.position;
-		Rigidbody movable = objectHit.collider.gameObject.GetComponent<Rigidbody>();
-		movable.AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+		Vector3 movableRepulsion = movable.transform.position - transform.position;
+		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
 	}
 
 	void StartSounds ()
@@ -463,35 +401,9 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	void SlowMotionDebug ()
-	{
-		if(mouseControl)
-		{
-			if(Input.GetKeyDown(KeyCode.E) && mainCamera.GetComponent<SlowMotionCamera>().slowMotion == false)
-			{
-				mainCamera.GetComponent<SlowMotionCamera>().slowMotion = true;
-			}
-			else if(Input.GetKeyDown(KeyCode.E) && mainCamera.GetComponent<SlowMotionCamera>().slowMotion == true)
-			{
-				mainCamera.GetComponent<SlowMotionCamera>().slowMotion = false;
-			}
-		}
-		else
-		{
-			if(XCI.GetButtonDown(XboxButton.A) && mainCamera.GetComponent<SlowMotionCamera>().slowMotion == false)
-			{
-				mainCamera.GetComponent<SlowMotionCamera>().slowMotion = true;
-			}
-			else if(XCI.GetButtonDown(XboxButton.A)  && mainCamera.GetComponent<SlowMotionCamera>().slowMotion == true)
-			{
-				mainCamera.GetComponent<SlowMotionCamera>().slowMotion = false;
-			}
-		}
-	}
-		
 	void Pause ()
 	{
-		if(controllerNumber == 0 && Input.GetKeyDown (KeyCode.Escape) || controllerNumber != 0 && XCI.GetButtonDown (XboxButton.Start, controllerNumber))
+		if(player.GetButtonDown("Start"))
 		{
 			mainMenuScript.GamePauseResumeVoid ();
 		}
@@ -504,19 +416,9 @@ public class PlayersGameplay : MonoBehaviour
 
 	void TurningGamepad ()
 	{
-
-		if(XCI.GetAxisRaw(XboxAxis.RightStickX, controllerNumber) > gamepadDeadZone || XCI.GetAxisRaw(XboxAxis.RightStickX, controllerNumber) < -gamepadDeadZone || 
-			XCI.GetAxisRaw(XboxAxis.RightStickY, controllerNumber) > gamepadDeadZone || XCI.GetAxisRaw(XboxAxis.RightStickY, controllerNumber) < -gamepadDeadZone)
+		if(player.GetAxis("Aim Horizontal") != 0 || player.GetAxis("Aim Vertical") != 0)
 		{
-			oldRotation = new Vector3(transform.eulerAngles.x, Mathf.Atan2(XCI.GetAxisRaw(XboxAxis.RightStickX, controllerNumber), XCI.GetAxisRaw(XboxAxis.RightStickY, controllerNumber)) * Mathf.Rad2Deg, transform.eulerAngles.z);
-			//transform.eulerAngles =	new Vector3(transform.eulerAngles.x, Mathf.Atan2(XCI.GetAxisRaw(XboxAxis.RightStickX, controllerNumber), XCI.GetAxisRaw(XboxAxis.RightStickY, controllerNumber)) * Mathf.Rad2Deg, transform.eulerAngles.z);
-
-			transform.eulerAngles = oldRotation;
-
-		}
-		else
-		{
-			transform.eulerAngles = oldRotation;
+			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
 		}
 	}
 
@@ -553,43 +455,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	}
 
-	void OnCollisionStay (Collision other)
-	{	
-		if (other.gameObject.tag == "RightWall")
-			rightBlocked = true;
-		else
-			rightBlocked = false;
-
-		if (other.gameObject.tag == "LeftWall")
-			leftBlocked = true;
-		else
-			leftBlocked = false;
-		
-		if (other.gameObject.tag == "UpWall")
-			topBlocked = true;
-		else
-			topBlocked = false;
-		
-		if (other.gameObject.tag == "DownWall")
-			bottomBlocked = true;
-		else
-			bottomBlocked = false;
-	}
-
-	void OnCollisionExit (Collision other)
-	{
-		/*if (other.gameObject.tag == "RightWall" || other.gameObject.tag == "LeftWall" || other.gameObject.tag == "UpWall" || other.gameObject.tag == "DownWall")
-		{
-			rightBlocked = false;
-			leftBlocked = false;
-			topBlocked = false;
-			bottomBlocked = false;
-		}	*/
-	}
-
 	void TurningMouse ()
 	{
-
 		// Create a ray from the mouse cursor on screen in the direction of the camera.
 		Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
 		
@@ -611,7 +478,6 @@ public class PlayersGameplay : MonoBehaviour
 			// Set the player's rotation to this new rotation.
 			rigidbodyPlayer.MoveRotation (newRotatation);
 		}
-	
 	}
 		
 	IEnumerator BumpedDuration ()

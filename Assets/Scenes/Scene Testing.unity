@@ -1718,14 +1718,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581b3e3c96df0ef42aef16b63b27b87f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dontDestroyOnLoad: 1
+  _dontDestroyOnLoad: 0
   _userData:
     configVars:
       updateLoop: 3
       windowsStandalonePrimaryInputSource: 0
       useXInput: 1
       alwaysUseUnityInput: 0
-      useNativeMouse: 1
+      useNativeMouse: 0
       maxJoysticksPerPlayer: 1
       autoAssignJoysticks: 1
       assignJoysticksToPlayingPlayersOnly: 0
@@ -1809,7 +1809,7 @@ MonoBehaviour:
         _layoutId: 0
       _defaultCustomControllerMaps: []
       _startingCustomControllers: []
-      _assignMouseOnStart: 0
+      _assignMouseOnStart: 1
     actions:
     - _id: 0
       _name: Submit
@@ -2253,7 +2253,7 @@ MonoBehaviour:
     keyboardMapIdCounter: 1
     mouseMapIdCounter: 1
     customControllerMapIdCounter: 0
-    customControllerIdCounter: 0
+    customControllerIdCounter: 1
   _controllerDataFiles: {fileID: 11400000, guid: d21d2b20df8369642b76aafbb2576ba7,
     type: 2}
 --- !u!4 &751539169

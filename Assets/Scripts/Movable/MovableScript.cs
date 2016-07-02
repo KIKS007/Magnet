@@ -248,7 +248,7 @@ public class MovableScript : MonoBehaviour
 		rigibodyMovable = gameObject.GetComponent<Rigidbody>();
 		rigibodyMovable.mass = massRb;
 		rigibodyMovable.collisionDetectionMode = collisionDetectionModeRb;
-		player.GetComponent<PlayersGameplay>().holdMovable = rigibodyMovable;
+		player.GetComponent<PlayersGameplay>().holdMovableRB = rigibodyMovable;
 
 		currentVelocity = player.GetComponent<PlayersGameplay>().shootForce;
 		gameObject.tag = "ThrownMovable";
