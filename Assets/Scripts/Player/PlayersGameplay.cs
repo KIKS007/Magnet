@@ -128,7 +128,10 @@ public class PlayersGameplay : MonoBehaviour
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 
-		mainMenuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
+		if (GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
+			mainMenuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
+		else
+			Debug.Log ("No MainMenuManager Found");
 
 		deadParticlesPrefab = GameObject.FindGameObjectWithTag("DeadParticles") as GameObject;
 

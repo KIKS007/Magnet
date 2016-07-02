@@ -47,22 +47,26 @@ public class ProbesPlacement : MonoBehaviour
 
 	public void GetReflectionGameObjects ()
 	{
-		forwardWall = LoadModeManager.mirrorForward.transform;
-		backwardWall = LoadModeManager.mirrorBackward.transform;
-		rightWall = LoadModeManager.mirrorRight.transform;
-		leftWall = LoadModeManager.mirrorLeft.transform;
+		if(LoadModeManager.mirrorForward != null)
+		{
+			forwardWall = LoadModeManager.mirrorForward.transform;
+			backwardWall = LoadModeManager.mirrorBackward.transform;
+			rightWall = LoadModeManager.mirrorRight.transform;
+			leftWall = LoadModeManager.mirrorLeft.transform;
 
-		forwardProbe = LoadModeManager.probeForward.transform;
-		backwardProbe = LoadModeManager.probeBackward.transform;
-		rightProbe = LoadModeManager.probeRight.transform;
-		leftProbe = LoadModeManager.probeLeft.transform;
+			forwardProbe = LoadModeManager.probeForward.transform;
+			backwardProbe = LoadModeManager.probeBackward.transform;
+			rightProbe = LoadModeManager.probeRight.transform;
+			leftProbe = LoadModeManager.probeLeft.transform;
+		}
+
 
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(followCamera)
+		if(followCamera && LoadModeManager.mirrorForward != null)
 		{
 			forwardProbePosition = mainCamera.transform.position;
 			backwardProbePosition = mainCamera.transform.position;

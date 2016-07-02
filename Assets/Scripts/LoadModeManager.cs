@@ -5,6 +5,11 @@ using DG.Tweening;
 
 public class LoadModeManager : MonoBehaviour 
 {
+	[Header ("Scene Test")]
+	public bool gamePaused = true;
+	public string firstSceneToLoad = "Test";
+
+	[Header ("Load Mode Manager")]
 	public GameObject[] rootGameObjects;
 
 	public float loadingX = -140;
@@ -35,9 +40,14 @@ public class LoadModeManager : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		StartCoroutine (FirstLoadedScene ("Test"));
+		StartCoroutine (FirstLoadedScene (firstSceneToLoad));
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
+
+		if (gamePaused)
+			StaticVariables.GamePaused = true;
+		else
+			StaticVariables.GamePaused = false;
 	}
 
 	IEnumerator FirstLoadedScene (string sceneToLoad)
