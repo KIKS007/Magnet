@@ -26,7 +26,7 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().holdingMovable == false && character.GetComponent<PlayersGameplay>().bumped == false)
+		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 		{
 			
 			if(player.GetButton("Attract"))
@@ -35,7 +35,7 @@ public class MagnetTriggerScript : MonoBehaviour
 				other.gameObject.GetComponent<MovableScript>().hold = true;
 				other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
 				other.gameObject.GetComponent<MovableScript>().player = transform.parent;
-				character.GetComponent<PlayersGameplay>().holdingMovable = true;
+				character.GetComponent<PlayersGameplay> ().playerState = PlayerState.Holding;
 				character.GetComponent<PlayersGameplay>().holdMovableRB = other.gameObject.GetComponent<Rigidbody>();
 				character.GetComponent<PlayersGameplay>().holdMovableTransform = other.gameObject.GetComponent<Transform>();
 

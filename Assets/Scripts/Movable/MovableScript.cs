@@ -88,14 +88,13 @@ public class MovableScript : MonoBehaviour
 	{
 		if(other.collider.tag != "HoldMovable")
 		{
-			if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().bumped == false && gameObject.tag == "ThrownMovable" && other.gameObject.name != playerThatThrew.name)
+			if(other.collider.tag == "Player" 
+				&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+				&& gameObject.tag == "ThrownMovable" 
+				&& other.gameObject.name != playerThatThrew.name)
 			{
-				//Debug.Log(other.collider.name);
-				//Debug.Log(other.collider.tag);
+				other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 
-				//Debug.Log("Bump");
-				other.gameObject.GetComponent<PlayersGameplay>().bumped = true;
-				other.gameObject.GetComponent<PlayersGameplay>().boxThatHitPlayer = transform;
 				playerTouched = other.gameObject;
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 

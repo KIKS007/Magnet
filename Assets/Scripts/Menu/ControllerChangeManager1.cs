@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using XboxCtrlrInput;
 using DG.Tweening;
 using System.Collections.Generic;
+using Rewired;
 
 public class ControllerChangeManager1 : MonoBehaviour 
 {
@@ -33,9 +34,17 @@ public class ControllerChangeManager1 : MonoBehaviour
 	private Color gamepad4Color;
 	private Color disableColor;
 
+	public Player mouseKeyboard;
+	public Player gamepad1;
+	public Player gamepad2;
+	public Player gamepad3;
+	public Player gamepad4;
+
 	void Start ()
 	{
 		GetPlayersAndControllers ();
+
+		GetPlayers ();
 
 		gamepad1Color = gamepadsLines [0].GetComponent<Text> ().color;
 		gamepad2Color = gamepadsLines [1].GetComponent<Text> ().color;
@@ -56,67 +65,76 @@ public class ControllerChangeManager1 : MonoBehaviour
 		GamepadDisplay ();
 	}
 
+	void GetPlayers ()
+	{
+		mouseKeyboard = ReInput.players.GetPlayer (4);
+		gamepad1 = ReInput.players.GetPlayer (0);
+		gamepad2 = ReInput.players.GetPlayer (1);
+		gamepad3 = ReInput.players.GetPlayer (2);
+		gamepad4 = ReInput.players.GetPlayer (3);
+	}
+
 	void GetInput ()
 	{
-		if (Input.GetAxisRaw ("HorizontalPlayer") < 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxis("Move Horizontal") < 0 && !keyboardMoving)
 		{
 			GoOnTheLeft (0);
 			StartCoroutine (GapBetweenInputs (0));
 		}
 
-		if (Input.GetAxisRaw ("HorizontalPlayer") > 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxis("Move Horizontal") > 0 && !keyboardMoving)
 		{
 			GoOnTheRight (0);
 			StartCoroutine (GapBetweenInputs (0));
 		}
 
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 1) < 0 && !gamepad1Moving)
+		if (gamepad1.GetAxis("Move Horizontal") < 0 && !gamepad1Moving)
 		{
 			GoOnTheLeft (1);
 			StartCoroutine (GapBetweenInputs (1));
 		}
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 1) > 0 && !gamepad1Moving)
+		if (gamepad1.GetAxis("Move Horizontal") > 0 && !gamepad1Moving)
 		{
 			GoOnTheRight (1);
 			StartCoroutine (GapBetweenInputs (1));
 		}
 
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 2) < 0 && !gamepad2Moving)
+		if (gamepad2.GetAxis("Move Horizontal") < 0 && !gamepad2Moving)
 		{
 			GoOnTheLeft (2);
 			StartCoroutine (GapBetweenInputs (2));
 		}
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 2) > 0 && !gamepad2Moving)
+		if (gamepad2.GetAxis("Move Horizontal") > 0 && !gamepad2Moving)
 		{
 			GoOnTheRight (2);
 			StartCoroutine (GapBetweenInputs (2));
 		}
 		
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 3) < 0 && !gamepad3Moving)
+		if (gamepad3.GetAxis("Move Horizontal") < 0 && !gamepad3Moving)
 		{
 			GoOnTheLeft (3);
 			StartCoroutine (GapBetweenInputs (3));
 		}
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 3) > 0 && !gamepad3Moving)
+		if (gamepad3.GetAxis("Move Horizontal") > 0 && !gamepad3Moving)
 		{
 			GoOnTheRight (3);
 			StartCoroutine (GapBetweenInputs (3));
 		}
 		
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 4) < 0 && !gamepad4Moving)
+		if (gamepad4.GetAxis("Move Horizontal") < 0 && !gamepad4Moving)
 		{
 			GoOnTheLeft (4);
 			StartCoroutine (GapBetweenInputs (4));
 		}
 
-		if (XCI.GetAxisRaw (XboxAxis.LeftStickX, 4) > 0 && !gamepad4Moving)
+		if (gamepad4.GetAxis("Move Horizontal") > 0 && !gamepad4Moving)
 		{
 			GoOnTheRight (4);
 			StartCoroutine (GapBetweenInputs (4));

@@ -8,15 +8,17 @@ public class MagnetZoneScript : MonoBehaviour
 	public float rayLength;
 
 	private Transform character;
+	private PlayersGameplay characterScript;
 
 	private RaycastHit objectHit;
 
-	private Player player;
+	public Player player;
 
 	// Use this for initialization
 	void Start () 
 	{
 		character = gameObject.transform.parent;
+		characterScript = character.GetComponent<PlayersGameplay> ();
 	}
 
 	void Update ()
@@ -26,7 +28,8 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().holdingMovable == false && character.GetComponent<PlayersGameplay>().bumped == false || other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().holdingMovable == false && character.GetComponent<PlayersGameplay>().bumped == false)
+		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+			|| other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 		{
 			if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out objectHit, rayLength))
 			{
@@ -37,17 +40,17 @@ public class MagnetZoneScript : MonoBehaviour
 				{
 					if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
 					{
-						character.GetComponent<PlayersGameplay>().Attraction (objectHit.collider.gameObject);
+						characterScript.Attraction (objectHit.collider.gameObject);
 					}
 
 					if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
 					{
-						character.GetComponent<PlayersGameplay>().Repulsion (objectHit.collider.gameObject);
+						characterScript.Repulsion (objectHit.collider.gameObject);
 					}
 
 					if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
 					{
-						character.GetComponent<PlayersGameplay>().Repulsion (objectHit.collider.gameObject);
+						characterScript.Repulsion (objectHit.collider.gameObject);
 					}
 				}
 			}

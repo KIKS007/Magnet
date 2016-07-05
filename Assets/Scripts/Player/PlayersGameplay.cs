@@ -6,8 +6,36 @@ using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
 
+public enum Team
+{
+	Team1,
+	Team2
+}
+
+public enum PlayerState
+{
+	None,
+	Attracting,
+	Repulsing,
+	Holding,
+	Stunned,
+	Dead
+}
+
+public enum DashState
+{
+	CanDash,
+	Dashing,
+	Cooldown
+}
+
 public class PlayersGameplay : MonoBehaviour 
 {
+	[Header ("States")]
+	public Team team;
+	public PlayerState playerState = PlayerState.None;
+	public DashState dashState = DashState.CanDash;
+
 	[Header ("Controller Number")]
 	public int controllerNumber;
 	[HideInInspector]
@@ -15,9 +43,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	[Header ("Movement")]
 	public float speed = 15;
-	public float maxVelocityChange = 10f;
-	public float bumpedSpeed = 8;
-	//public float gamepadDeadZone;
+	public float stunnedSpeed = 8;
 	public float velocity;
 
 	[Header ("Forces")]
@@ -26,8 +52,8 @@ public class PlayersGameplay : MonoBehaviour
 	public float repulsionForce = 10;
 
 	[Header ("Bump")]
-	public float bumpedRotation = 400;
-	public float bumpedDuration = 1;
+	public float stunnedRotation = 400;
+	public float stunnedDuration = 1;
 
 	[Header ("Dash")]
 	public float dashSpeed = 30;
@@ -38,10 +64,6 @@ public class PlayersGameplay : MonoBehaviour
 	[RangeAttribute(0, 1f)]
 	public float motorVibration = 0.5f;
 	public float durationVibration = 0.3f;
-
-	[Header ("Game Paused")]
-	public bool gamePaused = true;
-	public bool gamePausedStats = false;
 
 	[Header ("Player Sounds")]
 	[SoundGroupAttribute]
@@ -54,13 +76,10 @@ public class PlayersGameplay : MonoBehaviour
 	public string attractionSound;
 	public float fadeDuration;
 
-	[Space(10)]
-	public GameObject slowMotionDetection;
 
 	private float attractionSoundVolume;
 	private float repulsionSoundVolume;
 
-	private GameObject mainCamera;
 	private Transform movableParent;
 	private Transform magnetPoint;
 
@@ -68,18 +87,13 @@ public class PlayersGameplay : MonoBehaviour
 
 	private float lerpHold = 0.2f;
 
-	private Rigidbody rigidbodyPlayer;
+	private Rigidbody playerRigidbody;
 	private Vector3 movement;
-	private Vector3 oldRotation;
 
 	private int triggerMask;
 	private float camRayLength = 200f;
 
-	private bool bumpCoroutineRunning;
-	private bool dashCoroutineRunning;
-
 	private float originalSpeed;
-	private float currentTimeScale;
 
 	private GameObject deadParticlesPrefab;
 	//private GameObject playerDestroyParticles;
@@ -88,22 +102,19 @@ public class PlayersGameplay : MonoBehaviour
 	public Rigidbody holdMovableRB;
 	[HideInInspector]
 	public Transform holdMovableTransform;
-	[HideInInspector]
-	public bool holdingMovable = false;
-	[HideInInspector]
-	public RaycastHit objectHit;
-	[HideInInspector]
-	public RaycastHit playerHit;
-	[HideInInspector]
-	public bool mouseControl = false;
-	[HideInInspector]
-	public bool bumped;
-	[HideInInspector]
-	public bool dead;
-	[HideInInspector]
-	public Transform boxThatHitPlayer;
 
 	private MainMenuManagerScript mainMenuScript;
+
+
+	public delegate void OnAttractingDelegate();
+	public delegate void OnRepulsingDelegate();
+	public delegate void OnHoldingDelegate();
+	public delegate void OnHoldDelegate();
+	public delegate void OnShootDelegate();
+	public delegate void OnStunDelegate();
+	public delegate void OnDashDelegate();
+	public delegate void OnDeathDelegate();
+
 
 	// Use this for initialization
 	void Start () 
@@ -113,8 +124,6 @@ public class PlayersGameplay : MonoBehaviour
 		GetControllerNumber ();
 
 		Controller ();
-
-		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 
 		if (GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
 			mainMenuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
@@ -126,7 +135,7 @@ public class PlayersGameplay : MonoBehaviour
 		//playerDestroyParticles = GameObject.FindGameObjectWithTag("PlayerDestroy") as GameObject;
 
 		triggerMask = LayerMask.GetMask ("FloorMask");
-		rigidbodyPlayer = GetComponent<Rigidbody>();
+		playerRigidbody = GetComponent<Rigidbody>();
 		originalSpeed = speed;
 
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
@@ -135,25 +144,43 @@ public class PlayersGameplay : MonoBehaviour
 
 		StartSounds ();
 	}
+
+	void OnEnable ()
+	{
+		playerState = PlayerState.None;
+		dashState = DashState.CanDash;
+	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(rigidbodyPlayer.velocity.magnitude > velocity)
-			velocity = rigidbodyPlayer.velocity.magnitude;
+		if(playerRigidbody.velocity.magnitude > velocity)
+			velocity = playerRigidbody.velocity.magnitude;
 
 
 		if (StaticVariables.GamePaused == false)
 			WhichControllerFunctions ();
 
-		if(bumped == true)
+		if(playerState == PlayerState.Stunned)
 		{
-			if(bumpCoroutineRunning == false)
-			StartCoroutine("BumpedDuration");
-
-			transform.Rotate(0, bumpedRotation * Time.deltaTime, 0, Space.World);
+			transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
 		}
 
+		if(playerState == PlayerState.None)
+		{
+			if (player.GetButton ("Attract"))
+				playerState = PlayerState.Attracting;
+
+			if (player.GetButton ("Repulse"))
+				playerState = PlayerState.Repulsing;
+		}
+
+		if (playerState == PlayerState.Attracting && !player.GetButton ("Attract"))
+			playerState = PlayerState.None;
+			
+		if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
+			playerState = PlayerState.None;
+		
 		TrailLength ();
 
 		StatsButton ();
@@ -165,14 +192,14 @@ public class PlayersGameplay : MonoBehaviour
 
 	void WhichControllerFunctions ()
 	{
-		if(mouseControl == true && bumped == false)
+		if(controllerNumber == 0 && playerState != PlayerState.Stunned)
 			TurningMouse ();
 
-		else if(mouseControl == false && bumped == false)
+		else if(controllerNumber > 0 && playerState != PlayerState.Stunned)
 			TurningGamepad ();
 
 
-		if(holdingMovable == true && player.GetButtonUp("Attract"))
+		if(playerState == PlayerState.Holding && player.GetButtonUp("Attract"))
 		{
 			Shoot ();
 		}
@@ -181,38 +208,21 @@ public class PlayersGameplay : MonoBehaviour
 		movement = movement.normalized * speed * Time.deltaTime;
 
 
-		if(player.GetButtonDown("Dash") && dashCoroutineRunning == false)
+		if(player.GetButtonDown("Dash") && dashState == DashState.CanDash)
 		{
-			StartCoroutine("Dash");
+			StartCoroutine(Dash ());
 		}
 	}
 	
 	void FixedUpdate ()
 	{
-		rigidbodyPlayer.MovePosition(transform.position + movement);
+		playerRigidbody.MovePosition(transform.position + movement);
 
-		//rigidbodyPlayer.velocity = movement;
-
-		//PhysicsMovement ();
-
-		if(holdingMovable)
+		if(playerState == PlayerState.Holding)
 		{
 			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
 			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
 		}
-	}
-
-	void PhysicsMovement ()
-	{
-		// Apply a force that attempts to reach our target velocity
-		Vector3 velocity = GetComponent<Rigidbody>().velocity;
-		Vector3 velocityChange = (movement - velocity);
-
-		velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
-		velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
-		velocityChange.y = 0;
-
-		rigidbodyPlayer.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 
 	public void GetControllerNumber ()
@@ -238,22 +248,7 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(controllerNumber == -1)
 		{
-			//Debug.Log(name + " : Deactivate");
-			mouseControl = false;
-
 			gameObject.SetActive(false);
-		}
-
-		if(controllerNumber == 0)
-		{
-			//Debug.Log(name + " : Keyboard");
-			mouseControl = true;
-		}
-
-		if(controllerNumber > 0)
-		{
-			//Debug.Log(name + " : Gamepad");
-			mouseControl = false;
 		}
 
 		if(gameObject.transform.GetChild(1).gameObject.activeSelf == false)
@@ -288,16 +283,20 @@ public class PlayersGameplay : MonoBehaviour
 
 	public void Attraction (GameObject movable)
 	{
+		playerState = PlayerState.Attracting;
+
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
 	}
 		
 	public void Shoot ()
 	{
+		playerState = PlayerState.None;
+
 		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
 
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
-		holdingMovable = false;
+
 		holdMovableTransform.transform.parent = null;
 		holdMovableTransform.transform.parent = movableParent;
 		holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
@@ -306,13 +305,15 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableTransform.GetComponent<MovableScript> ().currentVelocity = 200;
 		holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
-		rigidbodyPlayer.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
+		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
 
 		MasterAudio.PlaySound3DAtTransformAndForget (shootSound, transform);
 	}
 
 	public void Repulsion (GameObject movable)
 	{
+		playerState = PlayerState.Repulsing;
+
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
 	}
@@ -333,7 +334,7 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(!StaticVariables.GamePaused)
 		{
-			if(bumped || holdingMovable)
+			if(playerState == PlayerState.Stunned || playerState == PlayerState.Holding)
 			{
 				if(MasterAudio.GetGroupVolume(attractionSound) != 0)
 					MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, fadeDuration);
@@ -343,43 +344,30 @@ public class PlayersGameplay : MonoBehaviour
 			}
 
 
-			if(!bumped && !holdingMovable)
+			if(playerState != PlayerState.Stunned && playerState != PlayerState.Holding)
 			{
 				
 				if(MasterAudio.GetGroupVolume(attractionSound) == 0)
 				{
-					if(mouseControl == true && Input.GetMouseButton (1))
-						MasterAudio.FadeSoundGroupToVolume (attractionSound, attractionSoundVolume, fadeDuration);
-
-
-					if(controllerNumber > 0 && XCI.GetAxisRaw(XboxAxis.RightTrigger, controllerNumber) != 0)
+					if(player.GetButton("Attract"))
 						MasterAudio.FadeSoundGroupToVolume (attractionSound, attractionSoundVolume, fadeDuration);
 				}
 
 				else if(MasterAudio.GetGroupVolume(attractionSound) != 0)
 				{
-					if(mouseControl == true && !Input.GetMouseButton (1))
-						MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, fadeDuration);
-					
-					if(controllerNumber > 0 && XCI.GetAxisRaw(XboxAxis.RightTrigger, controllerNumber) == 0)
+					if(!player.GetButton("Attract"))
 						MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, fadeDuration);
 				}
 
 				if(MasterAudio.GetGroupVolume(repulsionSound) == 0)
 				{
-					if(mouseControl == true && Input.GetMouseButton (0))
-						MasterAudio.FadeSoundGroupToVolume (repulsionSound, repulsionSoundVolume, fadeDuration);
-
-					if(controllerNumber > 0 && XCI.GetAxisRaw(XboxAxis.LeftTrigger, controllerNumber) != 0)
+					if(player.GetButton("Repulse"))
 						MasterAudio.FadeSoundGroupToVolume (repulsionSound, repulsionSoundVolume, fadeDuration);
 				}
 
 				else if(MasterAudio.GetGroupVolume(repulsionSound) != 0)
 				{
-					if(mouseControl == true && !Input.GetMouseButton (0))
-						MasterAudio.FadeSoundGroupToVolume (repulsionSound, 0, fadeDuration);
-
-					if(controllerNumber > 0 && XCI.GetAxisRaw(XboxAxis.LeftTrigger, controllerNumber) == 0)
+					if(!player.GetButton("Repulse"))
 						MasterAudio.FadeSoundGroupToVolume (repulsionSound, 0, fadeDuration);
 				}
 			}
@@ -389,12 +377,12 @@ public class PlayersGameplay : MonoBehaviour
 
 	void TrailLength ()
 	{
-		if(rigidbodyPlayer.velocity.magnitude > 1)
+		if(playerRigidbody.velocity.magnitude > 1)
 		{
 			trail.time = 0.1f;
 			trail.startWidth = 1;
 		}
-		else if (rigidbodyPlayer.velocity.magnitude < 1)
+		else if (playerRigidbody.velocity.magnitude < 1)
 		{
 			trail.time = 0.15f;
 			trail.startWidth = 0.5f;
@@ -424,9 +412,9 @@ public class PlayersGameplay : MonoBehaviour
 
 	void OnCollisionEnter (Collision other)
 	{
-		if(other.gameObject.tag == "DeadZone" && !dead)
+		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead)
 		{
-			dead = true;
+			playerState = PlayerState.Dead;
 
 			Vector3 pos = other.contacts[0].point;
 			//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
@@ -439,7 +427,7 @@ public class PlayersGameplay : MonoBehaviour
 			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
 			instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
 
-			if(holdingMovable)
+			if(playerState == PlayerState.Holding)
 			{
 				for(int i = 0; i < transform.childCount; i++)
 				{
@@ -450,7 +438,7 @@ public class PlayersGameplay : MonoBehaviour
 				}
 			}
 
-			Destroy(gameObject);
+			gameObject.SetActive (false);
 		}
 
 	}
@@ -476,14 +464,17 @@ public class PlayersGameplay : MonoBehaviour
 			Quaternion newRotatation = Quaternion.LookRotation (playerToMouse);
 			
 			// Set the player's rotation to this new rotation.
-			rigidbodyPlayer.MoveRotation (newRotatation);
+			playerRigidbody.MoveRotation (newRotatation);
 		}
 	}
 		
-	IEnumerator BumpedDuration ()
+	public void StunVoid ()
 	{
-		bumpCoroutineRunning = true;
+		StartCoroutine(Stun ());
+	}
 
+	IEnumerator Stun ()
+	{
 		MasterAudio.PlaySound3DAtTransformAndForget (hitSound, transform);
 
 		switch (controllerNumber)
@@ -493,43 +484,44 @@ public class PlayersGameplay : MonoBehaviour
 
 		case 1:
 			GamePad.SetVibration (PlayerIndex.One, motorVibration, motorVibration);
-			StartCoroutine (BumpedVibration (PlayerIndex.One));
+			StartCoroutine (StunnedVibration (PlayerIndex.One));
 			break;
 
 		case 2:
 			GamePad.SetVibration (PlayerIndex.Two, motorVibration, motorVibration);
-			StartCoroutine (BumpedVibration (PlayerIndex.Two));
+			StartCoroutine (StunnedVibration (PlayerIndex.Two));
 			break;
 
 		case 3:
 			GamePad.SetVibration (PlayerIndex.Three, motorVibration, motorVibration);
-			StartCoroutine (BumpedVibration (PlayerIndex.Three));
+			StartCoroutine (StunnedVibration (PlayerIndex.Three));
 			break;
 
 		case 4:
 			GamePad.SetVibration (PlayerIndex.Four, motorVibration, motorVibration);
-			StartCoroutine (BumpedVibration (PlayerIndex.Four));
+			StartCoroutine (StunnedVibration (PlayerIndex.Four));
 			break;
 
 		default :
 			break;
 		}
 
-		if(holdingMovable == true)
+		if(playerState == PlayerState.Holding)
 		{
 			Shoot ();
 		}
 
-		speed = bumpedSpeed;
-		
-		yield return new WaitForSeconds(bumpedDuration);
+		playerState = PlayerState.Stunned;
 
+		speed = stunnedSpeed;
+		
+		yield return new WaitForSeconds(stunnedDuration);
+
+		playerState = PlayerState.None;
 		speed = originalSpeed;
-		bumped = false;
-		bumpCoroutineRunning = false;
 	}
 
-	IEnumerator BumpedVibration (PlayerIndex whichController)
+	IEnumerator StunnedVibration (PlayerIndex whichController)
 	{
 		yield return new WaitForSeconds (durationVibration);
 
@@ -538,16 +530,17 @@ public class PlayersGameplay : MonoBehaviour
 
 	IEnumerator Dash ()
 	{
-		dashCoroutineRunning = true;
+		dashState = DashState.Dashing;
 		speed = dashSpeed;
 
 		yield return new WaitForSeconds(dashDuration);
 
+		dashState = DashState.Cooldown;
 		speed = originalSpeed;
 
 		yield return new WaitForSeconds(dashCoolDown);
 
-		dashCoroutineRunning = false;
+		dashState = DashState.CanDash;
 	}
 
 	void OnApplicationQuit ()
