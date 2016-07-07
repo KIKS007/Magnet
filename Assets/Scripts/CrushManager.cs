@@ -17,7 +17,7 @@ public class CrushManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(StaticVariables.GamePaused == false)
+		if(StaticVariables.Instance.GamePaused == false)
 			FindPlayers ();
 
 	}
@@ -36,8 +36,8 @@ public class CrushManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		StaticVariables.GameOver = true;
-		StaticVariables.GamePaused = true;
+		StaticVariables.Instance.GameOver = true;
+		StaticVariables.Instance.GamePaused = true;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();

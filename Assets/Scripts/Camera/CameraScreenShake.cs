@@ -13,13 +13,9 @@ public class CameraScreenShake : MonoBehaviour
 
 	private Vector3 initialPosition;
 
-	private ProbesPlacement probesScript;
-
 	// Use this for initialization
 	void Start () 
 	{
-		probesScript = GetComponent<ProbesPlacement> ();
-
 		//initialPosition = transform.position;
 		initialPosition = new Vector3 (0, 30, 0);
 	}
@@ -43,7 +39,7 @@ public class CameraScreenShake : MonoBehaviour
 
 	void ResetCameraPosition ()
 	{
-		if(StaticVariables.GamePaused == false)
+		if(StaticVariables.Instance.GamePaused == false)
 			transform.DOMove(initialPosition, 0.5f);
 	}
 	

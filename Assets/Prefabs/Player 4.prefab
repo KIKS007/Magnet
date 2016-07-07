@@ -391,36 +391,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a1563249b177a48a36f574a7f05794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  team: 0
+  playerState: 0
+  dashState: 0
   controllerNumber: -1
   speed: 15
-  maxVelocityChange: 10
-  bumpedSpeed: 8
+  stunnedSpeed: 8
   velocity: 0
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
-  bumpedRotation: 400
-  bumpedDuration: 1
-  dashSpeed: 50
-  dashDuration: 3
-  dashCoolDown: 1
+  stunnedRotation: 400
+  stunnedDuration: 1
+  dashSpeed: 70
+  dashDuration: 0.3
+  dashCooldown: 1.2
+  dashEase: 6
   motorVibration: 0.7
   durationVibration: 0.3
-  gamePaused: 0
-  gamePausedStats: 0
   hitSound: AvatarHit
   shootSound: EnvoiCube1
   repulsionSound: Repulsion_Player4
   attractionSound: Attraction_Player4
   fadeDuration: 0.2
-  slowMotionDetection: {fileID: 0}
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}
-  holdingMovable: 0
-  mouseControl: 0
-  bumped: 0
-  dead: 0
-  boxThatHitPlayer: {fileID: 0}
 --- !u!114 &11467634
 MonoBehaviour:
   m_ObjectHideFlags: 1

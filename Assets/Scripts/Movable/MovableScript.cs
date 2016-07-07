@@ -9,20 +9,17 @@ public class MovableScript : MonoBehaviour
 	public float limitVelocity;
 
 	public bool hold;
-	public bool fastMovable;
 
 	public Ease easetype;
 	public float timeTween;
 
 	private Rigidbody rigibodyMovable;
-	private GameObject mainCamera;
 
 	private float massRb;
 	private CollisionDetectionMode collisionDetectionModeRb;
 
 	private GameObject wallHitParticlesPrefab;
 	private GameObject hitParticlesPrefab;
-	private GameObject movableExplosionPrefab;
 
 	[HideInInspector]
 	public Transform player;
@@ -36,11 +33,9 @@ public class MovableScript : MonoBehaviour
 	void Start () 
 	{
 		rigibodyMovable = GetComponent<Rigidbody>();
-		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 
 		wallHitParticlesPrefab = GameObject.FindGameObjectWithTag("WallHitParticles") as GameObject;
 		hitParticlesPrefab = GameObject.FindGameObjectWithTag("HitParticles") as GameObject;
-		movableExplosionPrefab = GameObject.FindGameObjectWithTag("MovableExplosion") as GameObject;
 
 		massRb = rigibodyMovable.mass;
 		collisionDetectionModeRb = rigibodyMovable.collisionDetectionMode;
@@ -98,147 +93,44 @@ public class MovableScript : MonoBehaviour
 				playerTouched = other.gameObject;
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-				ContactPoint contact = other.contacts[0];
-				Vector3 pos = contact.point;
-				Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-				GameObject instantiatedParticles = Instantiate(hitParticlesPrefab, pos, rot) as GameObject;
-				instantiatedParticles.transform.SetParent (StaticVariables.ParticulesClonesParent);
-				instantiatedParticles.GetComponent<Renderer>().material.color = other.gameObject.GetComponent<Renderer>().material.color;
-				instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
-
-				FragsAndHits ();
+				InstantiateParticles (other.contacts [0], hitParticlesPrefab, other.gameObject.GetComponent<Renderer>().material.color);
 			}
 		}
 
 		if(other.gameObject.tag == "Movable")
 		{
-			//Debug.Log("Touched Movable!");
-
-			ContactPoint contact = other.contacts[0];
-			Vector3 pos = contact.point;
-			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-
 			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 			int numberOfParticles = (int) numberOfParticlesFloat;
 
-			GameObject instantiatedParticles = Instantiate(wallHitParticlesPrefab, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (StaticVariables.ParticulesClonesParent);
-
-			//instantiatedParticles.GetComponent<Renderer>().material.color = other.gameObject.GetComponent<Renderer>().material.color;
-			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], wallHitParticlesPrefab, gameObject.GetComponent<Renderer> ().material.color);
 
 			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
-			instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
 		}
 
+		//Touched Wall
 		if(other.gameObject.layer == 16)
 		{
-			//Debug.Log("Touched Wall!");
-
-			ContactPoint contact = other.contacts[0];
-			Vector3 pos = contact.point;
-			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-
 			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 			int numberOfParticles = (int) numberOfParticlesFloat;
 
-			GameObject instantiatedParticles = Instantiate(wallHitParticlesPrefab, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (StaticVariables.ParticulesClonesParent);
-
-			//instantiatedParticles.GetComponent<Renderer>().material.color = other.gameObject.GetComponent<Renderer>().material.color;
-			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], wallHitParticlesPrefab, gameObject.GetComponent<Renderer> ().material.color);
 
 			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
-			instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
-		}
-
-		if(other.gameObject.tag == "GoalTrigger")
-		{
-			other.gameObject.GetComponent<GoalTriggerScore>().ScoreUpdate();
-			gameObject.SetActive(false);
-
-			mainCamera.GetComponent<SlowMotionCamera>().slowMotion = true;
-
-			//Debug.Log("Touched Trigger!");
-			
-			ContactPoint contact = other.contacts[0];
-			Vector3 pos = contact.point;
-			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-			
-			GameObject instantiatedParticles = Instantiate(movableExplosionPrefab, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (StaticVariables.ParticulesClonesParent);
-			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
-			instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
 		}
 	}
 
-	void FragsAndHits ()
+	GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)
 	{
-		if(playerThatThrew.name == "Player 1" && playerTouched.name == "Player 2")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_2HitByPlayer_1 += 1;
-		}
+		Vector3 pos = contact.point;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
 
-		if(playerThatThrew.name == "Player 1" && playerTouched.name == "Player 3")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_3HitByPlayer_1 += 1;
-		}
+		instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<Renderer>().material.color = color;
 
-		if(playerThatThrew.name == "Player 1" && playerTouched.name == "Player 4")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_4HitByPlayer_1 += 1;
-		}
-
-
-		if(playerThatThrew.name == "Player 2" && playerTouched.name == "Player 1")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_1HitByPlayer_2 += 1;
-		}
-
-		if(playerThatThrew.name == "Player 2" && playerTouched.name == "Player 3")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_3HitByPlayer_2 += 1;
-		}
-
-		if(playerThatThrew.name == "Player 2" && playerTouched.name == "Player 4")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_4HitByPlayer_2 += 1;
-		}
-
-
-		if(playerThatThrew.name == "Player 3" && playerTouched.name == "Player 1")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_1HitByPlayer_3 += 1;
-		}
-		
-		if(playerThatThrew.name == "Player 3" && playerTouched.name == "Player 2")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_2HitByPlayer_3 += 1;
-		}
-		
-		if(playerThatThrew.name == "Player 3" && playerTouched.name == "Player 4")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_2HitByPlayer_3 += 1;
-		}
-
-
-		if(playerThatThrew.name == "Player 4" && playerTouched.name == "Player 1")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_4HitByPlayer_1 += 1;
-		}
-		
-		if(playerThatThrew.name == "Player 4" && playerTouched.name == "Player 2")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_4HitByPlayer_2 += 1;
-		}
-		
-		if(playerThatThrew.name == "Player 4" && playerTouched.name == "Player 3")
-		{
-			mainCamera.GetComponent<StatsScript>().Player_4HitByPlayer_3 += 1;
-		}
-
+		return instantiatedParticles;
 	}
 
 	public void AddRigidbody ()

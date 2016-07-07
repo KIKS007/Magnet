@@ -3,10 +3,9 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
-public class LoadModeManager : MonoBehaviour 
+public class LoadModeManager : Singleton<LoadModeManager> 
 {
 	[Header ("Scene Test")]
-	public bool gamePaused = true;
 	public string firstSceneToLoad = "Test";
 
 	[Header ("Load Mode Manager")]
@@ -43,18 +42,13 @@ public class LoadModeManager : MonoBehaviour
 		StartCoroutine (FirstLoadedScene (firstSceneToLoad));
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
-
-		if (gamePaused)
-			StaticVariables.GamePaused = true;
-		else
-			StaticVariables.GamePaused = false;
 	}
 
 	IEnumerator FirstLoadedScene (string sceneToLoad)
 	{
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
-		StaticVariables.CurrentModeLoaded = sceneToLoad;
+		StaticVariables.Instance.CurrentModeLoaded = sceneToLoad;
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
 
@@ -65,18 +59,18 @@ public class LoadModeManager : MonoBehaviour
 	{
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
-		if(StaticVariables.CurrentModeLoaded != sceneToLoad && StaticVariables.GameOver == true)
+		if(StaticVariables.Instance.CurrentModeLoaded != sceneToLoad && StaticVariables.Instance.GameOver == true)
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
 
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 		
-		else if(StaticVariables.GameOver == false)
+		else if(StaticVariables.Instance.GameOver == false)
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
 
-			StaticVariables.GameOver = true;
+			StaticVariables.Instance.GameOver = true;
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 
@@ -89,8 +83,8 @@ public class LoadModeManager : MonoBehaviour
 		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
-		if (StaticVariables.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (StaticVariables.CurrentModeLoaded);
+		if (StaticVariables.Instance.CurrentModeLoaded != "")
+			yield return SceneManager.UnloadScene (StaticVariables.Instance.CurrentModeLoaded);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
@@ -98,7 +92,7 @@ public class LoadModeManager : MonoBehaviour
 
 		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
-		StaticVariables.CurrentModeLoaded = sceneToLoad;
+		StaticVariables.Instance.CurrentModeLoaded = sceneToLoad;
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
 
@@ -114,23 +108,23 @@ public class LoadModeManager : MonoBehaviour
 
 	IEnumerator RestartScene ()
 	{
-		string sceneToLoad = StaticVariables.CurrentModeLoaded;
+		string sceneToLoad = StaticVariables.Instance.CurrentModeLoaded;
 
 		Tween myTween = mainCamera.DOMoveX (reloadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
-		if (StaticVariables.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (StaticVariables.CurrentModeLoaded);
+		if (StaticVariables.Instance.CurrentModeLoaded != "")
+			yield return SceneManager.UnloadScene (StaticVariables.Instance.CurrentModeLoaded);
 
 		DestroyParticules ();
 
-		StaticVariables.CurrentModeLoaded = sceneToLoad;
+		StaticVariables.Instance.CurrentModeLoaded = sceneToLoad;
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
 		myTween = mainCamera.DOMoveX (0, movementDuration).SetEase(movementEase);
 
-		rootGameObjects = SceneManager.GetSceneByName (StaticVariables.CurrentModeLoaded).GetRootGameObjects ();
+		rootGameObjects = SceneManager.GetSceneByName (StaticVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
 		FindGameObjects ();
 	
 		yield return myTween.WaitForCompletion ();
@@ -141,8 +135,8 @@ public class LoadModeManager : MonoBehaviour
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
-		StaticVariables.GameOver = false;
-		StaticVariables.GamePaused = false;
+		StaticVariables.Instance.GameOver = false;
+		StaticVariables.Instance.GamePaused = false;
 	}
 
 	public void ReloadSceneVoid ()
@@ -155,18 +149,18 @@ public class LoadModeManager : MonoBehaviour
 	IEnumerator ReloadScene ()
 	{
 		float orginalPosition = mainCamera.transform.position.x;
-		string sceneToLoad = StaticVariables.CurrentModeLoaded;
+		string sceneToLoad = StaticVariables.Instance.CurrentModeLoaded;
 
 		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
 
-		if (StaticVariables.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (StaticVariables.CurrentModeLoaded);
+		if (StaticVariables.Instance.CurrentModeLoaded != "")
+			yield return SceneManager.UnloadScene (StaticVariables.Instance.CurrentModeLoaded);
 
 		DestroyParticules ();
 
-		StaticVariables.CurrentModeLoaded = sceneToLoad;
+		StaticVariables.Instance.CurrentModeLoaded = sceneToLoad;
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
@@ -174,7 +168,7 @@ public class LoadModeManager : MonoBehaviour
 
 		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
-		rootGameObjects = SceneManager.GetSceneByName (StaticVariables.CurrentModeLoaded).GetRootGameObjects ();
+		rootGameObjects = SceneManager.GetSceneByName (StaticVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
 
 		FindGameObjects ();
 	}
@@ -183,11 +177,11 @@ public class LoadModeManager : MonoBehaviour
 
 	void DestroyParticules ()
 	{
-		if(StaticVariables.ParticulesClonesParent.childCount != null)
+		if(StaticVariables.Instance.ParticulesClonesParent.childCount != 0)
 		{
-			for(int i = 0; i < StaticVariables.ParticulesClonesParent.childCount; i++)
+			for(int i = 0; i < StaticVariables.Instance.ParticulesClonesParent.childCount; i++)
 			{
-				Destroy (StaticVariables.ParticulesClonesParent.GetChild (i).gameObject);
+				Destroy (StaticVariables.Instance.ParticulesClonesParent.GetChild (i).gameObject);
 			}
 		}
 	}
@@ -230,10 +224,10 @@ public class LoadModeManager : MonoBehaviour
 
 	void UpdateStaticVariables ()
 	{
-		StaticVariables.Player1 = player1;
-		StaticVariables.Player2 = player2;
-		StaticVariables.Player3 = player3;
-		StaticVariables.Player4 = player4;
+		StaticVariables.Instance.Player1 = player1;
+		StaticVariables.Instance.Player2 = player2;
+		StaticVariables.Instance.Player3 = player3;
+		StaticVariables.Instance.Player4 = player4;
 	}
 		
 }

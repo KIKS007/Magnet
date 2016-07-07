@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class GamepadsManager : MonoBehaviour 
+public class GamepadsManager : Singleton<GamepadsManager>
 {
 	public GameObject[] gamepadLine;
 
@@ -61,12 +61,12 @@ public class GamepadsManager : MonoBehaviour
 	{
 		//GetPlayers ();
 
-		if(StaticVariables.FirstGameLaunch)
+		if(StaticVariables.Instance.FirstGameLaunch)
 		{
 			GetGamepadsPlugged ();
 			UpdateStaticVariables ();
-			StaticVariables.FirstGameLaunch = false;
-			StaticVariables.ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
+			StaticVariables.Instance.FirstGameLaunch = false;
+			StaticVariables.Instance.ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 		}
 
 
@@ -137,77 +137,77 @@ public class GamepadsManager : MonoBehaviour
 	{
 		players = GameObject.FindGameObjectsWithTag("Player").OrderBy( go => go.name ).ToArray();
 
-		StaticVariables.Player1 = players[0];
-		StaticVariables.Player2 = players[1];
-		StaticVariables.Player3 = players[2];
-		StaticVariables.Player4 = players[3];
+		StaticVariables.Instance.Player1 = players[0];
+		StaticVariables.Instance.Player2 = players[1];
+		StaticVariables.Instance.Player3 = players[2];
+		StaticVariables.Instance.Player4 = players[3];
 	}
 
 	void GetGamepadsPlugged ()
 	{
 		if(XCI.IsPluggedIn(1) && !XCI.IsPluggedIn(2) && !XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
 		{
-			StaticVariables.ControllerNumberPlayer1 = 0;
-			StaticVariables.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 0;
+			StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 
-			StaticVariables.ControllerNumberPlayer2 = 1;
-			StaticVariables.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 1;
+			StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
 
 			EnablePlayers (2);
 		}
 
 		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && !XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
 		{
-			StaticVariables.ControllerNumberPlayer1 = 0;
-			StaticVariables.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 0;
+			StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 
-			StaticVariables.ControllerNumberPlayer2 = 1;
-			StaticVariables.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 1;
+			StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
 
-			StaticVariables.ControllerNumberPlayer3 = 2;
-			StaticVariables.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 2;
+			StaticVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
 
 			EnablePlayers (3);
 		}
 
 		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
 		{
-			StaticVariables.ControllerNumberPlayer1 = 0;
-			StaticVariables.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 0;
+			StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 
-			StaticVariables.ControllerNumberPlayer2 = 1;
-			StaticVariables.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 1;
+			StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
 
-			StaticVariables.ControllerNumberPlayer3 = 2;
-			StaticVariables.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 2;
+			StaticVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
 
-			StaticVariables.ControllerNumberPlayer4 = 3;
-			StaticVariables.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 3;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 3;
+			StaticVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 3;
 
 			EnablePlayers (4);
 		}
 
 		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && XCI.IsPluggedIn(3) && XCI.IsPluggedIn(4))
 		{
-			StaticVariables.ControllerNumberPlayer1 = 1;
-			StaticVariables.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 1;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 1;
+			StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 1;
 
-			StaticVariables.ControllerNumberPlayer2 = 2;
-			StaticVariables.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 2;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 2;
+			StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 2;
 
-			StaticVariables.ControllerNumberPlayer3 = 3;
-			StaticVariables.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 3;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 3;
+			StaticVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 3;
 
-			StaticVariables.ControllerNumberPlayer4 = 4;
-			StaticVariables.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 4;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 4;
+			StaticVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 4;
 
 			EnablePlayers (4);
 		}
 
 		else
 		{
-			StaticVariables.ControllerNumberPlayer1 = 0;
-			StaticVariables.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 0;
+			StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 
 			EnablePlayers (1);
 		}
@@ -218,57 +218,55 @@ public class GamepadsManager : MonoBehaviour
 	{
 		switch (enabledPlayers) {
 		case 1:
-			StaticVariables.Player1.SetActive (true);
+			StaticVariables.Instance.Player1.SetActive (true);
 			break;
 		case 2:
-			StaticVariables.Player1.SetActive (true);
-			StaticVariables.Player2.SetActive (true);
+			StaticVariables.Instance.Player1.SetActive (true);
+			StaticVariables.Instance.Player2.SetActive (true);
 			break;
 		case 3:
-			StaticVariables.Player1.SetActive (true);
-			StaticVariables.Player2.SetActive (true);
-			StaticVariables.Player3.SetActive (true);
+			StaticVariables.Instance.Player1.SetActive (true);
+			StaticVariables.Instance.Player2.SetActive (true);
+			StaticVariables.Instance.Player3.SetActive (true);
 			break;
 		case 4:
-			StaticVariables.Player1.SetActive (true);
-			StaticVariables.Player2.SetActive (true);
-			StaticVariables.Player3.SetActive (true);
-			StaticVariables.Player4.SetActive (true);
+			StaticVariables.Instance.Player1.SetActive (true);
+			StaticVariables.Instance.Player2.SetActive (true);
+			StaticVariables.Instance.Player3.SetActive (true);
+			StaticVariables.Instance.Player4.SetActive (true);
 			break;
 		}
 	}
   
 	void UpdateStaticVariables ()
 		{
-			StaticVariables.NumberOfPlayers = 0;
-			StaticVariables.NumberOfDisabledPlayers = 0;
+			StaticVariables.Instance.NumberOfPlayers = 0;
+			StaticVariables.Instance.NumberOfDisabledPlayers = 0;
 
-			float numberOfPlayer;
-
-			if (StaticVariables.ControllerNumberPlayer1 != -1)
-				StaticVariables.NumberOfPlayers++;
+			if (StaticVariables.Instance.ControllerNumberPlayer1 != -1)
+				StaticVariables.Instance.NumberOfPlayers++;
 			else
-				StaticVariables.NumberOfDisabledPlayers++;
+				StaticVariables.Instance.NumberOfDisabledPlayers++;
 
-			if (StaticVariables.ControllerNumberPlayer2 != -1)
-				StaticVariables.NumberOfPlayers++;
+			if (StaticVariables.Instance.ControllerNumberPlayer2 != -1)
+				StaticVariables.Instance.NumberOfPlayers++;
 			else
-				StaticVariables.NumberOfDisabledPlayers++;
+				StaticVariables.Instance.NumberOfDisabledPlayers++;
 
-			if (StaticVariables.ControllerNumberPlayer3 != -1)
-				StaticVariables.NumberOfPlayers++;
+			if (StaticVariables.Instance.ControllerNumberPlayer3 != -1)
+				StaticVariables.Instance.NumberOfPlayers++;
 			else
-				StaticVariables.NumberOfDisabledPlayers++;
+				StaticVariables.Instance.NumberOfDisabledPlayers++;
 
-			if (StaticVariables.ControllerNumberPlayer4 != -1)
-				StaticVariables.NumberOfPlayers++;
+			if (StaticVariables.Instance.ControllerNumberPlayer4 != -1)
+				StaticVariables.Instance.NumberOfPlayers++;
 			else
-				StaticVariables.NumberOfDisabledPlayers++;
+				StaticVariables.Instance.NumberOfDisabledPlayers++;
 
 
-			/*Debug.Log (StaticVariables.ControllerNumberPlayer1);
-		Debug.Log (StaticVariables.ControllerNumberPlayer2);
-		Debug.Log (StaticVariables.ControllerNumberPlayer3);
-		Debug.Log (StaticVariables.ControllerNumberPlayer4);*/
+			/*Debug.Log (StaticVariables.Instance.ControllerNumberPlayer1);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer2);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer3);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer4);*/
 		}
 }

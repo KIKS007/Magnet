@@ -52,10 +52,10 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad4Color = gamepadsLines [3].GetComponent<Text> ().color;
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
-		/*Debug.Log (StaticVariables.ControllerNumberPlayer1);
-		Debug.Log (StaticVariables.ControllerNumberPlayer2);
-		Debug.Log (StaticVariables.ControllerNumberPlayer3);
-		Debug.Log (StaticVariables.ControllerNumberPlayer4);*/
+		/*Debug.Log (StaticVariables.Instance.ControllerNumberPlayer1);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer2);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer3);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer4);*/
 	}
 		
 	void Update ()
@@ -143,28 +143,28 @@ public class ControllerChangeManager1 : MonoBehaviour
 		
 	public void GetPlayersAndControllers ()
 	{
-		if(StaticVariables.ControllerNumberPlayer1 != -1)
+		if(StaticVariables.Instance.ControllerNumberPlayer1 != -1)
 		{
-			sliderRect [StaticVariables.ControllerNumberPlayer1].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
-			imagesNumber [StaticVariables.ControllerNumberPlayer1] = 1;
+			sliderRect [StaticVariables.Instance.ControllerNumberPlayer1].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
+			imagesNumber [StaticVariables.Instance.ControllerNumberPlayer1] = 1;
 		}
 
-		if(StaticVariables.ControllerNumberPlayer2 != -1)
+		if(StaticVariables.Instance.ControllerNumberPlayer2 != -1)
 		{
-			sliderRect [StaticVariables.ControllerNumberPlayer2].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
-			imagesNumber [StaticVariables.ControllerNumberPlayer2] = 2;
+			sliderRect [StaticVariables.Instance.ControllerNumberPlayer2].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
+			imagesNumber [StaticVariables.Instance.ControllerNumberPlayer2] = 2;
 		}
 
-		if(StaticVariables.ControllerNumberPlayer3 != -1)
+		if(StaticVariables.Instance.ControllerNumberPlayer3 != -1)
 		{
-			sliderRect [StaticVariables.ControllerNumberPlayer3].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
-			imagesNumber [StaticVariables.ControllerNumberPlayer3] = 3;
+			sliderRect [StaticVariables.Instance.ControllerNumberPlayer3].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
+			imagesNumber [StaticVariables.Instance.ControllerNumberPlayer3] = 3;
 		}
 
-		if(StaticVariables.ControllerNumberPlayer4 != -1)
+		if(StaticVariables.Instance.ControllerNumberPlayer4 != -1)
 		{
-			sliderRect [StaticVariables.ControllerNumberPlayer4].DOLocalMoveX (imagesAlignedPos [4], durationImageMovement);
-			imagesNumber [StaticVariables.ControllerNumberPlayer4] = 4;
+			sliderRect [StaticVariables.Instance.ControllerNumberPlayer4].DOLocalMoveX (imagesAlignedPos [4], durationImageMovement);
+			imagesNumber [StaticVariables.Instance.ControllerNumberPlayer4] = 4;
 		}
 	}
 
@@ -236,174 +236,174 @@ public class ControllerChangeManager1 : MonoBehaviour
 		switch (imagesNumber[0])
 		{
 		case 1:
-			StaticVariables.ControllerNumberPlayer1 = 0;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 0;
 			break;
 		case 2:
-			StaticVariables.ControllerNumberPlayer2 = 0;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 0;
 			break;
 		case 3:
-			StaticVariables.ControllerNumberPlayer3 = 0;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 0;
 			break;
 		case 4:
-			StaticVariables.ControllerNumberPlayer4 = 0;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 0;
 			break;
 		}
 
 		switch (imagesNumber[1])
 		{
 		case 1:
-			StaticVariables.ControllerNumberPlayer1 = 1;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 1;
 			break;
 		case 2:
-			StaticVariables.ControllerNumberPlayer2 = 1;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 1;
 			break;
 		case 3:
-			StaticVariables.ControllerNumberPlayer3 = 1;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 1;
 			break;
 		case 4:
-			StaticVariables.ControllerNumberPlayer4 = 1;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 1;
 			break;
 		}
 
 		switch (imagesNumber[2])
 		{
 		case 1:
-			StaticVariables.ControllerNumberPlayer1 = 2;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 2;
 			break;
 		case 2:
-			StaticVariables.ControllerNumberPlayer2 = 2;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 2;
 			break;
 		case 3:
-			StaticVariables.ControllerNumberPlayer3 = 2;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 2;
 			break;
 		case 4:
-			StaticVariables.ControllerNumberPlayer4 = 2;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 2;
 			break;
 		}
 
 		switch (imagesNumber[3])
 		{
 		case 1:
-			StaticVariables.ControllerNumberPlayer1 = 3;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 3;
 			break;
 		case 2:
-			StaticVariables.ControllerNumberPlayer2 = 3;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 3;
 			break;
 		case 3:
-			StaticVariables.ControllerNumberPlayer3 = 3;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 3;
 			break;
 		case 4:
-			StaticVariables.ControllerNumberPlayer4 = 3;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 3;
 			break;
 		}
 
 		switch (imagesNumber[4])
 		{
 		case 1:
-			StaticVariables.ControllerNumberPlayer1 = 4;
+			StaticVariables.Instance.ControllerNumberPlayer1 = 4;
 			break;
 		case 2:
-			StaticVariables.ControllerNumberPlayer2 = 4;
+			StaticVariables.Instance.ControllerNumberPlayer2 = 4;
 			break;
 		case 3:
-			StaticVariables.ControllerNumberPlayer3 = 4;
+			StaticVariables.Instance.ControllerNumberPlayer3 = 4;
 			break;
 		case 4:
-			StaticVariables.ControllerNumberPlayer4 = 4;
+			StaticVariables.Instance.ControllerNumberPlayer4 = 4;
 			break;
 		}
 
 
-		StaticVariables.NumberOfPlayers = 0;
-		StaticVariables.NumberOfDisabledPlayers = 0;
+		StaticVariables.Instance.NumberOfPlayers = 0;
+		StaticVariables.Instance.NumberOfDisabledPlayers = 0;
 
-		if (StaticVariables.ControllerNumberPlayer1 != -1)
+		if (StaticVariables.Instance.ControllerNumberPlayer1 != -1)
 		{
-			StaticVariables.NumberOfPlayers++;
+			StaticVariables.Instance.NumberOfPlayers++;
 		}
 		else
 		{
-			StaticVariables.NumberOfDisabledPlayers++;
+			StaticVariables.Instance.NumberOfDisabledPlayers++;
 
 		}
 
-		if (StaticVariables.ControllerNumberPlayer2 != -1)
+		if (StaticVariables.Instance.ControllerNumberPlayer2 != -1)
 		{
-			StaticVariables.NumberOfPlayers++;
-
-		}
-		else
-		{
-			StaticVariables.NumberOfDisabledPlayers++;
-
-		}
-
-		if (StaticVariables.ControllerNumberPlayer3 != -1)
-		{
-			StaticVariables.NumberOfPlayers++;
+			StaticVariables.Instance.NumberOfPlayers++;
 
 		}
 		else
 		{
-			StaticVariables.NumberOfDisabledPlayers++;
+			StaticVariables.Instance.NumberOfDisabledPlayers++;
 
 		}
 
-		if (StaticVariables.ControllerNumberPlayer4 != -1)
+		if (StaticVariables.Instance.ControllerNumberPlayer3 != -1)
 		{
-			StaticVariables.NumberOfPlayers++;
+			StaticVariables.Instance.NumberOfPlayers++;
 
 		}
 		else
 		{
-			StaticVariables.NumberOfDisabledPlayers++;
+			StaticVariables.Instance.NumberOfDisabledPlayers++;
+
+		}
+
+		if (StaticVariables.Instance.ControllerNumberPlayer4 != -1)
+		{
+			StaticVariables.Instance.NumberOfPlayers++;
+
+		}
+		else
+		{
+			StaticVariables.Instance.NumberOfDisabledPlayers++;
 		}
 
 
-		/*Debug.Log (StaticVariables.ControllerNumberPlayer1);
-		Debug.Log (StaticVariables.ControllerNumberPlayer2);
-		Debug.Log (StaticVariables.ControllerNumberPlayer3);
-		Debug.Log (StaticVariables.ControllerNumberPlayer4);*/
+		/*Debug.Log (StaticVariables.Instance.ControllerNumberPlayer1);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer2);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer3);
+		Debug.Log (StaticVariables.Instance.ControllerNumberPlayer4);*/
 	}
 
 	void EraseControllerNumbers (int whichController)
 	{
-		if (StaticVariables.ControllerNumberPlayer1 == whichController)
-			StaticVariables.ControllerNumberPlayer1 = -1;
+		if (StaticVariables.Instance.ControllerNumberPlayer1 == whichController)
+			StaticVariables.Instance.ControllerNumberPlayer1 = -1;
 
-		if (StaticVariables.ControllerNumberPlayer2 == whichController)
-			StaticVariables.ControllerNumberPlayer2 = -1;
+		if (StaticVariables.Instance.ControllerNumberPlayer2 == whichController)
+			StaticVariables.Instance.ControllerNumberPlayer2 = -1;
 
-		if (StaticVariables.ControllerNumberPlayer3 == whichController)
-			StaticVariables.ControllerNumberPlayer3 = -1;
+		if (StaticVariables.Instance.ControllerNumberPlayer3 == whichController)
+			StaticVariables.Instance.ControllerNumberPlayer3 = -1;
 
-		if (StaticVariables.ControllerNumberPlayer4 == whichController)
-			StaticVariables.ControllerNumberPlayer4 = -1;
+		if (StaticVariables.Instance.ControllerNumberPlayer4 == whichController)
+			StaticVariables.Instance.ControllerNumberPlayer4 = -1;
 	}
 
 	public void UpdatePlayersControllers ()
 	{
-		if (StaticVariables.ControllerNumberPlayer1 != -1)
-			StaticVariables.Player1.SetActive (true);
+		if (StaticVariables.Instance.ControllerNumberPlayer1 != -1)
+			StaticVariables.Instance.Player1.SetActive (true);
 
-		if (StaticVariables.ControllerNumberPlayer2 != -1)
-			StaticVariables.Player2.SetActive (true);
+		if (StaticVariables.Instance.ControllerNumberPlayer2 != -1)
+			StaticVariables.Instance.Player2.SetActive (true);
 
-		if (StaticVariables.ControllerNumberPlayer3 != -1)
-			StaticVariables.Player3.SetActive (true);
+		if (StaticVariables.Instance.ControllerNumberPlayer3 != -1)
+			StaticVariables.Instance.Player3.SetActive (true);
 
-		if (StaticVariables.ControllerNumberPlayer4 != -1)
-			StaticVariables.Player4.SetActive (true);
+		if (StaticVariables.Instance.ControllerNumberPlayer4 != -1)
+			StaticVariables.Instance.Player4.SetActive (true);
 
-		StaticVariables.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		StaticVariables.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		StaticVariables.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		StaticVariables.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		StaticVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		StaticVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		StaticVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		StaticVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
 
-		StaticVariables.Player1.GetComponent<PlayersGameplay>().Controller ();
-		StaticVariables.Player2.GetComponent<PlayersGameplay>().Controller ();
-		StaticVariables.Player3.GetComponent<PlayersGameplay>().Controller ();
-		StaticVariables.Player4.GetComponent<PlayersGameplay>().Controller ();
+		StaticVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
+		StaticVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
+		StaticVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
+		StaticVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
 	}
 
 	void GoOnTheRight (int controllerNumber)

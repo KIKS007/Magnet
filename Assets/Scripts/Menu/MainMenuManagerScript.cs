@@ -58,8 +58,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float cameraMovementDuration = 1.2f;
 	public Ease cameraEaseMovement = Ease.InOutCubic;
 
-	private float cameraZOffset;
-
 	[Header ("Game Over Menu")]
 	public GameObject gameOverCanvas;
 	public GameObject restart;
@@ -123,7 +121,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	private RectTransform soundsButtonRect;
 	private RectTransform qualityButtonRect;
 
-	private RectTransform startButtonRect;
 	private RectTransform crushButtonRect;
 	private RectTransform footballButtonRect;
 	private RectTransform hitButtonRect;
@@ -175,7 +172,6 @@ public class MainMenuManagerScript : MonoBehaviour
 		soundsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
 		qualityButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
 
-		startButtonRect = chooseModeCanvas.transform.GetChild(0).GetComponent<RectTransform>();
 		crushButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(0).GetComponent<RectTransform>();
 		footballButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
 		hitButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
@@ -224,8 +220,6 @@ public class MainMenuManagerScript : MonoBehaviour
 		logoMenu.transform.parent.GetChild(1).gameObject.SetActive(true);
 
 		GameObject.FindGameObjectWithTag("MainCamera").transform.position = new Vector3 (-140, 93, 16);
-
-		cameraZOffset = mainCamera.transform.position.z;
 	}
 
 	void SetGapsAndButtons ()
@@ -361,7 +355,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void SetButtonsNavigation ()
 	{
-		if(StaticVariables.GameOver && resumeRect.gameObject.activeSelf == true)
+		if(StaticVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == true)
 		{
 			resumeRect.gameObject.SetActive (false);
 
@@ -376,7 +370,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			quitRect.GetChild (1).GetComponent<Selectable> ().navigation = quitNavigation;
 		}
 
-		else if(!StaticVariables.GameOver && resumeRect.gameObject.activeSelf == false)
+		else if(!StaticVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == false)
 		{
 			resumeRect.gameObject.SetActive (true);
 
@@ -436,7 +430,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator GamePauseResume ()
 	{
-		if(StaticVariables.GamePaused == false && StaticVariables.GameOver == false)
+		if(StaticVariables.Instance.GamePaused == false && StaticVariables.Instance.GameOver == false)
 		{
 			Tweening ();
 
@@ -444,7 +438,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			//Wait Slowmotion
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforePause));
 
-			StaticVariables.GamePaused = true;
+			StaticVariables.Instance.GamePaused = true;
 
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayBackwards();
@@ -455,7 +449,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			LoadMainMenu ();
 		}
 
-		else if(StaticVariables.GamePaused == true && StaticVariables.GameOver == false)
+		else if(StaticVariables.Instance.GamePaused == true && StaticVariables.Instance.GameOver == false)
 		{
 			Tweening ();
 
@@ -483,7 +477,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 			NotTweening ();
 
-			StaticVariables.GamePaused = false;
+			StaticVariables.Instance.GamePaused = false;
 
 		}
 
@@ -508,37 +502,37 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	bool CorrectTeams ()
 	{
-		StaticVariables.NumberOfDisabledPlayers = 0;
+		StaticVariables.Instance.NumberOfDisabledPlayers = 0;
 
-		for(int i = 0; i < StaticVariables.TeamChoice.Length; i++)
+		for(int i = 0; i < StaticVariables.Instance.TeamChoice.Length; i++)
 		{
-			if (StaticVariables.TeamChoice [i] == -1)
-				StaticVariables.NumberOfDisabledPlayers++;
+			if (StaticVariables.Instance.TeamChoice [i] == -1)
+				StaticVariables.Instance.NumberOfDisabledPlayers++;
 
 		}
 
-		if (StaticVariables.NumberOfDisabledPlayers >= 3)
+		if (StaticVariables.Instance.NumberOfDisabledPlayers >= 3)
 			return false;
 
-		else if(StaticVariables.NumberOfPlayers == 2)
+		else if(StaticVariables.Instance.NumberOfPlayers == 2)
 		{
-			if(StaticVariables.Team1.Count == 2 || StaticVariables.Team2.Count == 2 || StaticVariables.Team3.Count == 2 || StaticVariables.Team4.Count == 2)
+			if(StaticVariables.Instance.Team1.Count == 2 || StaticVariables.Instance.Team2.Count == 2 || StaticVariables.Instance.Team3.Count == 2 || StaticVariables.Instance.Team4.Count == 2)
 				return false;
 			else
 				return true;
 		}
 
-		else if(StaticVariables.NumberOfPlayers == 3)
+		else if(StaticVariables.Instance.NumberOfPlayers == 3)
 		{
-			if(StaticVariables.Team1.Count == 3 || StaticVariables.Team2.Count == 3 || StaticVariables.Team3.Count == 3 || StaticVariables.Team4.Count == 3)
+			if(StaticVariables.Instance.Team1.Count == 3 || StaticVariables.Instance.Team2.Count == 3 || StaticVariables.Instance.Team3.Count == 3 || StaticVariables.Instance.Team4.Count == 3)
 				return false;
 			else
 				return true;
 		}
 
-		else if(StaticVariables.NumberOfPlayers == 4)
+		else if(StaticVariables.Instance.NumberOfPlayers == 4)
 		{
-			if(StaticVariables.Team1.Count == 4 || StaticVariables.Team2.Count == 4 || StaticVariables.Team3.Count == 4 || StaticVariables.Team4.Count == 4)
+			if(StaticVariables.Instance.Team1.Count == 4 || StaticVariables.Instance.Team2.Count == 4 || StaticVariables.Instance.Team3.Count == 4 || StaticVariables.Instance.Team4.Count == 4)
 				return false;
 			else
 				return true;
@@ -565,7 +559,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		Tween myTween;
 
-		switch (StaticVariables.CurrentModeLoaded)
+		switch (StaticVariables.Instance.CurrentModeLoaded)
 		{
 		case "Crush":
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
@@ -606,8 +600,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		NotTweening ();
 
-		StaticVariables.GamePaused = false;
-		StaticVariables.GameOver = false;
+		StaticVariables.Instance.GamePaused = false;
+		StaticVariables.Instance.GameOver = false;
 
 	}
 

@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using XboxCtrlrInput;
 using XInputDotNetPure;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
@@ -31,6 +30,17 @@ public enum DashState
 
 public class PlayersGameplay : MonoBehaviour 
 {
+	public delegate void EventHandler();
+
+	public event EventHandler OnAttracting;
+	public event EventHandler OnRepulsing;
+	public event EventHandler OnHolding;
+	public event EventHandler OnHold;
+	public event EventHandler OnShoot;
+	public event EventHandler OnStun;
+	public event EventHandler OnDash;
+	public event EventHandler OnDeath;
+
 	[Header ("States")]
 	public Team team;
 	public PlayerState playerState = PlayerState.None;
@@ -58,7 +68,8 @@ public class PlayersGameplay : MonoBehaviour
 	[Header ("Dash")]
 	public float dashSpeed = 30;
 	public float dashDuration = 0.2f;
-	public float dashCoolDown = 2;
+	public float dashCooldown = 2;
+	public Ease dashEase;
 
 	[Header ("Vibration")]
 	[RangeAttribute(0, 1f)]
@@ -106,16 +117,6 @@ public class PlayersGameplay : MonoBehaviour
 	private MainMenuManagerScript mainMenuScript;
 
 
-	public delegate void OnAttractingDelegate();
-	public delegate void OnRepulsingDelegate();
-	public delegate void OnHoldingDelegate();
-	public delegate void OnHoldDelegate();
-	public delegate void OnShootDelegate();
-	public delegate void OnStunDelegate();
-	public delegate void OnDashDelegate();
-	public delegate void OnDeathDelegate();
-
-
 	// Use this for initialization
 	void Start () 
 	{
@@ -158,21 +159,12 @@ public class PlayersGameplay : MonoBehaviour
 			velocity = playerRigidbody.velocity.magnitude;
 
 
-		if (StaticVariables.GamePaused == false)
-			WhichControllerFunctions ();
+		if (StaticVariables.Instance.GamePaused == false)
+			ActivateFunctions ();
 
 		if(playerState == PlayerState.Stunned)
 		{
 			transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
-		}
-
-		if(playerState == PlayerState.None)
-		{
-			if (player.GetButton ("Attract"))
-				playerState = PlayerState.Attracting;
-
-			if (player.GetButton ("Repulse"))
-				playerState = PlayerState.Repulsing;
 		}
 
 		if (playerState == PlayerState.Attracting && !player.GetButton ("Attract"))
@@ -185,13 +177,15 @@ public class PlayersGameplay : MonoBehaviour
 
 		StatsButton ();
 
-		Pause ();
-
 		Sounds ();
 	}
 
-	void WhichControllerFunctions ()
+	void ActivateFunctions ()
 	{
+		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+		movement = movement.normalized * speed * Time.deltaTime;
+
+
 		if(controllerNumber == 0 && playerState != PlayerState.Stunned)
 			TurningMouse ();
 
@@ -203,25 +197,37 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			Shoot ();
 		}
+			
 
-		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
-		movement = movement.normalized * speed * Time.deltaTime;
+		if(playerState == PlayerState.None)
+		{
+			if (player.GetButton ("Attract"))
+				playerState = PlayerState.Attracting;
 
+			if (player.GetButton ("Repulse"))
+				playerState = PlayerState.Repulsing;
+		}
 
 		if(player.GetButtonDown("Dash") && dashState == DashState.CanDash)
 		{
 			StartCoroutine(Dash ());
 		}
+			
+		Pause ();
 	}
 	
 	void FixedUpdate ()
 	{
-		playerRigidbody.MovePosition(transform.position + movement);
+		if(dashState != DashState.Dashing)
+			playerRigidbody.MovePosition(transform.position + movement);
 
 		if(playerState == PlayerState.Holding)
 		{
 			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
 			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+
+			if (OnHolding != null)
+				OnHolding ();
 		}
 	}
 
@@ -230,16 +236,16 @@ public class PlayersGameplay : MonoBehaviour
 		switch (gameObject.name)
 		{
 		case "Player 1":
-			controllerNumber = StaticVariables.ControllerNumberPlayer1;
+			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer1;
 			break;
 		case "Player 2":
-			controllerNumber = StaticVariables.ControllerNumberPlayer2;
+			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer2;
 			break;
 		case "Player 3":
-			controllerNumber = StaticVariables.ControllerNumberPlayer3;
+			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer3;
 			break;
 		case "Player 4":
-			controllerNumber = StaticVariables.ControllerNumberPlayer4;
+			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer4;
 			break;
 		}
 	}
@@ -287,6 +293,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
+
+		if (OnAttracting != null)
+			OnAttracting ();
 	}
 		
 	public void Shoot ()
@@ -308,6 +317,9 @@ public class PlayersGameplay : MonoBehaviour
 		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
 
 		MasterAudio.PlaySound3DAtTransformAndForget (shootSound, transform);
+
+		if (OnShoot != null)
+			OnShoot ();
 	}
 
 	public void Repulsion (GameObject movable)
@@ -316,6 +328,19 @@ public class PlayersGameplay : MonoBehaviour
 
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+
+		if (OnRepulsing != null)
+			OnRepulsing ();
+	}
+
+	public void OnHoldMovable (GameObject movable)
+	{
+		playerState = PlayerState.Holding;
+		holdMovableRB = movable.GetComponent<Rigidbody>();
+		holdMovableTransform = movable.GetComponent<Transform>();
+
+		if (OnHold != null)
+			OnHold ();
 	}
 
 	void StartSounds ()
@@ -332,7 +357,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	void Sounds ()
 	{
-		if(!StaticVariables.GamePaused)
+		if(!StaticVariables.Instance.GamePaused)
 		{
 			if(playerState == PlayerState.Stunned || playerState == PlayerState.Holding)
 			{
@@ -421,7 +446,7 @@ public class PlayersGameplay : MonoBehaviour
 			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
 
 			GameObject instantiatedParticles = Instantiate(deadParticlesPrefab, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (StaticVariables.ParticulesClonesParent);
+			instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
 			instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 			instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
 			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
@@ -514,7 +539,10 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Stunned;
 
 		speed = stunnedSpeed;
-		
+
+		if (OnStun != null)
+			OnStun ();
+
 		yield return new WaitForSeconds(stunnedDuration);
 
 		playerState = PlayerState.None;
@@ -531,14 +559,23 @@ public class PlayersGameplay : MonoBehaviour
 	IEnumerator Dash ()
 	{
 		dashState = DashState.Dashing;
-		speed = dashSpeed;
 
-		yield return new WaitForSeconds(dashDuration);
+		if (OnDash != null)
+			OnDash ();
+		
+		Vector3 movementTemp = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+
+		float dashSpeedTemp = dashSpeed;
+
+		DOTween.To (() => dashSpeedTemp, x => dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetId("Dash").OnUpdate(
+			()=> playerRigidbody.velocity = movementTemp * dashSpeedTemp);
+		
+
+		yield return new WaitForSeconds (dashDuration - 0.05f);
 
 		dashState = DashState.Cooldown;
-		speed = originalSpeed;
 
-		yield return new WaitForSeconds(dashCoolDown);
+		yield return new WaitForSeconds (dashCooldown);
 
 		dashState = DashState.CanDash;
 	}

@@ -35,9 +35,8 @@ public class MagnetTriggerScript : MonoBehaviour
 				other.gameObject.GetComponent<MovableScript>().hold = true;
 				other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
 				other.gameObject.GetComponent<MovableScript>().player = transform.parent;
-				character.GetComponent<PlayersGameplay> ().playerState = PlayerState.Holding;
-				character.GetComponent<PlayersGameplay>().holdMovableRB = other.gameObject.GetComponent<Rigidbody>();
-				character.GetComponent<PlayersGameplay>().holdMovableTransform = other.gameObject.GetComponent<Transform>();
+
+				character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
 
 				Destroy (other.GetComponent<Rigidbody>());
 			
