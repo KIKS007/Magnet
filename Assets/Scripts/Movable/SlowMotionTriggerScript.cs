@@ -12,14 +12,14 @@ public class SlowMotionTriggerScript : MonoBehaviour
 	{
 		playerThatThrew = transform.parent.GetComponent<MovableScript>().playerThatThrew;
 
-		if (triggerEnabled && transform.parent.tag != "ThrownMovable")
-			triggerEnabled = false;
-
 		if(triggerEnabled && other.tag == "Player" && other.gameObject != playerThatThrew)
 		{
 			triggerEnabled = false;
 
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion ();
 		}
+
+		if (triggerEnabled && transform.parent.tag != "ThrownMovable")
+			triggerEnabled = false;
 	}
 }

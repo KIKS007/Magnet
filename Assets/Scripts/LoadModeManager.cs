@@ -42,6 +42,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StartCoroutine (FirstLoadedScene (firstSceneToLoad));
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
+
+		if(GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
+			menuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
 	}
 
 	IEnumerator FirstLoadedScene (string sceneToLoad)

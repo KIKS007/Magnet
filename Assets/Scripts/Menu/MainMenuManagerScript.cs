@@ -1024,6 +1024,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator LoadCrush ()
 	{
+		LoadModeManager.Instance.LoadSceneVoid ("Crush");
+
 		//Reset Top Button Position
 		crushMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton));
 		crushMenuCanvas.transform.GetChild (1).GetChild(0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton - 131));
@@ -1089,6 +1091,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator LoadFootball ()
 	{
+		LoadModeManager.Instance.LoadSceneVoid ("Football");
+
 		//Reset Top Button Position
 		footballMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton));
 		footballMenuCanvas.transform.GetChild (1).GetChild(0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton - 131));
@@ -1155,6 +1159,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator LoadHit ()
 	{
+		LoadModeManager.Instance.LoadSceneVoid ("Hit");
+
 		//Reset Top Button Position
 		hitMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton));
 		hitMenuCanvas.transform.GetChild (1).GetChild(0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton - 131));

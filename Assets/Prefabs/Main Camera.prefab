@@ -65,7 +65,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 48, y: 93, z: 16}
+  m_LocalPosition: {x: 0, y: 30, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 446072}
@@ -171,14 +171,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c70c034e0235f954995bd6707161f03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  easetype: 12
+  easetype: 6
   slowFactor: 8
+  slowFactor2: 10
+  slowFactor3: 12
+  slowFactor4: 14
+  slowMotionDuration: 0.25
+  slowMotionDuration2: 0.75
+  slowMotionDuration3: 1.25
+  slowMotionDuration4: 2
   timeTween: 0.05
-  slowMotionDuration: 0.04
   bloomIntensity: 0.7
   timeTweenEffect: 0.1
   timeTweenPause: 0.05
   slowMotion: 0
+  timeScaleDebug: 1
+  slowMoNumber: 0
 --- !u!114 &11452296
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -419,7 +427,7 @@ MonoBehaviour:
     subdivisionsXSegment: 10
     subdivisions: 40
     wps:
-    - {x: -43, y: 93, z: 16}
+    - {x: 0, y: 30, z: 0}
     - {x: -30.752743, y: 74.91739, z: 11.478378}
     - {x: -14.18657, y: 50.346577, z: 5.549141}
     - {x: 0, y: 30, z: 0}
@@ -428,11 +436,11 @@ MonoBehaviour:
       b: {x: 0, y: 0, z: 0}
     - a: {x: 14.18657, y: 9.653423, z: -5.549141}
       b: {x: 0, y: 0, z: 0}
-    length: 77.94203
+    length: 112.11524
     wpLengths:
     - 0
-    - 22.30297
-    - 30.221416
+    - 55.633297
+    - 31.089233
     - 25.417635
     isFinalized: 1
     timesTable:
@@ -477,46 +485,46 @@ MonoBehaviour:
     - 0.975
     - 1
     lengthsTable:
-    - 0.22090502
-    - 0.8526488
-    - 1.8488134
-    - 3.1629586
-    - 4.748642
-    - 6.5594435
-    - 8.548915
-    - 10.670635
-    - 12.878164
-    - 15.125069
-    - 17.364918
-    - 19.551277
-    - 21.637718
-    - 23.64108
-    - 25.734598
-    - 27.917425
-    - 30.17345
-    - 32.486553
-    - 34.840626
-    - 37.21954
-    - 39.607185
-    - 41.987442
-    - 44.344196
-    - 46.661354
-    - 48.9228
-    - 51.112453
-    - 53.216843
-    - 55.26042
-    - 57.258102
-    - 59.21597
-    - 61.140125
-    - 63.036644
-    - 64.9116
-    - 66.77107
-    - 68.62111
-    - 70.46779
-    - 72.317154
-    - 74.17527
-    - 76.04821
-    - 77.94203
+    - 0.8257533
+    - 3.136696
+    - 6.683346
+    - 11.216231
+    - 16.485867
+    - 22.242775
+    - 28.237476
+    - 34.22051
+    - 39.942375
+    - 45.1536
+    - 49.604713
+    - 53.04623
+    - 55.228706
+    - 56.05382
+    - 56.1784
+    - 57.10292
+    - 58.71423
+    - 60.897663
+    - 63.53848
+    - 66.52196
+    - 69.73335
+    - 73.057915
+    - 76.38091
+    - 79.58761
+    - 82.56325
+    - 85.193115
+    - 87.39005
+    - 89.43363
+    - 91.43131
+    - 93.38918
+    - 95.31334
+    - 97.209854
+    - 99.08481
+    - 100.94428
+    - 102.79432
+    - 104.641
+    - 106.490364
+    - 108.34848
+    - 110.22142
+    - 112.11524
   pathType: 1
   handlesType: 0
   livePreview: 1
@@ -524,7 +532,7 @@ MonoBehaviour:
   perspectiveHandleSize: 0.5
   showIndexes: 1
   pathColor: {r: 1, g: 0, b: 0, a: 0.5}
-  lastSrcPosition: {x: -43, y: 93, z: 16}
+  lastSrcPosition: {x: 0, y: 30, z: 0}
   wpsDropdown: 1
 --- !u!114 &11489938
 MonoBehaviour:
@@ -537,9 +545,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4975a6e437fc3b149a8cd508ce5bdd69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  threshold: 0.217
-  intensity: 1.7
-  blurSize: 1.23
+  threshold: 0.25
+  intensity: 0.75
+  blurSize: 1
   blurIterations: 1
   blurType: 0
   fastBloomShader: {fileID: 4800000, guid: 68a00c837b82e4c6d92e7da765dc5f1d, type: 3}

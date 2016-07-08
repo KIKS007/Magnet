@@ -16676,7 +16676,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1008304059}
+      - m_Target: {fileID: 0}
         m_MethodName: LoadSceneVoid
         m_Mode: 5
         m_Arguments:
@@ -23776,12 +23776,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1003022318}
---- !u!114 &1008304059 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 11439200, guid: 555bc5607a87a4e98b964b95b12222ff,
-    type: 2}
-  m_PrefabInternal: {fileID: 1221565321}
-  m_Script: {fileID: 11500000, guid: 8c9d676f01f164ef6b40e162a71e5c87, type: 3}
 --- !u!1 &1009394029
 GameObject:
   m_ObjectHideFlags: 0
@@ -24958,7 +24952,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
 --- !u!1 &1077625665
 GameObject:
   m_ObjectHideFlags: 0
@@ -28571,7 +28565,7 @@ Transform:
   - {fileID: 518663970}
   - {fileID: 1719224288}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
 --- !u!1 &1182522279
 GameObject:
   m_ObjectHideFlags: 0
@@ -29052,56 +29046,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1001 &1221565321
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 493022, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 166840, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: m_Name
-      value: LoadModeManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 11439200, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-      propertyPath: menuScript
-      value: 
-      objectReference: {fileID: 1107571704}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 555bc5607a87a4e98b964b95b12222ff, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1226392187
 GameObject:
   m_ObjectHideFlags: 0
@@ -29915,7 +29859,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
 --- !u!1 &1271613529
 GameObject:
   m_ObjectHideFlags: 0
@@ -36686,7 +36630,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1008304059}
+      - m_Target: {fileID: 0}
         m_MethodName: LoadSceneVoid
         m_Mode: 5
         m_Arguments:
@@ -40869,7 +40813,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1008304059}
+      - m_Target: {fileID: 0}
         m_MethodName: LoadSceneVoid
         m_Mode: 5
         m_Arguments:

@@ -8,6 +8,7 @@ public class SpawnSingletonManager : MonoBehaviour
 		Debug.Log(StaticVariables.Instance.gameObject);
 		Debug.Log(GamepadsManager.Instance.gameObject);
 		Debug.Log(LoadModeManager.Instance.gameObject);
+		Debug.Log(VibrationManager.Instance.gameObject);
 	}
 
 }

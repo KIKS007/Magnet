@@ -150,7 +150,6 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
-  fastMovable: 0
   easetype: 0
   timeTween: 0
   player: {fileID: 0}
@@ -166,7 +165,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 4
+  m_Radius: 3.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &100100000
 Prefab:
