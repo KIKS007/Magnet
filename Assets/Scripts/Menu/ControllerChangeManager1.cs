@@ -67,11 +67,11 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void GetPlayers ()
 	{
-		mouseKeyboard = ReInput.players.GetPlayer (4);
-		gamepad1 = ReInput.players.GetPlayer (0);
-		gamepad2 = ReInput.players.GetPlayer (1);
-		gamepad3 = ReInput.players.GetPlayer (2);
-		gamepad4 = ReInput.players.GetPlayer (3);
+		mouseKeyboard = ReInput.players.GetPlayer (0);
+		gamepad1 = ReInput.players.GetPlayer (1);
+		gamepad2 = ReInput.players.GetPlayer (2);
+		gamepad3 = ReInput.players.GetPlayer (3);
+		gamepad4 = ReInput.players.GetPlayer (4);
 	}
 
 	void GetInput ()

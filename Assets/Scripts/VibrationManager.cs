@@ -5,8 +5,8 @@ using DG.Tweening;
 
 public class VibrationManager : Singleton<VibrationManager> 
 {
-	public float[] playersLeftMotor = new float[4];
-	public float[] playersRightMotor = new float[4];
+	public float[] playersLeftMotor = new float[5];
+	public float[] playersRightMotor = new float[5];
 
 	private Player gamepad1;
 	private Player gamepad2;
@@ -30,10 +30,10 @@ public class VibrationManager : Singleton<VibrationManager>
 	// Use this for initialization
 	void Start () 
 	{
-		gamepad1 = ReInput.players.GetPlayer (0);
-		gamepad2 = ReInput.players.GetPlayer (1);
-		gamepad3 = ReInput.players.GetPlayer (2);
-		gamepad4 = ReInput.players.GetPlayer (3);
+		gamepad1 = ReInput.players.GetPlayer (1);
+		gamepad2 = ReInput.players.GetPlayer (2);
+		gamepad3 = ReInput.players.GetPlayer (3);
+		gamepad4 = ReInput.players.GetPlayer (4);
 	}
 	
 	// Update is called once per frame
@@ -42,25 +42,25 @@ public class VibrationManager : Singleton<VibrationManager>
 		foreach(Joystick j in gamepad1.controllers.Joysticks) 
 		{
 			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[0], playersRightMotor[0]);
+			j.SetVibration(playersLeftMotor[1], playersRightMotor[1]);
 		}
 
 		foreach(Joystick j in gamepad2.controllers.Joysticks) 
 		{
 			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[1], playersRightMotor[1]);
+			j.SetVibration(playersLeftMotor[2], playersRightMotor[2]);
 		}
 
 		foreach(Joystick j in gamepad3.controllers.Joysticks) 
 		{
 			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[2], playersRightMotor[2]);
+			j.SetVibration(playersLeftMotor[3], playersRightMotor[3]);
 		}
 
 		foreach(Joystick j in gamepad4.controllers.Joysticks) 
 		{
 			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[3], playersRightMotor[3]);
+			j.SetVibration(playersLeftMotor[4], playersRightMotor[4]);
 		}
 
 		if(test)
@@ -68,13 +68,13 @@ public class VibrationManager : Singleton<VibrationManager>
 			test = false;
 
 			if(stopDurationTest == 0 && startDurationTest == 0 && burstNumberTest == 0)
-				StartCoroutine (Vibration (0, leftMotorTest, rightMotorTest, durationTest));
+				StartCoroutine (Vibration (1, leftMotorTest, rightMotorTest, durationTest));
 			
 			else if(burstNumberTest == 0)
-				StartCoroutine (Vibration (0, leftMotorTest, rightMotorTest, durationTest, startDurationTest, stopDurationTest, easeTypeTest));
+				StartCoroutine (Vibration (1, leftMotorTest, rightMotorTest, durationTest, startDurationTest, stopDurationTest, easeTypeTest));
 
 			else
-				StartCoroutine (VibrationBurst (0, burstNumberTest, leftMotorTest, rightMotorTest, burstDurationTest, durationBetweenBurstTest));
+				StartCoroutine (VibrationBurst (1, burstNumberTest, leftMotorTest, rightMotorTest, burstDurationTest, durationBetweenBurstTest));
 
 		}
 	}
@@ -99,7 +99,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		playersLeftMotor [whichPlayer] = leftMotor;
 		playersRightMotor [whichPlayer] = rightMotor;
 
-		yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (duration));
+		yield return new WaitForSeconds (duration);
 
 		StopVibration (whichPlayer);
 
@@ -112,7 +112,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, rightMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 
 		yield return myTween.WaitForCompletion ();
-		yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (duration));
+		yield return new WaitForSeconds (duration);
 
 		myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
@@ -131,17 +131,17 @@ public class VibrationManager : Singleton<VibrationManager>
 			playersLeftMotor [whichPlayer] = leftMotor;
 			playersRightMotor [whichPlayer] = rightMotor;
 
-			yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (burstDuration));
+			yield return new WaitForSeconds (burstDuration);
 
 			StopVibration (whichPlayer);
 
-			yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (durationBetweenBurst));
+			yield return new WaitForSeconds (durationBetweenBurst);
 		}
 
 		yield return null;
 	}
 		
-	void StopVibration (int whichPlayer)
+	public void StopVibration (int whichPlayer)
 	{
 		playersLeftMotor [whichPlayer] = 0;
 		playersRightMotor [whichPlayer] = 0;
@@ -179,7 +179,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		}
 	}
 
-	void StopAllVibration ()
+	public void StopAllVibration ()
 	{
 		foreach(Joystick j in gamepad1.controllers.Joysticks) 
 		{

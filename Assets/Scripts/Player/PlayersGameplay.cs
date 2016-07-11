@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using XInputDotNetPure;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
@@ -33,13 +32,17 @@ public class PlayersGameplay : MonoBehaviour
 	public delegate void EventHandler();
 
 	public event EventHandler OnAttracting;
+	public event EventHandler OnAttracted;
 	public event EventHandler OnRepulsing;
+	public event EventHandler OnRepulsed;
 	public event EventHandler OnHolding;
 	public event EventHandler OnHold;
 	public event EventHandler OnShoot;
 	public event EventHandler OnStun;
 	public event EventHandler OnDash;
 	public event EventHandler OnDeath;
+
+	public event EventHandler OnPlayerstateChange;
 
 	[Header ("States")]
 	public Team team;
@@ -71,22 +74,6 @@ public class PlayersGameplay : MonoBehaviour
 	public float dashCooldown = 2;
 	public Ease dashEase;
 
-	[Header ("Vibration")]
-	[RangeAttribute(0, 1f)]
-	public float motorVibration = 0.5f;
-	public float durationVibration = 0.3f;
-
-	[Header ("Player Sounds")]
-	[SoundGroupAttribute]
-	public string hitSound;
-	[SoundGroupAttribute]
-	public string shootSound;
-	[SoundGroupAttribute]
-	public string repulsionSound;
-	[SoundGroupAttribute]
-	public string attractionSound;
-	public float fadeDuration;
-
 
 	private float attractionSoundVolume;
 	private float repulsionSoundVolume;
@@ -116,6 +103,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	private MainMenuManagerScript mainMenuScript;
 
+	private bool hasAttracted;
+	private bool hasRepulsed;
 
 	// Use this for initialization
 	void Start () 
@@ -129,7 +118,7 @@ public class PlayersGameplay : MonoBehaviour
 		if (GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
 			mainMenuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
 		else
-			Debug.Log ("No MainMenuManager Found");
+			//Debug.Log ("No MainMenuManager Found");
 
 		deadParticlesPrefab = GameObject.FindGameObjectWithTag("DeadParticles") as GameObject;
 
@@ -143,7 +132,8 @@ public class PlayersGameplay : MonoBehaviour
 		magnetPoint = transform.GetChild (1).transform;
 		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 
-		StartSounds ();
+		if(gameObject.activeSelf == true)
+			StartCoroutine (OnPlayerStateChange ());
 	}
 
 	void OnEnable ()
@@ -172,12 +162,12 @@ public class PlayersGameplay : MonoBehaviour
 			
 		if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
 			playerState = PlayerState.None;
-		
+
 		TrailLength ();
 
 		StatsButton ();
 
-		Sounds ();
+		OnAttractedOnRepusled ();
 	}
 
 	void ActivateFunctions ()
@@ -265,22 +255,21 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(controllerNumber != -1)
 		{
+			player = ReInput.players.GetPlayer(controllerNumber);
+
 			switch (controllerNumber)
 			{
-			case 0:
-				player = ReInput.players.GetPlayer(4);
-				break;
 			case 1:
-				player = ReInput.players.GetPlayer(0);
+				player.controllers.AddController (ControllerType.Joystick, 0, true);
 				break;
 			case 2:
-				player = ReInput.players.GetPlayer(1);
+				player.controllers.AddController (ControllerType.Joystick, 1, true);
 				break;
 			case 3:
-				player = ReInput.players.GetPlayer(2);
+				player.controllers.AddController (ControllerType.Joystick, 2, true);
 				break;
 			case 4:
-				player = ReInput.players.GetPlayer(3);
+				player.controllers.AddController (ControllerType.Joystick, 3, true);
 				break;
 			}
 
@@ -316,8 +305,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
 
-		MasterAudio.PlaySound3DAtTransformAndForget (shootSound, transform);
-
 		if (OnShoot != null)
 			OnShoot ();
 	}
@@ -342,62 +329,31 @@ public class PlayersGameplay : MonoBehaviour
 		if (OnHold != null)
 			OnHold ();
 	}
-
-	void StartSounds ()
+		
+	public void OnAttractedOnRepusled ()
 	{
-		attractionSoundVolume = MasterAudio.GetGroupVolume (attractionSound);
-		repulsionSoundVolume = MasterAudio.GetGroupVolume (repulsionSound);
+		if(playerState != PlayerState.Attracting)
+			hasAttracted = false;
+	
+		if(playerState != PlayerState.Repulsing)
+			hasRepulsed = false;
+		
 
-		MasterAudio.PlaySound3DFollowTransformAndForget (attractionSound, transform);
-		MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, 0);
-
-		MasterAudio.PlaySound3DFollowTransformAndForget (repulsionSound, transform);
-		MasterAudio.FadeSoundGroupToVolume (repulsionSound, 0, 0);
-	}
-
-	void Sounds ()
-	{
-		if(!StaticVariables.Instance.GamePaused)
+		if(playerState == PlayerState.Attracting && !hasAttracted)
 		{
-			if(playerState == PlayerState.Stunned || playerState == PlayerState.Holding)
-			{
-				if(MasterAudio.GetGroupVolume(attractionSound) != 0)
-					MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, fadeDuration);
+			hasAttracted = true;
 
-				if(MasterAudio.GetGroupVolume(repulsionSound) != 0)
-					MasterAudio.FadeSoundGroupToVolume (repulsionSound, 0, fadeDuration);
-			}
-
-
-			if(playerState != PlayerState.Stunned && playerState != PlayerState.Holding)
-			{
-				
-				if(MasterAudio.GetGroupVolume(attractionSound) == 0)
-				{
-					if(player.GetButton("Attract"))
-						MasterAudio.FadeSoundGroupToVolume (attractionSound, attractionSoundVolume, fadeDuration);
-				}
-
-				else if(MasterAudio.GetGroupVolume(attractionSound) != 0)
-				{
-					if(!player.GetButton("Attract"))
-						MasterAudio.FadeSoundGroupToVolume (attractionSound, 0, fadeDuration);
-				}
-
-				if(MasterAudio.GetGroupVolume(repulsionSound) == 0)
-				{
-					if(player.GetButton("Repulse"))
-						MasterAudio.FadeSoundGroupToVolume (repulsionSound, repulsionSoundVolume, fadeDuration);
-				}
-
-				else if(MasterAudio.GetGroupVolume(repulsionSound) != 0)
-				{
-					if(!player.GetButton("Repulse"))
-						MasterAudio.FadeSoundGroupToVolume (repulsionSound, 0, fadeDuration);
-				}
-			}
+			if (OnAttracted != null)
+				OnAttracted ();
 		}
 
+		if(playerState == PlayerState.Repulsing && !hasRepulsed)
+		{
+			hasRepulsed = true;
+
+			if (OnRepulsed != null)
+				OnRepulsed ();
+		}
 	}
 
 	void TrailLength ()
@@ -500,37 +456,6 @@ public class PlayersGameplay : MonoBehaviour
 
 	IEnumerator Stun ()
 	{
-		MasterAudio.PlaySound3DAtTransformAndForget (hitSound, transform);
-
-		switch (controllerNumber)
-		{
-		case 0:
-			break;
-
-		case 1:
-			GamePad.SetVibration (PlayerIndex.One, motorVibration, motorVibration);
-			StartCoroutine (StunnedVibration (PlayerIndex.One));
-			break;
-
-		case 2:
-			GamePad.SetVibration (PlayerIndex.Two, motorVibration, motorVibration);
-			StartCoroutine (StunnedVibration (PlayerIndex.Two));
-			break;
-
-		case 3:
-			GamePad.SetVibration (PlayerIndex.Three, motorVibration, motorVibration);
-			StartCoroutine (StunnedVibration (PlayerIndex.Three));
-			break;
-
-		case 4:
-			GamePad.SetVibration (PlayerIndex.Four, motorVibration, motorVibration);
-			StartCoroutine (StunnedVibration (PlayerIndex.Four));
-			break;
-
-		default :
-			break;
-		}
-
 		if(playerState == PlayerState.Holding)
 		{
 			Shoot ();
@@ -547,13 +472,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		playerState = PlayerState.None;
 		speed = originalSpeed;
-	}
-
-	IEnumerator StunnedVibration (PlayerIndex whichController)
-	{
-		yield return new WaitForSeconds (durationVibration);
-
-		GamePad.SetVibration (whichController, 0f, 0f);
 	}
 
 	IEnumerator Dash ()
@@ -579,28 +497,32 @@ public class PlayersGameplay : MonoBehaviour
 
 		dashState = DashState.CanDash;
 	}
-
-	void OnApplicationQuit ()
+		
+	IEnumerator OnPlayerStateChange ()
 	{
-		GamePad.SetVibration (PlayerIndex.One, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Two, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Three, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Four, 0, 0);
+		PlayerState playerStateTemp = playerState;
+
+		yield return null;
+
+		if (playerState != playerStateTemp)
+		{
+			if (OnPlayerstateChange != null)
+				OnPlayerstateChange ();
+		}
+
+		StartCoroutine (OnPlayerStateChange ());
 	}
 
 	void OnDestroy ()
 	{
-		GamePad.SetVibration (PlayerIndex.One, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Two, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Three, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Four, 0, 0);
+		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
+			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
 
 	void OnDisable ()
 	{
-		GamePad.SetVibration (PlayerIndex.One, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Two, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Three, 0, 0);
-		GamePad.SetVibration (PlayerIndex.Four, 0, 0);
+		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
+			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
+
 }

@@ -31,6 +31,8 @@ GameObject:
   - 4: {fileID: 453106}
   - 33: {fileID: 3365360}
   - 114: {fileID: 11493528}
+  - 114: {fileID: 11439100}
+  - 114: {fileID: 11459864}
   - 136: {fileID: 13642792}
   - 23: {fileID: 2338206}
   - 54: {fileID: 5456510}
@@ -368,6 +370,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 2
+--- !u!114 &11439100
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 112468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe3849de96d6d29419dd2bad9bf35d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftMotorHold: 0.1
+  rightMotorHold: 0.2
+  durationHold: 0.3
+  leftMotorShoot: 0.7
+  rightMotorShoot: 0.5
+  durationShoot: 0.3
+  leftMotorStun: 0.8
+  rightMotorStun: 0
+  durationStun: 0.9
+  leftMotorDash: 0
+  rightMotorDash: 0.5
+  durationDash: 0.4
+  leftMotorDeath: 1
+  rightMotorDeath: 1
+  durationDeath: 1
 --- !u!114 &11443598
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -380,6 +408,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magnetPoint: {fileID: 473474}
+--- !u!114 &11459864
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 112468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c09e3cb35b687f41a81d3cdaf15e70d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeDuration: 0.5
+  attractingSound: Attraction_Player2
+  repulsingSound: Repulsion_Player2
+  onHoldSound: 
+  shootSound: EnvoiCube1
+  stunSound: AvatarHit
+  dashSound: 
+  deathSound: 
 --- !u!114 &11479534
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -419,13 +466,6 @@ MonoBehaviour:
   dashDuration: 0.3
   dashCooldown: 1.2
   dashEase: 6
-  motorVibration: 0.7
-  durationVibration: 0.3
-  hitSound: AvatarHit
-  shootSound: EnvoiCube1
-  repulsionSound: Repulsion_Player2
-  attractionSound: Attraction_Player2
-  fadeDuration: 0.2
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}
 --- !u!114 &11495130
