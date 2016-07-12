@@ -12,7 +12,6 @@ GameObject:
   - 114: {fileID: 11411936}
   - 114: {fileID: 11466250}
   - 114: {fileID: 11424106}
-  - 114: {fileID: 11466180}
   - 92: {fileID: 9224262}
   - 124: {fileID: 12492916}
   - 81: {fileID: 8150878}
@@ -221,49 +220,6 @@ MonoBehaviour:
   rightProbe: {fileID: 0}
   leftProbe: {fileID: 0}
   followCamera: 1
---- !u!114 &11466180
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52bb276b934fd1043b358a69fbb2fa15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player1: {fileID: 0}
-  player2: {fileID: 0}
-  player3: {fileID: 0}
-  player4: {fileID: 0}
-  Player_1frags: 0
-  Player_2frags: 0
-  Player_3frags: 0
-  Player_4frags: 0
-  Player_1HitByPlayer_2: 0
-  Player_1HitByPlayer_3: 0
-  Player_1HitByPlayer_4: 0
-  Player_1TotalHit: 0
-  Player_2HitByPlayer_1: 0
-  Player_2HitByPlayer_3: 0
-  Player_2HitByPlayer_4: 0
-  Player_2TotalHit: 0
-  Player_3HitByPlayer_1: 0
-  Player_3HitByPlayer_2: 0
-  Player_3HitByPlayer_4: 0
-  Player_3TotalHit: 0
-  Player_4HitByPlayer_1: 0
-  Player_4HitByPlayer_2: 0
-  Player_4HitByPlayer_3: 0
-  Player_4TotalHit: 0
-  Player_1Ratio: 0
-  Player_2Ratio: 0
-  Player_3Ratio: 0
-  Player_4Ratio: 0
-  player_1Stats: {fileID: 0}
-  player_2Stats: {fileID: 0}
-  player_3Stats: {fileID: 0}
-  player_4Stats: {fileID: 0}
 --- !u!114 &11466250
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,10 +1,19 @@
 fileFormatVersion: 2
 guid: 4c6c69ea3858ca64e8e81246560a6edb
-timeCreated: 1459801280
+timeCreated: 1468304945
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Player1: {instanceID: 0}
+  - Player2: {instanceID: 0}
+  - Player3: {instanceID: 0}
+  - Player4: {instanceID: 0}
+  - ParticulesClonesParent: {instanceID: 0}
+  - HitParticles: {fileID: 157234, guid: cd76df09f0f1d4345b49b6af15c123bc, type: 2}
+  - WallHitParticles: {fileID: 136970, guid: b5cf26f237d6a5a40a2b2253e2bfe2fb, type: 2}
+  - DeadParticles: {fileID: 151166, guid: 6944c4430c797a149ab4a7cddd8cceba, type: 2}
+  - MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

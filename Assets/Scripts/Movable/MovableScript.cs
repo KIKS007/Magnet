@@ -18,24 +18,19 @@ public class MovableScript : MonoBehaviour
 	private float massRb;
 	private CollisionDetectionMode collisionDetectionModeRb;
 
-	private GameObject wallHitParticlesPrefab;
-	private GameObject hitParticlesPrefab;
 
 	[HideInInspector]
 	public Transform player;
 	[HideInInspector]
 	public GameObject playerThatThrew;
 	[HideInInspector]
-	public GameObject playerTouched;
+	public GameObject playerHit;
 	[HideInInspector]
 
 	// Use this for initialization
 	void Start () 
 	{
 		rigibodyMovable = GetComponent<Rigidbody>();
-
-		wallHitParticlesPrefab = GameObject.FindGameObjectWithTag("WallHitParticles") as GameObject;
-		hitParticlesPrefab = GameObject.FindGameObjectWithTag("HitParticles") as GameObject;
 
 		massRb = rigibodyMovable.mass;
 		collisionDetectionModeRb = rigibodyMovable.collisionDetectionMode;
@@ -90,10 +85,12 @@ public class MovableScript : MonoBehaviour
 			{
 				other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 
-				playerTouched = other.gameObject;
+				playerHit = other.gameObject;
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-				InstantiateParticles (other.contacts [0], hitParticlesPrefab, other.gameObject.GetComponent<Renderer>().material.color);
+				InstantiateParticles (other.contacts [0], StaticVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+
+				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 			}
 		}
 
@@ -102,7 +99,7 @@ public class MovableScript : MonoBehaviour
 			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 			int numberOfParticles = (int) numberOfParticlesFloat;
 
-			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], wallHitParticlesPrefab, gameObject.GetComponent<Renderer> ().material.color);
+			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
 
 			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
@@ -114,7 +111,7 @@ public class MovableScript : MonoBehaviour
 			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 			int numberOfParticles = (int) numberOfParticlesFloat;
 
-			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], wallHitParticlesPrefab, gameObject.GetComponent<Renderer> ().material.color);
+			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
 
 			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);

@@ -35,4 +35,9 @@ public class StaticVariables : Singleton<StaticVariables>
 
 	public Transform ParticulesClonesParent;
 
+	public GameObject HitParticles;
+	public GameObject WallHitParticles;
+	public GameObject DeadParticles;
+	public GameObject MovableExplosion;
+
 }

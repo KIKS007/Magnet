@@ -93,8 +93,6 @@ public class PlayersGameplay : MonoBehaviour
 
 	private float originalSpeed;
 
-	private GameObject deadParticlesPrefab;
-	//private GameObject playerDestroyParticles;
 
 	[HideInInspector]
 	public Rigidbody holdMovableRB;
@@ -117,12 +115,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
 			mainMenuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
-		else
-			//Debug.Log ("No MainMenuManager Found");
-
-		deadParticlesPrefab = GameObject.FindGameObjectWithTag("DeadParticles") as GameObject;
-
-		//playerDestroyParticles = GameObject.FindGameObjectWithTag("PlayerDestroy") as GameObject;
 
 		triggerMask = LayerMask.GetMask ("FloorMask");
 		playerRigidbody = GetComponent<Rigidbody>();
@@ -289,14 +281,14 @@ public class PlayersGameplay : MonoBehaviour
 		
 	public void Shoot ()
 	{
-		playerState = PlayerState.None;
-
 		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
+
+		playerState = PlayerState.None;
 
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
 
-		holdMovableTransform.transform.parent = null;
-		holdMovableTransform.transform.parent = movableParent;
+		holdMovableTransform.transform.SetParent(null);
+		holdMovableTransform.transform.SetParent(movableParent);
 		holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
 		holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
 		holdMovableTransform.gameObject.tag = "ThrownMovable";
@@ -383,43 +375,21 @@ public class PlayersGameplay : MonoBehaviour
 		
 	}
 
-	void TurningGamepad ()
-	{
-		if(player.GetAxis("Aim Horizontal") != 0 || player.GetAxis("Aim Vertical") != 0)
-		{
-			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
-		}
-	}
-
 	void OnCollisionEnter (Collision other)
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead)
 		{
-			playerState = PlayerState.Dead;
-
 			Vector3 pos = other.contacts[0].point;
 			//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
 			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
 
-			GameObject instantiatedParticles = Instantiate(deadParticlesPrefab, pos, rot) as GameObject;
+			GameObject instantiatedParticles = Instantiate(StaticVariables.Instance.DeadParticles, pos, rot) as GameObject;
 			instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
 			instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 			instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
 			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
-			instantiatedParticles.AddComponent<ParticlesAutoDestroy>();
-
-			if(playerState == PlayerState.Holding)
-			{
-				for(int i = 0; i < transform.childCount; i++)
-				{
-					if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "HoldMovable")
-					{
-						transform.GetChild(i).transform.SetParent(null);
-					}
-				}
-			}
-
-			gameObject.SetActive (false);
+		
+			Death ();
 		}
 
 	}
@@ -431,7 +401,7 @@ public class PlayersGameplay : MonoBehaviour
 		
 		// Create a RaycastHit variable to store information about what was hit by the ray.
 		RaycastHit floorHit;
-		
+
 		// Perform the raycast and if it hits something on the floor layer...
 		if (Physics.Raycast (camRay, out floorHit, camRayLength, triggerMask)) 
 		{
@@ -449,6 +419,14 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 		
+	void TurningGamepad ()
+	{
+		if(player.GetAxis("Aim Horizontal") != 0 || player.GetAxis("Aim Vertical") != 0)
+		{
+			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
+		}
+	}
+
 	public void StunVoid ()
 	{
 		StartCoroutine(Stun ());
@@ -511,6 +489,36 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		StartCoroutine (OnPlayerStateChange ());
+	}
+
+	public void Death ()
+	{
+		if (OnDeath != null)
+			OnDeath ();
+		
+
+		if(playerState == PlayerState.Holding)
+		{
+			Transform holdMovableTemp = null;
+
+			for(int i = 0; i < transform.childCount; i++)
+			{
+				if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "HoldMovable")
+				{
+					holdMovableTemp = transform.GetChild (i);
+
+					holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
+
+					holdMovableTemp.transform.SetParent(null);
+					holdMovableTemp.transform.SetParent(movableParent);
+					holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
+				}
+			}
+		}
+
+		playerState = PlayerState.Dead;
+
+		gameObject.SetActive (false);
 	}
 
 	void OnDestroy ()

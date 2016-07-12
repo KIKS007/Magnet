@@ -6,7 +6,7 @@ using DG.Tweening;
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
 	[Header ("Scene Test")]
-	public string firstSceneToLoad = "Test";
+	public string firstSceneToLoad = "Hit";
 
 	[Header ("Load Mode Manager")]
 	public GameObject[] rootGameObjects;
@@ -231,6 +231,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StaticVariables.Instance.Player2 = player2;
 		StaticVariables.Instance.Player3 = player3;
 		StaticVariables.Instance.Player4 = player4;
+
+		StatsManager.Instance.GetPlayersEvents ();
 	}
 		
 }
