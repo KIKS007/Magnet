@@ -64,7 +64,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 431296}
   - 33: {fileID: 3388246}
-  - 114: {fileID: 11485228}
+  - 114: {fileID: 11431074}
   - 114: {fileID: 11408468}
   - 114: {fileID: 11450556}
   - 136: {fileID: 13651876}
@@ -663,6 +663,35 @@ MonoBehaviour:
   leftMotorDeath: 1
   rightMotorDeath: 1
   durationDeath: 1
+--- !u!114 &11431074
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a1563249b177a48a36f574a7f05794, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  team: 0
+  playerState: 0
+  dashState: 0
+  controllerNumber: -1
+  speed: 15
+  stunnedSpeed: 8
+  velocity: 0
+  attractionForce: 10
+  shootForce: 200
+  repulsionForce: 10
+  stunnedRotation: 400
+  stunnedDuration: 1
+  dashSpeed: 70
+  dashDuration: 0.3
+  dashCooldown: 1.2
+  dashEase: 0
+  holdMovableRB: {fileID: 0}
+  holdMovableTransform: {fileID: 0}
 --- !u!114 &11450556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -706,35 +735,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 2
---- !u!114 &11485228
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 137104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a1563249b177a48a36f574a7f05794, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  team: 0
-  playerState: 0
-  dashState: 0
-  controllerNumber: -1
-  speed: 15
-  stunnedSpeed: 8
-  velocity: 0
-  attractionForce: 10
-  shootForce: 200
-  repulsionForce: 10
-  stunnedRotation: 400
-  stunnedDuration: 1
-  dashSpeed: 70
-  dashDuration: 0.3
-  dashCooldown: 1.2
-  dashEase: 6
-  holdMovableRB: {fileID: 0}
-  holdMovableTransform: {fileID: 0}
 --- !u!114 &11489520
 MonoBehaviour:
   m_ObjectHideFlags: 1

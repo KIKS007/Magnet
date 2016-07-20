@@ -16,7 +16,7 @@ public class StaticVariables : Singleton<StaticVariables>
 
 	public bool GamePaused = false;
 
-	public bool GameOver = true;
+	public bool GameOver = false;
 
 	public bool FirstGameLaunch = true;
 
@@ -39,5 +39,10 @@ public class StaticVariables : Singleton<StaticVariables>
 	public GameObject WallHitParticles;
 	public GameObject DeadParticles;
 	public GameObject MovableExplosion;
+	public GameObject PlayerSpawnParticles;
 
+
+	[Header ("Hit Mode")]
+	public int timerDuration = 300;
+	public float timeBetweenSpawn = 2;
 }

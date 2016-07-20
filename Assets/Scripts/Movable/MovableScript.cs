@@ -6,17 +6,17 @@ public class MovableScript : MonoBehaviour
 {
 	public float higherVelocity;
 	public float currentVelocity;
-	public float limitVelocity;
+	public float limitVelocity = 170f;
 
 	public bool hold;
 
 	public Ease easetype;
 	public float timeTween;
 
-	private Rigidbody rigibodyMovable;
+	protected Rigidbody rigibodyMovable;
 
-	private float massRb;
-	private CollisionDetectionMode collisionDetectionModeRb;
+	protected float massRb;
+	protected CollisionDetectionMode collisionDetectionModeRb;
 
 
 	[HideInInspector]
@@ -25,10 +25,9 @@ public class MovableScript : MonoBehaviour
 	public GameObject playerThatThrew;
 	[HideInInspector]
 	public GameObject playerHit;
-	[HideInInspector]
 
 	// Use this for initialization
-	void Start () 
+	protected virtual void Start () 
 	{
 		rigibodyMovable = GetComponent<Rigidbody>();
 
@@ -37,7 +36,7 @@ public class MovableScript : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
 		if(hold == false)
 			currentVelocity = rigibodyMovable.velocity.magnitude;
@@ -74,51 +73,67 @@ public class MovableScript : MonoBehaviour
 
 	}
 
-	void OnCollisionEnter (Collision other)
+	protected virtual void OnCollisionEnter (Collision other)
 	{
 		if(other.collider.tag != "HoldMovable")
 		{
-			if(other.collider.tag == "Player" 
-				&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
-				&& gameObject.tag == "ThrownMovable" 
-				&& other.gameObject.name != playerThatThrew.name)
-			{
-				other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-
-				playerHit = other.gameObject;
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
-
-				InstantiateParticles (other.contacts [0], StaticVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-
-				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-			}
-		}
+			HitPlayer (other);			
+		}			
+		
 
 		if(other.gameObject.tag == "Movable")
 		{
-			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
-			int numberOfParticles = (int) numberOfParticlesFloat;
-
-			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
-
-			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
-			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+			HitOtherMovable (other);
 		}
 
 		//Touched Wall
 		if(other.gameObject.layer == 16)
 		{
-			float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
-			int numberOfParticles = (int) numberOfParticlesFloat;
-
-			GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
-
-			instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
-			instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+			HitWall (other);
 		}
 	}
 
-	GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)
+	protected virtual void HitPlayer (Collision other)
+	{
+		if(other.collider.tag == "Player" 
+			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+			&& gameObject.tag == "ThrownMovable" 
+			&& other.gameObject.name != playerThatThrew.name)
+		{
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+
+			playerHit = other.gameObject;
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+			InstantiateParticles (other.contacts [0], StaticVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+
+			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+		}
+	}
+
+	protected virtual void HitOtherMovable (Collision other)
+	{
+		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
+		int numberOfParticles = (int) numberOfParticlesFloat;
+
+		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
+
+		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
+		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+	}
+
+	protected virtual void HitWall (Collision other)
+	{
+		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
+		int numberOfParticles = (int) numberOfParticlesFloat;
+
+		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
+
+		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
+		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+	}
+
+	public virtual GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)
 	{
 		Vector3 pos = contact.point;
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
@@ -130,7 +145,7 @@ public class MovableScript : MonoBehaviour
 		return instantiatedParticles;
 	}
 
-	public void AddRigidbody ()
+	public virtual void AddRigidbody ()
 	{
 		gameObject.AddComponent<Rigidbody>();
 		rigibodyMovable = gameObject.GetComponent<Rigidbody>();

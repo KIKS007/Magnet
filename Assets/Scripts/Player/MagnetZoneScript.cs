@@ -28,33 +28,38 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
-			|| other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(StaticVariables.Instance.GameOver == false)
 		{
-			if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out objectHit, rayLength))
+			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead
+				|| other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 			{
-				Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
-
-
-				if(StaticVariables.Instance.GamePaused == false && player != null)
+				if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out objectHit, rayLength))
 				{
-					if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
-					{
-						characterScript.Attraction (objectHit.collider.gameObject);
-					}
+					Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
 
-					if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
-					{
-						characterScript.Repulsion (objectHit.collider.gameObject);
-					}
 
-					if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
+					if(StaticVariables.Instance.GamePaused == false && player != null)
 					{
-						characterScript.Repulsion (objectHit.collider.gameObject);
+						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
+						{
+							characterScript.Attraction (objectHit.collider.gameObject);
+						}
+
+						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
+						{
+							characterScript.Repulsion (objectHit.collider.gameObject);
+						}
+
+						if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
+						{
+							characterScript.Repulsion (objectHit.collider.gameObject);
+						}
 					}
 				}
 			}
 		}
+
+
 
 	}
 }

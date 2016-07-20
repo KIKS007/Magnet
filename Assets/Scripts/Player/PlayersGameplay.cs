@@ -50,7 +50,7 @@ public class PlayersGameplay : MonoBehaviour
 	public DashState dashState = DashState.CanDash;
 
 	[Header ("Controller Number")]
-	public int controllerNumber;
+	public int controllerNumber = -1;
 	[HideInInspector]
 	public Player player; // The Rewired Player
 
@@ -64,34 +64,31 @@ public class PlayersGameplay : MonoBehaviour
 	public float shootForce = 200;
 	public float repulsionForce = 10;
 
-	[Header ("Bump")]
+	[Header ("Stun")]
 	public float stunnedRotation = 400;
 	public float stunnedDuration = 1;
 
 	[Header ("Dash")]
-	public float dashSpeed = 30;
-	public float dashDuration = 0.2f;
-	public float dashCooldown = 2;
+	public float dashSpeed = 70;
+	public float dashDuration = 0.3f;
+	public float dashCooldown = 1.2f;
 	public Ease dashEase;
 
 
-	private float attractionSoundVolume;
-	private float repulsionSoundVolume;
+	protected Transform movableParent;
+	protected Transform magnetPoint;
 
-	private Transform movableParent;
-	private Transform magnetPoint;
+	protected TrailRenderer trail;
 
-	private TrailRenderer trail;
+	protected float lerpHold = 0.2f;
 
-	private float lerpHold = 0.2f;
+	protected Rigidbody playerRigidbody;
+	protected Vector3 movement;
 
-	private Rigidbody playerRigidbody;
-	private Vector3 movement;
+	protected int triggerMask;
+	protected float camRayLength = 200f;
 
-	private int triggerMask;
-	private float camRayLength = 200f;
-
-	private float originalSpeed;
+	protected float originalSpeed;
 
 
 	[HideInInspector]
@@ -99,13 +96,13 @@ public class PlayersGameplay : MonoBehaviour
 	[HideInInspector]
 	public Transform holdMovableTransform;
 
-	private MainMenuManagerScript mainMenuScript;
+	protected MainMenuManagerScript mainMenuScript;
 
-	private bool hasAttracted;
-	private bool hasRepulsed;
+	protected bool hasAttracted;
+	protected bool hasRepulsed;
 
 	// Use this for initialization
-	void Start () 
+	protected void Start () 
 	{
 		DOTween.Init ();
 
@@ -128,41 +125,44 @@ public class PlayersGameplay : MonoBehaviour
 			StartCoroutine (OnPlayerStateChange ());
 	}
 
-	void OnEnable ()
+	protected void OnEnable ()
 	{
 		playerState = PlayerState.None;
 		dashState = DashState.CanDash;
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
-		if(playerRigidbody.velocity.magnitude > velocity)
-			velocity = playerRigidbody.velocity.magnitude;
-
-
-		if (StaticVariables.Instance.GamePaused == false)
-			ActivateFunctions ();
-
-		if(playerState == PlayerState.Stunned)
+		if(playerState != PlayerState.Dead && StaticVariables.Instance.GameOver == false)
 		{
-			transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
+			if(playerRigidbody.velocity.magnitude > velocity)
+				velocity = playerRigidbody.velocity.magnitude;
+
+
+			if (StaticVariables.Instance.GamePaused == false)
+				ActivateFunctions ();
+
+			if(playerState == PlayerState.Stunned)
+			{
+				transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
+			}
+
+			if (playerState == PlayerState.Attracting && !player.GetButton ("Attract"))
+				playerState = PlayerState.None;
+
+			if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
+				playerState = PlayerState.None;
+
+			TrailLength ();
+
+			StatsButton ();
+
+			OnAttractedOnRepusled ();
 		}
-
-		if (playerState == PlayerState.Attracting && !player.GetButton ("Attract"))
-			playerState = PlayerState.None;
-			
-		if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
-			playerState = PlayerState.None;
-
-		TrailLength ();
-
-		StatsButton ();
-
-		OnAttractedOnRepusled ();
 	}
 
-	void ActivateFunctions ()
+	protected virtual void ActivateFunctions ()
 	{
 		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
 		movement = movement.normalized * speed * Time.deltaTime;
@@ -178,6 +178,8 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Holding && player.GetButtonUp("Attract"))
 		{
 			Shoot ();
+
+			playerState = PlayerState.None;
 		}
 			
 
@@ -198,7 +200,7 @@ public class PlayersGameplay : MonoBehaviour
 		Pause ();
 	}
 	
-	void FixedUpdate ()
+	protected virtual void FixedUpdate ()
 	{
 		if(dashState != DashState.Dashing)
 			playerRigidbody.MovePosition(transform.position + movement);
@@ -268,7 +270,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	public void Attraction (GameObject movable)
+	public virtual void Attraction (GameObject movable)
 	{
 		playerState = PlayerState.Attracting;
 
@@ -279,11 +281,9 @@ public class PlayersGameplay : MonoBehaviour
 			OnAttracting ();
 	}
 		
-	public void Shoot ()
+	public virtual void Shoot ()
 	{
 		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
-
-		playerState = PlayerState.None;
 
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
 
@@ -301,7 +301,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnShoot ();
 	}
 
-	public void Repulsion (GameObject movable)
+	public virtual void Repulsion (GameObject movable)
 	{
 		playerState = PlayerState.Repulsing;
 
@@ -312,7 +312,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnRepulsing ();
 	}
 
-	public void OnHoldMovable (GameObject movable)
+	public virtual void OnHoldMovable (GameObject movable)
 	{
 		playerState = PlayerState.Holding;
 		holdMovableRB = movable.GetComponent<Rigidbody>();
@@ -322,7 +322,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnHold ();
 	}
 		
-	public void OnAttractedOnRepusled ()
+	protected virtual void OnAttractedOnRepusled ()
 	{
 		if(playerState != PlayerState.Attracting)
 			hasAttracted = false;
@@ -348,7 +348,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	void TrailLength ()
+	protected void TrailLength ()
 	{
 		if(playerRigidbody.velocity.magnitude > 1)
 		{
@@ -362,7 +362,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	void Pause ()
+	protected void Pause ()
 	{
 		if(player.GetButtonDown("Start"))
 		{
@@ -370,14 +370,14 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	void StatsButton ()
+	protected void StatsButton ()
 	{
 		
 	}
 
-	void OnCollisionEnter (Collision other)
+	protected virtual void OnCollisionEnter (Collision other)
 	{
-		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead)
+		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && StaticVariables.Instance.GameOver == false)
 		{
 			Vector3 pos = other.contacts[0].point;
 			//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
@@ -394,7 +394,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	}
 
-	void TurningMouse ()
+	protected virtual void TurningMouse ()
 	{
 		// Create a ray from the mouse cursor on screen in the direction of the camera.
 		Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
@@ -419,7 +419,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 		
-	void TurningGamepad ()
+	protected virtual void TurningGamepad ()
 	{
 		if(player.GetAxis("Aim Horizontal") != 0 || player.GetAxis("Aim Vertical") != 0)
 		{
@@ -427,12 +427,12 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	public void StunVoid ()
+	public virtual void StunVoid ()
 	{
 		StartCoroutine(Stun ());
 	}
 
-	IEnumerator Stun ()
+	protected IEnumerator Stun ()
 	{
 		if(playerState == PlayerState.Holding)
 		{
@@ -452,7 +452,7 @@ public class PlayersGameplay : MonoBehaviour
 		speed = originalSpeed;
 	}
 
-	IEnumerator Dash ()
+	protected IEnumerator Dash ()
 	{
 		dashState = DashState.Dashing;
 
@@ -460,6 +460,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnDash ();
 		
 		Vector3 movementTemp = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+		movementTemp = movementTemp.normalized;
 
 		float dashSpeedTemp = dashSpeed;
 
@@ -476,7 +477,7 @@ public class PlayersGameplay : MonoBehaviour
 		dashState = DashState.CanDash;
 	}
 		
-	IEnumerator OnPlayerStateChange ()
+	protected IEnumerator OnPlayerStateChange ()
 	{
 		PlayerState playerStateTemp = playerState;
 
@@ -491,7 +492,7 @@ public class PlayersGameplay : MonoBehaviour
 		StartCoroutine (OnPlayerStateChange ());
 	}
 
-	public void Death ()
+	public virtual void Death ()
 	{
 		if (OnDeath != null)
 			OnDeath ();
@@ -521,16 +522,22 @@ public class PlayersGameplay : MonoBehaviour
 		gameObject.SetActive (false);
 	}
 
-	void OnDestroy ()
+	protected void OnDestroy ()
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
 
-	void OnDisable ()
+	protected void OnDisable ()
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
 
+
+	protected void OnDeathVoid ()
+	{
+		if (OnDeath != null)
+			OnDeath ();
+	}
 }

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 4c6c69ea3858ca64e8e81246560a6edb
-timeCreated: 1468304945
+timeCreated: 1468923016
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
@@ -14,6 +14,8 @@ MonoImporter:
   - WallHitParticles: {fileID: 136970, guid: b5cf26f237d6a5a40a2b2253e2bfe2fb, type: 2}
   - DeadParticles: {fileID: 151166, guid: 6944c4430c797a149ab4a7cddd8cceba, type: 2}
   - MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
+  - PlayerSpawnParticles: {fileID: 165514, guid: 978ecf91ecbc2464783de9a03edbef72,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
