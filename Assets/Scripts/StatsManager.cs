@@ -35,15 +35,15 @@ public class StatsManager : Singleton<StatsManager>
 
 	public void GetPlayersEvents ()
 	{
-		StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnDash += DashPlayer1;
-		StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnDash += DashPlayer2;
-		StaticVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnDash += DashPlayer3;
-		StaticVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnDash += DashPlayer4;
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnDash += DashPlayer1;
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnDash += DashPlayer2;
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnDash += DashPlayer3;
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnDash += DashPlayer4;
 
-		StaticVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer1;
-		StaticVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer2;
-		StaticVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer3;
-		StaticVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer4;
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer1;
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer2;
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer3;
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer4;
 	}
 
 	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)

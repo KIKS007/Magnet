@@ -19,8 +19,8 @@ public class PlayersHit : PlayersGameplay
 		//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
 
-		GameObject instantiatedParticles = Instantiate(StaticVariables.Instance.DeadParticles, pos, rot) as GameObject;
-		instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
+		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, pos, rot) as GameObject;
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 		instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
 		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
@@ -28,9 +28,9 @@ public class PlayersHit : PlayersGameplay
 
 	void SpawnParticles ()
 	{
-		GameObject instantiatedParticles = Instantiate(StaticVariables.Instance.PlayerSpawnParticles, transform.position, StaticVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
+		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 
-		instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		//instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
 	}
@@ -48,13 +48,13 @@ public class PlayersHit : PlayersGameplay
 
 		DeactivatePlayer ();
 
-		yield return new WaitForSeconds(StaticVariables.Instance.timeBetweenSpawn);
+		yield return new WaitForSeconds(GlobalVariables.Instance.timeBetweenSpawn);
 
 		Vector3 newPos = new Vector3();
 
 		do
 		{
-			newPos = new Vector3 (Random.Range (-24, 24), transform.position.y, Random.Range (-14, 14));
+			newPos = new Vector3 (Random.Range (-24, 24 + 1), transform.position.y, Random.Range (-14, 14 + 1));
 		}
 		while(Physics.CheckSphere(newPos, 3, checkSphereLayer));
 

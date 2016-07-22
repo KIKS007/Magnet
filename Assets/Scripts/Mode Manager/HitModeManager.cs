@@ -11,7 +11,17 @@ public class HitModeManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		timer = StaticVariables.Instance.timerDuration;
+		timer = GlobalVariables.Instance.timerDuration;
+
+		StartCoroutine (StartTimer ());
+	}
+
+	IEnumerator StartTimer ()
+	{
+		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		{
+			yield return null;
+		}
 
 		StartCoroutine (Timer ());
 	}
@@ -29,6 +39,11 @@ public class HitModeManager : MonoBehaviour
 
 		yield return null;
 
+		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		{
+			yield return null;
+		}
+
 		if(timer > 0.01f)
 			StartCoroutine (Timer ());
 
@@ -44,6 +59,6 @@ public class HitModeManager : MonoBehaviour
 	{
 		gameEnded = true;
 
-		StaticVariables.Instance.GameOver = true;
+		GlobalVariables.Instance.GameOver = true;
 	}
 }

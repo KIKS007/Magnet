@@ -61,12 +61,12 @@ public class ChooseTeamScript : MonoBehaviour
 
 		GetControllersSettings ();
 
-		UpdateStaticVariables ();
+		UpdateGlobalVariables ();
 	}
 
 	void OnDisable ()
 	{
-		//UpdateStaticVariables ();
+		//UpdateGlobalVariables ();
 	}
 
 	void Start ()
@@ -94,10 +94,10 @@ public class ChooseTeamScript : MonoBehaviour
 
 	void GetPreviousTeamChoice ()
 	{
-		teamNumber [0] = StaticVariables.Instance.TeamChoice [0];
-		teamNumber [1] = StaticVariables.Instance.TeamChoice [1];
-		teamNumber [2] = StaticVariables.Instance.TeamChoice [2];
-		teamNumber [3] = StaticVariables.Instance.TeamChoice [3];
+		teamNumber [0] = GlobalVariables.Instance.TeamChoice [0];
+		teamNumber [1] = GlobalVariables.Instance.TeamChoice [1];
+		teamNumber [2] = GlobalVariables.Instance.TeamChoice [2];
+		teamNumber [3] = GlobalVariables.Instance.TeamChoice [3];
 	}
 
 	public void GetControllersSettings ()
@@ -109,7 +109,7 @@ public class ChooseTeamScript : MonoBehaviour
 		gamepad4PlayerNumber = -1;
 
 
-		if(StaticVariables.Instance.ControllerNumberPlayer1 == -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer1 == -1)
 		{
 			gamepadsLines [0].transform.GetChild (2).gameObject.SetActive (false);
 			gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
@@ -122,7 +122,7 @@ public class ChooseTeamScript : MonoBehaviour
 			gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (1, 0.5f);
 		}
 
-		switch (StaticVariables.Instance.ControllerNumberPlayer1)
+		switch (GlobalVariables.Instance.ControllerNumberPlayer1)
 		{
 		case 0:
 			gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
@@ -156,7 +156,7 @@ public class ChooseTeamScript : MonoBehaviour
 		}
 
 
-		if(StaticVariables.Instance.ControllerNumberPlayer2 == -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer2 == -1)
 		{
 			gamepadsLines [1].transform.GetChild (2).gameObject.SetActive (false);
 			gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (false);
@@ -169,7 +169,7 @@ public class ChooseTeamScript : MonoBehaviour
 			gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (1, 0.5f);
 		}
 
-		switch (StaticVariables.Instance.ControllerNumberPlayer2)
+		switch (GlobalVariables.Instance.ControllerNumberPlayer2)
 		{
 		case 0:
 			gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (false);
@@ -203,7 +203,7 @@ public class ChooseTeamScript : MonoBehaviour
 		}
 
 
-		if(StaticVariables.Instance.ControllerNumberPlayer3 == -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer3 == -1)
 		{
 			gamepadsLines [2].transform.GetChild (2).gameObject.SetActive (false);
 			gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (false);
@@ -216,7 +216,7 @@ public class ChooseTeamScript : MonoBehaviour
 			gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (1, 0.5f);
 		}
 
-		switch (StaticVariables.Instance.ControllerNumberPlayer3)
+		switch (GlobalVariables.Instance.ControllerNumberPlayer3)
 		{
 		case 0:
 			gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (false);
@@ -250,7 +250,7 @@ public class ChooseTeamScript : MonoBehaviour
 		}
 
 
-		if(StaticVariables.Instance.ControllerNumberPlayer4 == -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer4 == -1)
 		{
 			gamepadsLines [3].transform.GetChild (2).gameObject.SetActive (false);
 			gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (false);
@@ -263,7 +263,7 @@ public class ChooseTeamScript : MonoBehaviour
 			gamepadsLines [3].transform.GetChild (0).GetComponent<Image> ().DOFade (1, 0.5f);
 		}
 
-		switch (StaticVariables.Instance.ControllerNumberPlayer4)
+		switch (GlobalVariables.Instance.ControllerNumberPlayer4)
 		{
 		case 0:
 			gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (false);
@@ -405,108 +405,108 @@ public class ChooseTeamScript : MonoBehaviour
 		}
 	}
 		
-	public void UpdateStaticVariables ()
+	public void UpdateGlobalVariables ()
 	{
-		StaticVariables.Instance.TeamChoice = new int[] {-1, -1, -1, -1};
+		GlobalVariables.Instance.TeamChoice = new int[] {-1, -1, -1, -1};
 
-		if (teamNumber [0] != -1 && StaticVariables.Instance.ControllerNumberPlayer1 != -1)
-			StaticVariables.Instance.TeamChoice [0] = teamNumber [0];
+		if (teamNumber [0] != -1 && GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+			GlobalVariables.Instance.TeamChoice [0] = teamNumber [0];
 
-		if (teamNumber [1] != -1 && StaticVariables.Instance.ControllerNumberPlayer2 != -1)
-			StaticVariables.Instance.TeamChoice [1] = teamNumber [1];
+		if (teamNumber [1] != -1 && GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+			GlobalVariables.Instance.TeamChoice [1] = teamNumber [1];
 
-		if (teamNumber [2] != -1 && StaticVariables.Instance.ControllerNumberPlayer3 != -1)
-			StaticVariables.Instance.TeamChoice [2] = teamNumber [2];
+		if (teamNumber [2] != -1 && GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+			GlobalVariables.Instance.TeamChoice [2] = teamNumber [2];
 
-		if (teamNumber [3] != -1 && StaticVariables.Instance.ControllerNumberPlayer4 != -1)
-			StaticVariables.Instance.TeamChoice [3] = teamNumber [3];
+		if (teamNumber [3] != -1 && GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+			GlobalVariables.Instance.TeamChoice [3] = teamNumber [3];
 
 
-		StaticVariables.Instance.Team1.Clear ();
-		StaticVariables.Instance.Team2.Clear ();
-		StaticVariables.Instance.Team3.Clear ();
-		StaticVariables.Instance.Team4.Clear ();
+		GlobalVariables.Instance.Team1.Clear ();
+		GlobalVariables.Instance.Team2.Clear ();
+		GlobalVariables.Instance.Team3.Clear ();
+		GlobalVariables.Instance.Team4.Clear ();
 
-		if(StaticVariables.Instance.ControllerNumberPlayer1 != -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
 		{
 			switch (teamNumber [0])
 			{
 			case 1:
-				StaticVariables.Instance.Team1.Add (StaticVariables.Instance.Player1);
+				GlobalVariables.Instance.Team1.Add (GlobalVariables.Instance.Player1);
 				break;
 			case 2:
-				StaticVariables.Instance.Team2.Add (StaticVariables.Instance.Player1);
+				GlobalVariables.Instance.Team2.Add (GlobalVariables.Instance.Player1);
 				break;
 			case 3:
-				StaticVariables.Instance.Team3.Add (StaticVariables.Instance.Player1);
+				GlobalVariables.Instance.Team3.Add (GlobalVariables.Instance.Player1);
 				break;
 			case 4:
-				StaticVariables.Instance.Team4.Add (StaticVariables.Instance.Player1);
+				GlobalVariables.Instance.Team4.Add (GlobalVariables.Instance.Player1);
 				break;
 			}
 		}
 
-		if(StaticVariables.Instance.ControllerNumberPlayer2 != -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
 		{
 			switch (teamNumber [1])
 			{
 			case 1:
-				StaticVariables.Instance.Team1.Add (StaticVariables.Instance.Player2);
+				GlobalVariables.Instance.Team1.Add (GlobalVariables.Instance.Player2);
 				break;
 			case 2:
-				StaticVariables.Instance.Team2.Add (StaticVariables.Instance.Player2);
+				GlobalVariables.Instance.Team2.Add (GlobalVariables.Instance.Player2);
 				break;
 			case 3:
-				StaticVariables.Instance.Team3.Add (StaticVariables.Instance.Player2);
+				GlobalVariables.Instance.Team3.Add (GlobalVariables.Instance.Player2);
 				break;
 			case 4:
-				StaticVariables.Instance.Team4.Add (StaticVariables.Instance.Player2);
+				GlobalVariables.Instance.Team4.Add (GlobalVariables.Instance.Player2);
 				break;
 			}
 		}
 
-		if(StaticVariables.Instance.ControllerNumberPlayer3 != -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
 		{
 			switch (teamNumber [2])
 			{
 			case 1:
-				StaticVariables.Instance.Team1.Add (StaticVariables.Instance.Player3);
+				GlobalVariables.Instance.Team1.Add (GlobalVariables.Instance.Player3);
 				break;
 			case 2:
-				StaticVariables.Instance.Team2.Add (StaticVariables.Instance.Player3);
+				GlobalVariables.Instance.Team2.Add (GlobalVariables.Instance.Player3);
 				break;
 			case 3:
-				StaticVariables.Instance.Team3.Add (StaticVariables.Instance.Player3);
+				GlobalVariables.Instance.Team3.Add (GlobalVariables.Instance.Player3);
 				break;
 			case 4:
-				StaticVariables.Instance.Team4.Add (StaticVariables.Instance.Player3);
+				GlobalVariables.Instance.Team4.Add (GlobalVariables.Instance.Player3);
 				break;
 			}
 		}
 
-		if(StaticVariables.Instance.ControllerNumberPlayer4 != -1)
+		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
 		{
 			switch (teamNumber [3])
 			{
 			case 1:
-				StaticVariables.Instance.Team1.Add (StaticVariables.Instance.Player4);
+				GlobalVariables.Instance.Team1.Add (GlobalVariables.Instance.Player4);
 				break;
 			case 2:
-				StaticVariables.Instance.Team2.Add (StaticVariables.Instance.Player4);
+				GlobalVariables.Instance.Team2.Add (GlobalVariables.Instance.Player4);
 				break;
 			case 3:
-				StaticVariables.Instance.Team3.Add (StaticVariables.Instance.Player4);
+				GlobalVariables.Instance.Team3.Add (GlobalVariables.Instance.Player4);
 				break;
 			case 4:
-				StaticVariables.Instance.Team4.Add (StaticVariables.Instance.Player4);
+				GlobalVariables.Instance.Team4.Add (GlobalVariables.Instance.Player4);
 				break;
 			}
 		}
 
-		//Debug.Log (StaticVariables.Instance.TeamChoice [0]);
-		//Debug.Log (StaticVariables.Instance.TeamChoice [1]);
-		//Debug.Log (StaticVariables.Instance.TeamChoice [2]);
-		//Debug.Log (StaticVariables.Instance.TeamChoice [3]);
+		//Debug.Log (GlobalVariables.Instance.TeamChoice [0]);
+		//Debug.Log (GlobalVariables.Instance.TeamChoice [1]);
+		//Debug.Log (GlobalVariables.Instance.TeamChoice [2]);
+		//Debug.Log (GlobalVariables.Instance.TeamChoice [3]);
 	}
 		
 	void GoOnTheRight (int whichPlayer)
@@ -547,7 +547,7 @@ public class ChooseTeamScript : MonoBehaviour
 			}	
 		}
 
-		UpdateStaticVariables ();
+		UpdateGlobalVariables ();
 	}
 
 	void GoOnTheLeft (int whichPlayer)
@@ -591,7 +591,7 @@ public class ChooseTeamScript : MonoBehaviour
 			}
 		}
 
-		UpdateStaticVariables ();
+		UpdateGlobalVariables ();
 	}
 
 	IEnumerator GapBetweenInputs (int controllerNumber)

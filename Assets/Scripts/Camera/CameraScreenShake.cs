@@ -39,7 +39,7 @@ public class CameraScreenShake : MonoBehaviour
 
 	void ResetCameraPosition ()
 	{
-		if(StaticVariables.Instance.GamePaused == false)
+		if(GlobalVariables.Instance.GamePaused == false)
 			transform.DOMove(initialPosition, 0.5f);
 	}
 	

@@ -134,13 +134,13 @@ public class PlayersGameplay : MonoBehaviour
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
-		if(playerState != PlayerState.Dead && StaticVariables.Instance.GameOver == false)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
 		{
 			if(playerRigidbody.velocity.magnitude > velocity)
 				velocity = playerRigidbody.velocity.magnitude;
 
 
-			if (StaticVariables.Instance.GamePaused == false)
+			if (GlobalVariables.Instance.GamePaused == false)
 				ActivateFunctions ();
 
 			if(playerState == PlayerState.Stunned)
@@ -220,16 +220,16 @@ public class PlayersGameplay : MonoBehaviour
 		switch (gameObject.name)
 		{
 		case "Player 1":
-			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer1;
+			controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer1;
 			break;
 		case "Player 2":
-			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer2;
+			controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer2;
 			break;
 		case "Player 3":
-			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer3;
+			controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer3;
 			break;
 		case "Player 4":
-			controllerNumber = StaticVariables.Instance.ControllerNumberPlayer4;
+			controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer4;
 			break;
 		}
 	}
@@ -375,16 +375,16 @@ public class PlayersGameplay : MonoBehaviour
 		
 	}
 
-	protected virtual void OnCollisionEnter (Collision other)
+	protected virtual void OnCollisionStay (Collision other)
 	{
-		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && StaticVariables.Instance.GameOver == false)
+		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
 		{
 			Vector3 pos = other.contacts[0].point;
 			//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
 			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
 
-			GameObject instantiatedParticles = Instantiate(StaticVariables.Instance.DeadParticles, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
+			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, pos, rot) as GameObject;
+			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 			instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 			instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
 			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
@@ -392,6 +392,15 @@ public class PlayersGameplay : MonoBehaviour
 			Death ();
 		}
 
+		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
+		{
+			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+			{
+				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
+
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+			}
+		}
 	}
 
 	protected virtual void TurningMouse ()

@@ -15,7 +15,7 @@ public class MovableHit : MovableScript
 			playerHit = other.gameObject;
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-			InstantiateParticles (other.contacts [0], StaticVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 		}

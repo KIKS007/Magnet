@@ -4,14 +4,14 @@ using DG.Tweening;
 
 public class MovableScript : MonoBehaviour 
 {
+	[Header ("Informations")]
 	public float higherVelocity;
 	public float currentVelocity;
 	public float limitVelocity = 170f;
 
 	public bool hold;
 
-	public Ease easetype;
-	public float timeTween;
+	protected float timeTween = 0.5f;
 
 	protected Rigidbody rigibodyMovable;
 
@@ -61,12 +61,12 @@ public class MovableScript : MonoBehaviour
 
 		if(hold == true && gameObject.GetComponent<Renderer>().material.color == Color.white)
 		{
-			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween).SetEase(easetype);
+			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween);
 		}
 
 		if(hold == false && gameObject.GetComponent<Renderer>().material.color != Color.white && gameObject.tag == "Movable")
 		{
-			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, Color.white, timeTween).SetEase(easetype);
+			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, Color.white, timeTween);
 		}
 
 
@@ -105,7 +105,7 @@ public class MovableScript : MonoBehaviour
 			playerHit = other.gameObject;
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-			InstantiateParticles (other.contacts [0], StaticVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 		}
@@ -116,7 +116,7 @@ public class MovableScript : MonoBehaviour
 		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 		int numberOfParticles = (int) numberOfParticlesFloat;
 
-		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
+		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
@@ -127,7 +127,7 @@ public class MovableScript : MonoBehaviour
 		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
 		int numberOfParticles = (int) numberOfParticlesFloat;
 
-		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], StaticVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
+		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
@@ -139,7 +139,7 @@ public class MovableScript : MonoBehaviour
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
 		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
 
-		instantiatedParticles.transform.SetParent (StaticVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		instantiatedParticles.GetComponent<Renderer>().material.color = color;
 
 		return instantiatedParticles;

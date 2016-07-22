@@ -33,6 +33,7 @@ TagManager:
   - UpWall
   - MainMenuManager
   - ParticulesClonesParent
+  - RepulseZones
   layers:
   - Default
   - TransparentFX
@@ -52,7 +53,7 @@ TagManager:
   - GoalsTrigger
   - Walls
   - Goals
-  - 
+  - RepulseZones
   - 
   - 
   - 

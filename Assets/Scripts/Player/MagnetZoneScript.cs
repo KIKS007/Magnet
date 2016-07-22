@@ -28,7 +28,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(StaticVariables.Instance.GameOver == false)
+		if(GlobalVariables.Instance.GameOver == false)
 		{
 			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead
 				|| other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
@@ -38,7 +38,7 @@ public class MagnetZoneScript : MonoBehaviour
 					Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
 
 
-					if(StaticVariables.Instance.GamePaused == false && player != null)
+					if(GlobalVariables.Instance.GamePaused == false && player != null)
 					{
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
 						{

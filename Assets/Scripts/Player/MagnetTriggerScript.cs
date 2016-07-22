@@ -26,14 +26,14 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(StaticVariables.Instance.GameOver == false)
+		if(GlobalVariables.Instance.GameOver == false)
 		{
 			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding 
 				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 			{
 
-				if(player.GetButton("Attract"))
+				if(player != null && player.GetButton("Attract"))
 				{
 					other.tag = "HoldMovable";
 					other.gameObject.GetComponent<MovableScript>().hold = true;

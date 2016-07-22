@@ -355,7 +355,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void SetButtonsNavigation ()
 	{
-		if(StaticVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == true)
+		if(GlobalVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == true)
 		{
 			resumeRect.gameObject.SetActive (false);
 
@@ -370,7 +370,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			quitRect.GetChild (1).GetComponent<Selectable> ().navigation = quitNavigation;
 		}
 
-		else if(!StaticVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == false)
+		else if(!GlobalVariables.Instance.GameOver && resumeRect.gameObject.activeSelf == false)
 		{
 			resumeRect.gameObject.SetActive (true);
 
@@ -430,7 +430,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator GamePauseResume ()
 	{
-		if(StaticVariables.Instance.GamePaused == false && StaticVariables.Instance.GameOver == false)
+		if(GlobalVariables.Instance.GamePaused == false && GlobalVariables.Instance.GameOver == false)
 		{
 			Tweening ();
 
@@ -438,7 +438,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			//Wait Slowmotion
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforePause));
 
-			StaticVariables.Instance.GamePaused = true;
+			GlobalVariables.Instance.GamePaused = true;
 
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayBackwards();
@@ -449,7 +449,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			LoadMainMenu ();
 		}
 
-		else if(StaticVariables.Instance.GamePaused == true && StaticVariables.Instance.GameOver == false)
+		else if(GlobalVariables.Instance.GamePaused == true && GlobalVariables.Instance.GameOver == false)
 		{
 			Tweening ();
 
@@ -477,7 +477,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 			NotTweening ();
 
-			StaticVariables.Instance.GamePaused = false;
+			GlobalVariables.Instance.GamePaused = false;
 
 		}
 
@@ -502,37 +502,37 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	bool CorrectTeams ()
 	{
-		StaticVariables.Instance.NumberOfDisabledPlayers = 0;
+		GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
 
-		for(int i = 0; i < StaticVariables.Instance.TeamChoice.Length; i++)
+		for(int i = 0; i < GlobalVariables.Instance.TeamChoice.Length; i++)
 		{
-			if (StaticVariables.Instance.TeamChoice [i] == -1)
-				StaticVariables.Instance.NumberOfDisabledPlayers++;
+			if (GlobalVariables.Instance.TeamChoice [i] == -1)
+				GlobalVariables.Instance.NumberOfDisabledPlayers++;
 
 		}
 
-		if (StaticVariables.Instance.NumberOfDisabledPlayers >= 3)
+		if (GlobalVariables.Instance.NumberOfDisabledPlayers >= 3)
 			return false;
 
-		else if(StaticVariables.Instance.NumberOfPlayers == 2)
+		else if(GlobalVariables.Instance.NumberOfPlayers == 2)
 		{
-			if(StaticVariables.Instance.Team1.Count == 2 || StaticVariables.Instance.Team2.Count == 2 || StaticVariables.Instance.Team3.Count == 2 || StaticVariables.Instance.Team4.Count == 2)
+			if(GlobalVariables.Instance.Team1.Count == 2 || GlobalVariables.Instance.Team2.Count == 2 || GlobalVariables.Instance.Team3.Count == 2 || GlobalVariables.Instance.Team4.Count == 2)
 				return false;
 			else
 				return true;
 		}
 
-		else if(StaticVariables.Instance.NumberOfPlayers == 3)
+		else if(GlobalVariables.Instance.NumberOfPlayers == 3)
 		{
-			if(StaticVariables.Instance.Team1.Count == 3 || StaticVariables.Instance.Team2.Count == 3 || StaticVariables.Instance.Team3.Count == 3 || StaticVariables.Instance.Team4.Count == 3)
+			if(GlobalVariables.Instance.Team1.Count == 3 || GlobalVariables.Instance.Team2.Count == 3 || GlobalVariables.Instance.Team3.Count == 3 || GlobalVariables.Instance.Team4.Count == 3)
 				return false;
 			else
 				return true;
 		}
 
-		else if(StaticVariables.Instance.NumberOfPlayers == 4)
+		else if(GlobalVariables.Instance.NumberOfPlayers == 4)
 		{
-			if(StaticVariables.Instance.Team1.Count == 4 || StaticVariables.Instance.Team2.Count == 4 || StaticVariables.Instance.Team3.Count == 4 || StaticVariables.Instance.Team4.Count == 4)
+			if(GlobalVariables.Instance.Team1.Count == 4 || GlobalVariables.Instance.Team2.Count == 4 || GlobalVariables.Instance.Team3.Count == 4 || GlobalVariables.Instance.Team4.Count == 4)
 				return false;
 			else
 				return true;
@@ -559,7 +559,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		Tween myTween;
 
-		switch (StaticVariables.Instance.CurrentModeLoaded)
+		switch (GlobalVariables.Instance.CurrentModeLoaded)
 		{
 		case "Crush":
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
@@ -600,8 +600,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		NotTweening ();
 
-		StaticVariables.Instance.GamePaused = false;
-		StaticVariables.Instance.GameOver = false;
+		GlobalVariables.Instance.GamePaused = false;
+		GlobalVariables.Instance.GameOver = false;
 
 	}
 
@@ -874,7 +874,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	
 	public IEnumerator ExitPlayers ()
 	{
-		playersMenuContent.GetComponent<ControllerChangeManager1> ().UpdateStaticVariables ();
+		playersMenuContent.GetComponent<ControllerChangeManager1> ().UpdateGlobalVariables ();
 		playersMenuContent.GetComponent<ControllerChangeManager1> ().UpdatePlayersControllers ();
 
 		Tween myTween = playersMenuContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
