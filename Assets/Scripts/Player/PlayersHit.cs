@@ -6,6 +6,15 @@ public class PlayersHit : PlayersGameplay
 	[Header ("Hit")]
 	public LayerMask checkSphereLayer;
 
+	private float timeBetweenSpawn;
+
+	protected override void Start ()
+	{
+		base.Start ();
+
+		timeBetweenSpawn = GameObject.Find ("HitModeManager").GetComponent<HitModeManager> ().timeBetweenSpawn;
+	}
+
 	public void HitVoid (Collision other)
 	{
 		DeathParticles (other);
@@ -48,7 +57,7 @@ public class PlayersHit : PlayersGameplay
 
 		DeactivatePlayer ();
 
-		yield return new WaitForSeconds(GlobalVariables.Instance.timeBetweenSpawn);
+		yield return new WaitForSeconds(timeBetweenSpawn);
 
 		Vector3 newPos = new Vector3();
 

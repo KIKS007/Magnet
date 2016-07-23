@@ -7,6 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class FootballModeManager : MonoBehaviour 
 {
+	[Header ("Football Settings")]
+	public int goalsToWin = 5;
+	public float timeBetweenGoals = 1;
+
 	[Header ("Teams and Balls Positions")]
 	public Transform[] team1Positions = new Transform[3];
 	public Transform[] team2Positions = new Transform[3];
@@ -106,9 +110,9 @@ public class FootballModeManager : MonoBehaviour
 		}
 
 
-		if(goalsNumberRightSide < GlobalVariables.Instance.goalsToWin)
+		if(goalsNumberRightSide < goalsToWin)
 		{
-			yield return new WaitForSeconds(GlobalVariables.Instance.timeBetweenGoals);
+			yield return new WaitForSeconds(timeBetweenGoals);
 
 			ResetBall (ball);
 		}

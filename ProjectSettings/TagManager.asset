@@ -34,6 +34,7 @@ TagManager:
   - MainMenuManager
   - ParticulesClonesParent
   - RepulseZones
+  - RepulseZone
   layers:
   - Default
   - TransparentFX

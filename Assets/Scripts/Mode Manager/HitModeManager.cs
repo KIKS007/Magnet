@@ -4,14 +4,18 @@ using UnityEngine.UI;
 
 public class HitModeManager : MonoBehaviour 
 {
+	[Header ("Hit Settings")]
+	public int timerDuration = 300;
+	public float timeBetweenSpawn = 2;
+
+	[Header ("Timer")]
 	public float timer;
 	public string timerClock;
-	public bool gameEnded;
 
 	// Use this for initialization
 	void Start () 
 	{
-		timer = GlobalVariables.Instance.timerDuration;
+		timer = timerDuration;
 
 		StartCoroutine (StartTimer ());
 	}
@@ -30,7 +34,7 @@ public class HitModeManager : MonoBehaviour
 	{
 		timer -= Time.deltaTime;
 
-		string minutes = Mathf.Floor(timer / 60).ToString("00");
+		string minutes = Mathf.Floor(timer / 60).ToString("0");
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 
 		timerClock = minutes + ":" + seconds;
@@ -57,8 +61,6 @@ public class HitModeManager : MonoBehaviour
 
 	void GameEnded ()
 	{
-		gameEnded = true;
-
 		GlobalVariables.Instance.GameOver = true;
 	}
 }

@@ -45,13 +45,4 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Others")]
 	public string CurrentModeLoaded = "";
-
-
-	[Header ("Hit Mode")]
-	public int timerDuration = 300;
-	public float timeBetweenSpawn = 2;
-
-	[Header ("Football Mode")]
-	public int goalsToWin = 5;
-	public float timeBetweenGoals = 1;
 }

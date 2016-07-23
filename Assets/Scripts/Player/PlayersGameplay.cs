@@ -102,7 +102,7 @@ public class PlayersGameplay : MonoBehaviour
 	protected bool hasRepulsed;
 
 	// Use this for initialization
-	protected void Start () 
+	protected virtual void Start () 
 	{
 		DOTween.Init ();
 
@@ -202,16 +202,19 @@ public class PlayersGameplay : MonoBehaviour
 	
 	protected virtual void FixedUpdate ()
 	{
-		if(dashState != DashState.Dashing)
-			playerRigidbody.MovePosition(transform.position + movement);
-
-		if(playerState == PlayerState.Holding)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
 		{
-			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+			if(dashState != DashState.Dashing)
+				playerRigidbody.MovePosition(transform.position + movement);
 
-			if (OnHolding != null)
-				OnHolding ();
+			if(playerState == PlayerState.Holding)
+			{
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+
+				if (OnHolding != null)
+					OnHolding ();
+			}
 		}
 	}
 
