@@ -49,7 +49,7 @@ public class MovableRepulse : MovableScript
 	protected override void Update () 
 	{
 		if(hold == false)
-			currentVelocity = rigibodyMovable.velocity.magnitude;
+			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
 
 		if(hold == false && currentVelocity > 0)

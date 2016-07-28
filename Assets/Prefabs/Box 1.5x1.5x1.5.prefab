@@ -148,14 +148,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   higherVelocity: 0
   currentVelocity: 0
-  limitVelocity: 170
+  limitVelocity: 80
   hold: 0
-  fastMovable: 0
-  easetype: 0
-  timeTween: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 1
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
-  playerTouched: {fileID: 0}
+  playerHit: {fileID: 0}
 --- !u!135 &13509796
 SphereCollider:
   m_ObjectHideFlags: 1

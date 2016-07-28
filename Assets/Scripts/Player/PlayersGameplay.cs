@@ -369,6 +369,7 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Holding;
 		holdMovableRB = movable.GetComponent<Rigidbody>();
 		holdMovableTransform = movable.GetComponent<Transform>();
+		movable.GetComponent<MovableScript> ().OnHold ();
 
 		if (OnHold != null)
 			OnHold ();

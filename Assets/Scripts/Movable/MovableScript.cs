@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class MovableScript : MonoBehaviour 
 {
@@ -9,11 +10,23 @@ public class MovableScript : MonoBehaviour
 	public float currentVelocity;
 	public float limitVelocity = 170f;
 
+	[Header ("Cube States")]
 	public bool hold;
+	public List<GameObject> attracedBy = new List<GameObject> ();
+	public List<GameObject> repulsedBy = new List<GameObject> ();
+
+	[Header ("Deceleration")]
+	public bool decelerationShotOnly = false;
+	[Range (0, 1)]
+	public float decelerationAmount = 1;
+
+	[Header ("Gravity")]
+	public float gravity = 0;
+
 
 	protected float timeTween = 0.5f;
 
-	protected Rigidbody rigibodyMovable;
+	protected Rigidbody rigidbodyMovable;
 
 	protected float massRb;
 	protected CollisionDetectionMode collisionDetectionModeRb;
@@ -29,17 +42,17 @@ public class MovableScript : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-		rigibodyMovable = GetComponent<Rigidbody>();
+		rigidbodyMovable = GetComponent<Rigidbody>();
 
-		massRb = rigibodyMovable.mass;
-		collisionDetectionModeRb = rigibodyMovable.collisionDetectionMode;
+		massRb = rigidbodyMovable.mass;
+		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
 	}
 	
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
 		if(hold == false)
-			currentVelocity = rigibodyMovable.velocity.magnitude;
+			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
 
 		if(hold == false && currentVelocity > 0)
@@ -68,9 +81,23 @@ public class MovableScript : MonoBehaviour
 		{
 			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, Color.white, timeTween);
 		}
+	}
 
+	protected virtual void FixedUpdate () 
+	{
+		if(rigidbodyMovable != null)
+		{
+			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
+		}
 
+		if(rigidbodyMovable != null && currentVelocity > 5)
+		{
+			if(!decelerationShotOnly)
+				rigidbodyMovable.velocity *= decelerationAmount;
 
+			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
+				rigidbodyMovable.velocity *= decelerationAmount;
+		}
 	}
 
 	protected virtual void OnCollisionEnter (Collision other)
@@ -113,7 +140,7 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitOtherMovable (Collision other)
 	{
-		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
+		float numberOfParticlesFloat = (0.2f * rigidbodyMovable.velocity.magnitude);
 		int numberOfParticles = (int) numberOfParticlesFloat;
 
 		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
@@ -124,7 +151,7 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitWall (Collision other)
 	{
-		float numberOfParticlesFloat = (0.2f * rigibodyMovable.velocity.magnitude);
+		float numberOfParticlesFloat = (0.2f * rigidbodyMovable.velocity.magnitude);
 		int numberOfParticles = (int) numberOfParticlesFloat;
 
 		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
@@ -148,12 +175,18 @@ public class MovableScript : MonoBehaviour
 	public virtual void AddRigidbody ()
 	{
 		gameObject.AddComponent<Rigidbody>();
-		rigibodyMovable = gameObject.GetComponent<Rigidbody>();
-		rigibodyMovable.mass = massRb;
-		rigibodyMovable.collisionDetectionMode = collisionDetectionModeRb;
-		player.GetComponent<PlayersGameplay>().holdMovableRB = rigibodyMovable;
+		rigidbodyMovable = gameObject.GetComponent<Rigidbody>();
+		rigidbodyMovable.mass = massRb;
+		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
+		player.GetComponent<PlayersGameplay>().holdMovableRB = rigidbodyMovable;
 
 		currentVelocity = player.GetComponent<PlayersGameplay>().shootForce;
 		gameObject.tag = "ThrownMovable";
+	}
+
+	public virtual void OnHold ()
+	{
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
 	}
 }
