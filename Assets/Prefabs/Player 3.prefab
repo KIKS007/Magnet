@@ -372,6 +372,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -379,6 +380,13 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  enableRepulsionWave: 1
+  repulsionWaveForce: 80
+  repulsionWaveRadius: 12
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 8704
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70

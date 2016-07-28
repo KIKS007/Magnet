@@ -5,9 +5,6 @@ using DG.Tweening;
 
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
-	[Header ("Scene Test")]
-	public string firstSceneToLoad = "Repulse";
-
 	[Header ("Load Mode Manager")]
 	public GameObject[] rootGameObjects;
 
@@ -39,7 +36,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	// Use this for initialization
 	void Awake () 
 	{
-		StartCoroutine (FirstLoadedScene (firstSceneToLoad));
+		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
 

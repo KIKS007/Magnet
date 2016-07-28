@@ -44,5 +44,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
+	public string firstSceneToLoad = "Test";
 	public string CurrentModeLoaded = "";
 }

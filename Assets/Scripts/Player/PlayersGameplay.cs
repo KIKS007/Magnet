@@ -27,6 +27,13 @@ public enum DashState
 	Cooldown
 }
 
+public enum RepulsionWaveState
+{
+	CanRepulse,
+	Repulsing,
+	Cooldown
+}
+
 public class PlayersGameplay : MonoBehaviour 
 {
 	public delegate void EventHandler();
@@ -48,6 +55,7 @@ public class PlayersGameplay : MonoBehaviour
 	public Team team;
 	public PlayerState playerState = PlayerState.None;
 	public DashState dashState = DashState.CanDash;
+	public RepulsionWaveState repulsionState = RepulsionWaveState.CanRepulse;
 
 	[Header ("Controller Number")]
 	public int controllerNumber = -1;
@@ -63,6 +71,13 @@ public class PlayersGameplay : MonoBehaviour
 	public float attractionForce = 10;
 	public float shootForce = 200;
 	public float repulsionForce = 10;
+
+	[Header ("Repulsion Wave")]
+	public bool enableRepulsionWave = false;
+	public float repulsionWaveForce = 10;
+	public float repulsionWaveRadius = 3;
+	public LayerMask repulsionWaveMask;
+	public float repulsionCoolDown = 2;
 
 	[Header ("Stun")]
 	public float stunnedRotation = 400;
@@ -196,6 +211,11 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			StartCoroutine(Dash ());
 		}
+
+		if(player.GetButtonDown("Repulse") && repulsionState == RepulsionWaveState.CanRepulse && enableRepulsionWave && playerState != PlayerState.Holding)
+		{
+			StartCoroutine(RepulsionWave ());
+		}
 			
 		Pause ();
 	}
@@ -306,13 +326,42 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void Repulsion (GameObject movable)
 	{
+		if(!enableRepulsionWave)
+		{
+			playerState = PlayerState.Repulsing;
+
+			Vector3 movableRepulsion = movable.transform.position - transform.position;
+			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+
+			if (OnRepulsing != null)
+				OnRepulsing ();
+		}
+	}
+
+	protected IEnumerator RepulsionWave ()
+	{
 		playerState = PlayerState.Repulsing;
+		repulsionState = RepulsionWaveState.Repulsing;
 
-		Vector3 movableRepulsion = movable.transform.position - transform.position;
-		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+		foreach(Collider other in Physics.OverlapSphere(transform.position, repulsionWaveRadius, repulsionWaveMask))
+		{
+			Vector3 repulseDirection = other.transform.position - transform.position;
+			repulseDirection.Normalize ();
 
-		if (OnRepulsing != null)
-			OnRepulsing ();
+			float explosionImpactZone = 1 - (Vector3.Distance (transform.position, other.transform.position) / repulsionWaveRadius);
+
+			if(explosionImpactZone > 0)
+			{
+				if(other.GetComponent<Rigidbody>() != null)
+					other.GetComponent<Rigidbody> ().AddForce (repulseDirection * explosionImpactZone * repulsionWaveForce, ForceMode.Impulse);
+			}
+		}
+
+		repulsionState = RepulsionWaveState.Cooldown;
+
+		yield return new WaitForSeconds (repulsionCoolDown);
+
+		repulsionState = RepulsionWaveState.CanRepulse;
 	}
 
 	public virtual void OnHoldMovable (GameObject movable)
