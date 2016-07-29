@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using XboxCtrlrInput;
-using DG.Tweening;
-using UnityEngine.SceneManagement;
 
 public class CrushManager : MonoBehaviour 
 {
@@ -13,13 +9,11 @@ public class CrushManager : MonoBehaviour
 
 	private bool gameEndLoopRunning = false;
 
-
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GamePaused == false)
+		if(GlobalVariables.Instance.GamePaused == false && GlobalVariables.Instance.GameOver == false)
 			FindPlayers ();
-
 	}
 
 	void FindPlayers ()

@@ -12,6 +12,7 @@ GameObject:
   - 114: {fileID: 11411936}
   - 114: {fileID: 11466250}
   - 114: {fileID: 11424106}
+  - 114: {fileID: 11400114}
   - 92: {fileID: 9224262}
   - 124: {fileID: 12492916}
   - 81: {fileID: 8150878}
@@ -125,6 +126,25 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
   m_Enabled: 1
+--- !u!114 &11400114
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d31040895a45b44a9aeb14ed59cc271, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraZoomLerp: 0.1
+  cameraMovementLerp: 0.1
+  maxXPos: 0
+  minXPos: 0
+  maxZPos: 0
+  minZPos: 0
+  centerPos: {x: 0, y: 0, z: 0}
+  crossProduct: {x: 0, y: 0, z: 0}
 --- !u!114 &11411936
 MonoBehaviour:
   m_ObjectHideFlags: 1

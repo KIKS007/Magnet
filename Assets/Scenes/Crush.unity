@@ -7503,6 +7503,10 @@ Prefab:
       propertyPath: timeBeforeEndGame
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 11424978, guid: 2cb5adcfbfec5eb48aa87fbdba3e2f68, type: 2}
+      propertyPath: sphereTest
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2cb5adcfbfec5eb48aa87fbdba3e2f68, type: 2}
   m_IsPrefabParent: 0

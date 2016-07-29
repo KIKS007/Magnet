@@ -34,10 +34,11 @@ public enum RepulsionWaveState
 	Cooldown
 }
 
+public delegate void EventHandler();
+
+
 public class PlayersGameplay : MonoBehaviour 
 {
-	public delegate void EventHandler();
-
 	public event EventHandler OnAttracting;
 	public event EventHandler OnAttracted;
 	public event EventHandler OnRepulsing;
@@ -277,19 +278,34 @@ public class PlayersGameplay : MonoBehaviour
 			switch (controllerNumber)
 			{
 			case 1:
-				player.controllers.AddController (ControllerType.Joystick, 0, true);
+				foreach(Joystick j in ReInput.controllers.Joysticks)
+				{
+					if(j.name == "XInput Gamepad 1")
+						player.controllers.AddController(ControllerType.Joystick, j.id, true);
+				}
 				break;
 			case 2:
-				player.controllers.AddController (ControllerType.Joystick, 1, true);
+				foreach(Joystick j in ReInput.controllers.Joysticks)
+				{
+					if(j.name == "XInput Gamepad 2")
+						player.controllers.AddController(ControllerType.Joystick, j.id, true);
+				}
 				break;
 			case 3:
-				player.controllers.AddController (ControllerType.Joystick, 2, true);
+				foreach(Joystick j in ReInput.controllers.Joysticks)
+				{
+					if(j.name == "XInput Gamepad 3")
+						player.controllers.AddController(ControllerType.Joystick, j.id, true);
+				}
 				break;
 			case 4:
-				player.controllers.AddController (ControllerType.Joystick, 3, true);
+				foreach(Joystick j in ReInput.controllers.Joysticks)
+				{
+					if(j.name == "XInput Gamepad 4")
+						player.controllers.AddController(ControllerType.Joystick, j.id, true);
+				}
 				break;
 			}
-
 		}
 	}
 
@@ -312,6 +328,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		holdMovableTransform.transform.SetParent(null);
 		holdMovableTransform.transform.SetParent(movableParent);
+		holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
 		holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
 		holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
 		holdMovableTransform.gameObject.tag = "ThrownMovable";

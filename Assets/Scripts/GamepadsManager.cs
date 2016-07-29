@@ -2,271 +2,150 @@
 using System.Collections;
 using XboxCtrlrInput;
 using UnityEngine.UI;
-using System.Linq;
 using UnityEngine.SceneManagement;
+using Rewired;
 
 public class GamepadsManager : Singleton<GamepadsManager>
 {
+	public event EventHandler OnGamepadConnectionChange;
+
 	public GameObject[] gamepadLine;
 
 	[Header ("Number of Gamepads")]
 	public int numberOfGamepads;
 
 	[Header ("Gamepads plugged at Start")]
-	public bool gamepad1PluggedAtStart;
-	public bool gamepad2PluggedAtStart;
-	public bool gamepad3PluggedAtStart;
-	public bool gamepad4PluggedAtStart;
-
-	[Header ("Gamepad plugged")]
-	public string gamepad1;
-	public string gamepad2;
-	public string gamepad3;
-	public string gamepad4;
+	public bool[] gamepadsPluggedAtStart = new bool[4] {false, false, false, false};
 
 	[Header ("Gamepad unplugged")]
-	public bool gamepad1Unplugged;
-	public bool gamepad2Unplugged;
-	public bool gamepad3Unplugged;
-	public bool gamepad4Unplugged;
-	
-	private Color originalColorGamepad1;
-	private Color originalColorGamepad2;
-	private Color originalColorGamepad3;
-	private Color originalColorGamepad4;
+	public bool[] gamepadsUnplugged = new bool[4] {false, false, false, false};
 
-	public GameObject[] players;
 
 	void OnLevelWasLoaded () 
-	{		
-		GetPlayers ();
-
-		if(XCI.IsPluggedIn(1))
-			gamepad1PluggedAtStart = true;
-		
-		if(XCI.IsPluggedIn(2))
-			gamepad2PluggedAtStart = true;
-		
-		if(XCI.IsPluggedIn(3))
-			gamepad3PluggedAtStart = true;
-		
-		if(XCI.IsPluggedIn(4))
-			gamepad4PluggedAtStart = true;
-
-
+	{	
+		FindGamepadsPluggedAtStart ();
 	}
 
 	// Use this for initialization
 	void Start () 
 	{
-		//GetPlayers ();
+		ReInput.ControllerConnectedEvent += OnGamepadConnectedOrDisconneted;
+		ReInput.ControllerDisconnectedEvent += OnGamepadConnectedOrDisconneted;
 
-		if(GlobalVariables.Instance.FirstGameLaunch)
-		{
-			GetGamepadsPlugged ();
-			UpdateGlobalVariables ();
-			GlobalVariables.Instance.FirstGameLaunch = false;
-			GlobalVariables.Instance.ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
-		}
-
-
-		if(XCI.IsPluggedIn(1))
-			gamepad1PluggedAtStart = true;
-
-		if(XCI.IsPluggedIn(2))
-			gamepad2PluggedAtStart = true;
-	
-		if(XCI.IsPluggedIn(3))
-			gamepad3PluggedAtStart = true;
-		
-		if(XCI.IsPluggedIn(4))
-			gamepad4PluggedAtStart = true;
-
+		FindGamepadsPluggedAtStart ();
+		SetupPlayersAndControllers ();
 	}
 
 	// Update is called once per frame
 	void Update () 
 	{
-		numberOfGamepads = XCI.GetNumPluggedCtrlrs();
+
+	}
+
+	void OnGamepadConnectedOrDisconneted (ControllerStatusChangedEventArgs args)
+	{
+		if (OnGamepadConnectionChange != null)
+			OnGamepadConnectionChange ();
 
 		GamepadUnplugged ();
+
+		numberOfGamepads = ReInput.controllers.joystickCount;
+	}
+
+	void FindGamepadsPluggedAtStart ()
+	{
+		for (int i = 0; i < gamepadsPluggedAtStart.Length; i++)
+			gamepadsPluggedAtStart [i] = false;
+
+		foreach(Joystick j in ReInput.controllers.Joysticks)
+		{
+			if (j.name == "XInput Gamepad 1")
+				gamepadsPluggedAtStart [0] = true;
+
+			if (j.name == "XInput Gamepad 2")
+				gamepadsPluggedAtStart [1] = true;
+
+			if (j.name == "XInput Gamepad 3")
+				gamepadsPluggedAtStart [2] = true;
+
+			if (j.name == "XInput Gamepad 4")
+				gamepadsPluggedAtStart [3] = true;
+		}
 	}
 		
 	void GamepadUnplugged ()
 	{
-		if(gamepad1PluggedAtStart && XCI.IsPluggedIn(1) == false)
+		if(gamepadsPluggedAtStart[0] && XCI.IsPluggedIn(1) == false)
 		{
-			gamepad1Unplugged = true;
+			gamepadsUnplugged[0] = true;
 		}
-		else if (gamepad1PluggedAtStart && XCI.IsPluggedIn(1) == true)
+		else if (gamepadsPluggedAtStart[0] && XCI.IsPluggedIn(1) == true)
 		{
-			gamepad1Unplugged = false;
+			gamepadsUnplugged[0] = false;
 		}
 
-		if(gamepad2PluggedAtStart && XCI.IsPluggedIn(2) == false)
+		if(gamepadsPluggedAtStart[1] && XCI.IsPluggedIn(2) == false)
 		{
-			gamepad2Unplugged = true;
+			gamepadsUnplugged[1] = true;
 			
 		}
-		else if (gamepad2PluggedAtStart && XCI.IsPluggedIn(2) == true)
+		else if (gamepadsPluggedAtStart[1] && XCI.IsPluggedIn(2) == true)
 		{
-			gamepad2Unplugged = false;
+			gamepadsUnplugged[1] = false;
 		}
 
-		if(gamepad3PluggedAtStart && XCI.IsPluggedIn(3) == false)
+		if(gamepadsPluggedAtStart[2] && XCI.IsPluggedIn(3) == false)
 		{
-			gamepad3Unplugged = true;
+			gamepadsUnplugged[2] = true;
 		}
-		else if (gamepad3PluggedAtStart && XCI.IsPluggedIn(3) == true)
+		else if (gamepadsPluggedAtStart[2] && XCI.IsPluggedIn(3) == true)
 		{
-			gamepad3Unplugged = false;
+			gamepadsUnplugged[2] = false;
 		}
 
-		if(gamepad4PluggedAtStart && XCI.IsPluggedIn(4) == false)
+		if(gamepadsPluggedAtStart[3] && XCI.IsPluggedIn(4) == false)
 		{
-			gamepad4Unplugged = true;
+			gamepadsUnplugged[3] = true;
 		}
-		else if (gamepad4PluggedAtStart && XCI.IsPluggedIn(4) == true)
+		else if (gamepadsPluggedAtStart[3] && XCI.IsPluggedIn(4) == true)
 		{
-			gamepad4Unplugged = false;
+			gamepadsUnplugged[3] = false;
 		}
 			
 	}
 
-	void GetPlayers ()
+	void SetupPlayersAndControllers ()
 	{
-		players = GameObject.FindGameObjectsWithTag("Player").OrderBy( go => go.name ).ToArray();
-
-		GlobalVariables.Instance.Player1 = players[0];
-		GlobalVariables.Instance.Player2 = players[1];
-		GlobalVariables.Instance.Player3 = players[2];
-		GlobalVariables.Instance.Player4 = players[3];
+		for(int i = 0; i < 4; i++)
+		{
+			if (gamepadsPluggedAtStart[i])
+			{
+				SetControllerNumber (i);
+			}
+		}
+			
+		GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 	}
 
-	void GetGamepadsPlugged ()
+	void SetControllerNumber (int whichNumber)
 	{
-		if(XCI.IsPluggedIn(1) && !XCI.IsPluggedIn(2) && !XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
+		switch (whichNumber) 
 		{
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
-
+		case 0:
 			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
 			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
-
-			EnablePlayers (2);
-		}
-
-		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && !XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
-		{
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
-
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
-
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
-
-			EnablePlayers (3);
-		}
-
-		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && XCI.IsPluggedIn(3) && !XCI.IsPluggedIn(4))
-		{
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
-
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
-
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
-
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 3;
-
-			EnablePlayers (4);
-		}
-
-		else if(XCI.IsPluggedIn(1) && XCI.IsPluggedIn(2) && XCI.IsPluggedIn(3) && XCI.IsPluggedIn(4))
-		{
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 1;
-
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 2;
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 2;
-
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 3;
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 3;
-
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 4;
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 4;
-
-			EnablePlayers (4);
-		}
-
-		else
-		{
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
-
-			EnablePlayers (1);
-		}
-
-	}
-
-	void EnablePlayers (int enabledPlayers)
-	{
-		switch (enabledPlayers) {
+			break;
 		case 1:
-			GlobalVariables.Instance.Player1.SetActive (true);
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
+			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
 			break;
 		case 2:
-			GlobalVariables.Instance.Player1.SetActive (true);
-			GlobalVariables.Instance.Player2.SetActive (true);
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
+			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 3;
 			break;
 		case 3:
-			GlobalVariables.Instance.Player1.SetActive (true);
-			GlobalVariables.Instance.Player2.SetActive (true);
-			GlobalVariables.Instance.Player3.SetActive (true);
-			break;
-		case 4:
-			GlobalVariables.Instance.Player1.SetActive (true);
-			GlobalVariables.Instance.Player2.SetActive (true);
-			GlobalVariables.Instance.Player3.SetActive (true);
-			GlobalVariables.Instance.Player4.SetActive (true);
 			break;
 		}
 	}
-  
-	void UpdateGlobalVariables ()
-		{
-			GlobalVariables.Instance.NumberOfPlayers = 0;
-			GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-				GlobalVariables.Instance.NumberOfPlayers++;
-			else
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-				GlobalVariables.Instance.NumberOfPlayers++;
-			else
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-				GlobalVariables.Instance.NumberOfPlayers++;
-			else
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-				GlobalVariables.Instance.NumberOfPlayers++;
-			else
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-
-			/*Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer1);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer2);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer3);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer4);*/
-		}
 }

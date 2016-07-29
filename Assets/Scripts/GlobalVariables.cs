@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Rewired;
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -16,6 +17,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject Player2;
 	public GameObject Player3;
 	public GameObject Player4;
+	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 
 	[Header ("Game State")]
 	public bool GamePaused = false;
@@ -46,4 +48,50 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Others")]
 	public string firstSceneToLoad = "Test";
 	public string CurrentModeLoaded = "";
+
+	void Start ()
+	{
+		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
+	}
+
+	void Update ()
+	{
+		ListPlayers ();
+	}
+
+	void PlayersNumber ()
+	{
+		NumberOfPlayers = EnabledPlayersList.Count;
+		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
+	}
+
+	void ListPlayers ()
+	{
+		if (ControllerNumberPlayer1 != -1 && !EnabledPlayersList.Contains (Player1))
+			EnabledPlayersList.Add (Player1);
+
+		if (ControllerNumberPlayer2 != -1 && !EnabledPlayersList.Contains (Player2))
+			EnabledPlayersList.Add (Player2);
+
+		if (ControllerNumberPlayer3 != -1 && !EnabledPlayersList.Contains (Player3))
+			EnabledPlayersList.Add (Player3);
+
+		if (ControllerNumberPlayer4 != -1 && !EnabledPlayersList.Contains (Player4))
+			EnabledPlayersList.Add (Player4);
+
+
+		if (ControllerNumberPlayer1 == -1 && EnabledPlayersList.Contains (Player1))
+			EnabledPlayersList.Remove (Player1);
+
+		if (ControllerNumberPlayer2 == -1 && EnabledPlayersList.Contains (Player2))
+			EnabledPlayersList.Remove (Player2);
+
+		if (ControllerNumberPlayer3 == -1 && EnabledPlayersList.Contains (Player3))
+			EnabledPlayersList.Remove (Player3);
+
+		if (ControllerNumberPlayer4 == -1 && EnabledPlayersList.Contains (Player4))
+			EnabledPlayersList.Remove (Player4);
+
+		PlayersNumber ();
+	}
 }

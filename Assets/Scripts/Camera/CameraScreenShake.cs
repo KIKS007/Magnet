@@ -34,13 +34,13 @@ public class CameraScreenShake : MonoBehaviour
 	{
 		shaking = false;
 		//print("Shaking");
-		transform.DOShakePosition (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).OnComplete (ResetCameraPosition);
+		transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).OnComplete (ResetCameraPosition);
 	}
 
 	void ResetCameraPosition ()
 	{
-		if(GlobalVariables.Instance.GamePaused == false)
-			transform.DOMove(initialPosition, 0.5f);
+		/*if(GlobalVariables.Instance.GamePaused == false)
+			transform.DOMove(initialPosition, 0.5f);*/
 	}
 	
 }

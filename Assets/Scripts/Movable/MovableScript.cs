@@ -125,6 +125,19 @@ public class MovableScript : MonoBehaviour
 		if(other.collider.tag == "Player" 
 			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 			&& gameObject.tag == "ThrownMovable" 
+			&& playerThatThrew == null)
+		{
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+
+			playerHit = other.gameObject;
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+		}
+
+		if(other.collider.tag == "Player" 
+			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
@@ -135,6 +148,8 @@ public class MovableScript : MonoBehaviour
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+
+			playerThatThrew = null;
 		}
 	}
 
@@ -188,5 +203,6 @@ public class MovableScript : MonoBehaviour
 	{
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
+		playerThatThrew = null;
 	}
 }
