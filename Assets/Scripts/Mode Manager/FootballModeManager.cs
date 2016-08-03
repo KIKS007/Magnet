@@ -51,10 +51,20 @@ public class FootballModeManager : MonoBehaviour
 		}
 	}
 
+	void OnEnable ()
+	{
+		ChooseTeamScript.OnTeamChange += FindPlayersPosition;
+	}
+
+	void OnDisable ()
+	{
+		ChooseTeamScript.OnTeamChange -= FindPlayersPosition;
+	}
+
 	void Update ()
 	{
-		if(GlobalVariables.Instance.GamePaused && GlobalVariables.Instance.GameOver)
-			FindPlayersPosition ();
+		/*if(GlobalVariables.Instance.GamePaused && GlobalVariables.Instance.GameOver && GlobalVariables.Instance.Team1.Count != 0)
+			FindPlayersPosition ();*/
 	}
 
 	void FindPlayersPosition ()
@@ -88,6 +98,9 @@ public class FootballModeManager : MonoBehaviour
 			else
 				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [1].position;
 		}
+
+		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
+			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
 	}
 
 	public void GoalScoreVoid (int whichGoal, GameObject ball)

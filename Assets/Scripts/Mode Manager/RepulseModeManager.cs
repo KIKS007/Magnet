@@ -164,6 +164,8 @@ public class RepulseModeManager : MonoBehaviour
 				EnableZonesAndScore (0, players [1]);
 			}
 
+			for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
+				GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
 		}
 
 		else if(GlobalVariables.Instance.NumberOfPlayers > 2)

@@ -139,12 +139,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
-  maxXPos: 0
-  minXPos: 0
-  maxZPos: 0
-  minZPos: 0
-  centerPos: {x: 0, y: 0, z: 0}
-  crossProduct: {x: 0, y: 0, z: 0}
+  cameraYMin: 30
+  distanceMin: 0
+  distanceRatio: 1
+  largestDistance: 0
+  yPos: 0
 --- !u!114 &11411936
 MonoBehaviour:
   m_ObjectHideFlags: 1

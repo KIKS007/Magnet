@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Rewired;
+using UnityEngine.SceneManagement;
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -20,8 +21,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 
 	[Header ("Game State")]
-	public bool GamePaused = false;
-	public bool GameOver = false;
+	public bool GamePaused = true;
+	public bool GameOver = true;
 	public bool FirstGameLaunch = true;
 
 	[Header ("Players States")]
@@ -46,27 +47,29 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
-	public string firstSceneToLoad = "Test";
+	public string firstSceneToLoad = "Hit";
 	public string CurrentModeLoaded = "";
 
 	void Start ()
 	{
+		if(SceneManager.GetActiveScene().name == "Scene Testing")
+		{
+			GamePaused = false;
+			GameOver = false;
+		}
+
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 	}
 
-	void Update ()
+	public IEnumerator ListPlayers ()
 	{
-		ListPlayers ();
-	}
+		while(ControllerNumberPlayer1 == -1)
+		{
+			yield return null;
+		}
 
-	void PlayersNumber ()
-	{
-		NumberOfPlayers = EnabledPlayersList.Count;
-		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
-	}
+		EnabledPlayersList.Clear ();
 
-	void ListPlayers ()
-	{
 		if (ControllerNumberPlayer1 != -1 && !EnabledPlayersList.Contains (Player1))
 			EnabledPlayersList.Add (Player1);
 
@@ -93,5 +96,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			EnabledPlayersList.Remove (Player4);
 
 		PlayersNumber ();
+	}
+
+	void PlayersNumber ()
+	{
+		NumberOfPlayers = EnabledPlayersList.Count;
+		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
 	}
 }

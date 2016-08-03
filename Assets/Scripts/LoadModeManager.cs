@@ -90,6 +90,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		DestroyParticules ();
 
+
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
 
 		FindGameObjects ();
@@ -230,6 +231,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		GlobalVariables.Instance.Player4 = player4;
 
 		StatsManager.Instance.GetPlayersEvents ();
+
+		GlobalVariables.Instance.StartCoroutine("ListPlayers");
 	}
 		
 }

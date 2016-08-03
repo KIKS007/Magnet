@@ -170,12 +170,12 @@ public class PlayersGameplay : MonoBehaviour
 			if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
 				playerState = PlayerState.None;
 
-			TrailLength ();
-
 			StatsButton ();
 
 			OnAttractedOnRepusled ();
 		}
+
+		TrailLength ();
 	}
 
 	protected virtual void ActivateFunctions ()
@@ -420,15 +420,24 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected void TrailLength ()
 	{
-		if(playerRigidbody.velocity.magnitude > 1)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
 		{
-			trail.time = 0.1f;
-			trail.startWidth = 1;
+			if(playerRigidbody.velocity.magnitude > 1)
+			{
+				trail.time = 0.1f;
+				trail.startWidth = 1;
+			}
+			else if (playerRigidbody.velocity.magnitude < 1)
+			{
+				trail.time = 0.15f;
+				trail.startWidth = 0.5f;
+			}
 		}
-		else if (playerRigidbody.velocity.magnitude < 1)
+
+		else
 		{
-			trail.time = 0.15f;
-			trail.startWidth = 0.5f;
+			trail.time = 0f;
+			trail.startWidth = 0f;
 		}
 	}
 

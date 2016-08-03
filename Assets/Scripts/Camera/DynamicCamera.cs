@@ -3,18 +3,22 @@ using System.Collections;
 
 public class DynamicCamera : MonoBehaviour 
 {
+	public bool enabled = true;
+
+	[Header ("Camera Lerp")]
 	public float cameraZoomLerp = 0.5f;
 	public float cameraMovementLerp = 0.5f;
 
+	[Header ("Zoom Settings")]
+	public float cameraYMin = 30;
 	public float distanceMin = 30;
+	public float distanceRatio = 1;
 
+	[Header ("Infos")]
 	public float largestDistance;
-
 	public float yPos;
 
 	private Vector3 centerPos = new Vector3(0, 0, 0);
-
-	private Vector3 cameraOffset = new Vector3(0, 30, 0);
 
 	// Use this for initialization
 	void Start () 
@@ -25,10 +29,20 @@ public class DynamicCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		FindLargestDistance ();
-		FindCenterPosition ();
-		FindCameraPosition ();
-		FindYPosition ();
+		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && enabled)
+		{
+			FindLargestDistance ();
+			FindCenterPosition ();
+			FindYPosition ();
+		}
+	}
+
+	void FixedUpdate ()
+	{
+		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && enabled)
+		{
+			SetCameraPosition ();
+		}
 	}
 
 	void FindLargestDistance ()
@@ -67,8 +81,13 @@ public class DynamicCamera : MonoBehaviour
 
 	void FindYPosition ()
 	{
-		if(largestDistance > distanceMin)
-			yPos = (largestDistance - distanceMin);
+		if (largestDistance > distanceMin)
+			yPos = (largestDistance * distanceRatio) - distanceMin;
+		else
+			yPos = 0;
+
+		if(yPos < 0)
+			yPos = 0;
 	}
 
 	void FindCenterPosition ()
@@ -84,7 +103,7 @@ public class DynamicCamera : MonoBehaviour
 		centerPos = centerPosTemp;
 	}
 
-	void FindCameraPosition ()
+	void SetCameraPosition ()
 	{
 		if(centerPos != Vector3.zero)
 		{
@@ -93,7 +112,7 @@ public class DynamicCamera : MonoBehaviour
 
 
 			Vector3 newPos = transform.position;
-			newPos.y = cameraOffset.y + yPos;
+			newPos.y = cameraYMin + yPos;
 
 			//Zoom Lerp
 			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp);

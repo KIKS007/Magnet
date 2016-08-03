@@ -9,6 +9,8 @@ using Rewired;
 
 public class ChooseTeamScript : MonoBehaviour 
 {
+	public static event EventHandler OnTeamChange;
+
 	public enum TeamMode {TwoTeams, FourTeams, All};
 
 	public TeamMode teamMode;
@@ -62,11 +64,6 @@ public class ChooseTeamScript : MonoBehaviour
 		GetControllersSettings ();
 
 		UpdateGlobalVariables ();
-	}
-
-	void OnDisable ()
-	{
-		//UpdateGlobalVariables ();
 	}
 
 	void Start ()
@@ -503,6 +500,9 @@ public class ChooseTeamScript : MonoBehaviour
 			}
 		}
 
+		if (OnTeamChange != null)
+			OnTeamChange ();
+
 		//Debug.Log (GlobalVariables.Instance.TeamChoice [0]);
 		//Debug.Log (GlobalVariables.Instance.TeamChoice [1]);
 		//Debug.Log (GlobalVariables.Instance.TeamChoice [2]);
@@ -518,6 +518,7 @@ public class ChooseTeamScript : MonoBehaviour
 			case 1:
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
 				teamNumber [whichPlayer] = 2;
+				UpdateGlobalVariables ();
 				break;
 
 			case 2:
@@ -532,22 +533,23 @@ public class ChooseTeamScript : MonoBehaviour
 			case 1:
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
 				teamNumber [whichPlayer] = 2;
+				UpdateGlobalVariables ();
 				break;
 			case 2 :
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
 				teamNumber [whichPlayer] = 3;
+				UpdateGlobalVariables ();
 				break;
 			case 3 :
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
 				teamNumber [whichPlayer] = 4;
+				UpdateGlobalVariables ();
 				break;
 
 			case 4 :
 				break;
 			}	
 		}
-
-		UpdateGlobalVariables ();
 	}
 
 	void GoOnTheLeft (int whichPlayer)
@@ -562,6 +564,7 @@ public class ChooseTeamScript : MonoBehaviour
 			case 2:
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				teamNumber [whichPlayer] = 1;
+				UpdateGlobalVariables ();
 				break;
 			}
 		}
@@ -576,14 +579,17 @@ public class ChooseTeamScript : MonoBehaviour
 			case 2 :
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				teamNumber [whichPlayer] = 1;
+				UpdateGlobalVariables ();
 				break;
 			case 3 :
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
 				teamNumber [whichPlayer] = 2;
+				UpdateGlobalVariables ();
 				break;
 			case 4 :
 				sliderRect [whichPlayer].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
 				teamNumber [whichPlayer] = 3;
+				UpdateGlobalVariables ();
 				break;
 
 			case -1 :
@@ -591,7 +597,6 @@ public class ChooseTeamScript : MonoBehaviour
 			}
 		}
 
-		UpdateGlobalVariables ();
 	}
 
 	IEnumerator GapBetweenInputs (int controllerNumber)
