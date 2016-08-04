@@ -30,10 +30,9 @@ public class RepulseModeManager : MonoBehaviour
 
 		FindPlayersPosition ();
 
-		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", false);
+		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", 0.1f);
 
 		SetMovablesColor ();
-
 
 		timer = timerDuration;
 

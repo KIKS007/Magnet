@@ -137,9 +137,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d31040895a45b44a9aeb14ed59cc271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enabled: 1
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
-  cameraYMin: 30
+  cameraYMin: 15
   distanceMin: 0
   distanceRatio: 1
   largestDistance: 0
@@ -190,14 +191,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   easetype: 6
-  slowFactor: 8
-  slowFactor2: 10
-  slowFactor3: 12
-  slowFactor4: 14
-  slowMotionDuration: 0.25
-  slowMotionDuration2: 0.75
-  slowMotionDuration3: 1.25
-  slowMotionDuration4: 2
+  slowFactors:
+  - 8
+  - 10
+  - 12
+  - 14
+  slowMotionDurations:
+  - 0.25
+  - 0.75
+  - 1.25
+  - 2
   timeTween: 0.05
   bloomIntensity: 0.7
   timeTweenEffect: 0.1

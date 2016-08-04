@@ -73,6 +73,10 @@ public class PlayersGameplay : MonoBehaviour
 	public float shootForce = 200;
 	public float repulsionForce = 10;
 
+	[Header ("Deceleration")]
+	[Range (0, 1)]
+	public float decelerationAmount = 1;
+
 	[Header ("Repulsion Wave")]
 	public bool enableRepulsionWave = false;
 	public float repulsionWaveForce = 10;
@@ -208,7 +212,7 @@ public class PlayersGameplay : MonoBehaviour
 				playerState = PlayerState.Repulsing;
 		}
 
-		if(player.GetButtonDown("Dash") && dashState == DashState.CanDash)
+		if(player.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
 		{
 			StartCoroutine(Dash ());
 		}
@@ -236,6 +240,8 @@ public class PlayersGameplay : MonoBehaviour
 				if (OnHolding != null)
 					OnHolding ();
 			}
+
+			playerRigidbody.velocity *= decelerationAmount;
 		}
 	}
 
@@ -582,32 +588,35 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void Death ()
 	{
-		if (OnDeath != null)
-			OnDeath ();
-		
-
-		if(playerState == PlayerState.Holding)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
 		{
-			Transform holdMovableTemp = null;
+			if (OnDeath != null)
+				OnDeath ();
 
-			for(int i = 0; i < transform.childCount; i++)
+
+			if(playerState == PlayerState.Holding)
 			{
-				if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "HoldMovable")
+				Transform holdMovableTemp = null;
+
+				for(int i = 0; i < transform.childCount; i++)
 				{
-					holdMovableTemp = transform.GetChild (i);
+					if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "HoldMovable")
+					{
+						holdMovableTemp = transform.GetChild (i);
 
-					holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
+						holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
 
-					holdMovableTemp.transform.SetParent(null);
-					holdMovableTemp.transform.SetParent(movableParent);
-					holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
+						holdMovableTemp.transform.SetParent(null);
+						holdMovableTemp.transform.SetParent(movableParent);
+						holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
+					}
 				}
 			}
+
+			playerState = PlayerState.Dead;
+
+			gameObject.SetActive (false);
 		}
-
-		playerState = PlayerState.Dead;
-
-		gameObject.SetActive (false);
 	}
 
 	protected void OnDestroy ()

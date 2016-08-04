@@ -11,13 +11,13 @@ public class CameraScreenShake : MonoBehaviour
 
 	public bool shaking;
 
-	private Vector3 initialPosition;
+	private Vector3 initialRotation;
 
 	// Use this for initialization
 	void Start () 
 	{
-		//initialPosition = transform.position;
-		initialPosition = new Vector3 (0, 30, 0);
+		//initialRotation = new Vector3 (90, 0, 0);
+		initialRotation = transform.rotation.eulerAngles;
 	}
 	
 	// Update is called once per frame
@@ -40,7 +40,7 @@ public class CameraScreenShake : MonoBehaviour
 	void ResetCameraRotation ()
 	{
 		if(GlobalVariables.Instance.GamePaused == false)
-			transform.DORotate(new Vector3(90, 0, 0), 0.5f);
+			transform.DORotate(initialRotation, 0.5f);
 	}
 	
 }

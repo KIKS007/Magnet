@@ -9,14 +9,8 @@ public class SlowMotionCamera : MonoBehaviour
 
 	[Header ("SlowMotion InGame")]
 	//the factor used to slow down time
-	public float slowFactor = 4f;
-	public float slowFactor2 = 6f;
-	public float slowFactor3 = 8f;
-	public float slowFactor4 = 10f;
-	public float slowMotionDuration;
-	public float slowMotionDuration2;
-	public float slowMotionDuration3;
-	public float slowMotionDuration4;
+	public float[] slowFactors = new float[4];
+	public float[] slowMotionDurations = new float[4];
 	public float timeTween;
 	public float bloomIntensity = 0.7f;
 	public float timeTweenEffect;
@@ -72,19 +66,19 @@ public class SlowMotionCamera : MonoBehaviour
 		switch (slowMoNumber)
 		{
 		case 1:
-			slowFactorTemp = slowFactor;
+			slowFactorTemp = slowFactors[0];
 			break;
 		case 2:
-			slowFactorTemp = slowFactor2;
+			slowFactorTemp = slowFactors[1];
 			break;
 		case 3:
-			slowFactorTemp = slowFactor3;
+			slowFactorTemp = slowFactors[2];
 			break;
 		case 4:
-			slowFactorTemp = slowFactor4;
+			slowFactorTemp = slowFactors[3];
 			break;
 		default:
-			slowFactorTemp = slowFactor4;
+			slowFactorTemp = slowFactors[3];
 			break;
 		}
 
@@ -128,19 +122,19 @@ public class SlowMotionCamera : MonoBehaviour
 		switch (slowMoNumber)
 		{
 		case 1:
-			slowFactorTemp = slowFactor;
+			slowFactorTemp = slowFactors[0];
 			break;
 		case 2:
-			slowFactorTemp = slowFactor2;
+			slowFactorTemp = slowFactors[1];
 			break;
 		case 3:
-			slowFactorTemp = slowFactor3;
+			slowFactorTemp = slowFactors[2];
 			break;
 		case 4:
-			slowFactorTemp = slowFactor4;
+			slowFactorTemp = slowFactors[3];
 			break;
 		default:
-			slowFactorTemp = slowFactor4;
+			slowFactorTemp = slowFactors[3];
 			break;
 		}
 
@@ -177,16 +171,16 @@ public class SlowMotionCamera : MonoBehaviour
 		switch (slowMoNumber)
 		{
 		case 1:
-			slowMotionDurationTemp = slowMotionDuration;
+			slowMotionDurationTemp = slowMotionDurations[0];
 			break;
 		case 2:
-			slowMotionDurationTemp = slowMotionDuration2;
+			slowMotionDurationTemp = slowMotionDurations[1];
 			break;
 		case 3:
-			slowMotionDurationTemp = slowMotionDuration3;
+			slowMotionDurationTemp = slowMotionDurations[2];
 			break;
 		case 4:
-			slowMotionDurationTemp = slowMotionDuration4;
+			slowMotionDurationTemp = slowMotionDurations[3];
 			break;
 		}
 	

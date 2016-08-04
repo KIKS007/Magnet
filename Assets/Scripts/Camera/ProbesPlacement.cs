@@ -29,20 +29,23 @@ public class ProbesPlacement : MonoBehaviour
 
 		GetReflectionGameObjects ();
 
-		forwardProbePosition = mainCamera.transform.position;
-		backwardProbePosition = mainCamera.transform.position;
-		rightProbePosition = mainCamera.transform.position;
-		leftProbePosition = mainCamera.transform.position;
+		if(LoadModeManager.mirrorForward != null)
+		{
+			forwardProbePosition = mainCamera.transform.position;
+			backwardProbePosition = mainCamera.transform.position;
+			rightProbePosition = mainCamera.transform.position;
+			leftProbePosition = mainCamera.transform.position;
 
-		forwardProbePosition.z = forwardWall.position.z + (forwardWall.position.z - mainCamera.transform.position.z);
-		backwardProbePosition.z = backwardWall.position.z + (backwardWall.position.z - mainCamera.transform.position.z);
-		rightProbePosition.x = rightWall.position.x + (rightWall.position.x - mainCamera.transform.position.x);
-		leftProbePosition.x = leftWall.position.x + (leftWall.position.x - mainCamera.transform.position.x);
+			forwardProbePosition.z = forwardWall.position.z + (forwardWall.position.z - mainCamera.transform.position.z);
+			backwardProbePosition.z = backwardWall.position.z + (backwardWall.position.z - mainCamera.transform.position.z);
+			rightProbePosition.x = rightWall.position.x + (rightWall.position.x - mainCamera.transform.position.x);
+			leftProbePosition.x = leftWall.position.x + (leftWall.position.x - mainCamera.transform.position.x);
 
-		forwardProbe.transform.position = forwardProbePosition;
-		backwardProbe.transform.position = backwardProbePosition;
-		rightProbe.transform.position = rightProbePosition;
-		leftProbe.transform.position = leftProbePosition;
+			forwardProbe.transform.position = forwardProbePosition;
+			backwardProbe.transform.position = backwardProbePosition;
+			rightProbe.transform.position = rightProbePosition;
+			leftProbe.transform.position = leftProbePosition;
+		}
 	}
 
 	public void GetReflectionGameObjects ()

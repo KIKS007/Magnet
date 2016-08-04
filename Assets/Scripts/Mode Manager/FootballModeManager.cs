@@ -63,44 +63,12 @@ public class FootballModeManager : MonoBehaviour
 
 	void Update ()
 	{
-		/*if(GlobalVariables.Instance.GamePaused && GlobalVariables.Instance.GameOver && GlobalVariables.Instance.Team1.Count != 0)
-			FindPlayersPosition ();*/
+		
 	}
 
 	void FindPlayersPosition ()
 	{
-		if (GlobalVariables.Instance.Team1.Count == 1)
-			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [0].position;
-
-		if (GlobalVariables.Instance.Team2.Count == 1)
-			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [0].position;
-
-		if (GlobalVariables.Instance.Team1.Count == 2)
-		{
-			int randomInt = Random.Range(1, 2 + 1);
-
-			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [randomInt].position;;
-
-			if(randomInt == 1)
-				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [2].position;
-			else
-				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [1].position;
-		}
-
-		if (GlobalVariables.Instance.Team2.Count == 2)
-		{
-			int randomInt = Random.Range(1, 2 + 1);
-
-			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [randomInt].position;;
-
-			if(randomInt == 1)
-				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [2].position;
-			else
-				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [1].position;
-		}
-
-		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
-			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
+		GlobalMethods.Instance.SetPlayersPositions2Team (team1Positions, team2Positions);
 	}
 
 	public void GoalScoreVoid (int whichGoal, GameObject ball)

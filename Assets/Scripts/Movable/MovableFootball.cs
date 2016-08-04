@@ -24,7 +24,7 @@ public class MovableFootball : MovableScript
 
 		if(other.gameObject.name == "LeftGoalTrigger")
 		{
-			GameObject.Find ("Football Mode Manager").GetComponent<FootballModeManager> ().GoalScoreVoid (1, gameObject);
+			GameObject.Find ("Football Mode Manager").GetComponent<FootballModeManager> ().GoalScoreVoid (2, gameObject);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.MovableExplosion, gameObject.GetComponent<Renderer> ().material.color);
 
 			gameObject.SetActive (false);
@@ -32,7 +32,7 @@ public class MovableFootball : MovableScript
 
 		if(other.gameObject.name == "RightGoalTrigger")
 		{
-			GameObject.Find ("Football Mode Manager").GetComponent<FootballModeManager> ().GoalScoreVoid (2, gameObject);
+			GameObject.Find ("Football Mode Manager").GetComponent<FootballModeManager> ().GoalScoreVoid (1, gameObject);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.MovableExplosion, gameObject.GetComponent<Renderer> ().material.color);
 
 			gameObject.SetActive (false);

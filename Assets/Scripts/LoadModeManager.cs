@@ -209,18 +209,24 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		UpdateGlobalVariables ();
 
-		mirrorForward = reflection.transform.GetChild (0).GetChild (0).gameObject;
-		mirrorBackward = reflection.transform.GetChild (0).GetChild (1).gameObject;
-		mirrorRight = reflection.transform.GetChild (0).GetChild (2).gameObject;
-		mirrorLeft = reflection.transform.GetChild (0).GetChild (3).gameObject;
+		if(reflection != null)
+		{
+			mirrorForward = reflection.transform.GetChild (0).GetChild (0).gameObject;
+			mirrorBackward = reflection.transform.GetChild (0).GetChild (1).gameObject;
+			mirrorRight = reflection.transform.GetChild (0).GetChild (2).gameObject;
+			mirrorLeft = reflection.transform.GetChild (0).GetChild (3).gameObject;
 
-		probeForward = reflection.transform.GetChild (1).GetChild (0).gameObject;
-		probeBackward = reflection.transform.GetChild (1).GetChild (1).gameObject;
-		probeRight = reflection.transform.GetChild (1).GetChild (2).gameObject;
-		probeLeft = reflection.transform.GetChild (1).GetChild (3).gameObject;
+			probeForward = reflection.transform.GetChild (1).GetChild (0).gameObject;
+			probeBackward = reflection.transform.GetChild (1).GetChild (1).gameObject;
+			probeRight = reflection.transform.GetChild (1).GetChild (2).gameObject;
+			probeLeft = reflection.transform.GetChild (1).GetChild (3).gameObject;
 
-		mainCamera.GetComponent<ProbesPlacement> ().GetReflectionGameObjects ();
-		mainCamera.GetComponent<ProbesPlacement> ().followCamera = true;
+			mainCamera.GetComponent<ProbesPlacement> ().GetReflectionGameObjects ();
+			mainCamera.GetComponent<ProbesPlacement> ().followCamera = true;
+		}
+		else
+			Debug.Log("No Reflection");
+
 	}
 
 	void UpdateGlobalVariables ()

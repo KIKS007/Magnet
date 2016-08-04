@@ -4,7 +4,7 @@ using DG.Tweening;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
-	public IEnumerator RandomPositionMovables (bool instantly)
+	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)
 	{
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 		Vector3[] allScales = new Vector3[allMovables.Length];
@@ -27,8 +27,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			}
 			while(Physics.CheckSphere(newPos, 3, layer));
 
-			if (!instantly)
-				yield return new WaitForSeconds (0.1f);
+			yield return new WaitForSeconds (durationBetweenSpawn);
 
 			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
 
@@ -36,5 +35,64 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			yield return null;
 		}
+	}
+
+	public void SetPlayersPositions2Team (Transform[] team1Positions, Transform[] team2Positions)
+	{
+		if (GlobalVariables.Instance.Team1.Count == 1)
+			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [0].position;
+
+		if (GlobalVariables.Instance.Team2.Count == 1)
+			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [0].position;
+
+		if (GlobalVariables.Instance.Team1.Count == 2)
+		{
+			int randomInt = Random.Range(1, 2 + 1);
+
+			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [randomInt].position;;
+
+			if(randomInt == 1)
+				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [2].position;
+			else
+				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [1].position;
+		}
+
+		if (GlobalVariables.Instance.Team2.Count == 2)
+		{
+			int randomInt = Random.Range(1, 2 + 1);
+
+			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [randomInt].position;;
+
+			if(randomInt == 1)
+				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [2].position;
+			else
+				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [1].position;
+		}
+
+		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
+			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
+	}
+
+	public void SpawnExistingMovable (GameObject movable)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+
+		movable.transform.localScale = Vector3.zero;
+
+		do
+		{
+			newPos = new Vector3(Random.Range(-24, 24 + 1), 3, Random.Range(-14, 14 + 1));
+		}
+		while(Physics.CheckSphere(newPos, 3, layer));
+
+		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+
+		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
+
+		movable.transform.position = newPos;
 	}
 }

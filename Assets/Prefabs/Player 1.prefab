@@ -697,7 +697,7 @@ MonoBehaviour:
   dashSpeed: 70
   dashDuration: 0.3
   dashCooldown: 1.2
-  dashEase: 0
+  dashEase: 6
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}
 --- !u!114 &11450556

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class DynamicCamera : MonoBehaviour 
 {
-	public bool enabled = true;
+	public bool dynamicEnabled = true;
 
 	[Header ("Camera Lerp")]
 	public float cameraZoomLerp = 0.5f;
@@ -29,7 +29,7 @@ public class DynamicCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && enabled)
+		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && dynamicEnabled)
 		{
 			FindLargestDistance ();
 			FindCenterPosition ();
@@ -39,7 +39,7 @@ public class DynamicCamera : MonoBehaviour
 
 	void FixedUpdate ()
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && enabled)
+		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && dynamicEnabled)
 		{
 			SetCameraPosition ();
 		}
