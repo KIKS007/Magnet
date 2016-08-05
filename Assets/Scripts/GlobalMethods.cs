@@ -29,6 +29,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
+			allMovables [i].gameObject.SetActive(true);
+
 			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
 
 			allMovables [i].transform.position = newPos;
@@ -73,7 +75,25 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
 	}
 
-	public void SpawnExistingMovable (GameObject movable)
+	public void SpawnExistingMovable (GameObject movable, Vector3 position)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+
+		movable.transform.localScale = Vector3.zero;
+
+		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+		movable.gameObject.SetActive(true);
+
+		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
+
+		movable.transform.position = position;
+	}
+
+	public void SpawnExistingMovableRandom (GameObject movable)
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
@@ -90,9 +110,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
+		movable.gameObject.SetActive(true);
 
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
 		movable.transform.position = newPos;
 	}
+
 }

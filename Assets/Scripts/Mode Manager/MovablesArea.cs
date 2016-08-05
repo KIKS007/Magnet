@@ -30,7 +30,7 @@ public class MovablesArea : MonoBehaviour
 
 		if(!movablesIn.Contains(movable))
 		{
-			GlobalMethods.Instance.SpawnExistingMovable (movable);
+			GlobalMethods.Instance.SpawnExistingMovableRandom (movable);
 		}
 	}
 }

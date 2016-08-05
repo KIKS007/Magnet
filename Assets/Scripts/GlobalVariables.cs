@@ -47,7 +47,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
-	public string firstSceneToLoad = "PushOut";
+	public string firstSceneToLoad = "Bomb";
 	public string CurrentModeLoaded = "";
 
 	void Start ()

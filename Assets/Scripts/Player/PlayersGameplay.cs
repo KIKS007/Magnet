@@ -241,7 +241,7 @@ public class PlayersGameplay : MonoBehaviour
 					OnHolding ();
 			}
 
-			playerRigidbody.velocity *= decelerationAmount;
+			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 		}
 	}
 
@@ -464,15 +464,7 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
 		{
-			Vector3 pos = other.contacts[0].point;
-			//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-			Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
-
-			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, pos, rot) as GameObject;
-			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-			instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
-			instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
-			instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+			DeathParticles ();
 		
 			Death ();
 		}
@@ -584,6 +576,19 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		StartCoroutine (OnPlayerStateChange ());
+	}
+
+	public virtual void DeathParticles ()
+	{
+		//Vector3 pos = other.contacts[0].point;
+		//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
+
+		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, transform.position, rot) as GameObject;
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
+		instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
+		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
 	}
 
 	public virtual void Death ()

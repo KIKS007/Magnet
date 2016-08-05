@@ -29,8 +29,10 @@ public class MovableScript : MonoBehaviour
 	protected Rigidbody rigidbodyMovable;
 
 	protected float massRb;
+	protected float drag;
 	protected CollisionDetectionMode collisionDetectionModeRb;
 
+	protected Renderer movableRenderer;
 
 	[HideInInspector]
 	public Transform player;
@@ -43,9 +45,8 @@ public class MovableScript : MonoBehaviour
 	protected virtual void Start () 
 	{
 		rigidbodyMovable = GetComponent<Rigidbody>();
-
-		massRb = rigidbodyMovable.mass;
-		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
+		movableRenderer = GetComponent<Renderer> ();
+		GetRigidbodySettings ();
 	}
 	
 	// Update is called once per frame
@@ -69,17 +70,18 @@ public class MovableScript : MonoBehaviour
 			else if(currentVelocity < limitVelocity)
 			{
 				gameObject.tag = "Movable";
+				playerThatThrew = null;
 			}
 		}
 
-		if(hold == true && gameObject.GetComponent<Renderer>().material.color == Color.white)
+		if(hold == true && movableRenderer.material.color == Color.white)
 		{
-			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween);
+			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween);
 		}
 
-		if(hold == false && gameObject.GetComponent<Renderer>().material.color != Color.white && gameObject.tag == "Movable")
+		if(hold == false && movableRenderer.material.color != Color.white && gameObject.tag == "Movable")
 		{
-			DOTween.To(()=> gameObject.GetComponent<Renderer>().material.color, x=> gameObject.GetComponent<Renderer>().material.color =x, Color.white, timeTween);
+			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, Color.white, timeTween);
 		}
 	}
 
@@ -93,10 +95,10 @@ public class MovableScript : MonoBehaviour
 		if(rigidbodyMovable != null && currentVelocity > 5)
 		{
 			if(!decelerationShotOnly)
-				rigidbodyMovable.velocity *= decelerationAmount;
+				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
 
 			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
-				rigidbodyMovable.velocity *= decelerationAmount;
+				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
 		}
 	}
 
@@ -187,12 +189,32 @@ public class MovableScript : MonoBehaviour
 		return instantiatedParticles;
 	}
 
+	public virtual GameObject InstantiateExplosionParticles (GameObject prefab, Color color)
+	{
+		Vector3 pos = transform.position;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<Renderer>().material.color = color;
+
+		return instantiatedParticles;
+	}
+
+	public virtual void GetRigidbodySettings ()
+	{
+		massRb = rigidbodyMovable.mass;
+		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
+		drag = rigidbodyMovable.drag;
+	}
+
 	public virtual void AddRigidbody ()
 	{
 		gameObject.AddComponent<Rigidbody>();
 		rigidbodyMovable = gameObject.GetComponent<Rigidbody>();
 		rigidbodyMovable.mass = massRb;
 		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
+		rigidbodyMovable.drag = drag;
 		player.GetComponent<PlayersGameplay>().holdMovableRB = rigidbodyMovable;
 
 		currentVelocity = player.GetComponent<PlayersGameplay>().shootForce;

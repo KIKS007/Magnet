@@ -1382,6 +1382,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -2384,6 +2389,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -3601,6 +3611,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -4867,6 +4882,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -4874,6 +4890,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 0
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -8885,6 +8909,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -9661,6 +9690,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -9668,6 +9698,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 0
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -10627,6 +10665,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -10634,6 +10673,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 0
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -11785,6 +11832,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -11866,6 +11918,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -12546,6 +12603,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -13402,9 +13464,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801b6846bfbf0ff47bbcb833b8cd27be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timerDuration: 300
+  timeBetweenSpawn: 2
   timer: 0
   timerClock: 
-  gameEnded: 0
 --- !u!4 &2023797309 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}
@@ -13660,6 +13723,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -13667,6 +13731,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 0
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70

@@ -5,7 +5,7 @@ public class CrushManager : MonoBehaviour
 {
 	public GameObject[] playersList;
 
-	public float timeBeforeEndGame;
+	public float timeBeforeEndGame = 2;
 
 	private bool gameEndLoopRunning = false;
 

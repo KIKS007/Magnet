@@ -35,26 +35,31 @@ public class MagnetTriggerScript : MonoBehaviour
 
 				if(player != null && player.GetButton("Attract"))
 				{
-					other.tag = "HoldMovable";
-					other.gameObject.GetComponent<MovableScript>().hold = true;
-					other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
-					other.gameObject.GetComponent<MovableScript>().player = transform.parent;
-
-					character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
-
-					Destroy (other.GetComponent<Rigidbody>());
-
-					other.transform.SetParent(transform.parent);
-
-					Vector3 v3 = magnetPoint.localPosition;
-					v3.x = 0f;
-					v3.y = (other.transform.localScale.y /2 + 0.1f) - 1;
-					v3.z = 0.5f * other.transform.localScale.z + 0.8f;
-					magnetPoint.localPosition = v3;
+					GetMovable (other);
 				}
 			}
 		}
 
 
+	}
+
+	public void GetMovable (Collider other)
+	{
+		other.tag = "HoldMovable";
+		other.gameObject.GetComponent<MovableScript>().hold = true;
+		other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
+		other.gameObject.GetComponent<MovableScript>().player = transform.parent;
+
+		other.gameObject.GetComponent<MovableScript>().GetRigidbodySettings();
+		Destroy (other.GetComponent<Rigidbody>());
+
+		other.transform.SetParent(transform.parent);
+		character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
+
+		Vector3 v3 = magnetPoint.localPosition;
+		v3.x = 0f;
+		v3.y = (other.transform.localScale.y /2 + 0.1f) - 1;
+		v3.z = 0.5f * other.transform.localScale.z + 0.8f;
+		magnetPoint.localPosition = v3;
 	}
 }
