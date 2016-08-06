@@ -81,7 +81,7 @@ public class PlayersGameplay : MonoBehaviour
 	public bool enableRepulsionWave = false;
 	public float repulsionWaveForce = 10;
 	public float repulsionWaveRadius = 3;
-	public LayerMask repulsionWaveMask;
+	public LayerMask repulsionWaveMask = (1 << 9) | (1 << 13);
 	public float repulsionCoolDown = 2;
 
 	[Header ("Stun")]
@@ -92,7 +92,7 @@ public class PlayersGameplay : MonoBehaviour
 	public float dashSpeed = 70;
 	public float dashDuration = 0.3f;
 	public float dashCooldown = 1.2f;
-	public Ease dashEase;
+	public Ease dashEase = Ease.OutQuad;
 
 
 	protected Transform movableParent;

@@ -28,7 +28,7 @@ public class RepulseModeManager : MonoBehaviour
 	{
 		SetupArrayList ();
 
-		FindPlayersPosition ();
+		StartCoroutine (FindPlayersPosition ());
 
 		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", 0.1f);
 
@@ -132,13 +132,15 @@ public class RepulseModeManager : MonoBehaviour
 		playersDebug = new GameObject[players.Count];
 	}
 
-	void FindPlayersPosition ()
+	IEnumerator FindPlayersPosition ()
 	{
 		for (int i = 0; i < zones.Length; i++)
 		{
 			zones [i].gameObject.SetActive (false);
 			zonesScore [i].gameObject.SetActive (false);
 		}
+
+		yield return new WaitUntil (() => GlobalVariables.Instance.NumberOfPlayers != 0);
 
 		if (GlobalVariables.Instance.NumberOfPlayers == 2)
 		{

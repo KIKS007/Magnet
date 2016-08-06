@@ -239,6 +239,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -767,6 +772,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -1062,6 +1072,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -1450,7 +1465,7 @@ GameObject:
   - 64: {fileID: 619988717}
   m_Layer: 16
   m_Name: Wall Quad Right
-  m_TagString: RightWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1582,6 +1597,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -1605,7 +1625,7 @@ GameObject:
   - 4: {fileID: 657604203}
   m_Layer: 0
   m_Name: Reflection
-  m_TagString: Untagged
+  m_TagString: Reflection
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1697,7 +1717,7 @@ GameObject:
   - 64: {fileID: 731531040}
   m_Layer: 16
   m_Name: Wall Quad Backward
-  m_TagString: DownWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2022,6 +2042,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -2029,6 +2050,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 8704
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -2087,6 +2116,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -2094,6 +2124,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 8704
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -2125,6 +2163,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -2132,6 +2171,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 8704
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70
@@ -2604,7 +2651,7 @@ GameObject:
   - 64: {fileID: 1070879639}
   m_Layer: 16
   m_Name: Wall Quad Forward
-  m_TagString: UpWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3435,6 +3482,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -3562,19 +3614,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 164642, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_TagString
-      value: UpWall
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 120786, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_TagString
-      value: RightWall
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 115464, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_TagString
-      value: LeftWall
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 130518, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_TagString
-      value: DownWall
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 198528, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_IsActive
@@ -3586,7 +3638,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 443826, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 422742, guid: 369798461d01657418dfb113e1923fa8, type: 2}
+      propertyPath: m_RootOrder
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 193726, guid: 369798461d01657418dfb113e1923fa8, type: 2}
+      propertyPath: m_TagString
+      value: Wall
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 369798461d01657418dfb113e1923fa8, type: 2}
@@ -3911,6 +3971,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -4244,6 +4309,11 @@ MonoBehaviour:
   currentVelocity: 0
   limitVelocity: 170
   hold: 0
+  attracedBy: []
+  repulsedBy: []
+  decelerationShotOnly: 0
+  decelerationAmount: 1
+  gravity: 0
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
@@ -4418,7 +4488,7 @@ GameObject:
   - 64: {fileID: 2063797065}
   m_Layer: 16
   m_Name: Wall Quad Left
-  m_TagString: LeftWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4498,6 +4568,7 @@ MonoBehaviour:
   team: 0
   playerState: 0
   dashState: 0
+  repulsionState: 0
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
@@ -4505,6 +4576,14 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
+  enableRepulsionWave: 0
+  repulsionWaveForce: 10
+  repulsionWaveRadius: 3
+  repulsionWaveMask:
+    serializedVersion: 2
+    m_Bits: 8704
+  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 70

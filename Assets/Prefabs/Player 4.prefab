@@ -404,6 +404,7 @@ MonoBehaviour:
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
+  decelerationAmount: 1
   enableRepulsionWave: 1
   repulsionWaveForce: 80
   repulsionWaveRadius: 12

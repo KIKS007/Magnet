@@ -7,6 +7,7 @@ public class BombManager : MonoBehaviour
 	[Header ("Bomb Settings")]
 	public GameObject[] playersList;
 	public GameObject bomb;
+	public int playersNumber;
 	public int firstBombTimer = 300;
 	public int secondBombTimer = 300;
 	public int thirdBombTimer = 300;
@@ -17,17 +18,23 @@ public class BombManager : MonoBehaviour
 	public string timerClock;
 	public float timeBeforeEndGame = 2;
 
-	private bool gameEndLoopRunning = false;
-
 	// Use this for initialization
 	void Start () 
 	{
 		bomb = GameObject.FindGameObjectWithTag ("Movable").gameObject;
 		bomb.SetActive (false);
 
-		playersList = GameObject.FindGameObjectsWithTag("Player");
+		StartCoroutine (Setup ());
+	}
 
-		switch(playersList.Length)
+	IEnumerator Setup ()
+	{
+		while (GlobalVariables.Instance.NumberOfPlayers == 0)
+			yield return null;
+
+		playersNumber = GlobalVariables.Instance.NumberOfPlayers;
+
+		switch(playersNumber)
 		{
 		case 4:
 			timer = firstBombTimer;
@@ -48,21 +55,9 @@ public class BombManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		FindPlayers ();
-	}
-
-	void FindPlayers ()
-	{
 		playersList = GameObject.FindGameObjectsWithTag("Player");
 
-		if(playersList.Length == 1 && gameEndLoopRunning == false)
-		{
-			gameEndLoopRunning = true;
-
-			StartCoroutine(GameEnd ());
-		}
 	}
-
 
 	IEnumerator StartTimer ()
 	{
@@ -98,26 +93,36 @@ public class BombManager : MonoBehaviour
 		else
 		{
 			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
-			bomb.GetComponent<MovableBomb> ().Explode ();
-			StartCoroutine (SpawnBomb ());
+			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
 	
-			switch(playersList.Length)
+			yield return new WaitWhile (()=> bomb.activeSelf == true);
+
+			playersNumber--;
+
+			switch(playersNumber)
 			{
 			case 4:
 				timer = firstBombTimer;
+				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+				StartCoroutine (Timer ());
 				break;
 			case 3:
 				timer = secondBombTimer;
+				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+				StartCoroutine (Timer ());
 				break;
 			case 2:
 				timer = thirdBombTimer;
+				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+				StartCoroutine (Timer ());
+				break;
+			case 1:
+				StartCoroutine(GameEnd ());
 				break;
 			}
-
-			StartCoroutine (Timer ());
 		}
 
 	}

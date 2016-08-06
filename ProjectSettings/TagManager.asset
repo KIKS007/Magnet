@@ -8,33 +8,16 @@ TagManager:
   - Movable
   - Floor
   - HoldMovable
-  - Roof
-  - SlowMotion
-  - Fluff
-  - DeadParticles
-  - HitParticles
-  - WallHitParticles
   - ThrownMovable
-  - GoalTrigger
-  - MovableExplosion
+  - Fluff
   - DeadZone
-  - PlayerDestroy
-  - PlayerSpawn
-  - PlayerTextDisplayed
-  - PlayerControllerText
-  - ControllerColor
-  - PlayerChosen
-  - ControllerChangeCanvas
-  - GamepadLine
   - MovableParent
-  - LeftWall
-  - RightWall
-  - DownWall
-  - UpWall
   - MainMenuManager
   - ParticulesClonesParent
   - RepulseZones
   - RepulseZone
+  - SlowMotion
+  - Reflection
   layers:
   - Default
   - TransparentFX
@@ -56,8 +39,8 @@ TagManager:
   - Goals
   - RepulseZones
   - MovablesArea
-  - 
-  - 
+  - IgnoreMovables
+  - IgnorePlayers
   - 
   - 
   - 

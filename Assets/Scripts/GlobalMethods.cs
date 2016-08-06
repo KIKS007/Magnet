@@ -81,6 +81,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 
+		do
+		{
+			newPos = position;
+		}
+		while (Physics.CheckSphere (position, 3, layer));
+
 		movable.transform.localScale = Vector3.zero;
 
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
@@ -90,7 +96,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
-		movable.transform.position = position;
+		movable.transform.position = newPos;
 	}
 
 	public void SpawnExistingMovableRandom (GameObject movable)
@@ -115,6 +121,23 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
 		movable.transform.position = newPos;
+	}
+
+	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)
+	{
+		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
+		{
+			Vector3 repulseDirection = other.transform.position - explosionPosition;
+			repulseDirection.Normalize ();
+
+			float explosionImpactZone = 1 - (Vector3.Distance (explosionPosition, other.transform.position) / explosionRadius);
+
+			if(explosionImpactZone > 0)
+			{
+				if(other.GetComponent<Rigidbody>() != null)
+					other.GetComponent<Rigidbody> ().AddForce (repulseDirection * explosionImpactZone * explosionForce, ForceMode.Impulse);
+			}
+		}
 	}
 
 }

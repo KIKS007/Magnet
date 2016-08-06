@@ -3618,7 +3618,7 @@ GameObject:
   - 4: {fileID: 307307241}
   m_Layer: 0
   m_Name: Walls
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4240,7 +4240,7 @@ GameObject:
   - 64: {fileID: 619988717}
   m_Layer: 16
   m_Name: Wall Quad Right
-  m_TagString: RightWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4547,7 +4547,7 @@ GameObject:
   - 4: {fileID: 657604203}
   m_Layer: 0
   m_Name: Reflection
-  m_TagString: Untagged
+  m_TagString: Reflection
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5297,7 +5297,7 @@ GameObject:
   - 64: {fileID: 731531040}
   m_Layer: 16
   m_Name: Wall Quad Backward
-  m_TagString: DownWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8129,7 +8129,7 @@ GameObject:
   - 64: {fileID: 1070879639}
   m_Layer: 16
   m_Name: Wall Quad Forward
-  m_TagString: UpWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11554,6 +11554,10 @@ Prefab:
     - target: {fileID: 101902, guid: cd937c364f837284ba213c13271bfed5, type: 2}
       propertyPath: m_Layer
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 101902, guid: cd937c364f837284ba213c13271bfed5, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd937c364f837284ba213c13271bfed5, type: 2}
@@ -15452,7 +15456,7 @@ GameObject:
   - 64: {fileID: 2063797065}
   m_Layer: 16
   m_Name: Wall Quad Left
-  m_TagString: LeftWall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -9,7 +9,6 @@ public class MovableBomb : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 10;
 	public float explosionRadius = 3;
-	public float explosionUpwardsMofifier;
 	public LayerMask explosionMask;
 
 	private Renderer playerRenderer;
@@ -67,6 +66,22 @@ public class MovableBomb : MovableScript
 
 		if(other.collider.tag == "Player" 
 			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+			&& gameObject.tag == "Movable")
+		{
+			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+			other.gameObject.GetComponent<PlayerBomb>().GetBomb(GetComponent<Collider>());
+			playerHolding = other.gameObject;
+
+			playerHit = other.gameObject;
+
+
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+		}
+
+		if(other.collider.tag == "Player" 
+			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
@@ -99,21 +114,28 @@ public class MovableBomb : MovableScript
 		DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, Color.white, timeTween);
 	}
 
-	public void Explode ()
+	public IEnumerator Explode ()
 	{
-		Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, explosionMask);
-
-		for(int i = 0; i < colliders.Length; i++)
+		if (!hold)
 		{
-			Rigidbody rb = colliders [i].GetComponent<Rigidbody> ();
-
-			if (rb != null)
-				rb.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, explosionRadius, explosionUpwardsMofifier, ForceMode.Impulse);
+			yield return StartCoroutine (GetToPlayerPosition ());
 		}
+
+		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
 		//playerHolding.GetComponent<PlayersGameplay> ().DeathParticles ();
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
 		InstantiateExplosionParticles (GlobalVariables.Instance.MovableExplosion, playerRenderer.material.color);
 		gameObject.SetActive (false);
+	}
+
+	IEnumerator GetToPlayerPosition ()
+	{
+		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 3)
+		{
+			transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
+
+			yield return null;
+		}
 	}
 }

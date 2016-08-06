@@ -48,11 +48,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	{
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
 
 		FindGameObjects ();
+
+		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 	}
 
 	public void LoadSceneVoid (string sceneToLoad)
@@ -189,7 +190,26 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	void FindGameObjects ()
 	{
-		for(int i = 0; i < rootGameObjects.Length; i++)
+		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+
+		for(int i = 0; i < players.Length; i++)
+		{
+			if (players [i].name == "Player 1")
+				player1 = players [i];
+
+			if (players [i].name == "Player 2")
+				player2 = players [i];
+
+			if (players [i].name == "Player 3")
+				player3 = players [i];
+
+			if (players [i].name == "Player 4")
+				player4 = players [i];
+		}
+
+		reflection = GameObject.FindGameObjectWithTag ("Reflection");
+
+		/*for(int i = 0; i < rootGameObjects.Length; i++)
 		{
 			if (rootGameObjects [i].name == "Player 1")
 				player1 = rootGameObjects [i];
@@ -205,7 +225,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 			if (rootGameObjects [i].name == "Reflection")
 				reflection = rootGameObjects [i];
-		}
+		}*/
 
 		UpdateGlobalVariables ();
 
