@@ -8,7 +8,7 @@ public class MovableScript : MonoBehaviour
 	[Header ("Informations")]
 	public float higherVelocity;
 	public float currentVelocity;
-	public float limitVelocity = 170f;
+	public float limitVelocity = 80f;
 
 	[Header ("Cube States")]
 	public bool hold;

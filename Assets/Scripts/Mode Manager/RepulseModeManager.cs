@@ -13,7 +13,7 @@ public class RepulseModeManager : MonoBehaviour
 	[Header ("Zones")]
 	public RepulseZones[] zones = new RepulseZones[6];
 	public Text[] zonesScore = new Text[6];
-	public List<ZoneAndIntType> mostMovablesZones = new List<ZoneAndIntType> ();
+	public List<ZoneAndIntType> leastMovablesZones = new List<ZoneAndIntType> ();
 
 	[Header ("Debug")]
 	public int[] numberDebug = new int[4];
@@ -28,14 +28,13 @@ public class RepulseModeManager : MonoBehaviour
 	{
 		SetupArrayList ();
 
-		StartCoroutine (FindPlayersPosition ());
+		SetupPlayersAndZones ();
 
 		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", 0.1f);
 
 		SetMovablesColor ();
 
 		timer = timerDuration;
-
 		StartCoroutine (StartTimer ());
 	}
 
@@ -47,11 +46,11 @@ public class RepulseModeManager : MonoBehaviour
 
 			SortLists ();
 
-			for(int i = 0; i < mostMovablesZones.Count; i++)
+			for(int i = 0; i < leastMovablesZones.Count; i++)
 			{
-				numberDebug [i] = mostMovablesZones [i].movableInZone;
-				zonesDebug [i] = mostMovablesZones [i].zone;
-				playersDebug [i] = mostMovablesZones [i].zonesPlayer;
+				numberDebug [i] = leastMovablesZones [i].movableInZone;
+				zonesDebug [i] = leastMovablesZones [i].zone;
+				playersDebug [i] = leastMovablesZones [i].zonesPlayer;
 			}
 
 			for(int i = 0; i < zonesScore.Length; i++)
@@ -106,42 +105,39 @@ public class RepulseModeManager : MonoBehaviour
 		GlobalVariables.Instance.GameOver = true;
 		GlobalVariables.Instance.GamePaused = true;
 
-		Debug.Log ("The winner is " + mostMovablesZones [0].zonesPlayer.name + " with " + mostMovablesZones [0].movableInZone + " points");
+		Debug.Log ("The winner is " + leastMovablesZones [0].zonesPlayer.name + " with " + leastMovablesZones [0].movableInZone + " points");
 	}
 
 
 	void SetupArrayList ()
 	{
-		GameObject[] playersTemp = GameObject.FindGameObjectsWithTag ("Player");
 		players.Clear ();
 
-		for(int i = 0; i < playersTemp.Length; i++)
-		{
-			if (playersTemp [i].GetComponent<PlayersGameplay> ().controllerNumber != -1)
-				players.Add (playersTemp [i]);
-		}
+		players = GlobalVariables.Instance.EnabledPlayersList;
 
 		for (int i = 0; i < players.Count; i++)
-			mostMovablesZones.Add (new ZoneAndIntType ());
+		{
+			leastMovablesZones.Add (new ZoneAndIntType ());
+		}
 
-		for (int i = 0; i < mostMovablesZones.Count; i++)
-			mostMovablesZones [i].zone = RepulseTriggerZones.None;
+		for (int i = 0; i < leastMovablesZones.Count; i++)
+		{
+			leastMovablesZones [i].zone = RepulseTriggerZones.None;
+		}
 
 		numberDebug = new int[players.Count];
 		zonesDebug = new RepulseTriggerZones[players.Count];
 		playersDebug = new GameObject[players.Count];
 	}
 
-	IEnumerator FindPlayersPosition ()
+	void SetupPlayersAndZones ()
 	{
 		for (int i = 0; i < zones.Length; i++)
 		{
 			zones [i].gameObject.SetActive (false);
 			zonesScore [i].gameObject.SetActive (false);
 		}
-
-		yield return new WaitUntil (() => GlobalVariables.Instance.NumberOfPlayers != 0);
-
+			
 		if (GlobalVariables.Instance.NumberOfPlayers == 2)
 		{
 			int randomInt = Random.Range(0, 1 + 1);
@@ -196,69 +192,33 @@ public class RepulseModeManager : MonoBehaviour
 		{
 		case 0:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone1;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		case 1:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone2;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		case 2:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone1;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		case 3:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone2;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		case 4:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone3;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone3;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		case 5:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone4;
-			for(int i = 0; i < mostMovablesZones.Count; i++)
-			{
-				if(mostMovablesZones [i].zone == RepulseTriggerZones.None)
-				{
-					mostMovablesZones [i].zone = RepulseTriggerZones.Zone1;
-					mostMovablesZones [i].zonesPlayer = player;
-				}
-			}
+			leastMovablesZones [number].zone = RepulseTriggerZones.Zone4;
+			leastMovablesZones [number].zonesPlayer = player;
 			break;
 		}
 	}
@@ -334,27 +294,27 @@ public class RepulseModeManager : MonoBehaviour
 
 	void GetMovablesNumbers ()
 	{
-		for(int i = 0; i < mostMovablesZones.Count; i++)
+		for(int i = 0; i < leastMovablesZones.Count; i++)
 		{
-			switch(mostMovablesZones[i].zone)
+			switch(leastMovablesZones[i].zone)
 			{
 			case RepulseTriggerZones.Zone1:
 				if(players.Count == 2)
-					mostMovablesZones [i].movableInZone = zones [0].movablesNumber;
+					leastMovablesZones [i].movableInZone = zones [0].movablesNumber;
 				else
-					mostMovablesZones [i].movableInZone = zones [2].movablesNumber;
+					leastMovablesZones [i].movableInZone = zones [2].movablesNumber;
 				break;
 			case RepulseTriggerZones.Zone2:
 				if(players.Count == 2)
-					mostMovablesZones [i].movableInZone = zones [1].movablesNumber;
+					leastMovablesZones [i].movableInZone = zones [1].movablesNumber;
 				else
-					mostMovablesZones [i].movableInZone = zones [3].movablesNumber;
+					leastMovablesZones [i].movableInZone = zones [3].movablesNumber;
 				break;
 			case RepulseTriggerZones.Zone3:
-				mostMovablesZones [i].movableInZone = zones [4].movablesNumber;
+				leastMovablesZones [i].movableInZone = zones [4].movablesNumber;
 				break;
 			case RepulseTriggerZones.Zone4:
-				mostMovablesZones [i].movableInZone = zones [5].movablesNumber;
+				leastMovablesZones [i].movableInZone = zones [5].movablesNumber;
 				break;
 			}
 		}
@@ -362,9 +322,9 @@ public class RepulseModeManager : MonoBehaviour
 
 	void SortLists ()
 	{
-		mostMovablesZones.Sort(delegate(ZoneAndIntType x, ZoneAndIntType y) 
+		leastMovablesZones.Sort(delegate(ZoneAndIntType x, ZoneAndIntType y) 
 		{
-				return -1*(x.movableInZone).CompareTo(y.movableInZone);
+				return 1*(x.movableInZone).CompareTo(y.movableInZone);
 		});
 	}
 }

@@ -47,7 +47,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
-	public string firstSceneToLoad = "Repulse";
+	public string firstSceneToLoad = "Wrap";
 	public string CurrentModeLoaded = "";
 
 	void Start ()
@@ -60,14 +60,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 	}
-
-	public IEnumerator ListPlayers ()
+		
+	public void SetPlayersControllerNumbers ()
 	{
-		while(ControllerNumberPlayer1 == -1)
-		{
-			yield return null;
-		}
+		Player1.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer1;
+		Player2.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer2;
+		Player3.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer3;
+		Player4.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer4;
+	}
 
+	public void ListPlayers ()
+	{
 		EnabledPlayersList.Clear ();
 
 		if (ControllerNumberPlayer1 != -1 && !EnabledPlayersList.Contains (Player1))

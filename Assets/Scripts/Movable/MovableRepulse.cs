@@ -23,27 +23,6 @@ public class MovableRepulse : MovableScript
 		base.Start ();
 
 		movableMaterial = GetComponent<Renderer> ().material;
-
-		GameObject[] repulseZones = GameObject.FindGameObjectsWithTag ("RepulseZones");
-
-		for(int i = 0; i < repulseZones.Length; i++)
-		{
-			switch(repulseZones[i].GetComponent<RepulseZones>().zone)
-			{
-			case RepulseTriggerZones.Zone1:
-				zonesColors[0] = repulseZones [i].GetComponent<RepulseZones> ().zoneColor;
-				break;
-			case RepulseTriggerZones.Zone2:
-				zonesColors[1] = repulseZones [i].GetComponent<RepulseZones> ().zoneColor;
-				break;
-			case RepulseTriggerZones.Zone3:
-				zonesColors[2] = repulseZones [i].GetComponent<RepulseZones> ().zoneColor;
-				break;
-			case RepulseTriggerZones.Zone4:
-				zonesColors[3] = repulseZones [i].GetComponent<RepulseZones> ().zoneColor;
-				break;
-			}
-		}
 	}
 
 	protected override void Update () 

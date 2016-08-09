@@ -27,19 +27,13 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	}
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		ReInput.ControllerConnectedEvent += OnGamepadConnectedOrDisconneted;
 		ReInput.ControllerDisconnectedEvent += OnGamepadConnectedOrDisconneted;
 
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
-	}
-
-	// Update is called once per frame
-	void Update () 
-	{
-
 	}
 
 	void OnGamepadConnectedOrDisconneted (ControllerStatusChangedEventArgs args)
@@ -116,6 +110,8 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void SetupPlayersAndControllers ()
 	{
+		GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
+
 		for(int i = 0; i < 4; i++)
 		{
 			if (gamepadsPluggedAtStart[i])
@@ -123,9 +119,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 				SetControllerNumber (i);
 			}
 		}
-			
-		GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().controllerNumber = 0;
 	}
 
 	void SetControllerNumber (int whichNumber)
@@ -134,15 +127,12 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		{
 		case 0:
 			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().controllerNumber = 1;
 			break;
 		case 1:
 			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().controllerNumber = 2;
 			break;
 		case 2:
 			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().controllerNumber = 3;
 			break;
 		case 3:
 			break;
