@@ -139,5 +139,5 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			}
 		}
 	}
-
+		
 }
