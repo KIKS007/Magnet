@@ -2,13 +2,19 @@
 using System.Collections;
 using UnityEngine.UI;
 using DG.Tweening;
+using Rewired;
 
 public class FeedbackInputs : MonoBehaviour 
 {
-	public KeyCode keycode;
+	public enum WhichButton {GamepadButton, KeyboardOrMouseButton, LeftJoystick, RightJoystick, Mouse};
 
-	public string axisX;
-	public string axisY;
+	public WhichButton whichbutton;
+
+	public string whichAction;
+
+	public float movementMultiplicator;
+
+	public KeyCode keycode;
 
 	public float originScale;
 	public float modifiedScale;
@@ -17,16 +23,33 @@ public class FeedbackInputs : MonoBehaviour
 
 	public bool keyPressed;
 
+	public Player mouseKeyboard;
+	public Player gamepad1;
+
+	private RectTransform rect;
+	private Vector2 initialPos;
+	private Vector2 mouseInitialPos;
+
 	// Use this for initialization
 	void Start () 
 	{
-		DOTween.Init ();
+		ReInput.ControllerConnectedEvent += GetPlayersEvent;
+
+		GetPlayers ();
+
+		rect = GetComponent<RectTransform> ();
+		initialPos = rect.anchoredPosition;
+	}
+
+	void OnEnable ()
+	{
+		mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(keycode != KeyCode.None)
+		if(whichbutton == WhichButton.KeyboardOrMouseButton)
 		{
 			if(Input.GetKey(keycode) || Input.GetKeyDown(keycode))
 			{
@@ -36,40 +59,103 @@ public class FeedbackInputs : MonoBehaviour
 			
 			if(Input.GetKeyUp(keycode))
 			{
-				Feedback2 ();
+				ResetFeedback ();
 				keyPressed = false;
 			}
 		}
 
-		if(axisX != "" && axisY != "")
+		if(whichbutton == WhichButton.GamepadButton)
 		{
-			if(Input.GetAxisRaw(axisX) != 0 || Input.GetAxisRaw(axisY) != 0)
+			if(gamepad1.GetButtonDown(whichAction))
 			{
 				Feedback ();
 				keyPressed = true;
 			}
-			
-			if(Input.GetAxisRaw(axisX) == 0 && Input.GetAxisRaw(axisY) == 0)
+
+			if(gamepad1.GetButtonUp(whichAction))
 			{
-				Feedback2 ();
+				ResetFeedback ();
 				keyPressed = false;
 			}
 		}
-	
-		if(axisX != "")
+
+		if(whichbutton == WhichButton.LeftJoystick)
 		{
-			if(Input.GetAxisRaw(axisX) != 0)
+			Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
+
+			if(joystickMovement.magnitude != 0 && !keyPressed)
 			{
 				Feedback ();
 				keyPressed = true;
 			}
-			
-			if(Input.GetAxisRaw(axisX) == 0)
+
+			if(joystickMovement.magnitude == 0 && keyPressed)
 			{
-				Feedback2 ();
+				ResetFeedback ();
 				keyPressed = false;
 			}
+
+
+			rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
 		}
+
+		if(whichbutton == WhichButton.RightJoystick)
+		{
+			Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
+
+			if(joystickMovement.magnitude != 0 && !keyPressed)
+			{
+				Feedback ();
+				keyPressed = true;
+			}
+
+			if(joystickMovement.magnitude == 0 && keyPressed)
+			{
+				ResetFeedback ();
+				keyPressed = false;
+			}
+
+
+			rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+		}
+
+		if(whichbutton == WhichButton.Mouse)
+		{
+			Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+
+			mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
+			mouseMovement.Normalize ();
+
+			if(mouseMovement.magnitude != 0 && !keyPressed)
+			{
+				Feedback ();
+				keyPressed = true;
+			}
+
+			if(mouseMovement.magnitude == 0 && keyPressed)
+			{
+				ResetFeedback ();
+				keyPressed = false;
+			}
+
+			rect.anchoredPosition = initialPos + mouseMovement * movementMultiplicator;
+		}
+	}
+
+	void GetPlayersEvent (ControllerStatusChangedEventArgs arg)
+	{
+		mouseKeyboard = ReInput.players.GetPlayer (0);
+		gamepad1 = ReInput.players.GetPlayer (1);
+
+		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
+	}
+
+	void GetPlayers ()
+	{
+		mouseKeyboard = ReInput.players.GetPlayer (0);
+		gamepad1 = ReInput.players.GetPlayer (1);
+
+		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
 	}
 
 	void Feedback ()
@@ -83,7 +169,7 @@ public class FeedbackInputs : MonoBehaviour
 			transform.gameObject.GetComponent<Image> ().color = modifiedColor;
 	}
 
-	void Feedback2 ()
+	void ResetFeedback ()
 	{
 		transform.DOScale (originScale, 0.2f);
 

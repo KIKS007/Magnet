@@ -21,8 +21,6 @@ GameObject:
   - 114: {fileID: 11412352}
   - 114: {fileID: 11489938}
   - 114: {fileID: 11476588}
-  - 114: {fileID: 11452296}
-  - 114: {fileID: 11477964}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -65,7 +63,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 30, z: 0}
+  m_LocalPosition: {x: -48, y: 93, z: 16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 446072}
@@ -137,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d31040895a45b44a9aeb14ed59cc271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabled: 1
+  dynamicEnabled: 1
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
   cameraYMin: 15
@@ -168,17 +166,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  intensity: 0
-  chromaticAberration: 0
+  intensity: 0.375
+  chromaticAberration: 0.2
   axialAberration: 0.5
   blur: 0
-  blurSpread: 4
+  blurSpread: 0.75
   luminanceDependency: 0.25
   blurDistance: 2.5
-  vignetteShader: {fileID: 4800000, guid: 627943dc7a9a74286b70a4f694a0acd5, type: 3}
-  separableBlurShader: {fileID: 4800000, guid: e97c14fbb5ea04c3a902cc533d7fc5d1, type: 3}
-  chromAberrationShader: {fileID: 4800000, guid: 2b4f29398d9484ccfa9fd220449f5eee,
-    type: 3}
+  vignetteShader: {fileID: 0}
+  separableBlurShader: {fileID: 0}
+  chromAberrationShader: {fileID: 0}
 --- !u!114 &11424106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -208,20 +205,6 @@ MonoBehaviour:
   slowMotion: 0
   timeScaleDebug: 1
   slowMoNumber: 0
---- !u!114 &11452296
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 40306178, guid: aa0b1eebb5db27a419fa4564bbe5c9c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  preset: 0
-  onEnableBehaviour: 0
-  onDisableBehaviour: 0
 --- !u!114 &11463970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -274,7 +257,7 @@ MonoBehaviour:
   hdr: 0
   sepBlurSpread: 2.5
   quality: 1
-  bloomIntensity: 0
+  bloomIntensity: 0.5
   bloomThreshold: 0.5
   bloomThresholdColor: {r: 1, g: 1, b: 1, a: 1}
   bloomBlurIterations: 2
@@ -289,13 +272,11 @@ MonoBehaviour:
   flareColorB: {r: 0.4, g: 0.8, b: 0.8, a: 0.75}
   flareColorC: {r: 0.8, g: 0.4, b: 0.8, a: 0.75}
   flareColorD: {r: 0.8, g: 0.4, b: 0, a: 0.75}
-  lensFlareVignetteMask: {fileID: 2800000, guid: 95ef4804fe0be4c999ddaa383536cde8,
-    type: 3}
-  lensFlareShader: {fileID: 4800000, guid: 459fe69d2f6d74ddb92f04dbf45a866b, type: 3}
-  screenBlendShader: {fileID: 4800000, guid: 7856cbff0a0ca45c787d5431eb805bb0, type: 3}
-  blurAndFlaresShader: {fileID: 4800000, guid: be6e39cf196f146d5be72fbefb18ed75, type: 3}
-  brightPassFilterShader: {fileID: 4800000, guid: 0aeaa4cb29f5d4e9c8455f04c8575c8c,
-    type: 3}
+  lensFlareVignetteMask: {fileID: 0}
+  lensFlareShader: {fileID: 0}
+  screenBlendShader: {fileID: 0}
+  blurAndFlaresShader: {fileID: 0}
+  brightPassFilterShader: {fileID: 0}
 --- !u!114 &11476588
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -307,211 +288,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a49b0101d7b9342458d78a981d006ac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &11477964
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -333801856, guid: aa0b1eebb5db27a419fa4564bbe5c9c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hasOnStart: 0
-  hasOnPlay: 0
-  hasOnUpdate: 0
-  hasOnStepComplete: 0
-  hasOnComplete: 1
-  onStart:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  onPlay:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  onUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  onStepComplete:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  onComplete:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11463970}
-        m_MethodName: FollowOFF
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  delay: 0
-  duration: 1.2
-  easeType: 10
-  easeCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  loops: 1
-  loopType: 1
-  orientType: 0
-  lookAtTransform: {fileID: 0}
-  lookAtPosition: {x: 0, y: 0, z: 0}
-  lookAhead: 0.01
-  autoPlay: 0
-  autoKill: 0
-  relative: 0
-  isLocal: 0
-  isClosedPath: 0
-  pathResolution: 20
-  pathMode: 1
-  lockRotation: 0
-  assignForwardAndUp: 0
-  forwardDirection: {x: 0, y: 0, z: 1}
-  upDirection: {x: 0, y: 1, z: 0}
-  wps:
-  - {x: -30.752743, y: 74.91739, z: 11.478378}
-  - {x: -14.18657, y: 50.346577, z: 5.549141}
-  - {x: 0, y: 30, z: 0}
-  fullWps: []
-  path:
-    type: 1
-    subdivisionsXSegment: 10
-    subdivisions: 40
-    wps:
-    - {x: 0, y: 30, z: 0}
-    - {x: -30.752743, y: 74.91739, z: 11.478378}
-    - {x: -14.18657, y: 50.346577, z: 5.549141}
-    - {x: 0, y: 30, z: 0}
-    controlPoints:
-    - a: {x: -30.752743, y: 74.91739, z: 11.478378}
-      b: {x: 0, y: 0, z: 0}
-    - a: {x: 14.18657, y: 9.653423, z: -5.549141}
-      b: {x: 0, y: 0, z: 0}
-    length: 112.11524
-    wpLengths:
-    - 0
-    - 55.633297
-    - 31.089233
-    - 25.417635
-    isFinalized: 1
-    timesTable:
-    - 0.025
-    - 0.05
-    - 0.075
-    - 0.1
-    - 0.125
-    - 0.15
-    - 0.175
-    - 0.2
-    - 0.22500001
-    - 0.25
-    - 0.275
-    - 0.3
-    - 0.32500002
-    - 0.35
-    - 0.375
-    - 0.4
-    - 0.425
-    - 0.45000002
-    - 0.475
-    - 0.5
-    - 0.52500004
-    - 0.55
-    - 0.575
-    - 0.6
-    - 0.625
-    - 0.65000004
-    - 0.675
-    - 0.7
-    - 0.725
-    - 0.75
-    - 0.77500004
-    - 0.8
-    - 0.825
-    - 0.85
-    - 0.875
-    - 0.90000004
-    - 0.925
-    - 0.95
-    - 0.975
-    - 1
-    lengthsTable:
-    - 0.8257533
-    - 3.136696
-    - 6.683346
-    - 11.216231
-    - 16.485867
-    - 22.242775
-    - 28.237476
-    - 34.22051
-    - 39.942375
-    - 45.1536
-    - 49.604713
-    - 53.04623
-    - 55.228706
-    - 56.05382
-    - 56.1784
-    - 57.10292
-    - 58.71423
-    - 60.897663
-    - 63.53848
-    - 66.52196
-    - 69.73335
-    - 73.057915
-    - 76.38091
-    - 79.58761
-    - 82.56325
-    - 85.193115
-    - 87.39005
-    - 89.43363
-    - 91.43131
-    - 93.38918
-    - 95.31334
-    - 97.209854
-    - 99.08481
-    - 100.94428
-    - 102.79432
-    - 104.641
-    - 106.490364
-    - 108.34848
-    - 110.22142
-    - 112.11524
-  pathType: 1
-  handlesType: 0
-  livePreview: 1
-  handlesDrawMode: 0
-  perspectiveHandleSize: 0.5
-  showIndexes: 1
-  pathColor: {r: 1, g: 0, b: 0, a: 0.5}
-  lastSrcPosition: {x: 0, y: 30, z: 0}
-  wpsDropdown: 1
 --- !u!114 &11489938
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -528,7 +304,7 @@ MonoBehaviour:
   blurSize: 1
   blurIterations: 1
   blurType: 0
-  fastBloomShader: {fileID: 4800000, guid: 68a00c837b82e4c6d92e7da765dc5f1d, type: 3}
+  fastBloomShader: {fileID: 0}
 --- !u!124 &12492916
 Behaviour:
   m_ObjectHideFlags: 1

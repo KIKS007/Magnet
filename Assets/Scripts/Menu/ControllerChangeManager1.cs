@@ -8,6 +8,8 @@ using Rewired;
 
 public class ControllerChangeManager1 : MonoBehaviour 
 {
+	public event EventHandler OnControllerChange;
+
 	public GameObject[] gamepadsLines = new GameObject[4];
 
 	public RectTransform[] sliderRect = new RectTransform[5];
@@ -45,6 +47,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 		ReInput.ControllerConnectedEvent += GetPlayersEvent;
 		ReInput.ControllerConnectedEvent += GamepadDisplay;
 		ReInput.ControllerPreDisconnectEvent += GamepadDisplay;
+
+		OnControllerChange += UpdateGlobalVariables;
+		OnControllerChange += UpdatePlayersControllers;
 
 		GetPlayersAndControllers ();
 
@@ -517,6 +522,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 		case -1 :
 			break;
 		}
+
+		if (OnControllerChange != null)
+			OnControllerChange ();
 	}
 
 	void GoOnTheLeft (int controllerNumber)
@@ -546,6 +554,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 		case -1 :
 			break;
 		}
+
+		if (OnControllerChange != null)
+			OnControllerChange ();
 	}
 
 	IEnumerator GapBetweenInputs (int controllerNumber)
