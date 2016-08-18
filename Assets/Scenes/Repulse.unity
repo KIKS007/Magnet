@@ -3530,11 +3530,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 443826, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 422742, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 193726, guid: 369798461d01657418dfb113e1923fa8, type: 2}
       propertyPath: m_TagString

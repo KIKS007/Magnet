@@ -35,6 +35,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			allMovables [i].transform.position = newPos;
 
+			allMovables [i].SetActive (true);
+
+			allMovables [i].GetComponent<Renderer> ().enabled = true;
+
 			yield return null;
 		}
 	}

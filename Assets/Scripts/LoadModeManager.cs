@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
+	public event EventHandler OnLevelLoaded;
+
 	[Header ("Load Mode Manager")]
 	public GameObject[] rootGameObjects;
 
@@ -53,6 +55,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		FindGameObjects ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
 	}
 
 	public void LoadSceneVoid (string sceneToLoad)
@@ -98,6 +103,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
 	}
 
 	public void RestartSceneVoid ()
@@ -130,14 +138,17 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	
 		yield return myTween.WaitForCompletion ();
 
-		myTween = mainCamera.DOMove (new Vector3(0, 30, 0), menuScript.cameraMovementDuration).SetEase(movementEase);
+		/*myTween = mainCamera.DOMove (menuScript.playPosition, menuScript.cameraMovementDuration).SetEase(movementEase);
 
-		yield return myTween.WaitForCompletion ();
+		yield return myTween.WaitForCompletion ();*/
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
 		GlobalVariables.Instance.GameOver = false;
 		GlobalVariables.Instance.GamePaused = false;
+
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
 	}
 
 	public void ReloadSceneVoid ()
@@ -172,6 +183,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		rootGameObjects = SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
 
 		FindGameObjects ();
+
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
 	}
 
 

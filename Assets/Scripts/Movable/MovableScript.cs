@@ -106,7 +106,7 @@ public class MovableScript : MonoBehaviour
 	{
 		if(other.collider.tag != "HoldMovable")
 		{
-			HitPlayer (other);			
+			HitPlayer (other);	
 		}			
 		
 
@@ -129,6 +129,9 @@ public class MovableScript : MonoBehaviour
 			&& gameObject.tag == "ThrownMovable" 
 			&& playerThatThrew == null)
 		{
+			Debug.Log ("Collision 1");
+
+
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 
 			playerHit = other.gameObject;
@@ -137,11 +140,14 @@ public class MovableScript : MonoBehaviour
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 		}
 
-		if(other.collider.tag == "Player" 
+		else if(other.collider.tag == "Player" 
 			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
+			Debug.Log ("Collision 2");
+
+
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 
 			playerHit = other.gameObject;

@@ -1456,11 +1456,11 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		gameOverCanvas.SetActive (true);
 
-		gameOverButton.anchoredPosition = new Vector2 (gameOverButton.anchoredPosition.x, 700);
+		gameOverButton.anchoredPosition = new Vector2 (gameOverButton.anchoredPosition.x, 800);
 		gameOverButton.DOAnchorPos (new Vector2(gameOverButton.anchoredPosition.x, topYpositionButton), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
-		restartButton.anchoredPosition = new Vector2 (restartButton.anchoredPosition.x, -700);
-		menuButton.anchoredPosition = new Vector2 (menuButton.anchoredPosition.x, -700);
+		restartButton.anchoredPosition = new Vector2 (restartButton.anchoredPosition.x, playButtonMinY);
+		menuButton.anchoredPosition = new Vector2 (menuButton.anchoredPosition.x, playButtonMinY);
 		restartButton.DOAnchorPos (new Vector2(restartButton.anchoredPosition.x, bottomYPosition), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		menuButton.DOAnchorPos (new Vector2(menuButton.anchoredPosition.x, bottomYPosition), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
@@ -1519,10 +1519,10 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		gameOverContent.DOAnchorPos (new Vector2(-offScreenX, gameOverContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 
-		menuButton.DOAnchorPos (new Vector2(menuButton.anchoredPosition.x, -700), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		restartButton.DOAnchorPos (new Vector2(restartButton.anchoredPosition.x, -700), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		menuButton.DOAnchorPos (new Vector2(menuButton.anchoredPosition.x, playButtonMinY), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		restartButton.DOAnchorPos (new Vector2(restartButton.anchoredPosition.x, playButtonMinY), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
-		Tween myTween = gameOverButton.DOAnchorPos (new Vector2(gameOverButton.anchoredPosition.x, 700), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		Tween myTween = gameOverButton.DOAnchorPos (new Vector2(gameOverButton.anchoredPosition.x, 800), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		yield return myTween.WaitForCompletion ();
 
 		gameOverCanvas.SetActive (false);

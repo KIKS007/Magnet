@@ -46,7 +46,12 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		ReInput.ControllerConnectedEvent += GetPlayersEvent;
 		ReInput.ControllerConnectedEvent += GamepadDisplay;
+
 		ReInput.ControllerPreDisconnectEvent += GamepadDisplay;
+		ReInput.ControllerPreDisconnectEvent += ResetGamepadOnDisconnect;
+
+		ReInput.ControllerPreDisconnectEvent += UpdateGlobalVariables;
+		ReInput.ControllerPreDisconnectEvent += UpdatePlayersControllers;
 
 		OnControllerChange += UpdateGlobalVariables;
 		OnControllerChange += UpdatePlayersControllers;
@@ -81,6 +86,33 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
 		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
 		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
+	}
+
+	void ResetGamepadOnDisconnect (ControllerStatusChangedEventArgs arg)
+	{
+		switch (arg.name)
+		{
+		case "XInput Gamepad 1":
+			sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+			imagesNumber [1] = 0;
+			EraseControllerNumbers (1);
+			break;
+		case "XInput Gamepad 2":
+			sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+			imagesNumber [2] = 0;
+			EraseControllerNumbers (2);
+			break;
+		case "XInput Gamepad 3":
+			sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+			imagesNumber [3] = 0;
+			EraseControllerNumbers (3);
+			break;
+		case "XInput Gamepad 4":
+			sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+			imagesNumber [4] = 0;
+			EraseControllerNumbers (4);
+			break;
+		}
 	}
 
 	void GetPlayers ()
@@ -449,12 +481,157 @@ public class ControllerChangeManager1 : MonoBehaviour
 			GlobalVariables.Instance.NumberOfDisabledPlayers++;
 		}
 
+		GlobalVariables.Instance.ListPlayers ();
 
 		/*Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer1);
 		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer2);
 		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer3);
 		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer4);*/
 	}
+
+	public void UpdateGlobalVariables (ControllerStatusChangedEventArgs arg)
+	{
+		EraseControllerNumbers (0);
+		EraseControllerNumbers (1);
+		EraseControllerNumbers (2);
+		EraseControllerNumbers (3);
+		EraseControllerNumbers (4);
+
+		switch (imagesNumber[0])
+		{
+		case 1:
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
+			break;
+		case 2:
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 0;
+			break;
+		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 0;
+			break;
+		case 4:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 0;
+			break;
+		}
+
+		switch (imagesNumber[1])
+		{
+		case 1:
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
+			break;
+		case 2:
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+			break;
+		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 1;
+			break;
+		case 4:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 1;
+			break;
+		}
+
+		switch (imagesNumber[2])
+		{
+		case 1:
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 2;
+			break;
+		case 2:
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 2;
+			break;
+		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
+			break;
+		case 4:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 2;
+			break;
+		}
+
+		switch (imagesNumber[3])
+		{
+		case 1:
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 3;
+			break;
+		case 2:
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 3;
+			break;
+		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 3;
+			break;
+		case 4:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
+			break;
+		}
+
+		switch (imagesNumber[4])
+		{
+		case 1:
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 4;
+			break;
+		case 2:
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 4;
+			break;
+		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 4;
+			break;
+		case 4:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 4;
+			break;
+		}
+
+
+		GlobalVariables.Instance.NumberOfPlayers = 0;
+		GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+		{
+			GlobalVariables.Instance.NumberOfPlayers++;
+		}
+		else
+		{
+			GlobalVariables.Instance.NumberOfDisabledPlayers++;
+
+		}
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+		{
+			GlobalVariables.Instance.NumberOfPlayers++;
+
+		}
+		else
+		{
+			GlobalVariables.Instance.NumberOfDisabledPlayers++;
+
+		}
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+		{
+			GlobalVariables.Instance.NumberOfPlayers++;
+
+		}
+		else
+		{
+			GlobalVariables.Instance.NumberOfDisabledPlayers++;
+
+		}
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+		{
+			GlobalVariables.Instance.NumberOfPlayers++;
+
+		}
+		else
+		{
+			GlobalVariables.Instance.NumberOfDisabledPlayers++;
+		}
+
+		GlobalVariables.Instance.ListPlayers ();
+
+		/*Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer1);
+		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer2);
+		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer3);
+		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer4);*/
+	}
+
+
 
 	void EraseControllerNumbers (int whichController)
 	{
@@ -495,6 +672,32 @@ public class ControllerChangeManager1 : MonoBehaviour
 		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
 		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
 	}
+
+	public void UpdatePlayersControllers (ControllerStatusChangedEventArgs arg)
+	{
+		if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+			GlobalVariables.Instance.Player1.SetActive (true);
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+			GlobalVariables.Instance.Player2.SetActive (true);
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+			GlobalVariables.Instance.Player3.SetActive (true);
+
+		if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+			GlobalVariables.Instance.Player4.SetActive (true);
+
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
+
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+	}
+
 
 	void GoOnTheRight (int controllerNumber)
 	{

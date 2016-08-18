@@ -1798,7 +1798,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 664, y: -400}
+  m_AnchoredPosition: {x: 795, y: -550}
   m_SizeDelta: {x: 444.96, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &20075423
@@ -12399,7 +12399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 4
-    m_SelectOnUp: {fileID: 330046701}
+    m_SelectOnUp: {fileID: 517032231}
     m_SelectOnDown: {fileID: 718454791}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -14045,7 +14045,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 4
-    m_SelectOnUp: {fileID: 2036459409}
+    m_SelectOnUp: {fileID: 1417574612}
     m_SelectOnDown: {fileID: 243519529}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -19079,7 +19079,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 974684324}
-    m_SelectOnDown: {fileID: 2036459409}
+    m_SelectOnDown: {fileID: 318403748}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -23386,7 +23386,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: playPosition.y
-      value: 50
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: cameraEaseMovement
@@ -23407,6 +23407,10 @@ Prefab:
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: modesDescriptionXPos
       value: 693
+      objectReference: {fileID: 0}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: bottomYPosition
+      value: -550
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
@@ -33697,7 +33701,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 167, y: -400}
+  m_AnchoredPosition: {x: 298, y: -550}
   m_SizeDelta: {x: 444.96, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1038341865
@@ -40942,7 +40946,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 422, y: 404}
+  m_AnchoredPosition: {x: 553, y: 540}
   m_SizeDelta: {x: 772, y: 214}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1282682054
@@ -44294,7 +44298,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 351194132}
-    m_SelectOnDown: {fileID: 2036459409}
+    m_SelectOnDown: {fileID: 330046701}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -50054,7 +50058,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -650, y: 540}
+  m_AnchoredPosition: {x: -650, y: -600}
   m_SizeDelta: {x: 389, y: 97.027}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1609484324
@@ -61547,54 +61551,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: m_Enabled
+    - target: {fileID: 106368, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 11412352, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11489938, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: lensFlareVignetteMask
-      value: 
-      objectReference: {fileID: 2800000, guid: 95ef4804fe0be4c999ddaa383536cde8, type: 3}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: lensFlareShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 459fe69d2f6d74ddb92f04dbf45a866b, type: 3}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: screenBlendShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 7856cbff0a0ca45c787d5431eb805bb0, type: 3}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: blurAndFlaresShader
-      value: 
-      objectReference: {fileID: 4800000, guid: be6e39cf196f146d5be72fbefb18ed75, type: 3}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: brightPassFilterShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 0aeaa4cb29f5d4e9c8455f04c8575c8c, type: 3}
-    - target: {fileID: 11489938, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: fastBloomShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 68a00c837b82e4c6d92e7da765dc5f1d, type: 3}
-    - target: {fileID: 11412352, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: vignetteShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 627943dc7a9a74286b70a4f694a0acd5, type: 3}
-    - target: {fileID: 11412352, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: separableBlurShader
-      value: 
-      objectReference: {fileID: 4800000, guid: e97c14fbb5ea04c3a902cc533d7fc5d1, type: 3}
-    - target: {fileID: 11412352, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: chromAberrationShader
-      value: 
-      objectReference: {fileID: 4800000, guid: 2b4f29398d9484ccfa9fd220449f5eee, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
   m_IsPrefabParent: 0

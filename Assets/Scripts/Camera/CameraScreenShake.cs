@@ -9,38 +9,50 @@ public class CameraScreenShake : MonoBehaviour
 	public int shakeVibrato = 100;
 	public float shakeRandomness = 45;
 
-	public bool shaking;
+	public bool shake;
 
+	private bool shaking;
 	private Vector3 initialRotation;
 
 	// Use this for initialization
 	void Start () 
 	{
-		//initialRotation = new Vector3 (90, 0, 0);
-		initialRotation = transform.rotation.eulerAngles;
+		initialRotation = new Vector3 (90, 0, 0);
+		//initialRotation = transform.rotation.eulerAngles;
+
+		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
 	}
-	
+
 	// Update is called once per frame
 	void Update () 
 	{
-		if(shaking)
+		if(shake)
 		{
-			shaking = false;
+			shake = false;
 			CameraShaking();
 		}
 	}
 
 	public void CameraShaking ()
 	{
-		shaking = false;
+		shaking = true;
+		shake = false;
 		//print("Shaking");
-		transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).OnComplete (ResetCameraRotation);
+		transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).OnComplete (EndOfShake).SetId("ScreenShake");
+	}
+
+	void EndOfShake ()
+	{
+		if(!DOTween.IsTweening("ScreenShake"))
+		{
+			shaking = false;
+			ResetCameraRotation ();
+		}
 	}
 
 	void ResetCameraRotation ()
 	{
-		if(GlobalVariables.Instance.GamePaused == false)
-			transform.DORotate(initialRotation, 0.5f);
+		transform.DORotate(initialRotation, 0.5f);
 	}
 	
 }

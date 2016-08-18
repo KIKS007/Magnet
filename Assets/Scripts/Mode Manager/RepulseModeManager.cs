@@ -24,8 +24,28 @@ public class RepulseModeManager : MonoBehaviour
 	public Transform[] playersPos = new Transform[6];
 	public List<GameObject> players = new List<GameObject>();
 
+	private GameObject[] allMovables = new GameObject[0];
+
 	void Start ()
 	{
+		allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+
+		for (int i = 0; i < allMovables.Length; i++)
+			allMovables [i].GetComponent<Renderer> ().enabled = false;
+
+		for (int i = 0; i < zones.Length; i++)
+		{
+			zones [i].gameObject.SetActive (false);
+			zonesScore [i].gameObject.SetActive (false);
+		}
+
+		StartCoroutine (WaitForBeginning ());
+	}
+
+	IEnumerator WaitForBeginning ()
+	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameOver && GlobalVariables.Instance.GamePaused);
+
 		SetupArrayList ();
 
 		SetupPlayersAndZones ();
@@ -268,8 +288,6 @@ public class RepulseModeManager : MonoBehaviour
 
 	void SetMovablesColor ()
 	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
-
 		for(int i = 0; i < allMovables.Length; i++)
 		{
 			if(zones [0].gameObject.activeSelf == true)
