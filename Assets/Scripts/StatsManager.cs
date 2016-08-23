@@ -1,25 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
+
+public enum WhichPlayer {Player1, Player2, Player3, Player4, None};
+public enum WhichStat {Frags, Hits, Death, Dash, Shots};
 
 public class StatsManager : Singleton<StatsManager> 
 {
-	public int[] PlayersFrags = new int[5];
+	public List<PlayerStats> playerStatsList = new List<PlayerStats> ();
 
-	public int[] PlayersHits = new int[5];
+	[Header ("Total")]
+	public int totalFrags = 0;
+	public int totalHits = 0;
+	public int totalDeath = 0;
+	public int totalDash = 0;
+	public int totalShots = 0;
 
-	public int[] PlayersDeath = new int[5];
+	[Header ("Player With Most")]
+	public List<MostStats> mostStatsList = new List<MostStats> ();
 
-	public int[] PlayersDash = new int[5];
+	[Header ("Winner")]
+	public string winner;
 
-	public int[] PlayersShots = new int[5];
 
+	void Awake ()
+	{
+		for (int i = 0; i < 4; i++)
+			playerStatsList.Add (new PlayerStats ());
 
-	public string mostFrags;
-	public string mostHits;
-	public string mostDeath;
-	public string mostDash;
-	public string mostShots;
+		playerStatsList[0].whichPlayer = WhichPlayer.Player1;
+		playerStatsList[1].whichPlayer = WhichPlayer.Player2;
+		playerStatsList[2].whichPlayer = WhichPlayer.Player3;
+		playerStatsList[3].whichPlayer = WhichPlayer.Player4;
 
+		for (int i = 0; i < 5; i++)
+			mostStatsList.Add (new MostStats ());
+
+		mostStatsList [0].whichStat = WhichStat.Frags;
+		mostStatsList [0].whichPlayer = WhichPlayer.None;
+
+		mostStatsList [1].whichStat = WhichStat.Hits;
+		mostStatsList [1].whichPlayer = WhichPlayer.None;
+
+		mostStatsList [2].whichStat = WhichStat.Death;
+		mostStatsList [2].whichPlayer = WhichPlayer.None;
+
+		mostStatsList [3].whichStat = WhichStat.Dash;
+		mostStatsList [3].whichPlayer = WhichPlayer.None;
+
+		mostStatsList [4].whichStat = WhichStat.Shots;
+		mostStatsList [4].whichPlayer = WhichPlayer.None;
+	}
 
 	// Use this for initialization
 	void Start () 
@@ -35,125 +67,69 @@ public class StatsManager : Singleton<StatsManager>
 
 	public void GetPlayersEvents ()
 	{
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnDash += DashPlayer1;
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnDash += DashPlayer2;
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnDash += DashPlayer3;
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnDash += DashPlayer4;
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(0);
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(1);
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(2);
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(3);
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer1;
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer2;
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer3;
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnShoot += ShotPlayer4;
+		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(0);
+		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(1);
+		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(2);
+		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(3);
 	}
 
 	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)
 	{
-		PlayersFrags [4]++;
-		PlayersHits [4]++;
+		totalFrags++;
+		totalHits++;
 
 		switch (playerThatThrew.name)
 		{
 		case "Player 1":
-			PlayersFrags [0]++;
+			playerStatsList [0].frags++;
 			break;
 		case "Player 2":
-			PlayersFrags [1]++;
+			playerStatsList [1].frags++;
 			break;
 		case "Player 3":
-			PlayersFrags [2]++;
+			playerStatsList [2].frags++;
 			break;
 		case "Player 4":
-			PlayersFrags [3]++;
+			playerStatsList [3].frags++;
 			break;
 		}
 
 		switch (playerHit.name)
 		{
 		case "Player 1":
-			PlayersHits [0]++;
+			playerStatsList [0].hits++;
 			break;
 		case "Player 2":
-			PlayersHits [1]++;
+			playerStatsList [1].hits++;
 			break;
 		case "Player 3":
-			PlayersHits [2]++;
+			playerStatsList [2].hits++;
 			break;
 		case "Player 4":
-			PlayersHits [3]++;
+			playerStatsList [3].hits++;
 			break;
 		}
 
 		StatsUpdate ();
 	}
 
-	void DashPlayer1 ()
+	void DashPlayer (int whichPlayer)
 	{
-		PlayersDash [0]++;
-
-		PlayersDash [4]++;
+		totalDash++;
+		playerStatsList [whichPlayer].dash++;
 
 		StatsUpdate ();
 	}
 
-	void DashPlayer2 ()
+	void ShotPlayer (int whichPlayer)
 	{
-		PlayersDash [1]++;
-
-		PlayersDash [4]++;
-
-		StatsUpdate ();
-	}
-
-	void DashPlayer3 ()
-	{
-		PlayersDash [2]++;
-
-		PlayersDash [4]++;
-
-		StatsUpdate ();
-	}
-
-	void DashPlayer4 ()
-	{
-		PlayersDash [3]++;
-
-		PlayersDash [4]++;
-
-		StatsUpdate ();
-	}
-
-	void ShotPlayer1 ()
-	{
-		PlayersShots [0]++;
-
-		PlayersShots [4]++;
-
-		StatsUpdate ();
-	}
-
-	void ShotPlayer2 ()
-	{
-		PlayersShots [1]++;
-
-		PlayersShots [4]++;
-
-		StatsUpdate ();
-	}
-
-	void ShotPlayer3 ()
-	{
-		PlayersShots [2]++;
-
-		PlayersShots [4]++;
-
-		StatsUpdate ();
-	}
-
-	void ShotPlayer4 ()
-	{
-		PlayersShots [3]++;
-
-		PlayersShots [4]++;
+		totalShots++;
+		playerStatsList [whichPlayer].shots++;
 
 		StatsUpdate ();
 	}
@@ -162,25 +138,25 @@ public class StatsManager : Singleton<StatsManager>
 	{
 		int frags = 0;
 
-		for(int i = 0; i < PlayersFrags.Length; i++)
+		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (PlayersFrags [i] > frags)
+			if (playerStatsList [i].frags > frags)
 			{
-				frags = PlayersFrags [i];
+				mostStatsList [0].statNumber = playerStatsList [i].frags;
 
 				switch (i)
 				{
 				case 0:
-					mostFrags = "Player 1";
+					mostStatsList [0].whichPlayer = WhichPlayer.Player1;
 					break;
 				case 1:
-					mostFrags = "Player 2";
+					mostStatsList [0].whichPlayer = WhichPlayer.Player2;
 					break;
 				case 2:
-					mostFrags = "Player 3";
+					mostStatsList [0].whichPlayer = WhichPlayer.Player3;
 					break;
 				case 3:
-					mostFrags = "Player 4";
+					mostStatsList [0].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
@@ -189,25 +165,25 @@ public class StatsManager : Singleton<StatsManager>
 
 		int hits = 0;
 
-		for(int i = 0; i < PlayersHits.Length; i++)
+		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (PlayersHits [i] > hits)
+			if (playerStatsList [i].hits > hits)
 			{
-				hits = PlayersHits [i];
+				mostStatsList [1].statNumber = playerStatsList [i].hits;
 
 				switch (i)
 				{
 				case 0:
-					mostHits = "Player 1";
+					mostStatsList [1].whichPlayer = WhichPlayer.Player1;
 					break;
 				case 1:
-					mostHits = "Player 2";
+					mostStatsList [1].whichPlayer = WhichPlayer.Player2;
 					break;
 				case 2:
-					mostHits = "Player 3";
+					mostStatsList [1].whichPlayer = WhichPlayer.Player3;
 					break;
 				case 3:
-					mostHits = "Player 4";
+					mostStatsList [1].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
@@ -216,25 +192,25 @@ public class StatsManager : Singleton<StatsManager>
 
 		int deaths = 0;
 
-		for(int i = 0; i < PlayersDeath.Length; i++)
+		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (PlayersDeath [i] > deaths)
+			if (playerStatsList [i].death > deaths)
 			{
-				deaths = PlayersDeath [i];
+				mostStatsList [2].statNumber = playerStatsList [i].death;
 
 				switch (i)
 				{
 				case 0:
-					mostDeath = "Player 1";
+					mostStatsList [2].whichPlayer = WhichPlayer.Player1;
 					break;
 				case 1:
-					mostDeath = "Player 2";
+					mostStatsList [2].whichPlayer = WhichPlayer.Player2;
 					break;
 				case 2:
-					mostDeath = "Player 3";
+					mostStatsList [2].whichPlayer = WhichPlayer.Player3;
 					break;
 				case 3:
-					mostDeath = "Player 4";
+					mostStatsList [2].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
@@ -243,25 +219,25 @@ public class StatsManager : Singleton<StatsManager>
 
 		int dashs = 0;
 
-		for(int i = 0; i < PlayersDash.Length; i++)
+		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (PlayersDash [i] > dashs)
+			if (playerStatsList [i].dash > dashs)
 			{
-				dashs = PlayersDash [i];
+				mostStatsList [3].statNumber = playerStatsList [i].dash;
 
 				switch (i)
 				{
 				case 0:
-					mostDash = "Player 1";
+					mostStatsList [3].whichPlayer = WhichPlayer.Player1;
 					break;
 				case 1:
-					mostDash = "Player 2";
+					mostStatsList [3].whichPlayer = WhichPlayer.Player2;
 					break;
 				case 2:
-					mostDash = "Player 3";
+					mostStatsList [3].whichPlayer = WhichPlayer.Player3;
 					break;
 				case 3:
-					mostDash = "Player 4";
+					mostStatsList [3].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
@@ -270,29 +246,79 @@ public class StatsManager : Singleton<StatsManager>
 
 		int shots = 0;
 
-		for(int i = 0; i < PlayersShots.Length; i++)
+		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (PlayersShots [i] > shots)
+			if (playerStatsList [i].shots > shots)
 			{
-				shots = PlayersShots [i];
+				mostStatsList [4].statNumber = playerStatsList [i].shots;
 
 				switch (i)
 				{
 				case 0:
-					mostShots = "Player 1";
+					mostStatsList [4].whichPlayer = WhichPlayer.Player1;
 					break;
 				case 1:
-					mostShots = "Player 2";
+					mostStatsList [4].whichPlayer = WhichPlayer.Player2;
 					break;
 				case 2:
-					mostShots = "Player 3";
+					mostStatsList [4].whichPlayer = WhichPlayer.Player3;
 					break;
 				case 3:
-					mostShots = "Player 4";
+					mostStatsList [4].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
 
 		}
 	}
+
+	public void ResetStats (bool resetWins = false)
+	{
+		for(int i = 0; i < playerStatsList.Count; i++)
+		{
+			playerStatsList [i].frags = 0;
+			playerStatsList [i].hits = 0;
+			playerStatsList [i].death = 0;
+			playerStatsList [i].dash = 0;
+			playerStatsList [i].shots = 0;
+
+			if(resetWins)
+				playerStatsList [i].winsInARow = 0;
+		}
+
+		totalFrags = 0;
+		totalHits = 0;
+		totalDeath = 0;
+		totalDash = 0;
+		totalShots = 0;
+
+		for(int i = 0; i < mostStatsList.Count; i++)
+		{
+			mostStatsList [i].statNumber = 0;
+			mostStatsList [i].whichPlayer = WhichPlayer.None;
+		}
+	}
+
+}
+
+[Serializable]
+public class PlayerStats 
+{
+	public WhichPlayer whichPlayer;
+
+	public int frags = 0;
+	public int hits = 0;
+	public int death = 0;
+	public int dash = 0;
+	public int shots = 0;
+
+	public int winsInARow = 0;
+}
+
+[Serializable]
+public class MostStats 
+{
+	public WhichStat whichStat;
+	public int statNumber = 0;
+	public WhichPlayer whichPlayer;
 }

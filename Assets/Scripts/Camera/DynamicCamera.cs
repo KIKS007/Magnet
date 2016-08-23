@@ -130,8 +130,6 @@ public class DynamicCamera : MonoBehaviour
 	{
 		for(int i = 0; i < modesSettingsList.Count; i++)
 		{
-			Debug.Log (i);
-
 			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.WhichModeLoaded)
 			{
 				cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;

@@ -69,12 +69,16 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
 
+			StatsManager.Instance.ResetStats (true);
+
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 		
 		else if(GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
+
+			StatsManager.Instance.ResetStats (true);
 
 			GlobalVariables.Instance.GameState = GameStateEnum.Over;
 			StartCoroutine (LoadScene (sceneToLoad));
@@ -256,6 +260,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		GlobalVariables.Instance.Player4 = player4;
 
 		StatsManager.Instance.GetPlayersEvents ();
+		StatsManager.Instance.ResetStats (false);
 
 		GlobalVariables.Instance.SetPlayersControllerNumbers ();
 		GlobalVariables.Instance.ListPlayers ();

@@ -141,7 +141,7 @@ MonoBehaviour:
   - whichMode: 0
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
-    cameraYMin: 0
+    cameraYMin: 15
     distanceMin: 0
     distanceRatio: 1
   - whichMode: 1

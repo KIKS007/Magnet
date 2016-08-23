@@ -40,11 +40,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tweening: 0
-  offScreenX: -1400
-  onScreenX: -580
-  screenCenterY: -93
+  offScreenX: -1600
+  onScreenX: -650
+  screenCenterY: -200
   gapBetweenButtons: 131
-  topYpositionButton: 404
+  topYpositionButton: 540
   yPositions:
   - 0
   - 0
@@ -59,7 +59,8 @@ MonoBehaviour:
   smallLogo: {fileID: 0}
   logoMenu: {fileID: 0}
   shrinkDuration: 0.5
-  cameraNewXPosition: -48
+  cameraNewXPosition: -43
+  textToResume: {fileID: 0}
   topMenuButtons:
   - {fileID: 0}
   - {fileID: 0}
@@ -81,9 +82,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   playButton: {fileID: 0}
-  playButtonMinY: -700
-  playButtonMaxY: -457
+  playButtonMinY: -800
+  playButtonMaxY: -600
   playButtonDuration: 0.25
+  modesDescriptionXPos: 693
+  modesDescriptionOnScreen: 242
+  modesDescriptionOffScreen: 700
   durationSubmit: 0.25
   durationCancel: 0.25
   durationContent: 0.25
@@ -103,22 +107,26 @@ MonoBehaviour:
   - 0.5
   timeBeforePause: 0
   timeBeforeUnpause: 0
-  pausePosition: {x: -48, y: 93, z: 16}
-  playPosition: {x: 0, y: 30, z: 0}
-  gameOverPosition: {x: 48, y: 93, z: 16}
+  pausePosition: {x: -48, y: 93, z: 15}
+  playPosition: {x: 0, y: 60, z: 0}
+  gameOverPosition: {x: 48, y: 93, z: 15}
   cameraMovementDuration: 1.2
-  cameraEaseMovement: 10
+  cameraEaseMovement: 6
   gameOverCanvas: {fileID: 0}
   restart: {fileID: 0}
   gameOverButton: {fileID: 0}
   restartButton: {fileID: 0}
   menuButton: {fileID: 0}
-  gameOverContent: {fileID: 0}
-  bottomYPosition: -400
+  bottomYPosition: -550
+  goRepulseContent: {fileID: 0}
+  goBombContent: {fileID: 0}
+  goHitContent: {fileID: 0}
+  goCrushContent: {fileID: 0}
+  goWinner: {fileID: 0}
   easeTypeMainMenu: 10
   returnSound: ChoixMenu_Retour
   start: {fileID: 0}
-  players: {fileID: 0}
+  sounds: {fileID: 0}
   no: {fileID: 0}
   high: {fileID: 0}
   overall: {fileID: 0}
@@ -150,6 +158,7 @@ MonoBehaviour:
   chooseModeContent: {fileID: 0}
   chooseTeamContent: {fileID: 0}
   choosePlayerContent: {fileID: 0}
+  backButtonsContent: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

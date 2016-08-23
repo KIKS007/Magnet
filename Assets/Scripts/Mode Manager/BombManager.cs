@@ -142,6 +142,8 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
+		StatsManager.Instance.winner = playersList [0].name;
+
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
