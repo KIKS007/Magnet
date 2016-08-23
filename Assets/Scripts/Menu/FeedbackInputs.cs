@@ -123,7 +123,8 @@ public class FeedbackInputs : MonoBehaviour
 		{
 			Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-			mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
+			//mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
+			mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
 			mouseMovement.Normalize ();
 
 			if(mouseMovement.magnitude != 0 && !keyPressed)

@@ -7,6 +7,7 @@ public class HitModeManager : MonoBehaviour
 	[Header ("Hit Settings")]
 	public int timerDuration = 300;
 	public float timeBetweenSpawn = 2;
+	public float timeBeforeEndGame = 2;
 
 	[Header ("Timer")]
 	public float timer;
@@ -22,7 +23,7 @@ public class HitModeManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -43,7 +44,7 @@ public class HitModeManager : MonoBehaviour
 
 		yield return null;
 
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -53,14 +54,21 @@ public class HitModeManager : MonoBehaviour
 
 		else
 		{
-			GameEnded ();
+			StartCoroutine (GameEnded ());
 			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
 		}
 			
 	}
 
-	void GameEnded ()
+	IEnumerator GameEnded ()
 	{
-		GlobalVariables.Instance.GameOver = true;
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+
+		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
 	}
 }

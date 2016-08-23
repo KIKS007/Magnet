@@ -5,8 +5,18 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
 
+public enum GameStateEnum {Playing, Paused, Over};
+
+public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushOut};
+
 public class GlobalVariables : Singleton<GlobalVariables>
 {
+	[Header ("Game State")]
+	public GameStateEnum GameState = GameStateEnum.Over;
+	//public bool GamePaused = true;
+	//public bool GameOver = true;
+	public bool FirstGameLaunch = true;
+
 	[Header ("Controller Numbers")]
 	public int ControllerNumberPlayer1 = -1;
 	public int ControllerNumberPlayer2 = -1;
@@ -20,10 +30,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject Player4;
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 
-	[Header ("Game State")]
-	public bool GamePaused = true;
-	public bool GameOver = true;
-	public bool FirstGameLaunch = true;
 
 	[Header ("Players States")]
 	public int NumberOfPlayers;
@@ -48,14 +54,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Others")]
 	public string firstSceneToLoad = "Wrap";
+	public WhichMode WhichModeLoaded;
 	public string CurrentModeLoaded = "";
 
 	void Start ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 		{
-			GamePaused = false;
-			GameOver = false;
+			//GamePaused = false;
+			//GameOver = false;
+
+			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 		}
 
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
@@ -105,5 +114,38 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		NumberOfPlayers = EnabledPlayersList.Count;
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
+	}
+
+	public void SetWhichModeEnum ()
+	{
+		switch(CurrentModeLoaded)
+		{
+		default:
+			WhichModeLoaded = WhichMode.Default;
+			break;
+		case "Repulse":
+			WhichModeLoaded = WhichMode.Repulse;
+			break;
+		case "Bomb":
+			WhichModeLoaded = WhichMode.Bomb;
+			break;
+		case "Hit":
+			WhichModeLoaded = WhichMode.Hit;
+			break;
+		case "Crush":
+			WhichModeLoaded = WhichMode.Crush;
+			break;
+		case "Football":
+			WhichModeLoaded = WhichMode.Football;
+			break;
+		case "Wrap":
+			WhichModeLoaded = WhichMode.Wrap;
+			break;
+		case "PushOut":
+			WhichModeLoaded = WhichMode.PushOut;
+			break;
+		}
+
+		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 }

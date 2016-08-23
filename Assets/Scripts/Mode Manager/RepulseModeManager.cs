@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class RepulseModeManager : MonoBehaviour 
 {
+	public float timeBeforeEndGame = 2;
+
 	[Header ("Timer")]
 	public int timerDuration = 300;
 	public float timer;
@@ -44,7 +46,7 @@ public class RepulseModeManager : MonoBehaviour
 
 	IEnumerator WaitForBeginning ()
 	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameOver && GlobalVariables.Instance.GamePaused);
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		SetupArrayList ();
 
@@ -60,7 +62,7 @@ public class RepulseModeManager : MonoBehaviour
 
 	void Update ()
 	{
-		if(!GlobalVariables.Instance.GamePaused && !GlobalVariables.Instance.GameOver)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			GetMovablesNumbers ();
 
@@ -83,7 +85,7 @@ public class RepulseModeManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -104,7 +106,7 @@ public class RepulseModeManager : MonoBehaviour
 
 		yield return null;
 
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -114,16 +116,22 @@ public class RepulseModeManager : MonoBehaviour
 
 		else
 		{
-			GameEnded ();
+			StartCoroutine (GameEnded ());
 			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
 		}
 
 	}
 
-	void GameEnded ()
+	IEnumerator GameEnded ()
 	{
-		GlobalVariables.Instance.GameOver = true;
-		GlobalVariables.Instance.GamePaused = true;
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+
+		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
 
 		Debug.Log ("The winner is " + leastMovablesZones [0].zonesPlayer.name + " with " + leastMovablesZones [0].movableInZone + " points");
 	}
@@ -208,39 +216,42 @@ public class RepulseModeManager : MonoBehaviour
 
 	void SetPlayerZone (int number, GameObject player)
 	{
+		Debug.Log (number + " " + player);
+
 		switch(number)
 		{
 		case 0:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [0].zone = RepulseTriggerZones.Zone1;
+			leastMovablesZones [0].zonesPlayer = player;
 			break;
 		case 1:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [1].zone = RepulseTriggerZones.Zone2;
+			leastMovablesZones [1].zonesPlayer = player;
 			break;
 		case 2:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [0].zone = RepulseTriggerZones.Zone1;
+			leastMovablesZones [0].zonesPlayer = player;
 			break;
 		case 3:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [1].zone = RepulseTriggerZones.Zone2;
+			leastMovablesZones [1].zonesPlayer = player;
 			break;
 		case 4:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone3;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone3;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [2].zone = RepulseTriggerZones.Zone3;
+			leastMovablesZones [2].zonesPlayer = player;
 			break;
 		case 5:
 			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone4;
-			leastMovablesZones [number].zone = RepulseTriggerZones.Zone4;
-			leastMovablesZones [number].zonesPlayer = player;
+			leastMovablesZones [3].zone = RepulseTriggerZones.Zone4;
+			leastMovablesZones [3].zonesPlayer = player;
 			break;
 		}
+
 	}
 
 	void EnableZonesAndScore (int zoneNumber, GameObject player)

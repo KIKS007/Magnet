@@ -154,14 +154,13 @@ public class PlayersGameplay : MonoBehaviour
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
-		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(playerRigidbody.velocity.magnitude > velocity)
 				velocity = playerRigidbody.velocity.magnitude;
 
 
-			if (GlobalVariables.Instance.GamePaused == false)
-				ActivateFunctions ();
+			ActivateFunctions ();
 
 			if(playerState == PlayerState.Stunned)
 			{
@@ -178,6 +177,8 @@ public class PlayersGameplay : MonoBehaviour
 
 			OnAttractedOnRepusled ();
 		}
+
+		Pause ();
 
 		TrailLength ();
 	}
@@ -221,13 +222,11 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			StartCoroutine(RepulsionWave ());
 		}
-			
-		Pause ();
 	}
 	
 	protected virtual void FixedUpdate ()
 	{
-		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(dashState != DashState.Dashing)
 				playerRigidbody.MovePosition(transform.position + movement);
@@ -426,7 +425,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected void TrailLength ()
 	{
-		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(playerRigidbody.velocity.magnitude > 1)
 			{
@@ -462,7 +461,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual void OnCollisionStay (Collision other)
 	{
-		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false)
+		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			DeathParticles ();
 		
@@ -593,7 +592,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void Death ()
 	{
-		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
+		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if (OnDeath != null)
 				OnDeath ();

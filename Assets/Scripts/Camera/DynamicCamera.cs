@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class DynamicCamera : MonoBehaviour 
 {
 	public bool dynamicEnabled = true;
 
-	[Header ("Camera Lerp")]
-	public float cameraZoomLerp = 0.5f;
-	public float cameraMovementLerp = 0.5f;
+	public WhichMode whichMode = WhichMode.Default;
 
-	[Header ("Zoom Settings")]
-	public float cameraYMin = 30;
-	public float distanceMin = 30;
+	public List<DynamicCameraSettings> modesSettingsList;
+
+
+	[Header ("Current Camera Lerp")]
+	public float cameraZoomLerp = 0.1f;
+	public float cameraMovementLerp = 0.1f;
+
+	[Header ("Current Zoom Settings")]
+	public float cameraYMin = 15;
+	public float distanceMin = 0;
 	public float distanceRatio = 1;
 
 	[Header ("Infos")]
@@ -29,7 +36,7 @@ public class DynamicCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && dynamicEnabled)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
 			FindLargestDistance ();
 			FindCenterPosition ();
@@ -39,7 +46,7 @@ public class DynamicCamera : MonoBehaviour
 
 	void FixedUpdate ()
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false && dynamicEnabled)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
 			SetCameraPosition ();
 		}
@@ -117,7 +124,58 @@ public class DynamicCamera : MonoBehaviour
 			//Zoom Lerp
 			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp);
 		}
-
-
 	}
+
+	public void GetNewSettings ()
+	{
+		for(int i = 0; i < modesSettingsList.Count; i++)
+		{
+			Debug.Log (i);
+
+			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.WhichModeLoaded)
+			{
+				cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;
+				cameraMovementLerp = modesSettingsList [i].cameraMovementLerp;
+
+				cameraYMin = modesSettingsList [i].cameraYMin;
+				distanceMin = modesSettingsList [i].distanceMin;
+				distanceRatio = modesSettingsList [i].distanceRatio;
+
+				break;
+			}
+
+			else
+			{
+				for(int y = 0; i < modesSettingsList.Count; i++)
+				{
+					if(modesSettingsList[y].whichMode == WhichMode.Default)
+					{
+						cameraZoomLerp = modesSettingsList [y].cameraZoomLerp;
+						cameraMovementLerp = modesSettingsList [y].cameraMovementLerp;
+
+						cameraYMin = modesSettingsList [y].cameraYMin;
+						distanceMin = modesSettingsList [y].distanceMin;
+						distanceRatio = modesSettingsList [y].distanceRatio;
+
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+[Serializable]
+public class DynamicCameraSettings
+{
+	public WhichMode whichMode = WhichMode.Default;
+
+	[Header ("Camera Lerp")]
+	public float cameraZoomLerp = 0.1f;
+	public float cameraMovementLerp = 0.1f;
+
+	[Header ("Zoom Settings")]
+	public float cameraYMin = 15;
+	public float distanceMin = 0;
+	public float distanceRatio = 1;
 }

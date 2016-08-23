@@ -136,6 +136,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dynamicEnabled: 1
+  whichMode: 0
+  modesSettingsList:
+  - whichMode: 0
+    cameraZoomLerp: 0.1
+    cameraMovementLerp: 0.1
+    cameraYMin: 0
+    distanceMin: 0
+    distanceRatio: 1
+  - whichMode: 1
+    cameraZoomLerp: 0.1
+    cameraMovementLerp: 0.1
+    cameraYMin: 15
+    distanceMin: 0
+    distanceRatio: 1
+  - whichMode: 2
+    cameraZoomLerp: 0.1
+    cameraMovementLerp: 0.1
+    cameraYMin: 15
+    distanceMin: 0
+    distanceRatio: 1
+  - whichMode: 3
+    cameraZoomLerp: 0.1
+    cameraMovementLerp: 0.1
+    cameraYMin: 15
+    distanceMin: 0
+    distanceRatio: 1
+  - whichMode: 4
+    cameraZoomLerp: 0.1
+    cameraMovementLerp: 0.1
+    cameraYMin: 15
+    distanceMin: 0
+    distanceRatio: 1
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
   cameraYMin: 15

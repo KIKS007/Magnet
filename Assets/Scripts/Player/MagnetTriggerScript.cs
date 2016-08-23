@@ -26,7 +26,7 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(GlobalVariables.Instance.GameOver == false)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding 
 				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 

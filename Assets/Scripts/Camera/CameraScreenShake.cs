@@ -11,7 +11,6 @@ public class CameraScreenShake : MonoBehaviour
 
 	public bool shake;
 
-	private bool shaking;
 	private Vector3 initialRotation;
 
 	// Use this for initialization
@@ -35,9 +34,7 @@ public class CameraScreenShake : MonoBehaviour
 
 	public void CameraShaking ()
 	{
-		shaking = true;
 		shake = false;
-		//print("Shaking");
 		transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).OnComplete (EndOfShake).SetId("ScreenShake");
 	}
 
@@ -45,7 +42,6 @@ public class CameraScreenShake : MonoBehaviour
 	{
 		if(!DOTween.IsTweening("ScreenShake"))
 		{
-			shaking = false;
 			ResetCameraRotation ();
 		}
 	}

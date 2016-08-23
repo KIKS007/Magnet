@@ -28,7 +28,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead
 				|| other.tag == "Fluff" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
@@ -68,7 +68,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerExit (Collider other)
 	{
-		if(GlobalVariables.Instance.GameOver == false && GlobalVariables.Instance.GamePaused == false)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if (other.tag =="Movable" && other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
 				other.GetComponent<MovableScript> ().attracedBy.Remove (character.gameObject);

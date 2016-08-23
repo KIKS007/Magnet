@@ -129,8 +129,7 @@ public class FootballModeManager : MonoBehaviour
 
 	IEnumerator GameEnded ()
 	{
-		GlobalVariables.Instance.GameOver = true;
-		GlobalVariables.Instance.GamePaused = true;
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();

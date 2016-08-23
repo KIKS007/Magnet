@@ -55,6 +55,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		FindGameObjects ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+		GlobalVariables.Instance.SetWhichModeEnum ();
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
@@ -64,18 +65,18 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	{
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
-		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad && GlobalVariables.Instance.GameOver == true)
+		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad)
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
 
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 		
-		else if(GlobalVariables.Instance.GameOver == false)
+		else if(GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 		{
 			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
 
-			GlobalVariables.Instance.GameOver = true;
+			GlobalVariables.Instance.GameState = GameStateEnum.Over;
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 
@@ -103,6 +104,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+		GlobalVariables.Instance.SetWhichModeEnum ();
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
@@ -128,6 +131,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+		GlobalVariables.Instance.SetWhichModeEnum ();
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
@@ -144,8 +148,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
-		GlobalVariables.Instance.GameOver = false;
-		GlobalVariables.Instance.GamePaused = false;
+		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
@@ -173,6 +176,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+		GlobalVariables.Instance.SetWhichModeEnum ();
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 

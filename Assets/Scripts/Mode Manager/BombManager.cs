@@ -29,6 +29,8 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator Setup ()
 	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
 		while (GlobalVariables.Instance.NumberOfPlayers == 0)
 			yield return null;
 
@@ -56,12 +58,11 @@ public class BombManager : MonoBehaviour
 	void Update () 
 	{
 		playersList = GameObject.FindGameObjectsWithTag("Player");
-
 	}
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -82,7 +83,7 @@ public class BombManager : MonoBehaviour
 
 		yield return null;
 
-		while(GlobalVariables.Instance.GameOver == true || GlobalVariables.Instance.GamePaused == true)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;
 		}
@@ -141,8 +142,7 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		GlobalVariables.Instance.GameOver = true;
-		GlobalVariables.Instance.GamePaused = true;
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
