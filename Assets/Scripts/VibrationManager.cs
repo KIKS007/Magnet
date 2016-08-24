@@ -27,6 +27,8 @@ public class VibrationManager : Singleton<VibrationManager>
 	public float burstDurationTest;
 	public float durationBetweenBurstTest;
 
+	public float timeToStopVibration = 3;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -34,6 +36,8 @@ public class VibrationManager : Singleton<VibrationManager>
 		gamepad2 = ReInput.players.GetPlayer (2);
 		gamepad3 = ReInput.players.GetPlayer (3);
 		gamepad4 = ReInput.players.GetPlayer (4);
+
+		GlobalVariables.Instance.OnGameOver += SlowlyStopVibration;
 	}
 	
 	// Update is called once per frame
@@ -209,6 +213,27 @@ public class VibrationManager : Singleton<VibrationManager>
 		DOTween.Pause ("Vibration1");
 		DOTween.Pause ("Vibration2");
 		DOTween.Pause ("Vibration3");
+	}
+
+	void SlowlyStopVibration ()
+	{
+		DOTween.Pause ("Vibration0");
+		DOTween.Pause ("Vibration1");
+		DOTween.Pause ("Vibration2");
+		DOTween.Pause ("Vibration3");
+
+		DOTween.To(()=> playersLeftMotor [0], x=> playersLeftMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersRightMotor [0], x=> playersRightMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+
+		DOTween.To(()=> playersLeftMotor [1], x=> playersLeftMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersRightMotor [1], x=> playersRightMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+
+		DOTween.To(()=> playersLeftMotor [2], x=> playersLeftMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersRightMotor [2], x=> playersRightMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+
+		DOTween.To(()=> playersLeftMotor [3], x=> playersLeftMotor [3] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersRightMotor [3], x=> playersRightMotor[3] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+
 	}
 
 	void OnLevelWasLoaded ()

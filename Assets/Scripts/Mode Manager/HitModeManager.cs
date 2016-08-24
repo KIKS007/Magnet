@@ -52,7 +52,7 @@ public class HitModeManager : MonoBehaviour
 		if(timer > 0.01f)
 			StartCoroutine (Timer ());
 
-		else
+		else if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
 		{
 			StartCoroutine (GameEnded ());
 			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
@@ -62,6 +62,8 @@ public class HitModeManager : MonoBehaviour
 
 	IEnumerator GameEnded ()
 	{
+		StatsManager.Instance.Winner(StatsManager.Instance.mostStatsList [(int)WhichStat.Frags].whichPlayer);
+
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();

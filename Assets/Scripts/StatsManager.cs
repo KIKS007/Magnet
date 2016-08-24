@@ -23,7 +23,6 @@ public class StatsManager : Singleton<StatsManager>
 	[Header ("Winner")]
 	public string winner;
 
-
 	void Awake ()
 	{
 		for (int i = 0; i < 4; i++)
@@ -62,7 +61,7 @@ public class StatsManager : Singleton<StatsManager>
 	// Update is called once per frame
 	void Update () 
 	{
-
+		
 	}
 
 	public void GetPlayersEvents ()
@@ -132,6 +131,29 @@ public class StatsManager : Singleton<StatsManager>
 		playerStatsList [whichPlayer].shots++;
 
 		StatsUpdate ();
+	}
+
+	public void Winner (WhichPlayer whichPlayerWon)
+	{
+		switch (whichPlayerWon)
+		{
+		case WhichPlayer.Player1:
+			playerStatsList [0].winsInARow++;
+			winner = "Player 1";
+			break;
+		case WhichPlayer.Player2:
+			playerStatsList [1].winsInARow++;
+			winner = "Player 2";
+			break;
+		case WhichPlayer.Player3:
+			playerStatsList [2].winsInARow++;
+			winner = "Player 3";
+			break;
+		case WhichPlayer.Player4:
+			playerStatsList [3].winsInARow++;
+			winner = "Player 4";
+			break;
+		}
 	}
 
 	public void StatsUpdate ()
@@ -311,6 +333,8 @@ public class PlayerStats
 	public int death = 0;
 	public int dash = 0;
 	public int shots = 0;
+
+	public int aimPrecision;
 
 	public int winsInARow = 0;
 }

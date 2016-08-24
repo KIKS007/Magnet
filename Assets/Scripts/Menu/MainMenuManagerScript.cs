@@ -1571,21 +1571,21 @@ public class MainMenuManagerScript : MonoBehaviour
 		menuButton.DOAnchorPos (new Vector2(menuButton.anchoredPosition.x, bottomYPosition), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 
-		goWinner.DOAnchorPos (new Vector2(-onScreenX, goWinner.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
+		goWinner.DOAnchorPos (new Vector2(0, goWinner.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 
 		switch(GlobalVariables.Instance.CurrentModeLoaded)
 		{
 		case "Repulse":
-			goRepulseContent.DOAnchorPos (new Vector2(-onScreenX, goRepulseContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
+			goRepulseContent.DOAnchorPos (new Vector2(0, goRepulseContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Bomb":
-			goBombContent.DOAnchorPos (new Vector2(-onScreenX, goBombContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
+			goBombContent.DOAnchorPos (new Vector2(0, goBombContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Hit":
-			goHitContent.DOAnchorPos (new Vector2(-onScreenX, goHitContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
+			goHitContent.DOAnchorPos (new Vector2(0, goHitContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Crush":
-			goCrushContent.DOAnchorPos (new Vector2(-onScreenX, goCrushContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
+			goCrushContent.DOAnchorPos (new Vector2(0, goCrushContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		}
 

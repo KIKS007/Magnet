@@ -30,7 +30,21 @@ public class CrushManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		StatsManager.Instance.winner = playersList [0].name;
+		switch (playersList [0].name)
+		{
+		case "Player 1":
+			StatsManager.Instance.Winner(WhichPlayer.Player1);
+			break;
+		case "Player 2":
+			StatsManager.Instance.Winner(WhichPlayer.Player2);
+			break;
+		case "Player 3":
+			StatsManager.Instance.Winner(WhichPlayer.Player3);
+			break;
+		case "Player 4":
+			StatsManager.Instance.Winner(WhichPlayer.Player4);
+			break;
+		}
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 

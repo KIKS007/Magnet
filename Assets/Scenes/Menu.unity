@@ -184,8 +184,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 164.68768, y: -0.000030517578}
-  m_SizeDelta: {x: 391, y: 120}
+  m_AnchoredPosition: {x: 264, y: -0.000030517578}
+  m_SizeDelta: {x: 576, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &712506
 MonoBehaviour:
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.1764706, b: 0.051470578, a: 1}
+  m_Color: {r: 0.34117648, g: 0.4901961, b: 0.7137255, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3984,8 +3984,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 412.99985, y: 289}
-  m_SizeDelta: {x: 376, y: 120}
+  m_AnchoredPosition: {x: 458, y: 289}
+  m_SizeDelta: {x: 469, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &165534386
 MonoBehaviour:
@@ -4020,7 +4020,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Winner :'
+  m_Text: The winner is
 --- !u!222 &165534387
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17789,7 +17789,7 @@ GameObject:
   - 222: {fileID: 353446072}
   - 114: {fileID: 353446071}
   m_Layer: 5
-  m_Name: Player
+  m_Name: Number
   m_TagString: PlayerControllerText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17810,8 +17810,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 164.68732, y: -0.00001335144}
-  m_SizeDelta: {x: 391, y: 120}
+  m_AnchoredPosition: {x: 257, y: -0.00001335144}
+  m_SizeDelta: {x: 576, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &353446071
 MonoBehaviour:
@@ -17826,7 +17826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.1764706, b: 0.051470578, a: 1}
+  m_Color: {r: 0.34117648, g: 0.4901961, b: 0.7137255, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -17846,7 +17846,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Player 1
+  m_Text: 0
 --- !u!222 &353446072
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19412,7 +19412,7 @@ GameObject:
   - 114: {fileID: 482482327}
   - 114: {fileID: 482482329}
   m_Layer: 5
-  m_Name: Most Shots
+  m_Name: Player
   m_TagString: PlayerControllerText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19470,7 +19470,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Most Shots
+  m_Text: Player 1
 --- !u!222 &482482328
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -51270,8 +51270,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 164.68732, y: 0.000015258789}
-  m_SizeDelta: {x: 391, y: 120}
+  m_AnchoredPosition: {x: 169, y: 0.000015258789}
+  m_SizeDelta: {x: 576, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1577537600
 MonoBehaviour:
@@ -51286,7 +51286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.1764706, b: 0.051470578, a: 1}
+  m_Color: {r: 0.34117648, g: 0.4901961, b: 0.7137255, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -51306,7 +51306,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Player 1
+  m_Text: made 0 dashs
 --- !u!222 &1577537601
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56157,7 +56157,7 @@ GameObject:
   - 222: {fileID: 1801649327}
   - 114: {fileID: 1801649326}
   m_Layer: 5
-  m_Name: Player
+  m_Name: Most Shots
   m_TagString: PlayerControllerText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56178,8 +56178,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 164.68707, y: 0.000030517578}
-  m_SizeDelta: {x: 391, y: 120}
+  m_AnchoredPosition: {x: 171, y: 0.000030517578}
+  m_SizeDelta: {x: 576, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801649326
 MonoBehaviour:
@@ -56194,7 +56194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.1764706, b: 0.051470578, a: 1}
+  m_Color: {r: 0.34117648, g: 0.4901961, b: 0.7137255, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -56214,7 +56214,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Player 1
+  m_Text: made 0 shots
 --- !u!222 &1801649327
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57704,7 +57704,7 @@ GameObject:
   - 114: {fileID: 1885398765}
   - 114: {fileID: 1885398767}
   m_Layer: 5
-  m_Name: Player 1 hits
+  m_Name: Player
   m_TagString: PlayerControllerText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57762,7 +57762,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Player 1 hits
+  m_Text: Player 1
 --- !u!222 &1885398766
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57782,7 +57782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whichStatType: 0
-  whichStat: 1
+  whichStat: 3
   whichPlayer: 0
 --- !u!1 &1885979671
 GameObject:

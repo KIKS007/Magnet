@@ -15,9 +15,6 @@ public class SlowMotionCamera : MonoBehaviour
 	public float bloomIntensity = 0.7f;
 	public float timeTweenEffect;
 
-	[Header ("SlowMotion Pause")]
-	public float timeTweenPause = 0.05f;
-
 	[Header ("Debug Test")]
 	public bool slowMotion;
 	public float timeScaleDebug;

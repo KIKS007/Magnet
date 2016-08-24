@@ -11,6 +11,8 @@ public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushO
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
+	public event EventHandler OnGameOver;
+
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
 	//public bool GamePaused = true;
@@ -53,7 +55,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
-	public string firstSceneToLoad = "Wrap";
+	public string firstSceneToLoad = "Hit";
 	public WhichMode WhichModeLoaded;
 	public string CurrentModeLoaded = "";
 
@@ -68,6 +70,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
+
+		StartCoroutine (GetStatesChange ());
 	}
 		
 	public void SetPlayersControllerNumbers ()
@@ -147,5 +151,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
+	}
+
+	IEnumerator GetStatesChange ()
+	{
+		if(GameState != GameStateEnum.Over)
+		{
+			yield return null;
+
+			if(GameState == GameStateEnum.Over)
+			{
+				if (OnGameOver != null)
+					OnGameOver ();
+			}
+		}
+
+		yield return null;
+
+		StartCoroutine (GetStatesChange ());
 	}
 }

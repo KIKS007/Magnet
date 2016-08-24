@@ -114,7 +114,7 @@ public class RepulseModeManager : MonoBehaviour
 		if(timer > 0.01f)
 			StartCoroutine (Timer ());
 
-		else
+		else if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
 		{
 			StartCoroutine (GameEnded ());
 			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
@@ -124,6 +124,22 @@ public class RepulseModeManager : MonoBehaviour
 
 	IEnumerator GameEnded ()
 	{
+		switch (leastMovablesZones[0].zonesPlayer.name)
+		{
+		case "Player 1":
+			StatsManager.Instance.Winner(WhichPlayer.Player1);
+			break;
+		case "Player 2":
+			StatsManager.Instance.Winner(WhichPlayer.Player2);
+			break;
+		case "Player 3":
+			StatsManager.Instance.Winner(WhichPlayer.Player3);
+			break;
+		case "Player 4":
+			StatsManager.Instance.Winner(WhichPlayer.Player4);
+			break;
+		}
+
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
