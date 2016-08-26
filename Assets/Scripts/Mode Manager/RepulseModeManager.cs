@@ -232,8 +232,6 @@ public class RepulseModeManager : MonoBehaviour
 
 	void SetPlayerZone (int number, GameObject player)
 	{
-		Debug.Log (number + " " + player);
-
 		switch(number)
 		{
 		case 0:

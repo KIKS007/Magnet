@@ -13464,7 +13464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801b6846bfbf0ff47bbcb833b8cd27be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerDuration: 10
+  timerDuration: 300
   timeBetweenSpawn: 2
   timeBeforeEndGame: 2
   timer: 0

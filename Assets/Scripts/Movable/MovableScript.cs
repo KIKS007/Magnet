@@ -145,9 +145,6 @@ public class MovableScript : MonoBehaviour
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
-			Debug.Log ("Collision 2");
-
-
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 
 			playerHit = other.gameObject;
