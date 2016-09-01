@@ -12,6 +12,10 @@ public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushO
 public class GlobalVariables : Singleton<GlobalVariables>
 {
 	public event EventHandler OnGameOver;
+	public event EventHandler OnModeStarted;
+	public event EventHandler OnPlaying;
+	public event EventHandler OnPause;
+	public event EventHandler OnResume;
 
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
@@ -62,16 +66,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	void Start ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
-		{
-			//GamePaused = false;
-			//GameOver = false;
-
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-		}
+		
 
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 
-		StartCoroutine (GetStatesChange ());
+		StartCoroutine (OnGameOverEvent ());
+		StartCoroutine (OnPlayingEvent ());
+		StartCoroutine (OnResumeEvent ());
+		StartCoroutine (OnPauseEvent ());
+		StartCoroutine (OnModeStartedEvent ());
 	}
 		
 	public void SetPlayersControllerNumbers ()
@@ -153,21 +157,73 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 
-	IEnumerator GetStatesChange ()
+	IEnumerator OnGameOverEvent ()
 	{
-		if(GameState != GameStateEnum.Over)
-		{
-			yield return null;
+		yield return new WaitUntil (() => GameState != GameStateEnum.Over);
 
-			if(GameState == GameStateEnum.Over)
-			{
-				if (OnGameOver != null)
-					OnGameOver ();
-			}
-		}
+		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+
+		if (OnGameOver != null)
+			OnGameOver ();
 
 		yield return null;
 
-		StartCoroutine (GetStatesChange ());
+		StartCoroutine (OnGameOverEvent ());
+	}
+
+	IEnumerator OnPlayingEvent ()
+	{
+		yield return new WaitUntil (() => GameState != GameStateEnum.Playing);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnPlaying != null)
+			OnPlaying ();
+
+		yield return null;
+
+		StartCoroutine (OnPlayingEvent ());
+	}
+
+	IEnumerator OnPauseEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Paused);
+
+		if (OnPause != null)
+			OnPause ();
+
+		yield return null;
+
+		StartCoroutine (OnPauseEvent ());
+	}
+
+	IEnumerator OnResumeEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Paused);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnResume != null)
+			OnResume ();
+
+		yield return null;
+
+		StartCoroutine (OnResumeEvent ());
+	}
+
+	IEnumerator OnModeStartedEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnModeStarted != null)
+			OnModeStarted ();
+
+		yield return null;
+
+		StartCoroutine (OnModeStartedEvent ());
 	}
 }

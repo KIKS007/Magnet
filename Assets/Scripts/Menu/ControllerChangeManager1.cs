@@ -635,67 +635,76 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void EraseControllerNumbers (int whichController)
 	{
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 == whichController)
-			GlobalVariables.Instance.ControllerNumberPlayer1 = -1;
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			if (GlobalVariables.Instance.ControllerNumberPlayer1 == whichController)
+				GlobalVariables.Instance.ControllerNumberPlayer1 = -1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer2 == whichController)
-			GlobalVariables.Instance.ControllerNumberPlayer2 = -1;
+			if (GlobalVariables.Instance.ControllerNumberPlayer2 == whichController)
+				GlobalVariables.Instance.ControllerNumberPlayer2 = -1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer3 == whichController)
-			GlobalVariables.Instance.ControllerNumberPlayer3 = -1;
+			if (GlobalVariables.Instance.ControllerNumberPlayer3 == whichController)
+				GlobalVariables.Instance.ControllerNumberPlayer3 = -1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer4 == whichController)
-			GlobalVariables.Instance.ControllerNumberPlayer4 = -1;
+			if (GlobalVariables.Instance.ControllerNumberPlayer4 == whichController)
+				GlobalVariables.Instance.ControllerNumberPlayer4 = -1;
+		}
 	}
 
 	public void UpdatePlayersControllers ()
 	{
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-			GlobalVariables.Instance.Player1.SetActive (true);
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+				GlobalVariables.Instance.Player1.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-			GlobalVariables.Instance.Player2.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+				GlobalVariables.Instance.Player2.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-			GlobalVariables.Instance.Player3.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+				GlobalVariables.Instance.Player3.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-			GlobalVariables.Instance.Player4.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+				GlobalVariables.Instance.Player4.SetActive (true);
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+		}
 	}
 
 	public void UpdatePlayersControllers (ControllerStatusChangedEventArgs arg)
 	{
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-			GlobalVariables.Instance.Player1.SetActive (true);
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+				GlobalVariables.Instance.Player1.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-			GlobalVariables.Instance.Player2.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+				GlobalVariables.Instance.Player2.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-			GlobalVariables.Instance.Player3.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+				GlobalVariables.Instance.Player3.SetActive (true);
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-			GlobalVariables.Instance.Player4.SetActive (true);
+			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+				GlobalVariables.Instance.Player4.SetActive (true);
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
+			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
+			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+		}
 	}
 
 

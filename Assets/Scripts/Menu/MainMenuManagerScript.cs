@@ -42,6 +42,13 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float modesDescriptionOnScreen = 198;
 	public float modesDescriptionOffScreen = 700;
 
+	[Header ("Gamepad Disconnection")]
+	public bool oneGamepadDisconnected = false;
+	public GameObject gamepadsDisconnectedCanvas;
+	public float maxYGamepad;
+	public float minYGamepad;
+	public RectTransform[] gamepadsDisconnected = new RectTransform[4];
+
 	[Header ("Animations Duration")]
 	public float durationSubmit;
 	public float durationCancel;
@@ -213,6 +220,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		textToResume.gameObject.SetActive (true);
 		backButtonsContent.gameObject.SetActive (true);
+		gamepadsDisconnectedCanvas.SetActive (true);
 
 		startRect.anchoredPosition = new Vector2(offScreenX, yPositions [2]);
 		instructionsRect.anchoredPosition = new Vector2(offScreenX, yPositions [3]);
@@ -232,6 +240,11 @@ public class MainMenuManagerScript : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").transform.position = new Vector3 (-140, pausePosition.y, pausePosition.z);
 
 		controllerManager = choosePlayerContent.GetComponent<ControllerChangeManager1> ();
+
+		for(int i = 0; i < 4; i++)
+		{
+			gamepadsDisconnected [i].anchoredPosition = new Vector2 (gamepadsDisconnected [i].anchoredPosition.x, maxYGamepad);
+		}
 	}
 
 	void SetGapsAndButtons ()
@@ -382,18 +395,11 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		//SetButtonsNavigation ();
 
-		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !tweening)
-		{
-			if(textToResume.anchoredPosition.y != -517 && !DOTween.IsTweening("TextToResume"))
-				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -517), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
-		}
 
-		else 
-		{
-			if(textToResume.anchoredPosition.y != -700 && !DOTween.IsTweening("TextToResume"))
-				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -700), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
-		}
 
+		TextResume ();
+
+		GamepadsDisconnection ();
 	}
 
 	public void ClickExitMenu ()
@@ -468,6 +474,60 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			StartCoroutine (ExitBomb ());
 			Tweening ();
+		}
+	}
+
+	void TextResume ()
+	{
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !tweening && !oneGamepadDisconnected)
+		{
+			if(textToResume.anchoredPosition.y != -517 && !DOTween.IsTweening("TextToResume"))
+				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -517), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
+		}
+
+		else 
+		{
+			if(textToResume.anchoredPosition.y != -700 && !DOTween.IsTweening("TextToResume"))
+				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -700), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
+		}
+	}
+
+	void GamepadsDisconnection ()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
+				oneGamepadDisconnected = true;
+		}
+
+		if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
+			oneGamepadDisconnected = false;
+		
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !tweening)
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && gamepadsDisconnected[i].anchoredPosition.y != minYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
+				{
+					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, minYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+				}
+
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
+				{
+					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+
+				}
+			}
+		}
+
+		else
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
+					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+			}
 		}
 	}
 
@@ -570,7 +630,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			LoadMainMenu ();
 		}
 
-		else if(GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true)
+		else if(GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected)
 		{
 			Tweening ();
 
@@ -600,7 +660,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			NotTweening ();
 
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-
 		}
 
 	}

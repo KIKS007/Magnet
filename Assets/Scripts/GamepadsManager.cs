@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using XboxCtrlrInput;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Rewired;
@@ -8,8 +7,6 @@ using Rewired;
 public class GamepadsManager : Singleton<GamepadsManager>
 {
 	public event EventHandler OnGamepadConnectionChange;
-
-	public GameObject[] gamepadLine;
 
 	[Header ("Number of Gamepads")]
 	public int numberOfGamepads;
@@ -21,16 +18,18 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	public bool[] gamepadsUnplugged = new bool[4] {false, false, false, false};
 
 
-	void OnLevelWasLoaded () 
-	{	
-		FindGamepadsPluggedAtStart ();
-	}
-
 	// Use this for initialization
 	void Awake () 
 	{
 		ReInput.ControllerConnectedEvent += OnGamepadConnectedOrDisconneted;
-		ReInput.ControllerDisconnectedEvent += OnGamepadConnectedOrDisconneted;
+		ReInput.ControllerPreDisconnectEvent += OnGamepadConnectedOrDisconneted;
+
+		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
+
+		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
+
+		GlobalVariables.Instance.OnModeStarted += ResetUnpluggedArray;
+		GlobalVariables.Instance.OnModeStarted += FindGamepadsPluggedAtStart;
 
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
@@ -40,8 +39,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	{
 		if (OnGamepadConnectionChange != null)
 			OnGamepadConnectionChange ();
-
-		GamepadUnplugged ();
 
 		numberOfGamepads = ReInput.controllers.joystickCount;
 	}
@@ -66,46 +63,68 @@ public class GamepadsManager : Singleton<GamepadsManager>
 				gamepadsPluggedAtStart [3] = true;
 		}
 	}
-		
-	void GamepadUnplugged ()
+
+	void CheckIfGamepadReconnected (ControllerStatusChangedEventArgs arg)
 	{
-		if(gamepadsPluggedAtStart[0] && XCI.IsPluggedIn(1) == false)
+		switch (arg.name)
 		{
-			gamepadsUnplugged[0] = true;
+		case "XInput Gamepad 1":
+			if(gamepadsPluggedAtStart[0])
+				gamepadsUnplugged[0] = false;
+			break;
+		case "XInput Gamepad 2":
+			if(gamepadsPluggedAtStart[1])
+				gamepadsUnplugged[1] = false;
+			break;
+		case "XInput Gamepad 3":
+			if(gamepadsPluggedAtStart[2])
+				gamepadsUnplugged[2] = false;
+			break;
+		case "XInput Gamepad 4":
+			if(gamepadsPluggedAtStart[3])
+				gamepadsUnplugged[3] = false;
+			break;
 		}
-		else if (gamepadsPluggedAtStart[0] && XCI.IsPluggedIn(1) == true)
+	}
+
+	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
+	{
+		switch (arg.name)
 		{
-			gamepadsUnplugged[0] = false;
+		case "XInput Gamepad 1":
+			if(gamepadsPluggedAtStart[0])
+				gamepadsUnplugged[0] = true;
+			break;
+		case "XInput Gamepad 2":
+			if(gamepadsPluggedAtStart[1])
+				gamepadsUnplugged[1] = true;
+			break;
+		case "XInput Gamepad 3":
+			if(gamepadsPluggedAtStart[2])
+				gamepadsUnplugged[2] = true;
+			break;
+		case "XInput Gamepad 4":
+			if(gamepadsPluggedAtStart[3])
+				gamepadsUnplugged[3] = true;
+			break;
 		}
 
-		if(gamepadsPluggedAtStart[1] && XCI.IsPluggedIn(2) == false)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			gamepadsUnplugged[1] = true;
-			
+			if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
+				PauseGame ();
 		}
-		else if (gamepadsPluggedAtStart[1] && XCI.IsPluggedIn(2) == true)
-		{
-			gamepadsUnplugged[1] = false;
-		}
+	}
 
-		if(gamepadsPluggedAtStart[2] && XCI.IsPluggedIn(3) == false)
-		{
-			gamepadsUnplugged[2] = true;
-		}
-		else if (gamepadsPluggedAtStart[2] && XCI.IsPluggedIn(3) == true)
-		{
-			gamepadsUnplugged[2] = false;
-		}
+	void PauseGame ()
+	{
+		GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamePauseResumeVoid ();
+	}
 
-		if(gamepadsPluggedAtStart[3] && XCI.IsPluggedIn(4) == false)
-		{
-			gamepadsUnplugged[3] = true;
-		}
-		else if (gamepadsPluggedAtStart[3] && XCI.IsPluggedIn(4) == true)
-		{
-			gamepadsUnplugged[3] = false;
-		}
-			
+	void ResetUnpluggedArray ()
+	{
+		for (int i = 0; i < gamepadsUnplugged.Length; i++)
+			gamepadsUnplugged [i] = false;
 	}
 
 	void SetupPlayersAndControllers ()

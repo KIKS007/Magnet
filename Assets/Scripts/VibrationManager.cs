@@ -236,11 +236,6 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	}
 
-	void OnLevelWasLoaded ()
-	{
-		StopAllVibration ();
-	}
-
 	void OnApplicationQuit ()
 	{
 		StopAllVibration ();
