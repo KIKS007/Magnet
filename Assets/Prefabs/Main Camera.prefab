@@ -9,7 +9,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 479748}
   - 20: {fileID: 2084138}
-  - 114: {fileID: 11411936}
   - 114: {fileID: 11466250}
   - 114: {fileID: 11424106}
   - 114: {fileID: 11400114}
@@ -175,17 +174,6 @@ MonoBehaviour:
   distanceRatio: 1
   largestDistance: 0
   yPos: 0
---- !u!114 &11411936
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef55ffa3a313709488efa7dcdbe0cade, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11412352
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -234,7 +222,6 @@ MonoBehaviour:
   timeTween: 0.05
   bloomIntensity: 0.7
   timeTweenEffect: 0.1
-  timeTweenPause: 0.05
   slowMotion: 0
   timeScaleDebug: 1
   slowMoNumber: 0

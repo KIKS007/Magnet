@@ -68,7 +68,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 		
-
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 
 		StartCoroutine (OnGameOverEvent ());
