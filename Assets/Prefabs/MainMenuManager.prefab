@@ -88,6 +88,15 @@ MonoBehaviour:
   modesDescriptionXPos: 693
   modesDescriptionOnScreen: 242
   modesDescriptionOffScreen: 700
+  oneGamepadDisconnected: 0
+  gamepadsDisconnectedCanvas: {fileID: 0}
+  maxYGamepad: 850
+  minYGamepad: 588
+  gamepadsDisconnected:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   durationSubmit: 0.25
   durationCancel: 0.25
   durationContent: 0.25
@@ -136,7 +145,7 @@ MonoBehaviour:
   instructionsMenuCanvas: {fileID: 0}
   chooseOptionsMenuCanvas: {fileID: 0}
   soundsMenuCanvas: {fileID: 0}
-  qualityMenuCanvas: {fileID: 0}
+  graphicsMenuCanvas: {fileID: 0}
   playersMenuCanvas: {fileID: 0}
   creditsMenuCanvas: {fileID: 0}
   quitMenuCanvas: {fileID: 0}
@@ -148,10 +157,11 @@ MonoBehaviour:
   hitMenuCanvas: {fileID: 0}
   chooseTeamCanvas: {fileID: 0}
   choosePlayerCanvas: {fileID: 0}
+  backButtonsCanvas: {fileID: 0}
   instructionsMenuContent: {fileID: 0}
   optionsMenuContent: {fileID: 0}
   soundsMenuContent: {fileID: 0}
-  qualityMenuContent: {fileID: 0}
+  graphicsMenuContent: {fileID: 0}
   playersMenuContent: {fileID: 0}
   creditsMenuContent: {fileID: 0}
   quitMenuContent: {fileID: 0}
