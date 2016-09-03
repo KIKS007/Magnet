@@ -116,6 +116,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject hitMenuCanvas;
 	public GameObject chooseTeamCanvas;
 	public GameObject choosePlayerCanvas;
+	public GameObject backButtonsCanvas;
 
 	[Header ("All Contents")]
 	public RectTransform instructionsMenuContent;
@@ -221,6 +222,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		textToResume.gameObject.SetActive (true);
 		backButtonsContent.gameObject.SetActive (true);
 		gamepadsDisconnectedCanvas.SetActive (true);
+		backButtonsCanvas.SetActive (true);
 
 		startRect.anchoredPosition = new Vector2(offScreenX, yPositions [2]);
 		instructionsRect.anchoredPosition = new Vector2(offScreenX, yPositions [3]);

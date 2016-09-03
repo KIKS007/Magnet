@@ -16052,7 +16052,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &336713199
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21774,7 +21774,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &540709872
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24612,6 +24612,10 @@ Prefab:
       propertyPath: gamepadsDisconnectedCanvas
       value: 
       objectReference: {fileID: 336713198}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: backButtonsCanvas
+      value: 
+      objectReference: {fileID: 540709871}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
   m_IsPrefabParent: 0
@@ -43301,7 +43305,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 849, y: 588}
+  m_AnchoredPosition: {x: 849, y: 850}
   m_SizeDelta: {x: 113.4, y: 81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1328718500
@@ -58883,7 +58887,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 615, y: 588}
+  m_AnchoredPosition: {x: 615, y: 850}
   m_SizeDelta: {x: 113.4, y: 81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1922494624
@@ -61419,7 +61423,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1081, y: 588}
+  m_AnchoredPosition: {x: 1081, y: 850}
   m_SizeDelta: {x: 113.4, y: 81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1994127861
@@ -61696,7 +61700,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 378, y: 588}
+  m_AnchoredPosition: {x: 378, y: 850}
   m_SizeDelta: {x: 113.4, y: 81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2019345373
