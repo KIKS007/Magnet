@@ -6,6 +6,11 @@ public class ForceAspectRatio : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		UpdateCamera ();
+	}
+
+	void UpdateCamera ()
+	{
 		// set the desired aspect ratio (the values in this example are
 		// hard-coded for 16:9, but you could make them into public
 		// variables instead so you can set them at design time)
@@ -44,6 +49,18 @@ public class ForceAspectRatio : MonoBehaviour
 			rect.y = 0;
 
 			camera.rect = rect;
+		}
+	}
+
+	private int lastWidth = -1, lastHeight = -1;
+
+	public void Update()
+	{
+		if (Screen.width != lastWidth || Screen.height != lastHeight) {
+			lastWidth = Screen.width;
+			lastHeight = Screen.height;
+
+			UpdateCamera();
 		}
 	}
 }

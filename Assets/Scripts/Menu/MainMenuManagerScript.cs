@@ -82,6 +82,10 @@ public class MainMenuManagerScript : MonoBehaviour
 	public RectTransform goCrushContent;
 	public RectTransform goWinner;
 
+	[Header ("Back Buttons")]
+	public GameObject backButtonsCanvas;
+	public RectTransform backButtonsContent;
+	public Vector2 backButtonsInitialPos;
 
 	[Header ("Ease")]
 	public Ease easeTypeMainMenu;
@@ -116,7 +120,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject hitMenuCanvas;
 	public GameObject chooseTeamCanvas;
 	public GameObject choosePlayerCanvas;
-	public GameObject backButtonsCanvas;
 
 	[Header ("All Contents")]
 	public RectTransform instructionsMenuContent;
@@ -129,7 +132,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public RectTransform chooseModeContent;
 	public RectTransform chooseTeamContent;
 	public RectTransform choosePlayerContent;
-	public RectTransform backButtonsContent;
 
 	private RectTransform startRect;
 	private RectTransform instructionsRect;
@@ -283,10 +285,10 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && mainCamera.transform.position == pausePosition)
 		{
-			if (mainMenuCanvas.activeSelf == false && backButtonsEnabled && backButtonsContent.anchoredPosition.x != 0 && !DOTween.IsTweening("BackButtons"))
-				backButtonsContent.DOAnchorPos (Vector2.zero, durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
+			if (mainMenuCanvas.activeSelf == false && backButtonsEnabled && backButtonsContent.anchoredPosition != backButtonsInitialPos && !DOTween.IsTweening("BackButtons"))
+				backButtonsContent.DOAnchorPos (backButtonsInitialPos, durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 		}
-		else if(backButtonsEnabled && backButtonsContent.anchoredPosition.x == 0 && !DOTween.IsTweening("BackButtons"))
+		else if(backButtonsEnabled && backButtonsContent.anchoredPosition.x == backButtonsInitialPos.x && !DOTween.IsTweening("BackButtons"))
 			backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsContent.anchoredPosition.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 
 
@@ -830,7 +832,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		smallLogo.DOAnchorPos(new Vector2(0, 400), durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		yield return myTween.WaitForCompletion ();
 
-		backButtonsContent.DOAnchorPos (new Vector2(offScreenX, 0), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
+		backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 
 		chooseTeamCanvas.SetActive(false);
 		crushMenuCanvas.SetActive(false);
@@ -1585,7 +1587,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			smallLogo.DOAnchorPos(new Vector2(0, 0), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 		if(backButtonsContent.anchoredPosition.x != offScreenX)
-			backButtonsContent.DOAnchorPos (new Vector2(offScreenX, 0), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
+			backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 
 		instructionsMenuCanvas.SetActive(false);
 		chooseOptionsMenuCanvas.SetActive(false);

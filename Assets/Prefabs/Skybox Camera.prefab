@@ -12,6 +12,7 @@ GameObject:
   - 124: {fileID: 12494348}
   - 92: {fileID: 9297134}
   - 114: {fileID: 11447094}
+  - 114: {fileID: 11454900}
   m_Layer: 0
   m_Name: Skybox Camera
   m_TagString: Untagged
@@ -83,8 +84,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4f7378cc1ea3c408b2a5e0f26d51f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedMax: 0
-  speedMin: 0
+  xRot: 0
+  yRot: 0
+  zRot: 0
+--- !u!114 &11454900
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 121016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe422fcf3d1e8943aed8dfb3cfafe7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!124 &12494348
 Behaviour:
   m_ObjectHideFlags: 1
