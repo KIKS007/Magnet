@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots};
+public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy};
 
 public class StatsManager : Singleton<StatsManager> 
 {
@@ -61,7 +61,7 @@ public class StatsManager : Singleton<StatsManager>
 		playerStatsList [3].HitByPlayersList [2].hitBy = WhichPlayer.Player3;
 
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 6; i++)
 			mostStatsList.Add (new MostStats ());
 
 		mostStatsList [0].whichStat = WhichStat.Frags;
@@ -78,12 +78,9 @@ public class StatsManager : Singleton<StatsManager>
 
 		mostStatsList [4].whichStat = WhichStat.Shots;
 		mostStatsList [4].whichPlayer = WhichPlayer.None;
-	}
 
-	// Use this for initialization
-	void Start () 
-	{
-		GetPlayersEvents ();
+		mostStatsList [5].whichStat = WhichStat.AimAccuracy;
+		mostStatsList [5].whichPlayer = WhichPlayer.None;
 	}
 
 	public void GetPlayersEvents ()
@@ -199,9 +196,9 @@ public class StatsManager : Singleton<StatsManager>
 			break;
 		}
 
-		StatsUpdate ();
-
 		AimPrecision ();
+
+		MostStatsUpdate ();
 	}
 
 	void DashPlayer (int whichPlayer)
@@ -209,7 +206,7 @@ public class StatsManager : Singleton<StatsManager>
 		totalDash++;
 		playerStatsList [whichPlayer].dash++;
 
-		StatsUpdate ();
+		MostStatsUpdate ();
 	}
 
 	void ShotPlayer (int whichPlayer)
@@ -217,9 +214,9 @@ public class StatsManager : Singleton<StatsManager>
 		totalShots++;
 		playerStatsList [whichPlayer].shots++;
 
-		StatsUpdate ();
-
 		AimPrecision ();
+
+		MostStatsUpdate ();
 	}
 
 	public void Winner (WhichPlayer whichPlayerWon)
@@ -251,13 +248,13 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if(playerStatsList [i].shots > 0)
 			{
-				playerStatsList [i].aimPrecision = ((float)playerStatsList [i].frags / (float)playerStatsList [i].shots) * 100f;
-				playerStatsList [i].aimPrecision = (int)playerStatsList [i].aimPrecision;
+				float temp = ((float)playerStatsList [i].frags / (float)playerStatsList [i].shots) * 100f;
+				playerStatsList [i].aimAccuracy = (int)temp;
 			}
 		}
 	}
 
-	public void StatsUpdate ()
+	public void MostStatsUpdate  ()
 	{
 		int frags = 0;
 
@@ -265,6 +262,8 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if (playerStatsList [i].frags > frags)
 			{
+				frags = playerStatsList [i].frags;
+
 				mostStatsList [0].statNumber = playerStatsList [i].frags;
 
 				switch (i)
@@ -292,6 +291,8 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if (playerStatsList [i].hits > hits)
 			{
+				hits = playerStatsList [i].hits;
+
 				mostStatsList [1].statNumber = playerStatsList [i].hits;
 
 				switch (i)
@@ -319,6 +320,8 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if (playerStatsList [i].death > deaths)
 			{
+				deaths = playerStatsList [i].death;
+
 				mostStatsList [2].statNumber = playerStatsList [i].death;
 
 				switch (i)
@@ -346,6 +349,8 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if (playerStatsList [i].dash > dashs)
 			{
+				dashs = playerStatsList [i].dash;
+
 				mostStatsList [3].statNumber = playerStatsList [i].dash;
 
 				switch (i)
@@ -373,6 +378,8 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			if (playerStatsList [i].shots > shots)
 			{
+				shots = playerStatsList [i].shots;
+
 				mostStatsList [4].statNumber = playerStatsList [i].shots;
 
 				switch (i)
@@ -388,6 +395,35 @@ public class StatsManager : Singleton<StatsManager>
 					break;
 				case 3:
 					mostStatsList [4].whichPlayer = WhichPlayer.Player4;
+					break;
+				}
+			}
+
+		}
+
+		int accuracy = 0;
+
+		for(int i = 0; i < playerStatsList.Count; i++)
+		{
+			if (playerStatsList [i].aimAccuracy > accuracy)
+			{
+				accuracy = playerStatsList [i].aimAccuracy;
+
+				mostStatsList [5].statNumber = playerStatsList [i].aimAccuracy;
+
+				switch (i)
+				{
+				case 0:
+					mostStatsList [5].whichPlayer = WhichPlayer.Player1;
+					break;
+				case 1:
+					mostStatsList [5].whichPlayer = WhichPlayer.Player2;
+					break;
+				case 2:
+					mostStatsList [5].whichPlayer = WhichPlayer.Player3;
+					break;
+				case 3:
+					mostStatsList [5].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
@@ -444,7 +480,7 @@ public class PlayerStats
 	public List<HitByWhichPlayer> HitByPlayersList = new List<HitByWhichPlayer> ();
 
 	[Range (0, 100)]
-	public float aimPrecision = 0;
+	public int aimAccuracy = 0;
 
 	public int winsInARow = 0;
 }

@@ -26,6 +26,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     void Start()
     {
+		StartCoroutine (WaitForFullscreenChange ());
+
 		InitResolutions();
 
 		Setup();
@@ -164,6 +166,25 @@ public class ResolutionManager : Singleton<ResolutionManager>
 			toggleScreenText [0].SetActive (true);
 			toggleScreenText [1].SetActive (false);
 		}
-
     }
+
+	IEnumerator WaitForFullscreenChange ()
+	{
+		bool fullScreenTemp = Screen.fullScreen;
+
+		yield return new WaitUntil (() => fullScreenTemp != Screen.fullScreen);
+
+		if(Screen.fullScreen)
+		{
+			toggleScreenText [0].SetActive (false);
+			toggleScreenText [1].SetActive (true);
+		}
+		else
+		{
+			toggleScreenText [0].SetActive (true);
+			toggleScreenText [1].SetActive (false);
+		}
+
+		StartCoroutine (WaitForFullscreenChange ());
+	}
 }

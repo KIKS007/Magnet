@@ -399,8 +399,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		//SetButtonsNavigation ();
 
-
-
 		TextResume ();
 
 		GamepadsDisconnection ();
@@ -1742,8 +1740,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		loadModeScript.RestartSceneVoid ();
 	}
-
-
+		
 
 
 	void Tweening ()
