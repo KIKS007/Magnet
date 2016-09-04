@@ -6,6 +6,7 @@ using Rewired.Utils;
 using Rewired.Platforms;
 
 #pragma warning disable 0219
+#pragma warning disable 0618
 
 namespace Rewired {
 

@@ -13,7 +13,6 @@ public class StatsFeedback : MonoBehaviour
 	private StatsManager stats;
 	private Text parentText;
 	private Text firstChildText;
-	private Text secondChildText;
 
 	// Use this for initialization
 	void Start () 
@@ -21,9 +20,6 @@ public class StatsFeedback : MonoBehaviour
 		stats = StatsManager.Instance;
 		parentText = GetComponent<Text> ();
 		firstChildText = transform.GetChild(0).GetComponent<Text> ();
-
-		if(transform.childCount == 2)
-			secondChildText = transform.GetChild(1).GetComponent<Text> ();
 
 		if(stats != null)
 		{

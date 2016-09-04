@@ -1,3 +1,5 @@
+#pragma warning disable 0618
+
 //unity before version 5 is old
 #define USE_OLD_UNITY 
 
@@ -5,7 +7,6 @@ using UnityEngine;
 //using System;
 using System.Collections;
 using System.Collections.Generic;
-
 
 
 [System.Serializable]

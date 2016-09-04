@@ -28,7 +28,7 @@ public class FeedbackInputs : MonoBehaviour
 
 	private RectTransform rect;
 	private Vector2 initialPos;
-	private Vector2 mouseInitialPos;
+	//private Vector2 mouseInitialPos;
 
 	// Use this for initialization
 	void Start () 
@@ -43,7 +43,7 @@ public class FeedbackInputs : MonoBehaviour
 
 	void OnEnable ()
 	{
-		mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+		//mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 	}
 	
 	// Update is called once per frame
