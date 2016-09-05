@@ -16,6 +16,10 @@ public class StatsFeedback : MonoBehaviour
 	public string beforeNumberText;
 	public string afterNumberText;
 
+	[Header ("Display Condition")]
+	public bool displayCondition = false;
+	public int minimumNumber = 0;
+
 	private StatsManager stats;
 	private Text textComponent;
 
@@ -57,6 +61,105 @@ public class StatsFeedback : MonoBehaviour
 			UpdateStats ();
 		else
 			EditorUpdateStats ();
+
+		if (Application.isPlaying && displayCondition && stats != null)
+		{
+			if (CanDisplay() && !textComponent.enabled)
+				textComponent.enabled = true;
+
+			if (!CanDisplay() && textComponent.enabled)
+				textComponent.enabled = false;
+		}
+	}
+
+	bool CanDisplay ()
+	{
+		switch (whichStatType)
+		{
+		case WhichStatType.Player:
+			
+			switch(whichStat)
+			{
+			case WhichStat.Frags:
+				if (stats.playerStatsList [(int)whichPlayer].frags >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Hits:
+				if (stats.playerStatsList [(int)whichPlayer].hits >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Death:
+				if (stats.playerStatsList [(int)whichPlayer].death >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Dash:
+				if (stats.playerStatsList [(int)whichPlayer].dash >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Shots:
+				if (stats.playerStatsList [(int)whichPlayer].shots >= minimumNumber)
+					return true;
+				else
+					return false;
+			default:
+				return true;
+			}
+
+		case WhichStatType.Most:
+			if (stats.mostStatsList [(int)whichStat].statNumber >= minimumNumber)
+				return true;
+			else
+				return false;
+
+		case WhichStatType.Total:
+			
+			switch(whichStat)
+			{
+			case WhichStat.Frags:
+				if (stats.totalFrags >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Hits:
+				if (stats.totalHits >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Death:
+				if (stats.totalDeath >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Dash:
+				if (stats.totalDash >= minimumNumber)
+					return true;
+				else
+					return false;
+			case WhichStat.Shots:
+				if (stats.totalShots >= minimumNumber)
+					return true;
+				else
+					return false;
+			default:
+				return true;
+			}
+
+		case WhichStatType.Winner:
+			return true;
+
+		case WhichStatType.WinsInARow:
+			if (stats.mostStatsList [6].statNumber >= minimumNumber)
+				return true;
+			else
+				return false;
+
+		default:
+			return true;
+		}
 	}
 
 	void EditorUpdateStats ()
@@ -84,13 +187,18 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStatType.Total:
-			textComponent.text = beforeNumberText + " " + stats.totalFrags.ToString () + " " + afterNumberText;
+			textComponent.text = beforeNumberText + " " + "0" + " " + afterNumberText;
 			break;
 		case WhichStatType.Winner:
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
-		
+		case WhichStatType.WinsInARow:
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			textComponent.text = "Player 1";
+			secondText = beforeNumberText + " " + color + "2" + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
+			break;
 		}	
 
 	}
@@ -281,10 +389,10 @@ public class StatsFeedback : MonoBehaviour
 	void WinsInARow ()
 	{
 		string color = "";
-		string number = stats.mostStatsList [7].statNumber.ToString ();
+		string number = stats.mostStatsList [6].statNumber.ToString ();
 		string secondText;
 
-		switch (stats.mostStatsList [7].whichPlayer)
+		switch (stats.mostStatsList [6].whichPlayer)
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";
