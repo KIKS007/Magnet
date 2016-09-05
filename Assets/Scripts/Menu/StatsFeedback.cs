@@ -2,11 +2,11 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public enum WhichStatType {Player, Most, Total, Winner};
-
 [ExecuteInEditMode]
 public class StatsFeedback : MonoBehaviour 
 {
+	public enum WhichStatType {Player, Most, Total, Winner, WinsInARow};
+
 	public WhichStatType whichStatType;
 	public WhichStat whichStat;
 	public WhichPlayer whichPlayer = WhichPlayer.None;
@@ -42,6 +42,9 @@ public class StatsFeedback : MonoBehaviour
 					break;
 				case WhichStatType.Winner:
 					WinnerStat ();
+					break;
+				case WhichStatType.WinsInARow:
+					WinsInARow ();
 					break;
 				}
 			}
@@ -87,6 +90,7 @@ public class StatsFeedback : MonoBehaviour
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
+		
 		}	
 
 	}
@@ -110,6 +114,9 @@ public class StatsFeedback : MonoBehaviour
 				break;
 			case WhichStatType.Winner:
 				WinnerStat ();
+				break;
+			case WhichStatType.WinsInARow:
+				WinsInARow ();
 				break;
 			}
 		}
@@ -269,5 +276,35 @@ public class StatsFeedback : MonoBehaviour
 		}
 
 		textComponent.text = beforeNumberText + " " + color + textComponent.text + "</color> " + afterNumberText;
+	}
+
+	void WinsInARow ()
+	{
+		string color = "";
+		string number = stats.mostStatsList [7].statNumber.ToString ();
+		string secondText;
+
+		switch (stats.mostStatsList [7].whichPlayer)
+		{
+		case WhichPlayer.Player1:
+			textComponent.text = "Player 1";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			break;
+		case WhichPlayer.Player2:
+			textComponent.text = "Player 2";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			break;
+		case WhichPlayer.Player3:
+			textComponent.text = "Player 3";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			break;
+		case WhichPlayer.Player4:
+			textComponent.text = "Player 4";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			break;
+		}
+
+		secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+		textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 	}
 }

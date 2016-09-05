@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy};
+public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, WinsInARow};
 
 public class StatsManager : Singleton<StatsManager> 
 {
@@ -61,7 +61,7 @@ public class StatsManager : Singleton<StatsManager>
 		playerStatsList [3].HitByPlayersList [2].hitBy = WhichPlayer.Player3;
 
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 7; i++)
 			mostStatsList.Add (new MostStats ());
 
 		mostStatsList [0].whichStat = WhichStat.Frags;
@@ -81,6 +81,9 @@ public class StatsManager : Singleton<StatsManager>
 
 		mostStatsList [5].whichStat = WhichStat.AimAccuracy;
 		mostStatsList [5].whichPlayer = WhichPlayer.None;
+
+		mostStatsList [6].whichStat = WhichStat.WinsInARow;
+		mostStatsList [6].whichPlayer = WhichPlayer.None;
 	}
 
 	public void GetPlayersEvents ()
@@ -424,6 +427,35 @@ public class StatsManager : Singleton<StatsManager>
 					break;
 				case 3:
 					mostStatsList [5].whichPlayer = WhichPlayer.Player4;
+					break;
+				}
+			}
+
+		}
+
+		int winsInARow = 0;
+
+		for(int i = 0; i < playerStatsList.Count; i++)
+		{
+			if (playerStatsList [i].winsInARow > winsInARow)
+			{
+				winsInARow = playerStatsList [i].winsInARow;
+
+				mostStatsList [6].statNumber = playerStatsList [i].winsInARow;
+
+				switch (i)
+				{
+				case 0:
+					mostStatsList [6].whichPlayer = WhichPlayer.Player1;
+					break;
+				case 1:
+					mostStatsList [6].whichPlayer = WhichPlayer.Player2;
+					break;
+				case 2:
+					mostStatsList [6].whichPlayer = WhichPlayer.Player3;
+					break;
+				case 3:
+					mostStatsList [6].whichPlayer = WhichPlayer.Player4;
 					break;
 				}
 			}
