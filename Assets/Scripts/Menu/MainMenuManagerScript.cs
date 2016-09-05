@@ -80,7 +80,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public RectTransform goBombContent;
 	public RectTransform goHitContent;
 	public RectTransform goCrushContent;
-	public RectTransform goWinner;
 
 	[Header ("Back Buttons")]
 	public GameObject backButtonsCanvas;
@@ -1619,7 +1618,6 @@ public class MainMenuManagerScript : MonoBehaviour
 		goBombContent.anchoredPosition = new Vector2 (-offScreenX, goBombContent.anchoredPosition.y);
 		goHitContent.anchoredPosition = new Vector2 (-offScreenX, goHitContent.anchoredPosition.y);
 		goCrushContent.anchoredPosition = new Vector2 (-offScreenX, goCrushContent.anchoredPosition.y);
-		goWinner.anchoredPosition = new Vector2 (-offScreenX, goWinner.anchoredPosition.y);
 
 		gameOverCanvas.SetActive (true);
 
@@ -1631,8 +1629,6 @@ public class MainMenuManagerScript : MonoBehaviour
 		restartButton.DOAnchorPos (new Vector2(restartButton.anchoredPosition.x, bottomYPosition), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		menuButton.DOAnchorPos (new Vector2(menuButton.anchoredPosition.x, bottomYPosition), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
-
-		goWinner.DOAnchorPos (new Vector2(0, goWinner.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 
 		switch(GlobalVariables.Instance.CurrentModeLoaded)
 		{

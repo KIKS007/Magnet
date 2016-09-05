@@ -2,49 +2,101 @@
 using System.Collections;
 using UnityEngine.UI;
 
+public enum WhichStatType {Player, Most, Total, Winner};
+
+[ExecuteInEditMode]
 public class StatsFeedback : MonoBehaviour 
 {
-	public enum WhichStatType {Player, Most, Total, Winner};
-
 	public WhichStatType whichStatType;
 	public WhichStat whichStat;
 	public WhichPlayer whichPlayer = WhichPlayer.None;
 
+	[Header ("Text")]
+	public bool playerNameAtFirst = true;
+	public string beforeNumberText;
+	public string afterNumberText;
+
 	private StatsManager stats;
-	private Text parentText;
-	private Text firstChildText;
+	private Text textComponent;
 
 	// Use this for initialization
 	void Start () 
 	{
-		stats = StatsManager.Instance;
-		parentText = GetComponent<Text> ();
-		firstChildText = transform.GetChild(0).GetComponent<Text> ();
-
-		if(stats != null)
+		if(Application.isPlaying)
 		{
-			switch (whichStatType)
+			stats = StatsManager.Instance;
+			textComponent = GetComponent<Text> ();
+
+			if(stats != null)
 			{
-			case WhichStatType.Player:
-				PlayerStat ();
-				break;
-			case WhichStatType.Most:
-				MostStat ();
-				break;
-			case WhichStatType.Total:
-				TotalStat ();
-				break;
-			case WhichStatType.Winner:
-				WinnerStat ();
-				break;
+				switch (whichStatType)
+				{
+				case WhichStatType.Player:
+					PlayerStat ();
+					break;
+				case WhichStatType.Most:
+					MostStat ();
+					break;
+				case WhichStatType.Total:
+					TotalStat ();
+					break;
+				case WhichStatType.Winner:
+					WinnerStat ();
+					break;
+				}
 			}
 		}
 	}
 	
 	void OnEnable ()
 	{
+		if (Application.isPlaying)
+			UpdateStats ();
+		else
+			EditorUpdateStats ();
+	}
+
+	void EditorUpdateStats ()
+	{
+		stats = StatsManager.Instance;
+		textComponent = GetComponent<Text> ();
+
+		textComponent.text = "";
+
+		string color = "";
+		string secondText;
+
+		switch (whichStatType)
+		{
+		case WhichStatType.Player:
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			secondText = beforeNumberText + " " + color + "0" + "</color> " + afterNumberText;
+			textComponent.text = "Player 1";
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
+			break;
+		case WhichStatType.Most:
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			secondText = beforeNumberText + " " + color + "0" + "</color> " + afterNumberText;
+			textComponent.text = "Player 1";
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
+			break;
+		case WhichStatType.Total:
+			textComponent.text = beforeNumberText + " " + stats.totalFrags.ToString () + " " + afterNumberText;
+			break;
+		case WhichStatType.Winner:
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
+			break;
+		}	
+
+	}
+
+	void UpdateStats ()
+	{
 		if(stats != null)
 		{
+			textComponent.text = "";
+
 			switch (whichStatType)
 			{
 			case WhichStatType.Player:
@@ -70,99 +122,102 @@ public class StatsFeedback : MonoBehaviour
 		switch (whichPlayer)
 		{
 		case WhichPlayer.Player1:
-			parentText.text = "Player 1";
-			parentText.color = GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 1";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
-			parentText.text = "Player 2";
-			parentText.color = GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 2";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
-			parentText.text = "Player 3";
-			parentText.color = GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 3";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
-			parentText.text = "Player 4";
-			parentText.color = GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 4";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
+		string secondText;
+
 		switch(whichStat)
 		{
 		case WhichStat.Frags:
-			firstChildText.text = stats.playerStatsList [(int)whichPlayer].frags.ToString ();
-			firstChildText.text = "made " + color + stats.playerStatsList [(int)whichPlayer].frags.ToString () + "</color> frags";
+			secondText = beforeNumberText + " " + color + stats.playerStatsList [(int)whichPlayer].frags.ToString () + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Hits:
-			firstChildText.text = stats.playerStatsList [(int)whichPlayer].hits.ToString ();
-			firstChildText.text = "has been hit " + color +  stats.playerStatsList [(int)whichPlayer].hits.ToString () + "</color> times";
+			secondText = beforeNumberText + " " + color +  stats.playerStatsList [(int)whichPlayer].hits.ToString () + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Death:
-			firstChildText.text = stats.playerStatsList [(int)whichPlayer].death.ToString ();
-			firstChildText.text = "died " + color + stats.playerStatsList [(int)whichPlayer].death.ToString () + "</color> times";
+			secondText = beforeNumberText + " " + color + stats.playerStatsList [(int)whichPlayer].death.ToString () + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Dash:
-			firstChildText.text = stats.playerStatsList [(int)whichPlayer].dash.ToString ();
-			firstChildText.text = "made " + color + stats.playerStatsList [(int)whichPlayer].dash.ToString () + "</color> dashs";
+			secondText = beforeNumberText + " " + color + stats.playerStatsList [(int)whichPlayer].dash.ToString () + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Shots:
-			firstChildText.text = stats.playerStatsList [(int)whichPlayer].shots.ToString ();
-			firstChildText.text = "made " + color + stats.playerStatsList [(int)whichPlayer].shots.ToString () + "</color> shots";
+			secondText = beforeNumberText + " " + color + stats.playerStatsList [(int)whichPlayer].shots.ToString () + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		}
 	}
 
 	void MostStat ()
 	{
-		//parentText.text = stats.mostStatsList [(int)whichStat].whichPlayer.ToString ();
-
 		string color = "";
 		string number = stats.mostStatsList [(int)whichStat].statNumber.ToString ();
 
 		switch (stats.mostStatsList [(int)whichStat].whichPlayer)
 		{
 		case WhichPlayer.Player1:
-			parentText.text = "Player 1";
-			parentText.color = GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 1";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
-			parentText.text = "Player 2";
-			parentText.color = GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 2";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
-			parentText.text = "Player 3";
-			parentText.color = GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 3";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
-			parentText.text = "Player 4";
-			parentText.color = GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color;
+			textComponent.text = "Player 4";
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
+		string secondText;
+
 		switch(whichStat)
 		{
 		case WhichStat.Frags:
-			firstChildText.text = "made " + color + number + "</color> frags";
+			secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Hits:
-			firstChildText.text = "has been hit " + color +  number + "</color> times";
+			secondText = beforeNumberText + " " + color +  number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Death:
-			firstChildText.text = "died " + color + number + "</color> times";
+			secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Dash:
-			firstChildText.text = "made " + color + number + "</color> dashs";
+			secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStat.Shots:
-			firstChildText.text = "made " + color + number + "</color> shots";
+			secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
+			break;
+		case WhichStat.AimAccuracy:
+			secondText = beforeNumberText + " " + color + number + "</color> " + afterNumberText;
+			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		}
 	}
@@ -172,44 +227,47 @@ public class StatsFeedback : MonoBehaviour
 		switch(whichStat)
 		{
 		case WhichStat.Frags:
-			firstChildText.text = stats.totalFrags.ToString ();
+			textComponent.text = beforeNumberText + " " + stats.totalFrags.ToString () + " " + afterNumberText;
 			break;
 		case WhichStat.Hits:
-			firstChildText.text = stats.totalHits.ToString ();
+			textComponent.text = beforeNumberText + " " + stats.totalHits.ToString () + " " + afterNumberText;
 			break;
 		case WhichStat.Death:
-			firstChildText.text = stats.totalDeath.ToString ();
+			textComponent.text = beforeNumberText + " " + stats.totalDeath.ToString () + " " + afterNumberText;
 			break;
 		case WhichStat.Dash:
-			firstChildText.text = stats.totalDash.ToString ();
+			textComponent.text = beforeNumberText + " " + stats.totalDash.ToString () + " " + afterNumberText;
 			break;
 		case WhichStat.Shots:
-			firstChildText.text = stats.totalShots.ToString ();
+			textComponent.text = beforeNumberText + " " + stats.totalShots.ToString () + " " + afterNumberText;
 			break;
 		}
 	}
 
 	void WinnerStat ()
 	{
-		parentText.text = "The winner is ";
-
-		if(stats.winner != "")
-			firstChildText.text = stats.winner;
+		string color = "";
 
 		switch (stats.winner)
 		{
 		case "Player 1":
-			firstChildText.color = GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color;
+			textComponent.text = stats.winner;
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 2":
-			firstChildText.color = GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color;
+			textComponent.text = stats.winner;
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 3":
-			firstChildText.color = GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color;
+			textComponent.text = stats.winner;
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 4":
-			firstChildText.color = GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color;
+			textComponent.text = stats.winner;
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
+
+		textComponent.text = beforeNumberText + " " + color + textComponent.text + "</color> " + afterNumberText;
 	}
 }
