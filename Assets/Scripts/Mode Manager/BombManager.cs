@@ -133,7 +133,7 @@ public class BombManager : MonoBehaviour
 		yield return new WaitForSeconds (timeBetweenSpawn - 0.5f);
 
 		bomb.GetComponent<MovableBomb> ().ResetColor ();
-		GlobalMethods.Instance.SpawnExistingMovable (bomb, new Vector3(0, 2, 0));
+		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
 
 		yield return new WaitForSeconds (0.5f);
 

@@ -407,11 +407,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c09e3cb35b687f41a81d3cdaf15e70d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 0.5
+  fadeDuration: 0.25
   attractingSound: Attraction_Player3
   repulsingSound: Repulsion_Player3
   onHoldSound: 
-  shootSound: EnvoiCube1
+  shootSound: ShootWavy2
   stunSound: AvatarHit
   dashSound: 
   deathSound: 

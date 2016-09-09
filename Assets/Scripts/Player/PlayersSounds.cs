@@ -23,19 +23,21 @@ public class PlayersSounds : MonoBehaviour
 
 
 	private PlayersGameplay playerScript;
-	private int controllerNumber;
 
-	private float attractingVolume;
-	private float repulsingVolume;
+	static float attractingVolume = -1;
+	static float repulsingVolume = -1;
 
 	// Use this for initialization
 	void Start () 
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 
-		attractingVolume = MasterAudio.GetGroupVolume (attractingSound);
-		repulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
-
+		if(attractingVolume == -1)
+		{
+			attractingVolume = MasterAudio.GetGroupVolume (attractingSound);
+			repulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
+		}
+			
 		MasterAudio.SetGroupVolume (attractingSound, 0);
 		MasterAudio.SetGroupVolume (repulsingSound, 0);
 

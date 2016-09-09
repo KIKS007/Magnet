@@ -59,7 +59,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 
 	[Header ("Others")]
-	public string firstSceneToLoad = "Hit";
+	public string firstSceneToLoad = "Crush";
 	public WhichMode WhichModeLoaded;
 	public string CurrentModeLoaded = "";
 

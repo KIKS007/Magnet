@@ -11,6 +11,8 @@ public class MovableBomb : MovableScript
 	public float explosionRadius = 3;
 	public LayerMask explosionMask;
 
+	public float getToPlayerForce = 2;
+
 	private Renderer playerRenderer;
 
 	protected override void Update () 
@@ -133,7 +135,10 @@ public class MovableBomb : MovableScript
 	{
 		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 3)
 		{
-			transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
+			//transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
+			Vector3 direction = playerHolding.transform.position - transform.position;
+
+			rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Acceleration);
 
 			yield return null;
 		}

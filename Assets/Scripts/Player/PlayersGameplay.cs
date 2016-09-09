@@ -479,6 +479,26 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
+	protected virtual void OnCollisionEnter (Collision other)
+	{
+		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			DeathParticles ();
+
+			Death ();
+		}
+
+		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
+		{
+			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+			{
+				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
+
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+			}
+		}
+	}
+
 	protected virtual void TurningMouse ()
 	{
 		// Create a ray from the mouse cursor on screen in the direction of the camera.

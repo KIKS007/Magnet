@@ -79,7 +79,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
 	}
 
-	public void SpawnExistingMovable (GameObject movable, Vector3 position)
+	public void SpawnExistingMovableVoid (GameObject movable, Vector3 position)
+	{
+		StartCoroutine (SpawnExistingMovable (movable, position));
+	}
+
+	public IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position)
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
@@ -88,6 +93,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		do
 		{
 			newPos = position;
+			yield return null;
 		}
 		while (Physics.CheckSphere (position, 3, layer));
 
@@ -101,7 +107,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
 		movable.transform.position = newPos;
+
+		yield return null;
 	}
+
+
 
 	public void SpawnExistingMovableRandom (GameObject movable)
 	{

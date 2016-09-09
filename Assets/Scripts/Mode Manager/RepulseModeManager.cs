@@ -17,11 +17,6 @@ public class RepulseModeManager : MonoBehaviour
 	public Text[] zonesScore = new Text[6];
 	public List<ZoneAndIntType> leastMovablesZones = new List<ZoneAndIntType> ();
 
-	[Header ("Debug")]
-	public int[] numberDebug = new int[4];
-	public RepulseTriggerZones[] zonesDebug = new RepulseTriggerZones[4];
-	public GameObject[] playersDebug = new GameObject[4];
-
 	[Header ("Players Settings")]
 	public Transform[] playersPos = new Transform[6];
 	public List<GameObject> players = new List<GameObject>();
@@ -67,13 +62,6 @@ public class RepulseModeManager : MonoBehaviour
 			GetMovablesNumbers ();
 
 			SortLists ();
-
-			for(int i = 0; i < leastMovablesZones.Count; i++)
-			{
-				numberDebug [i] = leastMovablesZones [i].movableInZone;
-				zonesDebug [i] = leastMovablesZones [i].zone;
-				playersDebug [i] = leastMovablesZones [i].zonesPlayer;
-			}
 
 			for(int i = 0; i < zonesScore.Length; i++)
 			{
@@ -168,10 +156,6 @@ public class RepulseModeManager : MonoBehaviour
 		{
 			leastMovablesZones [i].zone = RepulseTriggerZones.None;
 		}
-
-		numberDebug = new int[players.Count];
-		zonesDebug = new RepulseTriggerZones[players.Count];
-		playersDebug = new GameObject[players.Count];
 	}
 
 	void SetupPlayersAndZones ()
@@ -235,34 +219,81 @@ public class RepulseModeManager : MonoBehaviour
 		switch(number)
 		{
 		case 0:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [0].zone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [0].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone1;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		case 1:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [1].zone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [1].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+				
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone2;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		case 2:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [0].zone = RepulseTriggerZones.Zone1;
-			leastMovablesZones [0].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone1;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		case 3:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [1].zone = RepulseTriggerZones.Zone2;
-			leastMovablesZones [1].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone2;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		case 4:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone3;
-			leastMovablesZones [2].zone = RepulseTriggerZones.Zone3;
-			leastMovablesZones [2].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone3;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone3;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		case 5:
-			player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone4;
-			leastMovablesZones [3].zone = RepulseTriggerZones.Zone4;
-			leastMovablesZones [3].zonesPlayer = player;
+			for(int i = 0; i < leastMovablesZones.Count; i++)
+			{
+				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
+				{
+
+					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone4;
+					leastMovablesZones [i].zone = RepulseTriggerZones.Zone4;
+					leastMovablesZones [i].zonesPlayer = player;
+					break;
+				}
+			}
 			break;
 		}
 
@@ -372,6 +403,7 @@ public class RepulseModeManager : MonoBehaviour
 	}
 }
 
+[System.Serializable]
 public class ZoneAndIntType
 {
 	public int movableInZone;

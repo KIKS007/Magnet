@@ -2,6 +2,7 @@
 using System.Collections;
 using DG.Tweening;
 using System.Collections.Generic;
+using DarkTonic.MasterAudio;
 
 public class MovableScript : MonoBehaviour 
 {
@@ -23,6 +24,9 @@ public class MovableScript : MonoBehaviour
 	[Header ("Gravity")]
 	public float gravity = 0;
 
+	[SoundGroupAttribute]
+	static string wallHitSound = "Impact";
+	private bool canPlaySound = true;
 
 	protected float timeTween = 0.5f;
 
@@ -164,6 +168,8 @@ public class MovableScript : MonoBehaviour
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+
+		StartCoroutine(HitSound ());
 	}
 
 	protected virtual void HitWall (Collision other)
@@ -175,6 +181,29 @@ public class MovableScript : MonoBehaviour
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+
+		if(other.gameObject.tag == "Wall" && canPlaySound)
+		{
+			StartCoroutine(HitSound ());
+		}
+	}
+
+	IEnumerator HitSound ()
+	{
+		canPlaySound = false;
+
+		if(currentVelocity >= limitVelocity)
+			MasterAudio.PlaySound3DFollowTransformAndForget (wallHitSound, transform);
+
+		else
+		{
+			float soundVolume = (currentVelocity * 100) / limitVelocity / 100;
+			MasterAudio.PlaySound3DFollowTransformAndForget (wallHitSound, transform, soundVolume);	
+		}
+
+		yield return new WaitForSeconds (0.05f);
+
+		canPlaySound = true;
 	}
 
 	public virtual GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)

@@ -155,6 +155,7 @@ MonoBehaviour:
   decelerationShotOnly: 1
   decelerationAmount: 1
   gravity: 0
+  wallHitSound: Impact
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
