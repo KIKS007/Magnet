@@ -1895,6 +1895,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!43 &337832246
 Mesh:
   m_ObjectHideFlags: 0

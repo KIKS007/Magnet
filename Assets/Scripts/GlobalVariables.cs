@@ -49,6 +49,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<GameObject> Team3 = new List<GameObject>();
 	public List<GameObject> Team4 = new List<GameObject>();
 
+	[Header ("Cubes Color")]
+	public Color cubeColorplayer1;
+	public Color cubeColorplayer2;
+	public Color cubeColorplayer3;
+	public Color cubeColorplayer4;
+	public Color cubeNeutralColor;
+
+	[Header ("Cubes Stripes")]
+	public Mesh[] cubesStripes = new Mesh[4];
+
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;
 	public GameObject WallHitParticles;

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 6f943513157fc2642be4a6a350c84f74
-timeCreated: 1473524075
+timeCreated: 1473531103
 licenseType: Free
 ShaderImporter:
   defaultTextures:
@@ -14,6 +14,7 @@ ShaderImporter:
   - _Layer5: {fileID: 2800000, guid: fa4307b7e00c58f49b6b014b0c63b0fe, type: 3}
   - _AlphaL5: {fileID: 2800000, guid: 2cd528cf6816dc2429166f49a2ee1237, type: 3}
   - _Opatexture: {fileID: 2800000, guid: 23733f148814b8b47a2a4a5eb9e0892c, type: 3}
+  - _Neutral: {fileID: 2800000, guid: dde976bcdaaea1143b8a48a75b7557be, type: 3}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

@@ -125,6 +125,18 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 106368, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: bloomIntensity
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
   m_IsPrefabParent: 0
@@ -1220,7 +1232,7 @@ Light:
   serializedVersion: 6
   m_Type: 1
   m_Color: {r: 0.972549, g: 0.8745098, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.66
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -1346,6 +1358,16 @@ MonoBehaviour:
   Team2: []
   Team3: []
   Team4: []
+  cubeColorplayer1: {r: 0, g: 0.8352941, b: 1, a: 1}
+  cubeColorplayer2: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
+  cubeColorplayer3: {r: 0.06666667, g: 0.9254902, b: 0.28627452, a: 1}
+  cubeColorplayer4: {r: 0.93333334, g: 0.43137255, b: 0.20784314, a: 1}
+  cubeNeutralColor: {r: 1, g: 1, b: 1, a: 1}
+  cubesStripes:
+  - {fileID: 4300000, guid: 52f336196681b674c8eaebbfa9b66f69, type: 3}
+  - {fileID: 4300000, guid: 5d72452c57b042e44962f65be779acd2, type: 3}
+  - {fileID: 4300002, guid: c482f5276955f7b4c81d872c3861a240, type: 3}
+  - {fileID: 4300002, guid: 4598b0c58d21b2644ac39795178bd40b, type: 3}
   HitParticles: {fileID: 157234, guid: cd76df09f0f1d4345b49b6af15c123bc, type: 2}
   WallHitParticles: {fileID: 136970, guid: b5cf26f237d6a5a40a2b2253e2bfe2fb, type: 2}
   DeadParticles: {fileID: 151166, guid: 6944c4430c797a149ab4a7cddd8cceba, type: 2}

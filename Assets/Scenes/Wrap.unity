@@ -344,6 +344,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -1658,6 +1660,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -2419,6 +2423,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -3919,6 +3925,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -8781,6 +8789,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -10193,6 +10203,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27
@@ -10600,6 +10612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timerDuration: 300
   timeBetweenSpawn: 2
+  timeBeforeEndGame: 2
   timer: 0
   timerClock: 
 --- !u!4 &1624482015
@@ -12082,6 +12095,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
   hasWrapped: 0
   minX: -27
   maxX: 27

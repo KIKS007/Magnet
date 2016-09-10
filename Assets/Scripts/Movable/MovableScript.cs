@@ -44,13 +44,24 @@ public class MovableScript : MonoBehaviour
 	public GameObject playerThatThrew;
 	[HideInInspector]
 	public GameObject playerHit;
+	[HideInInspector]
+	public MeshFilter cubeMeshFilter;
+	[HideInInspector]
+	public Material cubeMaterial;
 
 	// Use this for initialization
 	protected virtual void Start () 
 	{
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 		GetRigidbodySettings ();
+
+		cubeMaterial.SetFloat ("_Lerp", 0);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+
+		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 	}
 	
 	// Update is called once per frame
@@ -78,7 +89,12 @@ public class MovableScript : MonoBehaviour
 			}
 		}
 
-		if(hold == true && movableRenderer.material.color == Color.white)
+		SetCubeColor ();
+	}
+
+	protected virtual void SetCubeColor ()
+	{
+		/*if(hold == true && movableRenderer.material.color == Color.white)
 		{
 			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween);
 		}
@@ -86,7 +102,49 @@ public class MovableScript : MonoBehaviour
 		if(hold == false && movableRenderer.material.color != Color.white && gameObject.tag == "Movable")
 		{
 			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, Color.white, timeTween);
+		}*/
+
+		if(hold)
+		{
+			Color cubeCorrectColor = new Color ();
+
+			switch(player.name)
+			{
+			case "Player 1":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
+				break;
+			case "Player 2":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
+				break;
+			case "Player 3":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
+				break;
+			case "Player 4":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
+				break;
+			}
+
+			if (cubeMaterial.GetColor("_Color") != cubeCorrectColor)
+			{
+				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+
+				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+			}
+				
 		}
+
+		if(!hold && cubeMaterial.GetColor("_Color") != GlobalVariables.Instance.cubeNeutralColor)
+		{
+			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+		}
+
+		GetComponent<Renderer> ().material.color = cubeMaterial.GetColor ("_Color");
 	}
 
 	protected virtual void FixedUpdate () 

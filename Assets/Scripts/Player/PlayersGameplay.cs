@@ -149,8 +149,6 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		playerState = PlayerState.None;
 		dashState = DashState.CanDash;
-
-		GlobalVariables.Instance.ListPlayers ();
 	}
 	
 	// Update is called once per frame
@@ -655,8 +653,6 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
-
-		GlobalVariables.Instance.ListPlayers ();
 	}
 
 

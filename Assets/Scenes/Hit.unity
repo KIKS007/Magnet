@@ -1518,6 +1518,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!4 &341524719 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}
@@ -2397,6 +2399,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!4 &466958247 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}
@@ -3747,6 +3751,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!4 &642613882 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}
@@ -9049,6 +9055,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!1 &1343070492
 GameObject:
   m_ObjectHideFlags: 0
@@ -11720,6 +11728,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!4 &1738686205 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}
@@ -11806,6 +11816,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!1001 &1760022740
 Prefab:
   m_ObjectHideFlags: 0
@@ -12491,6 +12503,8 @@ MonoBehaviour:
   player: {fileID: 0}
   playerThatThrew: {fileID: 0}
   playerHit: {fileID: 0}
+  cubeMeshFilter: {fileID: 0}
+  cubeMaterial: {fileID: 0}
 --- !u!1001 &1872738999
 Prefab:
   m_ObjectHideFlags: 0

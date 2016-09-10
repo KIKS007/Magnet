@@ -64,7 +64,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 30, z: 0}
+  m_LocalPosition: {x: -43, y: 93, z: 15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 417364}
@@ -256,7 +256,7 @@ MonoBehaviour:
   - 1.25
   - 2
   timeTween: 0.05
-  bloomIntensity: 0.7
+  bloomIntensity: 2
   timeTweenEffect: 0.1
   slowMotion: 0
   timeScaleDebug: 1

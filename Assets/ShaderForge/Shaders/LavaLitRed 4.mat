@@ -92,6 +92,13 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Neutral
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -105,15 +112,15 @@ Material:
         first:
           name: _node_8973
         second: 0
+      data:
+        first:
+          name: _LerpLitUnlit
+        second: 0
     m_Colors:
       data:
         first:
-          name: _Color
-        second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
-      data:
-        first:
           name: _node_9969
-        second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
+        second: {r: 0, g: 0, b: 0, a: 1}
       data:
         first:
           name: _Emissive
