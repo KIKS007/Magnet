@@ -26,7 +26,7 @@ GameObject:
   - 33: {fileID: 3355258}
   - 23: {fileID: 2367774}
   m_Layer: 0
-  m_Name: Box015
+  m_Name: Stripes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ GameObject:
   - 33: {fileID: 3393638}
   - 23: {fileID: 2390484}
   m_Layer: 0
-  m_Name: Box014
+  m_Name: Stardust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,8 +68,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 119498}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalPosition: {x: 3.68, y: 3.33, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 401582}
   - {fileID: 492128}

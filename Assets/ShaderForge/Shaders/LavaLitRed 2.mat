@@ -94,11 +94,19 @@ Material:
         first:
           name: _Opacity
         second: 1
+      data:
+        first:
+          name: _node_8973
+        second: 0
     m_Colors:
       data:
         first:
+          name: _Color
+        second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
+      data:
+        first:
           name: _node_9969
-        second: {r: 0.06812285, g: 0.9264706, b: 0.28714937, a: 1}
+        second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
       data:
         first:
           name: _Emissive

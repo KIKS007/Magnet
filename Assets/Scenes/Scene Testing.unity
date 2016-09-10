@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -124,18 +124,6 @@ Prefab:
     - target: {fileID: 479748, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: cameraYMin
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: distanceMin
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: distanceRatio
-      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
@@ -1097,7 +1085,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1108,7 +1096,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1119,7 +1107,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!82 &1211676637
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1171,7 +1159,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1182,7 +1170,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1193,7 +1181,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!4 &1211676638
 Transform:
   m_ObjectHideFlags: 0
@@ -1231,7 +1219,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 6
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 0.972549, g: 0.8745098, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -1364,7 +1352,7 @@ MonoBehaviour:
   MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
   PlayerSpawnParticles: {fileID: 165514, guid: 978ecf91ecbc2464783de9a03edbef72, type: 2}
   ParticulesClonesParent: {fileID: 0}
-  firstSceneToLoad: Bomb
+  firstSceneToLoad: Test
   WhichModeLoaded: 0
   CurrentModeLoaded: 
 --- !u!4 &1437567659
