@@ -129,18 +129,25 @@ public class MovableBomb : MovableScript
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
 		InstantiateExplosionParticles (GlobalVariables.Instance.MovableExplosion, playerRenderer.material.color);
 		gameObject.SetActive (false);
+
+		playerHolding = null;
 	}
 
 	IEnumerator GetToPlayerPosition ()
 	{
-		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 3)
+		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 2)
 		{
-			//transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
-			Vector3 direction = playerHolding.transform.position - transform.position;
+			if (!hold)
+			{
+				//transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
+				Vector3 direction = playerHolding.transform.position - transform.position;
 
-			rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Acceleration);
+				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Acceleration);
 
-			yield return null;
+				yield return null;
+			}
+			else
+				break;
 		}
 	}
 }

@@ -33,13 +33,6 @@ public class WrapModeManager : MonoBehaviour
 
 	IEnumerator Timer ()
 	{
-		yield return null;
-
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-		{
-			yield return null;
-		}
-
 		timer -= Time.deltaTime;
 
 		string minutes = Mathf.Floor(timer / 60).ToString("0");
@@ -49,6 +42,10 @@ public class WrapModeManager : MonoBehaviour
 
 		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
 
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+		{
+			yield return null;
+		}
 
 		if(timer > 0.01f)
 			StartCoroutine (Timer ());

@@ -92,8 +92,6 @@ public class RepulseModeManager : MonoBehaviour
 
 		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
 
-		yield return null;
-
 		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			yield return null;

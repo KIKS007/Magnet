@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 6f943513157fc2642be4a6a350c84f74
+timeCreated: 1473349915
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _Layer1: {fileID: 2800000, guid: 5dd09cae55293e147817ac93510194c7, type: 3}
+  - _Layer2: {fileID: 2800000, guid: d37b7d354a030a041af417b0a908547c, type: 3}
+  - _AlphaL2: {fileID: 2800000, guid: 8b0db89cb010faa469d097ab10d911d8, type: 3}
+  - _Layer3: {fileID: 2800000, guid: aec8ee41990b93c489b0968f38b28b98, type: 3}
+  - _AlphaL3: {fileID: 2800000, guid: 6ada28538acd1f347833fe7234c68749, type: 3}
+  - _Layer4: {fileID: 2800000, guid: 480e16a2cb7ba6c49baf207f2debe457, type: 3}
+  - _AlphaL4: {fileID: 2800000, guid: 23d933a35a16e984fa3649b72dc813b2, type: 3}
+  - _Layer5: {fileID: 2800000, guid: fa4307b7e00c58f49b6b014b0c63b0fe, type: 3}
+  - _AlphaL5: {fileID: 2800000, guid: 2cd528cf6816dc2429166f49a2ee1237, type: 3}
+  - _Opatexture: {fileID: 2800000, guid: 23733f148814b8b47a2a4a5eb9e0892c, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

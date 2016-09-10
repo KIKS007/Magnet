@@ -24,6 +24,8 @@ public class BombManager : MonoBehaviour
 		bomb = GameObject.FindGameObjectWithTag ("Movable").gameObject;
 		bomb.SetActive (false);
 
+		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "0:00";
+
 		StartCoroutine (Setup ());
 	}
 
@@ -51,6 +53,8 @@ public class BombManager : MonoBehaviour
 
 		StartCoroutine (SpawnBomb ());
 
+		yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+
 		StartCoroutine (StartTimer ());
 	}
 	
@@ -62,7 +66,7 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false)
 		{
 			yield return null;
 		}
@@ -81,19 +85,21 @@ public class BombManager : MonoBehaviour
 
 		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
 
-		yield return null;
-
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false)
 		{
 			yield return null;
 		}
 
 		if(timer > 0.01f)
+		{
+			yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+
 			StartCoroutine (Timer ());
+		}
 
 		else
 		{
-			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
+			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "0:00";
 			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
 	
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
@@ -106,18 +112,27 @@ public class BombManager : MonoBehaviour
 				timer = firstBombTimer;
 				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+
+				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+
 				StartCoroutine (Timer ());
 				break;
 			case 3:
 				timer = secondBombTimer;
 				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+
+				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+
 				StartCoroutine (Timer ());
 				break;
 			case 2:
 				timer = thirdBombTimer;
 				StartCoroutine (SpawnBomb ());
 				yield return new WaitForSeconds (timeBetweenSpawn);
+
+				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+
 				StartCoroutine (Timer ());
 				break;
 			case 1:
@@ -135,9 +150,9 @@ public class BombManager : MonoBehaviour
 		bomb.GetComponent<MovableBomb> ().ResetColor ();
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
 
-		yield return new WaitForSeconds (0.5f);
+		//yield return new WaitForSeconds (0.5f);
 
-		playersList [Random.Range (0, playersList.Length)].GetComponent<PlayerBomb> ().GetBomb (bomb.GetComponent<Collider>());
+		//playersList [Random.Range (0, playersList.Length)].GetComponent<PlayerBomb> ().GetBomb (bomb.GetComponent<Collider>());
 	}
 
 	IEnumerator GameEnd ()

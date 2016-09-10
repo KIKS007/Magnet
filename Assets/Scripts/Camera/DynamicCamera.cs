@@ -11,7 +11,6 @@ public class DynamicCamera : MonoBehaviour
 
 	public List<DynamicCameraSettings> modesSettingsList;
 
-
 	[Header ("Current Camera Lerp")]
 	public float cameraZoomLerp = 0.1f;
 	public float cameraMovementLerp = 0.1f;
@@ -27,6 +26,8 @@ public class DynamicCamera : MonoBehaviour
 
 	private Vector3 centerPos = new Vector3(0, 0, 0);
 
+	private GameObject[] playersList;	 
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -36,6 +37,8 @@ public class DynamicCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
+		playersList = GameObject.FindGameObjectsWithTag("Player");
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
 			FindLargestDistance ();
@@ -54,32 +57,32 @@ public class DynamicCamera : MonoBehaviour
 
 	void FindLargestDistance ()
 	{
-		if(GlobalVariables.Instance.EnabledPlayersList.Count > 1)
+		if(playersList.Length > 1)
 		{
 			float distanceTemp = 0;
 
-			if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [1].transform.position) > distanceTemp)
-				distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [1].transform.position);
+			if (Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position) > distanceTemp)
+				distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position);
 
-			if(GlobalVariables.Instance.EnabledPlayersList.Count > 2)
+			if(playersList.Length > 2)
 			{
-				if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [2].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [2].transform.position);
+				if (Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position) > distanceTemp)
+					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position);
 
-				if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [1].transform.position, GlobalVariables.Instance.EnabledPlayersList [2].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [1].transform.position, GlobalVariables.Instance.EnabledPlayersList [2].transform.position);
+				if (Vector3.Distance (playersList [1].transform.position, playersList [2].transform.position) > distanceTemp)
+					distanceTemp = Vector3.Distance (playersList [1].transform.position, playersList [2].transform.position);
 			}
 
-			if(GlobalVariables.Instance.EnabledPlayersList.Count > 3)
+			if(playersList.Length > 3)
 			{
-				if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [0].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position);
+				if (Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position) > distanceTemp)
+					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position);
 
-				if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [1].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [1].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position);
+				if (Vector3.Distance (playersList [1].transform.position, playersList [3].transform.position) > distanceTemp)
+					distanceTemp = Vector3.Distance (playersList [1].transform.position, playersList [3].transform.position);
 
-				if (Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [2].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (GlobalVariables.Instance.EnabledPlayersList [2].transform.position, GlobalVariables.Instance.EnabledPlayersList [3].transform.position);
+				if (Vector3.Distance (playersList [2].transform.position, playersList [3].transform.position) > distanceTemp)
+					distanceTemp = Vector3.Distance (playersList [2].transform.position, playersList [3].transform.position);
 			}
 
 			largestDistance = distanceTemp;
@@ -101,10 +104,10 @@ public class DynamicCamera : MonoBehaviour
 	{
 		Vector3 centerPosTemp = new Vector3 ();
 
-		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
-			centerPosTemp += GlobalVariables.Instance.EnabledPlayersList [i].transform.position;
+		for (int i = 0; i < playersList.Length; i++)
+			centerPosTemp += playersList [i].transform.position;
 
-		centerPosTemp = centerPosTemp / GlobalVariables.Instance.EnabledPlayersList.Count;
+		centerPosTemp = centerPosTemp / playersList.Length;
 		centerPosTemp.y = transform.position.y;
 
 		centerPos = centerPosTemp;
