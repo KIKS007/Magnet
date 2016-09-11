@@ -59,6 +59,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Cubes Stripes")]
 	public Mesh[] cubesStripes = new Mesh[4];
 
+	[Header ("FX Prefabs")]
+	public GameObject[] shootFX = new GameObject[4];
+	public GameObject[] explosionFX = new GameObject[4];
+
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;
 	public GameObject WallHitParticles;

@@ -60144,6 +60144,16 @@ MonoBehaviour:
   - {fileID: 4300000, guid: 5d72452c57b042e44962f65be779acd2, type: 3}
   - {fileID: 4300002, guid: c482f5276955f7b4c81d872c3861a240, type: 3}
   - {fileID: 4300002, guid: 4598b0c58d21b2644ac39795178bd40b, type: 3}
+  shootFX:
+  - {fileID: 108450, guid: 0ae14e25107eae949b52915fb0ce542e, type: 2}
+  - {fileID: 133232, guid: dca14c620501bfb4d8a67f38eff4c68a, type: 2}
+  - {fileID: 137804, guid: 4a55b34bc53e24349b2234a9536b7bd4, type: 2}
+  - {fileID: 120954, guid: 85448de1956bf7745962d59a85f33af5, type: 2}
+  explosionFX:
+  - {fileID: 181636, guid: cbe137b9d5f23084a9832f34cd1f5ed8, type: 2}
+  - {fileID: 149876, guid: 382af989118e05947b529f10e0c3ef61, type: 2}
+  - {fileID: 181482, guid: 04dc6598c6e008c4eb9101b405e4469a, type: 2}
+  - {fileID: 151408, guid: a326599b4f5d126439a9603a53687a4e, type: 2}
   HitParticles: {fileID: 157234, guid: cd76df09f0f1d4345b49b6af15c123bc, type: 2}
   WallHitParticles: {fileID: 136970, guid: b5cf26f237d6a5a40a2b2253e2bfe2fb, type: 2}
   DeadParticles: {fileID: 151166, guid: 6944c4430c797a149ab4a7cddd8cceba, type: 2}

@@ -150,9 +150,10 @@ public class BombManager : MonoBehaviour
 		bomb.GetComponent<MovableBomb> ().ResetColor ();
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
 
-		//yield return new WaitForSeconds (0.5f);
+		yield return new WaitForSeconds (1.5f);
 
-		//playersList [Random.Range (0, playersList.Length)].GetComponent<PlayerBomb> ().GetBomb (bomb.GetComponent<Collider>());
+		if(bomb.GetComponent<MovableBomb>().playerHolding == null)
+			playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
 	}
 
 	IEnumerator GameEnd ()

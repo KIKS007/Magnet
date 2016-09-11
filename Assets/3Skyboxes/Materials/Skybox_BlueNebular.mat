@@ -75,11 +75,11 @@ Material:
       data:
         first:
           name: _Exposure
-        second: 0.5
+        second: 0.7
       data:
         first:
           name: _Rotation
-        second: 0
+        second: 221
     m_Colors:
       data:
         first:
@@ -88,4 +88,4 @@ Material:
       data:
         first:
           name: _Tint
-        second: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+        second: {r: 1, g: 1, b: 1, a: 0.5}

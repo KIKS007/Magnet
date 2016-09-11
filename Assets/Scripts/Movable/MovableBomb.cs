@@ -39,9 +39,34 @@ public class MovableBomb : MovableScript
 			}
 		}
 
-		if(hold == true && playerRenderer != null && movableRenderer.material.color != playerRenderer.material.color)
+		if(hold)
 		{
-			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, playerRenderer.material.color, timeTween);
+			Color cubeCorrectColor = new Color ();
+
+			switch(player.name)
+			{
+			case "Player 1":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
+				break;
+			case "Player 2":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
+				break;
+			case "Player 3":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
+				break;
+			case "Player 4":
+				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
+				break;
+			}
+
+			if (cubeMaterial.GetColor("_Color") != cubeCorrectColor)
+			{
+				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+
+				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+			}
 		}
 	}
 
@@ -55,7 +80,7 @@ public class MovableBomb : MovableScript
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayerBomb>().GetBomb(GetComponent<Collider>());
+			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 			playerHolding = other.gameObject;
 
 			playerHit = other.gameObject;
@@ -71,7 +96,7 @@ public class MovableBomb : MovableScript
 			&& gameObject.tag == "Movable")
 		{
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayerBomb>().GetBomb(GetComponent<Collider>());
+			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 			playerHolding = other.gameObject;
 
 			playerHit = other.gameObject;
@@ -90,7 +115,7 @@ public class MovableBomb : MovableScript
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayerBomb>().GetBomb(GetComponent<Collider>());
+			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 			playerHolding = other.gameObject;
 
 			playerHit = other.gameObject;
@@ -113,7 +138,14 @@ public class MovableBomb : MovableScript
 
 	public void ResetColor ()
 	{
-		DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, Color.white, timeTween);
+		if(cubeMaterial == null)
+			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
+		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 	}
 
 	public IEnumerator Explode ()
@@ -125,12 +157,36 @@ public class MovableBomb : MovableScript
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
+		ExplosionFX ();
+
 		//playerHolding.GetComponent<PlayersGameplay> ().DeathParticles ();
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
-		InstantiateExplosionParticles (GlobalVariables.Instance.MovableExplosion, playerRenderer.material.color);
 		gameObject.SetActive (false);
 
 		playerHolding = null;
+	}
+
+	void ExplosionFX ()
+	{
+		int playerNumber = -1;
+
+		switch(playerHolding.name)
+		{
+		case "Player 1":
+			playerNumber = 0;
+			break;
+		case "Player 2":
+			playerNumber = 1;
+			break;
+		case "Player 3":
+			playerNumber = 2;
+			break;
+		case "Player 4":
+			playerNumber = 3;
+			break;
+		}
+
+		Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation);
 	}
 
 	IEnumerator GetToPlayerPosition ()

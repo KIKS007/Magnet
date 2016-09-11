@@ -221,7 +221,7 @@ public class RepulseModeManager : MonoBehaviour
 			{
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone1;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone1;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;
@@ -234,7 +234,7 @@ public class RepulseModeManager : MonoBehaviour
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
 				
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone2;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone2;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;
@@ -247,7 +247,7 @@ public class RepulseModeManager : MonoBehaviour
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
 
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone1;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone1;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone1;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;
@@ -260,7 +260,7 @@ public class RepulseModeManager : MonoBehaviour
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
 
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone2;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone2;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone2;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;
@@ -273,7 +273,7 @@ public class RepulseModeManager : MonoBehaviour
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
 
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone3;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone3;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone3;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;
@@ -286,7 +286,7 @@ public class RepulseModeManager : MonoBehaviour
 				if(leastMovablesZones [i].zone == RepulseTriggerZones.None)
 				{
 
-					player.GetComponent<PlayerRepulse> ().playerZone = RepulseTriggerZones.Zone4;
+					player.GetComponent<PlayersRepulse> ().playerZone = RepulseTriggerZones.Zone4;
 					leastMovablesZones [i].zone = RepulseTriggerZones.Zone4;
 					leastMovablesZones [i].zonesPlayer = player;
 					break;

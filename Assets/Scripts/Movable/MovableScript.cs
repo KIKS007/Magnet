@@ -46,7 +46,6 @@ public class MovableScript : MonoBehaviour
 	public GameObject playerHit;
 	[HideInInspector]
 	public MeshFilter cubeMeshFilter;
-	[HideInInspector]
 	public Material cubeMaterial;
 
 	// Use this for initialization
@@ -56,6 +55,7 @@ public class MovableScript : MonoBehaviour
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
 		GetRigidbodySettings ();
 
 		cubeMaterial.SetFloat ("_Lerp", 0);

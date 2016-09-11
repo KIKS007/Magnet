@@ -98,11 +98,10 @@ public class PlayersGameplay : MonoBehaviour
 	protected Transform movableParent;
 	protected Transform magnetPoint;
 
-	protected TrailRenderer trail;
-
 	protected float lerpHold = 0.2f;
 
-	protected Rigidbody playerRigidbody;
+	[HideInInspector]
+	public Rigidbody playerRigidbody;
 	protected Vector3 movement;
 
 	protected int triggerMask;
@@ -139,7 +138,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
 		magnetPoint = transform.GetChild (1).transform;
-		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 
 		if(gameObject.activeSelf == true)
 			StartCoroutine (OnPlayerStateChange ());
@@ -179,8 +177,6 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		Pause ();
-
-		TrailLength ();
 	}
 
 	protected virtual void ActivateFunctions ()
@@ -422,30 +418,7 @@ public class PlayersGameplay : MonoBehaviour
 				OnRepulsed ();
 		}
 	}
-
-	protected void TrailLength ()
-	{
-		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if(playerRigidbody.velocity.magnitude > 1)
-			{
-				trail.time = 0.1f;
-				trail.startWidth = 1;
-			}
-			else if (playerRigidbody.velocity.magnitude < 1)
-			{
-				trail.time = 0.15f;
-				trail.startWidth = 0.5f;
-			}
-		}
-
-		else
-		{
-			trail.time = 0f;
-			trail.startWidth = 0f;
-		}
-	}
-
+		
 	protected void Pause ()
 	{
 		if(player.GetButtonDown("Start"))
