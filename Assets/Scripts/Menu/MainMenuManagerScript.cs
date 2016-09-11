@@ -1633,15 +1633,19 @@ public class MainMenuManagerScript : MonoBehaviour
 		switch(GlobalVariables.Instance.CurrentModeLoaded)
 		{
 		case "Repulse":
+			goRepulseContent.gameObject.SetActive (true);
 			goRepulseContent.DOAnchorPos (new Vector2(0, goRepulseContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Bomb":
+			goBombContent.gameObject.SetActive (true);
 			goBombContent.DOAnchorPos (new Vector2(0, goBombContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Hit":
+			goHitContent.gameObject.SetActive (true);
 			goHitContent.DOAnchorPos (new Vector2(0, goHitContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		case "Crush":
+			goCrushContent.gameObject.SetActive (true);
 			goCrushContent.DOAnchorPos (new Vector2(0, goCrushContent.anchoredPosition.y), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (NotTweening);
 			break;
 		}

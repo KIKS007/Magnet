@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, WinsInARow};
+public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins};
 
 public class StatsManager : Singleton<StatsManager> 
 {
@@ -22,6 +22,12 @@ public class StatsManager : Singleton<StatsManager>
 
 	[Header ("Winner")]
 	public string winner;
+
+	[Header ("Wins In A Row")]
+	public WhichPlayer mostWinsInARow = WhichPlayer.None;
+	public int winsInARowNumber = 0;
+
+	private WhichPlayer previousWinner = WhichPlayer.None;
 
 	void Awake ()
 	{
@@ -82,7 +88,7 @@ public class StatsManager : Singleton<StatsManager>
 		mostStatsList [5].whichStat = WhichStat.AimAccuracy;
 		mostStatsList [5].whichPlayer = WhichPlayer.None;
 
-		mostStatsList [6].whichStat = WhichStat.WinsInARow;
+		mostStatsList [6].whichStat = WhichStat.Wins;
 		mostStatsList [6].whichPlayer = WhichPlayer.None;
 	}
 
@@ -227,22 +233,66 @@ public class StatsManager : Singleton<StatsManager>
 		switch (whichPlayerWon)
 		{
 		case WhichPlayer.Player1:
-			playerStatsList [0].winsInARow++;
+			playerStatsList [0].wins++;
+			WinsInARow (whichPlayerWon);
 			winner = "Player 1";
 			break;
 		case WhichPlayer.Player2:
-			playerStatsList [1].winsInARow++;
+			playerStatsList [1].wins++;
+			WinsInARow (whichPlayerWon);
 			winner = "Player 2";
 			break;
 		case WhichPlayer.Player3:
-			playerStatsList [2].winsInARow++;
+			playerStatsList [2].wins++;
+			WinsInARow (whichPlayerWon);
 			winner = "Player 3";
 			break;
 		case WhichPlayer.Player4:
-			playerStatsList [3].winsInARow++;
+			playerStatsList [3].wins++;
+			WinsInARow (whichPlayerWon);
 			winner = "Player 4";
 			break;
 		}
+	}
+
+	void WinsInARow (WhichPlayer whichPlayerWon)
+	{
+		if (previousWinner == WhichPlayer.None)
+		{
+			previousWinner = whichPlayerWon;
+
+			playerStatsList [(int)whichPlayerWon].winsInARow = 1;
+		}
+
+		else if(previousWinner == whichPlayerWon)
+		{
+			for(int i = 0; i < playerStatsList.Count; i++)
+			{
+				if (playerStatsList [i].whichPlayer != whichPlayerWon)
+					playerStatsList [i].winsInARow = 0;
+			}
+
+			if (playerStatsList [(int)whichPlayerWon].winsInARow == 0)
+				playerStatsList [(int)whichPlayerWon].winsInARow = 2;
+			else
+				playerStatsList [(int)whichPlayerWon].winsInARow++;
+		}
+
+		else if(previousWinner != whichPlayerWon)
+		{
+			previousWinner = whichPlayerWon;
+
+			for(int i = 0; i < playerStatsList.Count; i++)
+			{
+				if (playerStatsList [i].whichPlayer != whichPlayerWon)
+					playerStatsList [i].winsInARow = 0;
+			}
+
+			playerStatsList [(int)whichPlayerWon].winsInARow++;
+		}
+
+		mostWinsInARow = whichPlayerWon;
+		winsInARowNumber = playerStatsList [(int)whichPlayerWon].winsInARow;
 	}
 
 	public void AimPrecision ()
@@ -433,15 +483,15 @@ public class StatsManager : Singleton<StatsManager>
 
 		}
 
-		int winsInARow = 0;
+		int wins = 0;
 
 		for(int i = 0; i < playerStatsList.Count; i++)
 		{
-			if (playerStatsList [i].winsInARow > winsInARow)
+			if (playerStatsList [i].wins > wins)
 			{
-				winsInARow = playerStatsList [i].winsInARow;
+				wins = playerStatsList [i].wins;
 
-				mostStatsList [6].statNumber = playerStatsList [i].winsInARow;
+				mostStatsList [6].statNumber = playerStatsList [i].wins;
 
 				switch (i)
 				{
@@ -474,7 +524,10 @@ public class StatsManager : Singleton<StatsManager>
 			playerStatsList [i].shots = 0;
 
 			if(resetWins)
+			{
+				playerStatsList [i].wins = 0;
 				playerStatsList [i].winsInARow = 0;
+			}
 		}
 
 		totalFrags = 0;
@@ -513,6 +566,8 @@ public class PlayerStats
 
 	[Range (0, 100)]
 	public int aimAccuracy = 0;
+
+	public int wins = 0;
 
 	public int winsInARow = 0;
 }

@@ -93,12 +93,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
+		DestroyParticules ();
+
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
-
-		DestroyParticules ();
 
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
@@ -129,10 +129,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		Tween myTween = mainCamera.DOMoveX (reloadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
+		DestroyParticules ();
+
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
-
-		DestroyParticules ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
@@ -173,11 +173,11 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
+		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
 
-		DestroyParticules ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
@@ -206,6 +206,13 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			{
 				Destroy (GlobalVariables.Instance.ParticulesClonesParent.GetChild (i).gameObject);
 			}
+		}
+
+		GameObject[] particlesFX = GameObject.FindGameObjectsWithTag ("Particles_FX");
+
+		for(int i = 0; i < particlesFX.Length; i++)
+		{
+			Destroy (particlesFX [i]);
 		}
 	}
 

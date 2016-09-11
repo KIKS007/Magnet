@@ -13,8 +13,6 @@ public class MovableBomb : MovableScript
 
 	public float getToPlayerForce = 2;
 
-	private Renderer playerRenderer;
-
 	protected override void Update () 
 	{
 		if(hold == false)
@@ -132,7 +130,6 @@ public class MovableBomb : MovableScript
 	{
 		base.OnHold ();
 
-		playerRenderer = player.GetComponent<Renderer> ();
 		playerHolding = player.gameObject;
 	}
 
@@ -186,7 +183,8 @@ public class MovableBomb : MovableScript
 			break;
 		}
 
-		Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation);
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
 	IEnumerator GetToPlayerPosition ()

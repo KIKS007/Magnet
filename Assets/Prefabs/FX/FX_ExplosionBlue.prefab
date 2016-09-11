@@ -115,7 +115,7 @@ GameObject:
   - 114: {fileID: 11497326}
   m_Layer: 0
   m_Name: FX_ExplosionBlue
-  m_TagString: Untagged
+  m_TagString: Particles_FX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

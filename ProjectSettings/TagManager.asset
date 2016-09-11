@@ -18,6 +18,10 @@ TagManager:
   - RepulseZone
   - SlowMotion
   - Reflection
+  - PlayerControllerText
+  - PlayerChosen
+  - Roof
+  - Particles_FX
   layers:
   - Default
   - TransparentFX

@@ -13,7 +13,7 @@ GameObject:
   - 114: {fileID: 11452562}
   m_Layer: 0
   m_Name: DeadParticles V2
-  m_TagString: Untagged
+  m_TagString: Particles_FX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

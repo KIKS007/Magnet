@@ -436,9 +436,9 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			DeathParticles ();
-		
 			Death ();
+
+			DeathParticles ();
 		}
 
 		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
@@ -456,9 +456,10 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			Death ();
+
 			DeathParticles ();
 
-			Death ();
 		}
 
 		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
@@ -572,15 +573,27 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void DeathParticles ()
 	{
-		//Vector3 pos = other.contacts[0].point;
-		//Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
+		int playerNumber = -1;
 
-		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, transform.position, rot) as GameObject;
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
-		instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
-		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+		switch(gameObject.name)
+		{
+		case "Player 1":
+			playerNumber = 0;
+			break;
+		case "Player 2":
+			playerNumber = 1;
+			break;
+		case "Player 3":
+			playerNumber = 2;
+			break;
+		case "Player 4":
+			playerNumber = 3;
+			break;
+
+		}
+
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
 	public virtual void Death ()

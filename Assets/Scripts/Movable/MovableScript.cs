@@ -51,6 +51,8 @@ public class MovableScript : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
+		tag = "Untagged";
+
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
@@ -62,6 +64,8 @@ public class MovableScript : MonoBehaviour
 		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
+
+		tag = "Movable";
 	}
 	
 	// Update is called once per frame
