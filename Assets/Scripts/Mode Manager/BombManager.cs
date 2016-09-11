@@ -161,6 +161,10 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
+		playersList = GameObject.FindGameObjectsWithTag("Player");
+
+		Debug.Log (playersList [0].name);
+
 		switch (playersList [0].name)
 		{
 		case "Player 1":

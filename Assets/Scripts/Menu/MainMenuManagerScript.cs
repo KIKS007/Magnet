@@ -573,10 +573,10 @@ public class MainMenuManagerScript : MonoBehaviour
 		logoMenu.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 365),  shrinkDuration);
 		logoMenu.transform.GetChild(2).GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 365),  shrinkDuration);
 
-		logoMenu.transform.GetChild(0).GetComponent<RectTransform>().DOScale(0.366f, shrinkDuration);
-		logoMenu.transform.GetChild(1).GetComponent<RectTransform>().DOScale(0.366f, shrinkDuration);
+		logoMenu.transform.GetChild(0).GetComponent<RectTransform>().DOScale(0.4f, shrinkDuration);
+		logoMenu.transform.GetChild(1).GetComponent<RectTransform>().DOScale(0.4f, shrinkDuration);
 
-		Tween myTween = logoMenu.transform.GetChild(2).GetComponent<RectTransform>().DOScale(0.366f, shrinkDuration);
+		Tween myTween = logoMenu.transform.GetChild(2).GetComponent<RectTransform>().DOScale(0.4f, shrinkDuration);
 
 		yield return myTween.WaitForCompletion();
 

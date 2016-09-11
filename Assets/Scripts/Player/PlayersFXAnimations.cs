@@ -16,6 +16,8 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Shoot FX Settings")]
 	public Vector3 shootPosOffset;
 
+	public ParticleSystem dashAvailableFX;
+
 	private PlayersGameplay playerScript;
 
 	private TrailRenderer trail;
@@ -29,6 +31,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 
 		playerScript.OnShoot += ShootFX;
+		playerScript.OnDashAvailable += DashAvailableFX;
+		playerScript.OnDash += StopDashAvailable;
 
 		switch(gameObject.name)
 		{
@@ -92,5 +96,16 @@ public class PlayersFXAnimations : MonoBehaviour
 	void ShootFX ()
 	{
 		Instantiate (GlobalVariables.Instance.shootFX [PlayerNumber], transform.position + shootPosOffset, transform.rotation);
+	}
+
+	void DashAvailableFX ()
+	{
+		dashAvailableFX.Play ();
+	}
+
+	void StopDashAvailable ()
+	{
+		if (dashAvailableFX.isPlaying)
+			dashAvailableFX.Stop ();
 	}
 }

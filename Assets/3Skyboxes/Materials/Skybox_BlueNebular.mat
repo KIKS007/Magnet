@@ -75,7 +75,7 @@ Material:
       data:
         first:
           name: _Exposure
-        second: 0.7
+        second: 0.5
       data:
         first:
           name: _Rotation

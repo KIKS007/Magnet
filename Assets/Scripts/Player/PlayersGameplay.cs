@@ -48,6 +48,7 @@ public class PlayersGameplay : MonoBehaviour
 	public event EventHandler OnShoot;
 	public event EventHandler OnStun;
 	public event EventHandler OnDash;
+	public event EventHandler OnDashAvailable;
 	public event EventHandler OnDeath;
 
 	public event EventHandler OnPlayerstateChange;
@@ -123,6 +124,8 @@ public class PlayersGameplay : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
+		StartCoroutine (WaitTillPlayerEnabled ());
+
 		DOTween.Init ();
 
 		GetControllerNumber ();
@@ -139,8 +142,14 @@ public class PlayersGameplay : MonoBehaviour
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
 		magnetPoint = transform.GetChild (1).transform;
 
-		if(gameObject.activeSelf == true)
-			StartCoroutine (OnPlayerStateChange ());
+	}
+
+	protected IEnumerator WaitTillPlayerEnabled ()
+	{
+		yield return new WaitUntil (() => gameObject.activeSelf == true);
+
+		StartCoroutine (OnPlayerStateChange ());
+		StartCoroutine (OnDashAvailableEvent ());
 	}
 
 	protected void OnEnable ()
@@ -641,6 +650,17 @@ public class PlayersGameplay : MonoBehaviour
 			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
 
+	protected IEnumerator OnDashAvailableEvent ()
+	{
+		yield return new WaitWhile (() => dashState != DashState.Cooldown);
+
+		yield return new WaitWhile (() => dashState == DashState.Cooldown);
+
+		if (OnDashAvailable != null)
+			OnDashAvailable ();
+
+		StartCoroutine (OnDashAvailableEvent ());
+	}
 
 	protected void OnDeathVoid ()
 	{
