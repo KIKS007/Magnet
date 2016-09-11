@@ -969,31 +969,25 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		chooseModeContent.anchoredPosition = new Vector2(offScreenX, 0);
 
-		repulseButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [2]);
 		bombButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [3]);
-		hitButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [4]);
-		crushButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [5]);
+		crushButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [4]);
 
 
 		mainMenuCanvas.SetActive(false);
 		chooseModeCanvas.SetActive(true);
 
-		repulseButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
-		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		hitButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");  
+		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);  
+		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");  
 
 		chooseModeContent.DOAnchorPos(new Vector2(0, 0), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
 
-		repulse.GetComponent<Button>().Select();
+		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
 	}
 
 	public void ExitChooseMode ()
 	{
-		repulseButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(LoadMainMenu); 
-		bombButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		hitButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		crushButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		bombButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(LoadMainMenu); 
+		crushButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 
 		PlayReturnSound ();
 	}
@@ -1305,11 +1299,9 @@ public class MainMenuManagerScript : MonoBehaviour
 		bombMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton));
 		bombMenuCanvas.transform.GetChild (1).GetChild(0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton - 131));
 
-		crushButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		hitButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		repulseButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		crushButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 
-		Tween myTween = bombButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton - 131), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		Tween myTween = bombButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton - 131), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		yield return myTween.WaitForCompletion();
 
 		choosePlayerContent.anchoredPosition = new Vector2(offScreenX, 0);
@@ -1329,7 +1321,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		yield return myTween.WaitForCompletion();
 
 		//playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonMaxY), playButtonDuration).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
-		play.GetComponent<Button> ().Select ();
+		play.GetComponent<Button>().Select();
+
 	}
 
 	public IEnumerator ExitBomb ()
@@ -1346,11 +1339,9 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
-		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		hitButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		repulseButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
+		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
 
-		repulse.GetComponent<Button>().Select();
+		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
 
 		PlayReturnSound ();
 	}
@@ -1439,11 +1430,9 @@ public class MainMenuManagerScript : MonoBehaviour
 		crushMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton));
 		crushMenuCanvas.transform.GetChild (1).GetChild(0).GetComponent<RectTransform> ().anchoredPosition = (new Vector2 (onScreenX, topYpositionButton - 131));
 
-		hitButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		bombButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		repulseButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		bombButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 
-		Tween myTween = crushButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton - 131), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		Tween myTween = crushButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton - 131), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		yield return myTween.WaitForCompletion();
 
 		choosePlayerContent.anchoredPosition = new Vector2(offScreenX, 0);
@@ -1463,7 +1452,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		yield return myTween.WaitForCompletion();
 
 		//playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonMaxY), playButtonDuration).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
-		play.GetComponent<Button> ().Select ();
+		play.GetComponent<Button>().Select();
 	}
 
 	public IEnumerator ExitCrush ()
@@ -1478,13 +1467,11 @@ public class MainMenuManagerScript : MonoBehaviour
 		crushMenuCanvas.SetActive(false);
 		chooseModeCanvas.SetActive(true);
 
-		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
-		hitButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		repulseButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
+		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
 
-		repulse.GetComponent<Button>().Select();
+		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
 
 		PlayReturnSound ();
 	}
