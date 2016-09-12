@@ -10,13 +10,14 @@ public class CameraScreenShake : MonoBehaviour
 	public float shakeRandomness = 45;
 
 	public bool shake;
+	public bool resetShake;
 
 	private Vector3 initialRotation;
 
 	// Use this for initialization
 	void Start () 
 	{
-		initialRotation = new Vector3 (90, 0, 0);
+		initialRotation = new Vector3 (90, 1, 1);
 		//initialRotation = transform.rotation.eulerAngles;
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
@@ -29,6 +30,12 @@ public class CameraScreenShake : MonoBehaviour
 		{
 			shake = false;
 			CameraShaking();
+		}
+
+		if(resetShake)
+		{
+			resetShake = false;
+			ResetCameraRotation();
 		}
 	}
 
@@ -48,6 +55,7 @@ public class CameraScreenShake : MonoBehaviour
 
 	void ResetCameraRotation ()
 	{
+		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 		transform.DORotate(initialRotation, 0.5f);
 	}
 	

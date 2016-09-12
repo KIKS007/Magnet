@@ -64,7 +64,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 30, z: 0}
+  m_LocalPosition: {x: -43, y: 93, z: 15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 417364}
@@ -188,9 +188,9 @@ MonoBehaviour:
   - whichMode: 2
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
-    cameraYMin: 15
+    cameraYMin: 20
     distanceMin: 0
-    distanceRatio: 1
+    distanceRatio: 0.5
   - whichMode: 3
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
@@ -200,9 +200,9 @@ MonoBehaviour:
   - whichMode: 4
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
-    cameraYMin: 15
+    cameraYMin: 20
     distanceMin: 0
-    distanceRatio: 1
+    distanceRatio: 0.5
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
   cameraYMin: 30
@@ -256,11 +256,11 @@ MonoBehaviour:
   - 1.25
   - 2
   timeTween: 0.05
-  bloomIntensity: 0.35
   timeTweenEffect: 0.1
+  bloomIntensity: 0.35
   vignettingIntensity: 0.36
-  vignettingChromaticAberration: 12
   vignettingBlur: 0.1
+  vignettingChromaticAberration: 12
   slowMotion: 0
   timeScaleDebug: 1
   slowMoNumber: 0

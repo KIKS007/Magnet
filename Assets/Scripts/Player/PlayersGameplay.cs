@@ -67,7 +67,8 @@ public class PlayersGameplay : MonoBehaviour
 	[Header ("Movement")]
 	public float speed = 15;
 	public float stunnedSpeed = 8;
-	public float velocity;
+	public float maxVelocity;
+	public float gravity = 100;
 
 	[Header ("Forces")]
 	public float attractionForce = 10;
@@ -163,8 +164,8 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(playerRigidbody.velocity.magnitude > velocity)
-				velocity = playerRigidbody.velocity.magnitude;
+			if(playerRigidbody.velocity.magnitude > maxVelocity)
+				maxVelocity = playerRigidbody.velocity.magnitude;
 
 
 			ActivateFunctions ();
@@ -246,6 +247,8 @@ public class PlayersGameplay : MonoBehaviour
 			}
 
 			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
+
+			playerRigidbody.AddForce (-Vector3.up * gravity, ForceMode.Acceleration);
 		}
 	}
 

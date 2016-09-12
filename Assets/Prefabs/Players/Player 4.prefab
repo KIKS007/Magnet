@@ -1530,6 +1530,7 @@ MonoBehaviour:
   speed: 15
   stunnedSpeed: 8
   velocity: 0
+  gravity: 100
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
