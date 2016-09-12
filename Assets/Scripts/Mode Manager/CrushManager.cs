@@ -9,11 +9,17 @@ public class CrushManager : MonoBehaviour
 
 	private bool gameEndLoopRunning = false;
 
+	void Start ()
+	{
+		GlobalMethods.Instance.RandomPositionMovables ();
+	}
+
 	// Update is called once per frame
 	void Update () 
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			FindPlayers ();
+
 	}
 
 	void FindPlayers ()

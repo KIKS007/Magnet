@@ -15,7 +15,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			allScales [i] = allMovables [i].transform.lossyScale;
 			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
 		}
-			
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
