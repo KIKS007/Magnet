@@ -139,7 +139,7 @@ public class MovableScript : MonoBehaviour
 				
 		}
 
-		if(!hold && cubeMaterial.GetColor("_Color") != GlobalVariables.Instance.cubeNeutralColor)
+		if(!hold && tag != "ThrownMovable" && cubeMaterial.GetColor("_Color") != GlobalVariables.Instance.cubeNeutralColor)
 		{
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
