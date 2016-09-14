@@ -9,6 +9,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	private Transform character;
 	private PlayersGameplay characterScript;
+	private PlayersFXAnimations fxAnimationsScript;
 
 	private RaycastHit objectHit;
 
@@ -19,11 +20,18 @@ public class MagnetZoneScript : MonoBehaviour
 	{
 		character = gameObject.transform.parent;
 		characterScript = character.GetComponent<PlayersGameplay> ();
+		fxAnimationsScript = character.GetComponent<PlayersFXAnimations> ();
 	}
 
 	void Update ()
 	{
 		player = character.GetComponent<PlayersGameplay> ().player;
+
+		if (player.GetButtonUp ("Attract"))
+			characterScript.cubesAttracted.Clear();
+
+		if (player.GetButtonUp ("Repulse"))
+			characterScript.cubesRepulsed.Clear ();
 	}
 
 	void OnTriggerStay (Collider other)
@@ -46,6 +54,12 @@ public class MagnetZoneScript : MonoBehaviour
 
 							if (!other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().attracedBy.Add (character.gameObject);
+
+							if (!characterScript.cubesAttracted.Contains (other.gameObject))
+							{
+								characterScript.cubesAttracted.Add (other.gameObject);
+								fxAnimationsScript.StartCoroutine ("AttractionFX", other.gameObject);
+							}
 						}
 
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
@@ -54,6 +68,9 @@ public class MagnetZoneScript : MonoBehaviour
 
 							if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().repulsedBy.Add (character.gameObject);
+
+							if (!characterScript.cubesRepulsed.Contains (other.gameObject))
+								characterScript.cubesRepulsed.Add (other.gameObject);
 						}
 
 						if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
@@ -82,6 +99,15 @@ public class MagnetZoneScript : MonoBehaviour
 
 			if (other.tag =="ThrownMovable" && other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
 				other.GetComponent<MovableScript> ().repulsedBy.Remove (character.gameObject);
+
+			if(other.tag == "Movable" || other.tag =="ThrownMovable")
+			{
+				if(characterScript.cubesAttracted.Contains(other.gameObject))
+					characterScript.cubesAttracted.Remove (other.gameObject);
+
+				if(characterScript.cubesRepulsed.Contains(other.gameObject))
+					characterScript.cubesRepulsed.Remove (other.gameObject);
+			}
 		}
 	}
 }

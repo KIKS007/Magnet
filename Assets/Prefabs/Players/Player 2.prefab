@@ -1255,6 +1255,12 @@ MonoBehaviour:
   dashingStartWidth: 2
   shootPosOffset: {x: 0, y: 0, z: 0}
   dashAvailableFX: {fileID: 19854334}
+  attractionFX: {fileID: 0}
+  startLifetimeAT: 0
+  startSizeAT: 0
+  emissionRateAT: 0
+  cubeDistance: 0
+  cube: {fileID: 0}
 --- !u!114 &11430722
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1354,7 +1360,7 @@ MonoBehaviour:
   controllerNumber: -1
   speed: 15
   stunnedSpeed: 8
-  velocity: 0
+  maxVelocity: 0
   gravity: 100
   attractionForce: 10
   shootForce: 200
@@ -1373,6 +1379,8 @@ MonoBehaviour:
   dashDuration: 0.3
   dashCooldown: 1.2
   dashEase: 6
+  cubesAttracted: []
+  cubesRepulsed: []
   playerRigidbody: {fileID: 0}
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}

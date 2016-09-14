@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
@@ -96,6 +97,8 @@ public class PlayersGameplay : MonoBehaviour
 	public float dashCooldown = 1.2f;
 	public Ease dashEase = Ease.OutQuad;
 
+	public List<GameObject> cubesAttracted = new List<GameObject> ();
+	public List<GameObject> cubesRepulsed = new List<GameObject> ();
 
 	protected Transform movableParent;
 	protected Transform magnetPoint;
@@ -400,6 +403,8 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableRB = movable.GetComponent<Rigidbody>();
 		holdMovableTransform = movable.GetComponent<Transform>();
 		movable.GetComponent<MovableScript> ().OnHold ();
+
+		cubesAttracted.Clear ();
 
 		if (OnHold != null)
 			OnHold ();

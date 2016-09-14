@@ -55,7 +55,7 @@ public class CameraScreenShake : MonoBehaviour
 
 	void ResetCameraRotation ()
 	{
-		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+//		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 		transform.DORotate(initialRotation, 0.5f);
 	}
 	

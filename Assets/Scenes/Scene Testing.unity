@@ -1368,13 +1368,23 @@ MonoBehaviour:
   - {fileID: 149876, guid: 382af989118e05947b529f10e0c3ef61, type: 2}
   - {fileID: 181482, guid: 04dc6598c6e008c4eb9101b405e4469a, type: 2}
   - {fileID: 151408, guid: a326599b4f5d126439a9603a53687a4e, type: 2}
+  attractFX:
+  - {fileID: 189984, guid: 49987dc28b02c934fb650062941784b9, type: 2}
+  - {fileID: 196376, guid: aae0debfa0b8d75409a9d09f42612c05, type: 2}
+  - {fileID: 165474, guid: 996866f6c7eacc44cb542c4eb8ee278a, type: 2}
+  - {fileID: 173284, guid: 22a375da2e172ea4e97e26e98760981e, type: 2}
+  repulseFX:
+  - {fileID: 126190, guid: da0e97ecac951ac42930ebf63e9a590c, type: 2}
+  - {fileID: 139232, guid: 6a1063b58c44ed146ab3331de3678920, type: 2}
+  - {fileID: 111766, guid: 6b4aa96bb068f6d49bb27c050e629206, type: 2}
+  - {fileID: 177424, guid: 86789c40589588747a92ecb6eea56486, type: 2}
   HitParticles: {fileID: 157234, guid: cd76df09f0f1d4345b49b6af15c123bc, type: 2}
   WallHitParticles: {fileID: 136970, guid: b5cf26f237d6a5a40a2b2253e2bfe2fb, type: 2}
   DeadParticles: {fileID: 151166, guid: 6944c4430c797a149ab4a7cddd8cceba, type: 2}
   MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
   PlayerSpawnParticles: {fileID: 165514, guid: 978ecf91ecbc2464783de9a03edbef72, type: 2}
   ParticulesClonesParent: {fileID: 595958288}
-  firstSceneToLoad: Crush
+  firstSceneToLoad: Test
   WhichModeLoaded: 0
   CurrentModeLoaded: 
 --- !u!4 &1437567659

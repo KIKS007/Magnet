@@ -62,6 +62,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("FX Prefabs")]
 	public GameObject[] shootFX = new GameObject[4];
 	public GameObject[] explosionFX = new GameObject[4];
+	public GameObject[] attractFX = new GameObject[4];
+	public GameObject[] repulseFX = new GameObject[4];
 
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;
