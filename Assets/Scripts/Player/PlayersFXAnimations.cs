@@ -175,6 +175,17 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		ps.Stop ();
 
+		ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
+		ps.GetParticles (particlesList);
+
+		for (int i = 0; i < ps.particleCount; i++)
+		{
+			particlesList [i].lifetime = -1f;
+			yield return null;
+		}
+
+		ps.SetParticles (particlesList, particlesList.Length);
+
 		yield return new WaitWhile(() => ps.IsAlive());
 
 		Destroy (fx);
