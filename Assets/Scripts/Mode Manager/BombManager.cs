@@ -66,10 +66,7 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false)
-		{
-			yield return null;
-		}
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
 
 		StartCoroutine (Timer ());
 	}
@@ -85,10 +82,7 @@ public class BombManager : MonoBehaviour
 
 		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
 
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false)
-		{
-			yield return null;
-		}
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
 
 		if(timer > 0.01f)
 		{

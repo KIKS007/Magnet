@@ -1384,7 +1384,7 @@ MonoBehaviour:
   MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
   PlayerSpawnParticles: {fileID: 165514, guid: 978ecf91ecbc2464783de9a03edbef72, type: 2}
   ParticulesClonesParent: {fileID: 595958288}
-  firstSceneToLoad: Test
+  firstSceneToLoad: Hit
   WhichModeLoaded: 0
   CurrentModeLoaded: 
 --- !u!4 &1437567659

@@ -73,10 +73,7 @@ public class RepulseModeManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-		{
-			yield return null;
-		}
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		StartCoroutine (Timer ());
 	}
@@ -92,10 +89,7 @@ public class RepulseModeManager : MonoBehaviour
 
 		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
 
-		while(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-		{
-			yield return null;
-		}
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		if(timer > 0.01f)
 			StartCoroutine (Timer ());
@@ -103,7 +97,7 @@ public class RepulseModeManager : MonoBehaviour
 		else if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
 		{
 			StartCoroutine (GameEnded ());
-			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "00:00";
+			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "0:00";
 		}
 
 	}
