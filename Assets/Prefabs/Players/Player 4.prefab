@@ -1535,7 +1535,7 @@ MonoBehaviour:
   shootForce: 200
   repulsionForce: 10
   decelerationAmount: 1
-  enableRepulsionWave: 1
+  enableRepulsionWave: 0
   repulsionWaveForce: 80
   repulsionWaveRadius: 12
   repulsionWaveMask:
@@ -1599,12 +1599,6 @@ MonoBehaviour:
   dashingStartWidth: 2
   shootPosOffset: {x: 0, y: 0, z: 0}
   dashAvailableFX: {fileID: 19886902}
-  attractionFX: {fileID: 0}
-  startLifetimeAT: 0
-  startSizeAT: 0
-  emissionRateAT: 0
-  cubeDistance: 0
-  cube: {fileID: 0}
 --- !u!114 &11467634
 MonoBehaviour:
   m_ObjectHideFlags: 1

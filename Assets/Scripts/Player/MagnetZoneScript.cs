@@ -70,12 +70,11 @@ public class MagnetZoneScript : MonoBehaviour
 								other.GetComponent<MovableScript> ().repulsedBy.Add (character.gameObject);
 
 							if (!characterScript.cubesRepulsed.Contains (other.gameObject))
+							{
 								characterScript.cubesRepulsed.Add (other.gameObject);
-						}
+								fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
 
-						if(objectHit.transform.tag == "Fluff" && player.GetButton("Repulse"))
-						{
-							characterScript.Repulsion (objectHit.collider.gameObject);
+							}
 						}
 					}
 				}

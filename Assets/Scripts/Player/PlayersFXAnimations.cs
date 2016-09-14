@@ -114,11 +114,6 @@ public class PlayersFXAnimations : MonoBehaviour
 			dashAvailableFX.Stop ();
 	}
 
-	void AttractionFXVoid ()
-	{
-		
-	}
-
 	public IEnumerator AttractionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
@@ -157,6 +152,54 @@ public class PlayersFXAnimations : MonoBehaviour
 			for (int i = 0; i < ps.particleCount; i++)
 			{
 				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
+				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+				particlesList [i].lifetime = lifeTime;
+			}
+
+			ps.SetParticles (particlesList, particlesList.Length);
+
+			yield return null;
+		}
+	}
+
+	public IEnumerator RepulsionFX (GameObject whichCube)
+	{
+		GameObject fx = Instantiate (GlobalVariables.Instance.repulseFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
+		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
+		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		ps.startSize = 2 + whichCube.transform.lossyScale.x;
+
+		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
+
+		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (whichCube));
+
+		ps.Stop ();
+
+		yield return new WaitWhile(() => ps.IsAlive());
+
+		Destroy (fx);
+	}
+
+	IEnumerator SetRepulsionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
+	{
+		while(ps.IsAlive())
+		{
+			fx.transform.position = transform.position;
+
+			Vector3 lookPos = new Vector3 (whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
+			fx.transform.LookAt(lookPos);
+
+			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
+			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+
+			ps.startLifetime = lifeTime;
+
+			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
+			ps.GetParticles (particlesList);
+
+			for (int i = 0; i < ps.particleCount; i++)
+			{
+				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
 				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
 				particlesList [i].lifetime = lifeTime;
 			}
