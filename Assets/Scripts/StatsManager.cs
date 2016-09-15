@@ -27,11 +27,17 @@ public class StatsManager : Singleton<StatsManager>
 	public WhichPlayer mostWinsInARow = WhichPlayer.None;
 	public int winsInARowNumber = 0;
 
+	[Header ("Game Duration")]
+	public string gameDuration;
+	private float timerDuration;
+
 	private WhichPlayer previousWinner = WhichPlayer.None;
 
 	void Awake ()
 	{
 		SetupLists ();
+
+		StartCoroutine (StartTimer ());
 	}
 
 	void SetupLists ()
@@ -542,6 +548,8 @@ public class StatsManager : Singleton<StatsManager>
 		totalDash = 0;
 		totalShots = 0;
 
+		timerDuration = 0;
+
 		for(int i = 0; i < mostStatsList.Count; i++)
 		{
 			mostStatsList [i].statNumber = 0;
@@ -555,6 +563,26 @@ public class StatsManager : Singleton<StatsManager>
 		}
 	}
 
+	IEnumerator StartTimer ()
+	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		StartCoroutine (Timer ());
+	}
+
+	IEnumerator Timer ()
+	{
+		timerDuration += Time.deltaTime;
+
+		string minutes = Mathf.Floor(timerDuration / 60).ToString("0");
+		string seconds = Mathf.Floor(timerDuration % 60).ToString("00");
+
+		gameDuration = minutes + ":" + seconds;
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		StartCoroutine (Timer ());
+	}
 }
 
 [Serializable]

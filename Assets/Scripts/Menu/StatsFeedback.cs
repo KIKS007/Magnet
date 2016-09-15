@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class StatsFeedback : MonoBehaviour 
 {
-	public enum WhichStatType {Player, Most, Total, Winner, Wins, WinsInARow, EachPlayerWin};
+	public enum WhichStatType {Player, Most, Total, Winner, Wins, WinsInARow, EachPlayerWin, GameDuration};
 
 	public WhichStatType whichStatType;
 	public WhichStat whichStat;
@@ -22,6 +22,7 @@ public class StatsFeedback : MonoBehaviour
 
 	private StatsManager stats;
 	private Text textComponent;
+
 
 	// Use this for initialization
 	void Start () 
@@ -214,6 +215,9 @@ public class StatsFeedback : MonoBehaviour
 			color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer4) + ">";
 			textComponent.text = beforeNumberText + " " + color1 + "0" + "</color>, " + color2 + "0" + "</color>, " + color3 + "0" + "</color>, " + color4 + "0" + "</color>, " + afterNumberText;
 			break;
+		case WhichStatType.GameDuration:
+			textComponent.text = beforeNumberText + " " + "0" + ":" + "00" + " " + afterNumberText;
+			break;
 		}	
 
 	}
@@ -246,6 +250,9 @@ public class StatsFeedback : MonoBehaviour
 				break;
 			case WhichStatType.EachPlayerWin:
 				EachPlayerWin ();
+				break;
+			case WhichStatType.GameDuration:
+				GameDuration ();
 				break;
 			}
 		}
@@ -515,5 +522,10 @@ public class StatsFeedback : MonoBehaviour
 		color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
 
 		textComponent.text = beforeNumberText + " " + color1 + number1 + "</color>, " + color2 + number2 + "</color>, " + color3 + number3 + "</color>, " + color4 + number4 + "</color>, " + afterNumberText;
+	}
+
+	void GameDuration ()
+	{
+		textComponent.text = beforeNumberText + " " + stats.gameDuration + " " + afterNumberText;
 	}
 }

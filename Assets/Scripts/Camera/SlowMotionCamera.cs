@@ -223,6 +223,9 @@ public class SlowMotionCamera : MonoBehaviour
 		case 4:
 			slowMotionDurationTemp = slowMotionDurations[3];
 			break;
+		default:
+			slowMotionDurationTemp = slowMotionDurations[3];
+			break;
 		}
 	
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(slowMotionDurationTemp + timeTween));
