@@ -57,13 +57,18 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
 
+		StatsManager.Instance.ResetStats (true);
+
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
 	}
 
 	public void LoadSceneVoid (string sceneToLoad)
 	{
-		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		else
+			mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
 		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad)
 		{
@@ -129,6 +134,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		Tween myTween = mainCamera.DOMoveX (reloadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
+		StatsManager.Instance.ResetStats (false);
+
 		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
@@ -150,7 +157,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return myTween.WaitForCompletion ();*/
 
-		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 
@@ -173,6 +180,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
 		yield return myTween.WaitForCompletion ();
 
+		StatsManager.Instance.ResetStats (true);
+
 		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
@@ -182,7 +191,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
 
-		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
@@ -267,7 +276,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		GlobalVariables.Instance.Player4 = player4;
 
 		StatsManager.Instance.GetPlayersEvents ();
-		StatsManager.Instance.ResetStats (false);
 
 		GlobalVariables.Instance.SetPlayersControllerNumbers ();
 		GlobalVariables.Instance.ListPlayers ();

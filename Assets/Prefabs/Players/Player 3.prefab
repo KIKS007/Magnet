@@ -543,7 +543,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 168500}
-  m_LocalRotation: {x: -0.27059805, y: -0.65328145, z: 0.6532815, w: 0.27059805}
+  m_LocalRotation: {x: -0.27059808, y: -0.6532815, z: 0.65328157, w: 0.27059808}
   m_LocalPosition: {x: 0.005141373, y: 0.062413327, z: 0.010258178}
   m_LocalScale: {x: 1.1515664, y: 1.1515663, z: 1.1515664}
   m_Children: []
@@ -1381,6 +1381,7 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
+  rightJoystickDeadzone: 0.25
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
@@ -1403,6 +1404,7 @@ MonoBehaviour:
   playerRigidbody: {fileID: 0}
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}
+  previousRotation: {x: 0, y: 0, z: 0}
 --- !u!114 &11409848
 MonoBehaviour:
   m_ObjectHideFlags: 1

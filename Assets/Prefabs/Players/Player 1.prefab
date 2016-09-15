@@ -1371,6 +1371,7 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
+  rightJoystickDeadzone: 0.25
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
@@ -1393,6 +1394,7 @@ MonoBehaviour:
   playerRigidbody: {fileID: 0}
   holdMovableRB: {fileID: 0}
   holdMovableTransform: {fileID: 0}
+  previousRotation: {x: 0, y: 0, z: 0}
 --- !u!114 &11442162
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -79,6 +79,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public WhichMode WhichModeLoaded;
 	public string CurrentModeLoaded = "";
 
+	public bool Stun = false;
+
 	void Start ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
@@ -93,6 +95,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnModeStartedEvent ());
 	}
 		
+	void Update ()
+	{
+		if(Stun)
+		{
+			Stun = false;
+			Player2.GetComponent<PlayersGameplay> ().StunVoid ();
+		}
+	}
+
 	public void SetPlayersControllerNumbers ()
 	{
 		Player1.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer1;

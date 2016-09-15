@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public enum WhichPlayer {Player1, Player2, Player3, Player4, None};
+public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
 public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins};
 
 public class StatsManager : Singleton<StatsManager> 
@@ -251,6 +251,9 @@ public class StatsManager : Singleton<StatsManager>
 			playerStatsList [3].wins++;
 			WinsInARow (whichPlayerWon);
 			winner = "Player 4";
+			break;
+		case WhichPlayer.Draw:
+			winner = "Draw";
 			break;
 		}
 	}
@@ -523,10 +526,13 @@ public class StatsManager : Singleton<StatsManager>
 			playerStatsList [i].dash = 0;
 			playerStatsList [i].shots = 0;
 
+			playerStatsList [i].aimAccuracy = 0;
+
 			if(resetWins)
 			{
 				playerStatsList [i].wins = 0;
 				playerStatsList [i].winsInARow = 0;
+				previousWinner = WhichPlayer.None;
 			}
 		}
 

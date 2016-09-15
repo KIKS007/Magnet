@@ -20,6 +20,10 @@ public class SlowMotionCamera : MonoBehaviour
 	public float vignettingBlur;
 	public float vignettingChromaticAberration;
 
+	[Header ("Pause SlowMo")]
+	public float timeTweenPause;
+	public float timeTweenEffectPause;
+
 	[Header ("Debug Test")]
 	public bool slowMotion;
 	public float timeScaleDebug;
@@ -121,6 +125,37 @@ public class SlowMotionCamera : MonoBehaviour
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
 		DOTween.Pause ("StopSlowMotion");
 
+		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
+		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
+		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
+
+		DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomIntensity, timeTweenEffectPause).SetEase(easetype).SetId("StartSlowMotion");
+
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, vignettingIntensity, timeTweenEffectPause).SetEase(easetype).SetId("StartSlowMotion");
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, vignettingChromaticAberration, timeTweenEffectPause).SetEase(easetype).SetId("StartSlowMotion");
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, vignettingIntensity, timeTweenEffectPause).SetEase(easetype).SetId("StartSlowMotion");
+	}
+
+	public void StopPauseSlowMotion ()
+	{
+		//Debug.Log("Undo Slomo !");
+
+		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 1, timeTweenPause).SetEase(easetype).SetId("StopSlowMotion");
+		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp, timeTweenPause).SetEase(easetype).SetId("StopSlowMotion");
+		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp, timeTweenPause).SetEase(easetype).SetId("StopSlowMotion");
+
+		DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomInitialIntensity, timeTweenEffectPause).SetEase(easetype).SetId("StopSlowMotion");
+
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, 0f, timeTweenEffectPause).SetEase(easetype).SetId("StopSlowMotion");
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, 0f, timeTweenEffectPause).SetEase(easetype).SetId("StopSlowMotion");
+		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, 0f, timeTweenEffectPause).SetEase(easetype).SetId("StopSlowMotion");
+	}
+
+	public void StartEndGameSlowMotion ()
+	{
+		StopCoroutine (SlowMotionDuration (slowMoNumber));
+		DOTween.Pause ("StopSlowMotion");
+
 		slowMoNumber++;
 
 		float slowFactorTemp = 0;
@@ -155,7 +190,7 @@ public class SlowMotionCamera : MonoBehaviour
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, vignettingIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 	}
 
-	public void StopPauseSlowMotion ()
+	public void StopEndGameSlowMotion ()
 	{
 		//Debug.Log("Undo Slomo !");
 

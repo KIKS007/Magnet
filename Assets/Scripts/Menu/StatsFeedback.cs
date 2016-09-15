@@ -418,9 +418,13 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.text = stats.winner;
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
 			break;
+		case "Draw":
+			textComponent.text = "It's a draw !";
+			break;
 		}
 
-		textComponent.text = beforeNumberText + " " + color + textComponent.text + "</color> " + afterNumberText;
+		if(stats.winner != "Draw")
+			textComponent.text = beforeNumberText + " " + color + textComponent.text + "</color> " + afterNumberText;
 
 		if(stats.winner != "")
 			textComponent.enabled = true;

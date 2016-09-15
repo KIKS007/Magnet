@@ -388,6 +388,11 @@ public class MainMenuManagerScript : MonoBehaviour
 			repulse.GetComponent<Button>().Select();
 		}
 
+		if(eventSyst.currentSelectedGameObject == null && gameOverCanvas.activeSelf == true)
+		{
+			restart.GetComponent<Button>().Select();
+		}
+
 		if(crushMenuCanvas.activeSelf == true || footballMenuCanvas.activeSelf == true || hitMenuCanvas.activeSelf == true || bombMenuCanvas.activeSelf == true || repulseMenuCanvas.activeSelf == true)
 		{
 			if(eventSyst.currentSelectedGameObject == null)
@@ -1637,6 +1642,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			break;
 		}
 
+		eventSyst.SetSelectedGameObject(null);
 		restart.GetComponent<Button> ().Select ();
 	}
 

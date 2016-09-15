@@ -30,7 +30,14 @@ public class CrushManager : MonoBehaviour
 		{
 			gameEndLoopRunning = true;
 
-			StartCoroutine("GameEnd");
+			StartCoroutine (GameEnd ());
+		}
+
+		if(playersList.Length == 0 && gameEndLoopRunning == false)
+		{
+			gameEndLoopRunning = true;
+
+			StartCoroutine (GameEndDraw ());
 		}
 	}
 
@@ -54,7 +61,21 @@ public class CrushManager : MonoBehaviour
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+
+		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+	}
+
+	IEnumerator GameEndDraw ()
+	{
+		StatsManager.Instance.Winner(WhichPlayer.Draw);
+
+		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));

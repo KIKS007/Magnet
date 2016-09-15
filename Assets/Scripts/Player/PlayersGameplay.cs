@@ -71,6 +71,8 @@ public class PlayersGameplay : MonoBehaviour
 	public float maxVelocity;
 	public float gravity = 100;
 
+	protected float rightJoystickDeadzone = 0.85f;
+
 	[Header ("Forces")]
 	public float attractionForce = 10;
 	public float shootForce = 200;
@@ -145,7 +147,6 @@ public class PlayersGameplay : MonoBehaviour
 
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
 		magnetPoint = transform.GetChild (1).transform;
-
 	}
 
 	protected IEnumerator WaitTillPlayerEnabled ()
@@ -190,6 +191,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		Pause ();
+
 	}
 
 	protected virtual void ActivateFunctions ()
@@ -341,13 +343,14 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
 
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
-
 		holdMovableTransform.transform.SetParent(null);
 		holdMovableTransform.transform.SetParent(movableParent);
 		holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
 		holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
 		holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
 		holdMovableTransform.gameObject.tag = "ThrownMovable";
+
+
 		holdMovableTransform.GetComponent<MovableScript> ().currentVelocity = 200;
 		holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
@@ -517,7 +520,9 @@ public class PlayersGameplay : MonoBehaviour
 		
 	protected virtual void TurningGamepad ()
 	{
-		if(player.GetAxis("Aim Horizontal") != 0 || player.GetAxis("Aim Vertical") != 0)
+		Vector3 aim = new Vector3 (player.GetAxis ("Aim Horizontal"), 0, player.GetAxis ("Aim Vertical"));
+
+		if(aim.magnitude > rightJoystickDeadzone)
 		{
 			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
 		}

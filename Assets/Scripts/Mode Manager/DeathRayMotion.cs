@@ -28,6 +28,9 @@ public class DeathRayMotion : MonoBehaviour
 		boxCollider = GetComponent<BoxCollider> ();
 
 		StartCoroutine (WaitTillGameBegins ());
+
+		GlobalVariables.Instance.OnPause += () => DOTween.Pause("DeathRay");
+		GlobalVariables.Instance.OnPlaying += () => DOTween.Play("DeathRay");
 	}
 
 	IEnumerator WaitTillGameBegins ()
@@ -42,14 +45,14 @@ public class DeathRayMotion : MonoBehaviour
 
 		for(int i = 0; i < rightCapsules.Length; i++)
 		{
-			rightCapsules [i].transform.DOLocalMoveX (rightCapsulesNewX, tweenDuration).SetEase (tweenEase);
-			rightCapsules [i].transform.DOLocalMoveZ (rightCapsulesNewZ, tweenDuration).SetEase (tweenEase);
+			rightCapsules [i].transform.DOLocalMoveX (rightCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
+			rightCapsules [i].transform.DOLocalMoveZ (rightCapsulesNewZ, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
 		}
 
 		for(int i = 0; i < leftCapsules.Length; i++)
 		{
-			leftCapsules [i].transform.DOLocalMoveX (leftCapsulesNewX, tweenDuration).SetEase (tweenEase);
-			leftCapsules [i].transform.DOLocalMoveZ (leftCapsulesNewZ, tweenDuration).SetEase (tweenEase);
+			leftCapsules [i].transform.DOLocalMoveX (leftCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
+			leftCapsules [i].transform.DOLocalMoveZ (leftCapsulesNewZ, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
 		}
 	}
 
@@ -62,7 +65,5 @@ public class DeathRayMotion : MonoBehaviour
 			Vector3 temp = new Vector3(distanceBetweenCapsules * 0.5f + 0.5f, boxCollider.size.y, boxCollider.size.z);
 			boxCollider.size = temp;
 		}
-
-
 	}
 }

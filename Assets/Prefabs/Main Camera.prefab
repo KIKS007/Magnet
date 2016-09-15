@@ -261,6 +261,8 @@ MonoBehaviour:
   vignettingIntensity: 0.36
   vignettingBlur: 0.1
   vignettingChromaticAberration: 12
+  timeTweenPause: 0.05
+  timeTweenEffectPause: 0.1
   slowMotion: 0
   timeScaleDebug: 1
   slowMoNumber: 0
@@ -311,6 +313,7 @@ MonoBehaviour:
   shakeVibrato: 100
   shakeRandomness: 45
   shake: 0
+  resetShake: 0
 --- !u!114 &11467490
 MonoBehaviour:
   m_ObjectHideFlags: 1

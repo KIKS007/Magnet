@@ -86,8 +86,6 @@ public class BombManager : MonoBehaviour
 
 		if(timer > 0.01f)
 		{
-			yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
-
 			StartCoroutine (Timer ());
 		}
 
@@ -157,8 +155,6 @@ public class BombManager : MonoBehaviour
 	{
 		playersList = GameObject.FindGameObjectsWithTag("Player");
 
-		Debug.Log (playersList [0].name);
-
 		switch (playersList [0].name)
 		{
 		case "Player 1":
@@ -177,7 +173,7 @@ public class BombManager : MonoBehaviour
 			
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartPauseSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
