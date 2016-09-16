@@ -125,6 +125,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2084138, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
   m_IsPrefabParent: 0
@@ -358,6 +362,7 @@ MonoBehaviour:
   winner: 
   mostWinsInARow: 4
   winsInARowNumber: 0
+  gameDuration: 
 --- !u!4 &889665712
 Transform:
   m_ObjectHideFlags: 0

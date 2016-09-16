@@ -114,9 +114,12 @@ public class PlayersFXAnimations : MonoBehaviour
 			dashAvailableFX.Stop ();
 	}
 
+	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
+
 	public IEnumerator AttractionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
+		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		ps.startSize = 2 + whichCube.transform.lossyScale.x;
@@ -128,6 +131,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		ps.Stop ();
 
 		yield return new WaitWhile(() => ps.IsAlive());
+
+		attractionRepulsionFX.Remove (fx);
 
 		Destroy (fx);
 	}
@@ -165,6 +170,7 @@ public class PlayersFXAnimations : MonoBehaviour
 	public IEnumerator RepulsionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.repulseFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
+		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		ps.startSize = 2 + whichCube.transform.lossyScale.x;
@@ -187,6 +193,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		ps.SetParticles (particlesList, particlesList.Length);
 
 		yield return new WaitWhile(() => ps.IsAlive());
+
+		attractionRepulsionFX.Remove (fx);
 
 		Destroy (fx);
 	}

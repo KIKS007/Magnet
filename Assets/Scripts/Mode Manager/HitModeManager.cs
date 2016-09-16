@@ -41,7 +41,7 @@ public class HitModeManager : MonoBehaviour
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(timer > 0.01f)
+		if(timer >= 1f)
 			StartCoroutine (Timer ());
 
 		else if(GlobalVariables.Instance.GameState != GameStateEnum.Over)

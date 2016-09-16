@@ -728,8 +728,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1)
 			return false;
 		
-		else if (GlobalVariables.Instance.NumberOfPlayers < 2)
-			return false;
+		/*else if (GlobalVariables.Instance.NumberOfPlayers < 2)
+			return false;*/
 		
 		else
 			return true;

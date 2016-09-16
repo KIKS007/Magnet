@@ -2410,6 +2410,7 @@ MonoBehaviour:
   durationImageMovement: 0.1
   gapBetweenInputs: 0.2
   durationColor: 0.5
+  getInput: 1
 --- !u!1 &51646298
 GameObject:
   m_ObjectHideFlags: 0
@@ -5948,14 +5949,6 @@ Prefab:
     - target: {fileID: 479748, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11467490, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: bloomIntensity
-      value: -0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 11424106, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: bloomIntensity
-      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
@@ -27279,6 +27272,7 @@ MonoBehaviour:
   durationImageMovement: 0.1
   gapBetweenInputs: 0.2
   durationColor: 0.5
+  getInput: 1
 --- !u!1 &711194877
 GameObject:
   m_ObjectHideFlags: 0
@@ -31381,6 +31375,7 @@ MonoBehaviour:
   durationImageMovement: 0.1
   gapBetweenInputs: 0.2
   durationColor: 0.5
+  getInput: 1
 --- !u!1 &877616563
 GameObject:
   m_ObjectHideFlags: 0
@@ -37800,6 +37795,10 @@ Prefab:
     - target: {fileID: 175966, guid: f59a9a6e46f3dc24192f720e608f9ef3, type: 2}
       propertyPath: m_Name
       value: Rewired Input Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 11482086, guid: f59a9a6e46f3dc24192f720e608f9ef3, type: 2}
+      propertyPath: _userData.actions.Array.data[5]._type
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f59a9a6e46f3dc24192f720e608f9ef3, type: 2}
@@ -47078,6 +47077,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1107571704}
         m_MethodName: StartModeVoid
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 707579446}
+        m_MethodName: IgnoreInput
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

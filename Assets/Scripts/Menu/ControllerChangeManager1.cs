@@ -42,6 +42,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 	public Player gamepad3;
 	public Player gamepad4;
 
+	public bool getInput = true;
+
 	void Start ()
 	{
 		gamepad1Color = gamepadsLines [0].GetComponent<Text> ().color;
@@ -71,11 +73,14 @@ public class ControllerChangeManager1 : MonoBehaviour
 		
 	void Update ()
 	{
-		GetInput ();
+		if(getInput)
+			GetInput ();
 	}
 
 	void OnEnable ()
 	{
+		getInput = true;
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
 			GetPlayersAndControllers ();
@@ -817,7 +822,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 		{
 		case 0:
 			keyboardMoving = true;
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds (gapBetweenInputs));
+			yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (gapBetweenInputs));
 			keyboardMoving = false;
 			break;
 		case 1:
@@ -841,5 +846,10 @@ public class ControllerChangeManager1 : MonoBehaviour
 			gamepad4Moving = false;
 			break;
 		}
+	}
+
+	public void IgnoreInput ()
+	{
+		getInput = false;
 	}
 }

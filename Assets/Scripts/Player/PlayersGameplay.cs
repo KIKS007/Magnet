@@ -66,7 +66,7 @@ public class PlayersGameplay : MonoBehaviour
 	public Player player; // The Rewired Player
 
 	[Header ("Movement")]
-	public float speed = 15;
+	public float speed = 18;
 	public float stunnedSpeed = 8;
 	public float maxVelocity;
 	public float gravity = 100;
@@ -187,7 +187,7 @@ public class PlayersGameplay : MonoBehaviour
 
 			StatsButton ();
 
-			OnAttractedOnRepusled ();
+			OnAttractedOnRepulsed ();
 		}
 
 		Pause ();
@@ -197,8 +197,6 @@ public class PlayersGameplay : MonoBehaviour
 	protected virtual void ActivateFunctions ()
 	{
 		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
-		movement = movement.normalized * speed * Time.deltaTime;
-
 
 		if(controllerNumber == 0 && playerState != PlayerState.Stunned)
 			TurningMouse ();
@@ -240,7 +238,7 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(dashState != DashState.Dashing)
-				playerRigidbody.MovePosition(transform.position + movement);
+				playerRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
 
 			if(playerState == PlayerState.Holding)
 			{
@@ -407,13 +405,22 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableTransform = movable.GetComponent<Transform>();
 		movable.GetComponent<MovableScript> ().OnHold ();
 
+		for(int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
+		{
+			if (GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ().cubesAttracted.Contains (movable))
+				GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ().cubesAttracted.Remove (movable);
+
+			if (GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ().cubesRepulsed.Contains (movable))
+				GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ().cubesRepulsed.Remove (movable);
+		}
+
 		cubesAttracted.Clear ();
 
 		if (OnHold != null)
 			OnHold ();
 	}
 		
-	protected virtual void OnAttractedOnRepusled ()
+	protected virtual void OnAttractedOnRepulsed ()
 	{
 		if(playerState != PlayerState.Attracting)
 			hasAttracted = false;
@@ -646,6 +653,11 @@ public class PlayersGameplay : MonoBehaviour
 			}
 
 			playerState = PlayerState.Dead;
+
+			for(int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
+			{
+				Destroy (GetComponent<PlayersFXAnimations> ().attractionRepulsionFX [i]);
+			}
 
 			gameObject.SetActive (false);
 		}

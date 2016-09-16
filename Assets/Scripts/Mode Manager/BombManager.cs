@@ -14,6 +14,7 @@ public class BombManager : MonoBehaviour
 	public float timeBetweenSpawn = 2;
 
 	[Header ("Timer")]
+	public Text[] timerTexts = new Text[0];
 	public float timer;
 	public string timerClock;
 	public float timeBeforeEndGame = 2;
@@ -24,7 +25,8 @@ public class BombManager : MonoBehaviour
 		bomb = GameObject.FindGameObjectWithTag ("Movable").gameObject;
 		bomb.SetActive (false);
 
-		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "0:00";
+		/*for(int i = 0; i < timerTexts.Length; i++)
+			timerTexts[i].text = "0";*/
 
 		StartCoroutine (Setup ());
 	}
@@ -78,20 +80,24 @@ public class BombManager : MonoBehaviour
 		string minutes = Mathf.Floor(timer / 60).ToString("0");
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 
-		timerClock = minutes + ":" + seconds;
+		//timerClock = minutes + ":" + seconds;
+		timerClock = seconds;
 
-		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
+		for(int i = 0; i < timerTexts.Length; i++)
+			timerTexts[i].text = timerClock;
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
 
-		if(timer > 0.01f)
+		if(timer >= 1f)
 		{
 			StartCoroutine (Timer ());
 		}
 
 		else
 		{
-			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "0:00";
+			for(int i = 0; i < timerTexts.Length; i++)
+				timerTexts[i].text = "0";
+			
 			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
 	
 			yield return new WaitWhile (()=> bomb.activeSelf == true);

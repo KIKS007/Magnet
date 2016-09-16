@@ -13,6 +13,23 @@ public class MovableBomb : MovableScript
 
 	public float getToPlayerForce = 2;
 
+	protected override void Start ()
+	{
+		tag = "Untagged";
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
+		GetRigidbodySettings ();
+
+		cubeMaterial.SetFloat ("_Lerp", 0);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+
+		tag = "Movable";
+	}
+
 	protected override void Update () 
 	{
 		if(hold == false)
@@ -70,8 +87,7 @@ public class MovableBomb : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+		if(other.collider.tag == "Player"  
 			&& gameObject.tag == "ThrownMovable" 
 			&& playerThatThrew == null)
 		{
@@ -89,8 +105,7 @@ public class MovableBomb : MovableScript
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
+		if(other.collider.tag == "Player"  
 			&& gameObject.tag == "Movable")
 		{
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
@@ -106,7 +121,6 @@ public class MovableBomb : MovableScript
 		}
 
 		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
