@@ -390,7 +390,7 @@ MonoBehaviour:
   explosionMask:
     serializedVersion: 2
     m_Bits: 12800
-  getToPlayerForce: 2
+  getToPlayerForce: 0.1
 --- !u!4 &83412441 stripped
 Transform:
   m_PrefabParentObject: {fileID: 411378, guid: 5090559efa4d900469c4b3a762a3f663, type: 2}

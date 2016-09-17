@@ -68,7 +68,7 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.GetComponent<MovableBomb>() == false);
 
 		StartCoroutine (Timer ());
 	}
@@ -77,7 +77,6 @@ public class BombManager : MonoBehaviour
 	{
 		timer -= Time.deltaTime;
 
-		string minutes = Mathf.Floor(timer / 60).ToString("0");
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 
 		//timerClock = minutes + ":" + seconds;

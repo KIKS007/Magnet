@@ -207,10 +207,9 @@ public class MovableBomb : MovableScript
 		{
 			if (!hold)
 			{
-				//transform.position = Vector3.Lerp(transform.position, playerHolding.transform.position, 0.1f);
 				Vector3 direction = playerHolding.transform.position - transform.position;
 
-				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Acceleration);
+				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
 
 				yield return null;
 			}

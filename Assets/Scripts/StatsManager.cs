@@ -567,19 +567,23 @@ public class StatsManager : Singleton<StatsManager>
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
+		timerDuration = 0;
+
 		StartCoroutine (Timer ());
 	}
 
 	IEnumerator Timer ()
 	{
-		timerDuration += Time.deltaTime;
+		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(1));
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+	
+		timerDuration += 1;
 
 		string minutes = Mathf.Floor(timerDuration / 60).ToString("0");
 		string seconds = Mathf.Floor(timerDuration % 60).ToString("00");
 
 		gameDuration = minutes + ":" + seconds;
-
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		StartCoroutine (Timer ());
 	}

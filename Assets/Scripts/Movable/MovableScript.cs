@@ -71,7 +71,7 @@ public class MovableScript : MonoBehaviour
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
-		if(hold == false)
+		if(hold == false && rigidbodyMovable != null)
 			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
 
