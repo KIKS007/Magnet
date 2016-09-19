@@ -9,7 +9,7 @@ PhysicsManager:
   m_BounceThreshold: 2
   m_SleepThreshold: 0.005
   m_DefaultContactOffset: 0.0001
-  m_SolverIterationCount: 20
+  m_SolverIterationCount: 15
   m_QueriesHitTriggers: 0
   m_EnableAdaptiveForce: 0
   m_LayerCollisionMatrix: fffaf3fffffbf3fffffbf3fffffffffffffbf3fffffbf3fffffffffffffffffffef9f3fffffaedffc800f0fffffbf3fffffbd7fffffbedfffffbfdfffffbf3fffffbf3ffff99f3ffc872f0ffc862f0ffffddffffffefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff

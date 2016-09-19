@@ -129,6 +129,14 @@ Prefab:
       propertyPath: m_CullingMask.m_Bits
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: modesSettingsList.Array.data[0].cameraZoomLerp
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
+      propertyPath: modesSettingsList.Array.data[0].cameraMovementLerp
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
   m_IsPrefabParent: 0

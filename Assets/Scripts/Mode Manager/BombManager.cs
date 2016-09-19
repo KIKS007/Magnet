@@ -11,6 +11,7 @@ public class BombManager : MonoBehaviour
 	public int firstBombTimer = 300;
 	public int secondBombTimer = 300;
 	public int thirdBombTimer = 300;
+	public float timeBeforeFirstSpawn = 1;
 	public float timeBetweenSpawn = 2;
 
 	[Header ("Timer")]
@@ -18,6 +19,8 @@ public class BombManager : MonoBehaviour
 	public float timer;
 	public string timerClock;
 	public float timeBeforeEndGame = 2;
+
+	private bool firstSpawn = true;
 
 	// Use this for initialization
 	void Start () 
@@ -87,7 +90,7 @@ public class BombManager : MonoBehaviour
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
 
-		if(timer >= 1f)
+		if(timer > 0)
 		{
 			StartCoroutine (Timer ());
 		}
@@ -95,7 +98,7 @@ public class BombManager : MonoBehaviour
 		else
 		{
 			for(int i = 0; i < timerTexts.Length; i++)
-				timerTexts[i].text = "0";
+				timerTexts[i].text = "00";
 			
 			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
 	
@@ -108,8 +111,6 @@ public class BombManager : MonoBehaviour
 			case 4:
 				timer = firstBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitForSeconds (timeBetweenSpawn);
-
 				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
 
 				StartCoroutine (Timer ());
@@ -117,8 +118,6 @@ public class BombManager : MonoBehaviour
 			case 3:
 				timer = secondBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitForSeconds (timeBetweenSpawn);
-
 				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
 
 				StartCoroutine (Timer ());
@@ -126,8 +125,6 @@ public class BombManager : MonoBehaviour
 			case 2:
 				timer = thirdBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitForSeconds (timeBetweenSpawn);
-
 				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
 
 				StartCoroutine (Timer ());
@@ -142,7 +139,10 @@ public class BombManager : MonoBehaviour
 
 	IEnumerator SpawnBomb ()
 	{
-		yield return new WaitForSeconds (timeBetweenSpawn - 0.5f);
+		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
+		firstSpawn = false;
+
+		yield return new WaitForSeconds (timeBeforeSpawn);
 
 		bomb.GetComponent<MovableBomb> ().ResetColor ();
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));

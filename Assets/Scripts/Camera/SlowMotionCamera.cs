@@ -94,7 +94,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, timeScaleTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
-		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
+		//DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 
 		DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 
@@ -111,7 +111,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 1, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
-		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
+		//DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 
 		DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomInitialIntensity, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
 

@@ -12,6 +12,7 @@ public class MovableBomb : MovableScript
 	public LayerMask explosionMask;
 
 	public float getToPlayerForce = 2;
+	public float distanceFactor = 2;
 
 	protected override void Start ()
 	{
@@ -203,13 +204,22 @@ public class MovableBomb : MovableScript
 
 	IEnumerator GetToPlayerPosition ()
 	{
-		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 2)
+		transform.DORotate (Vector3.zero, 0.5f);
+		transform.DOLocalMoveY (1.5f, 0.5f);
+
+		rigidbodyMovable.velocity = Vector3.zero;
+		rigidbodyMovable.angularVelocity = Vector3.zero;
+
+		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
 		{
 			if (!hold)
 			{
-				Vector3 direction = playerHolding.transform.position - transform.position;
+				Vector3 direction = (playerHolding.transform.position - transform.position);
+				direction.Normalize ();
+				float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 
-				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
+				//rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
+				rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
 
 				yield return null;
 			}

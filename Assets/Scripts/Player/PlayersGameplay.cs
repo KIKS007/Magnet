@@ -71,6 +71,10 @@ public class PlayersGameplay : MonoBehaviour
 	public float maxVelocity;
 	public float gravity = 100;
 
+	[Header ("Check Collisions")]
+	public LayerMask collisionsMask;
+	public float checkSphereRadius = 0.1f;
+
 	protected float rightJoystickDeadzone = 0.85f;
 
 	[Header ("Forces")]
@@ -172,6 +176,15 @@ public class PlayersGameplay : MonoBehaviour
 				maxVelocity = playerRigidbody.velocity.magnitude;
 
 
+			if(playerState == PlayerState.Holding)
+			{
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+
+				if (OnHolding != null)
+					OnHolding ();
+			}
+
 			ActivateFunctions ();
 
 			if(playerState == PlayerState.Stunned)
@@ -197,6 +210,20 @@ public class PlayersGameplay : MonoBehaviour
 	protected virtual void ActivateFunctions ()
 	{
 		movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+		movement.Normalize ();
+
+		/*if (!CanMoveRight () && movement.x > 0)
+			movement.x = 0;
+
+		if (!CanMoveLeft () && movement.x < 0)
+			movement.x = 0;
+
+		if (!CanMoveForwards () && movement.z > 0)
+			movement.z = 0;
+
+		if (!CanMoveBackwards () && movement.z < 0)
+			movement.z = 0;*/
+
 
 		if(controllerNumber == 0 && playerState != PlayerState.Stunned)
 			TurningMouse ();
@@ -240,14 +267,6 @@ public class PlayersGameplay : MonoBehaviour
 			if(dashState != DashState.Dashing)
 				playerRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
 
-			if(playerState == PlayerState.Holding)
-			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
-
-				if (OnHolding != null)
-					OnHolding ();
-			}
 
 			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
@@ -691,5 +710,37 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnDeath != null)
 			OnDeath ();
+	}
+
+	protected bool CanMoveRight ()
+	{
+		if (Physics.CheckSphere (new Vector3 (transform.position.x + 1.2f, transform.position.y, transform.position.z), checkSphereRadius, collisionsMask))
+			return false;
+		else
+			return true;
+	}
+
+	protected bool CanMoveLeft ()
+	{
+		if (Physics.CheckSphere (new Vector3 (transform.position.x - 1.2f, transform.position.y, transform.position.z), checkSphereRadius, collisionsMask))
+			return false;
+		else
+			return true;
+	}
+
+	protected bool CanMoveForwards ()
+	{
+		if (Physics.CheckSphere (new Vector3 (transform.position.x, transform.position.y, transform.position.z + 1.2f), checkSphereRadius, collisionsMask))
+			return false;
+		else
+			return true;
+	}
+
+	protected bool CanMoveBackwards ()
+	{
+		if (Physics.CheckSphere (new Vector3 (transform.position.x, transform.position.y, transform.position.z - 1.2f), checkSphereRadius, collisionsMask))
+			return false;
+		else
+			return true;
 	}
 }

@@ -11,7 +11,22 @@ public class CrushManager : MonoBehaviour
 
 	void Start ()
 	{
-		GlobalMethods.Instance.RandomPositionMovables ();
+		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+
+		for (int i = 0; i < allMovables.Length; i++)
+		{
+			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = false;	
+			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = false;	
+		}
+
+		StartCoroutine (WaitForBeginning ());
+	}
+
+	IEnumerator WaitForBeginning ()
+	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", 0.1f);
 	}
 
 	// Update is called once per frame

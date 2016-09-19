@@ -29,9 +29,13 @@ public class DynamicCamera : MonoBehaviour
 	private GameObject[] playersList;	 
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
-
+		for(int i = 0; i < modesSettingsList.Count; i++)
+		{
+			modesSettingsList [i].cameraMovementLerp = cameraMovementLerp * Time.fixedDeltaTime / 0.02f;
+			modesSettingsList [i].cameraZoomLerp = cameraZoomLerp * Time.fixedDeltaTime / 0.02f;
+		}
 	}
 	
 	// Update is called once per frame
@@ -47,7 +51,7 @@ public class DynamicCamera : MonoBehaviour
 		}
 	}
 
-	void FixedUpdate ()
+	void FixedUpdate () 
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
@@ -147,22 +151,21 @@ public class DynamicCamera : MonoBehaviour
 
 			else
 			{
-				for(int y = 0; i < modesSettingsList.Count; i++)
+				if(modesSettingsList[i].whichMode == WhichMode.Default)
 				{
-					if(modesSettingsList[y].whichMode == WhichMode.Default)
-					{
-						cameraZoomLerp = modesSettingsList [y].cameraZoomLerp;
-						cameraMovementLerp = modesSettingsList [y].cameraMovementLerp;
+					cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;
+					cameraMovementLerp = modesSettingsList [i].cameraMovementLerp;
 
-						cameraYMin = modesSettingsList [y].cameraYMin;
-						distanceMin = modesSettingsList [y].distanceMin;
-						distanceRatio = modesSettingsList [y].distanceRatio;
+					cameraYMin = modesSettingsList [i].cameraYMin;
+					distanceMin = modesSettingsList [i].distanceMin;
+					distanceRatio = modesSettingsList [i].distanceRatio;
 
-						break;
-					}
+					break;
 				}
+
 			}
 		}
+
 	}
 }
 

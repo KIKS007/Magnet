@@ -666,7 +666,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 105954}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000016292068}
-  m_LocalPosition: {x: 0, y: 1, z: 10}
+  m_LocalPosition: {x: 0, y: 1.26, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400286}
@@ -1622,6 +1622,10 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 0
+  collisionsMask:
+    serializedVersion: 2
+    m_Bits: 65536
+  checkSphereRadius: 0.1
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10

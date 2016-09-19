@@ -28,7 +28,10 @@ public class RepulseModeManager : MonoBehaviour
 		allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 
 		for (int i = 0; i < allMovables.Length; i++)
-			allMovables [i].GetComponent<Renderer> ().enabled = false;
+		{
+			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = false;	
+			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = false;	
+		}
 
 		for (int i = 0; i < zones.Length; i++)
 		{
@@ -91,7 +94,7 @@ public class RepulseModeManager : MonoBehaviour
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(timer >= 1f)
+		if(timer > 0)
 			StartCoroutine (Timer ());
 
 		else if(GlobalVariables.Instance.GameState != GameStateEnum.Over)

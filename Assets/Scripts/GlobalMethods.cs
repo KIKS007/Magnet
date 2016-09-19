@@ -35,10 +35,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
 
 			allMovables [i].transform.position = newPos;
+			allMovables [i].transform.rotation = Quaternion.Euler(Vector3.zero);
 
-			allMovables [i].SetActive (true);
-
-			allMovables [i].GetComponent<Renderer> ().enabled = true;
+			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = true;
+			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = true;
 
 			yield return null;
 		}
@@ -100,10 +100,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		movable.transform.localScale = Vector3.zero;
 
+		movable.gameObject.SetActive(true);
+
+		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		movable.gameObject.SetActive(true);
 
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
@@ -128,6 +129,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 		while(Physics.CheckSphere(newPos, 3, layer));
 
+		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
