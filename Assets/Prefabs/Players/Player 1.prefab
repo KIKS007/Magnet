@@ -952,7 +952,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!64 &6409994
 MeshCollider:
@@ -1441,7 +1441,7 @@ MonoBehaviour:
   onHoldSound: 
   shootSound: ShootWavy2
   stunSound: AvatarHit
-  dashSound: 
+  dashSound: Menu2
   deathSound: 
 --- !u!114 &11460404
 MonoBehaviour:
@@ -1497,7 +1497,7 @@ CapsuleCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 137104}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 3085c056622f3d14ca041b50c66979ce, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 1.25

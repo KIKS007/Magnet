@@ -5,6 +5,18 @@ using UnityStandardAssets.ImageEffects;
 
 public class SlowMotionCamera : MonoBehaviour 
 {
+	public event EventHandler OnAllSlowMotionStart;
+	public event EventHandler OnAllSlowMotionStop;
+
+	public event EventHandler OnSlowMotionStart;
+	public event EventHandler OnSlowMotionStop;
+
+	public event EventHandler OnPauseSlowMotionStart;
+	public event EventHandler OnPauseSlowMotionStop;
+
+	public event EventHandler OnEndGameSlowMotionStart;
+	public event EventHandler OnEndGameSlowMotionStop;
+
 	public Ease easetype;
 
 	[Header ("SlowMotion InGame")]
@@ -92,6 +104,14 @@ public class SlowMotionCamera : MonoBehaviour
 			break;
 		}
 
+		GameSoundsManager.Instance.StartSlowMoEffect (slowFactorTemp);
+
+		if (OnSlowMotionStart != null)
+			OnSlowMotionStart ();
+
+		if (OnAllSlowMotionStart != null)
+			OnAllSlowMotionStart ();
+
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, timeScaleTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		//DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
@@ -109,6 +129,12 @@ public class SlowMotionCamera : MonoBehaviour
 	{
 		//Debug.Log("Undo Slomo !");
 
+		if (OnSlowMotionStop != null)
+			OnSlowMotionStop ();
+
+		if (OnAllSlowMotionStop != null)
+			OnAllSlowMotionStop ();
+
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 1, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 		//DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
@@ -125,6 +151,12 @@ public class SlowMotionCamera : MonoBehaviour
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
 		DOTween.Pause ("StopSlowMotion");
 
+		if (OnPauseSlowMotionStart != null)
+			OnPauseSlowMotionStart ();
+
+		if (OnAllSlowMotionStart != null)
+			OnAllSlowMotionStart ();
+
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
@@ -139,6 +171,12 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StopPauseSlowMotion ()
 	{
 		//Debug.Log("Undo Slomo !");
+
+		if (OnPauseSlowMotionStop != null)
+			OnPauseSlowMotionStop ();
+
+		if (OnAllSlowMotionStop != null)
+			OnAllSlowMotionStop ();
 
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 1, timeTweenPause).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp, timeTweenPause).SetEase(easetype).SetId("StopSlowMotion");
@@ -179,6 +217,12 @@ public class SlowMotionCamera : MonoBehaviour
 			break;
 		}
 
+		if (OnEndGameSlowMotionStart != null)
+			OnEndGameSlowMotionStart ();
+
+		if (OnAllSlowMotionStart != null)
+			OnAllSlowMotionStart ();
+		
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, timeScaleTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
@@ -194,6 +238,12 @@ public class SlowMotionCamera : MonoBehaviour
 	{
 		//Debug.Log("Undo Slomo !");
 
+		if (OnEndGameSlowMotionStop != null)
+			OnEndGameSlowMotionStop ();
+
+		if (OnAllSlowMotionStop != null)
+			OnAllSlowMotionStop ();
+		
 		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, 1, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, fixedDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, maximumDeltaTemp, timeTween).SetEase(easetype).SetId("StopSlowMotion");
@@ -230,7 +280,7 @@ public class SlowMotionCamera : MonoBehaviour
 	
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(slowMotionDurationTemp + timeTween));
 
-		if(slowMoNumberTest == slowMoNumber)
+		if(slowMoNumberTest == slowMoNumber && GlobalVariables.Instance.GameState != GameStateEnum.Paused)
 		{
 			StopSlowMotion ();
 

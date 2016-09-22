@@ -841,7 +841,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131454}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 30, z: 0}
+  m_LocalPosition: {x: -43, y: 93, z: 15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 475676}
@@ -2878,7 +2878,7 @@ MonoBehaviour:
   showGizmos: 1
   showAdvancedSettings: 0
   showLocalization: 0
-  playListExpanded: 0
+  playListExpanded: 1
   playlistsExpanded: 1
   musicSpatialBlendType: 0
   musicSpatialBlend: 0
@@ -2888,17 +2888,33 @@ MonoBehaviour:
   newGroupSpatialBlend: 1
   musicPlaylists:
   - isExpanded: 1
-    playlistName: Menu Music
+    playlistName: Game
     songTransitionType: 1
     MusicSettings:
     - alias: 
       audLocation: 0
-      clip: {fileID: 8300000, guid: ef2985f9cbb9bda469fe268bf3f22012, type: 3}
-      songName: Menu Music LOOPING
+      clip: {fileID: 8300000, guid: 3f5bbc04f9bcbdd48880c11e60337795, type: 3}
+      songName: Sometimes I eat planets
       resourceFileName: 
       volume: 1
       pitch: 1
-      isExpanded: 0
+      isExpanded: 1
+      isLoop: 0
+      customStartTime: 0
+      lastKnownTimePoint: 0
+      songIndex: 0
+      songStartedEventExpanded: 0
+      songStartedCustomEvent: 
+      songChangedEventExpanded: 0
+      songChangedCustomEvent: 
+    - alias: 
+      audLocation: 0
+      clip: {fileID: 8300000, guid: 3c760d48b39495343aa8c36b8018fc5c, type: 3}
+      songName: Yellow scald
+      resourceFileName: 
+      volume: 1
+      pitch: 1
+      isExpanded: 1
       isLoop: 0
       customStartTime: 0
       lastKnownTimePoint: 0
@@ -2953,7 +2969,7 @@ MonoBehaviour:
   defaultDuckedVolumeCut: -6
   crossFadeTime: 1
   _masterPlaylistVolume: 1
-  showGroupSelect: 1
+  showGroupSelect: 0
   hideGroupsWithNoActiveVars: 0
   newEventName: my event
   showCustomEvents: 0
@@ -3207,7 +3223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db10a6d491569a8419b6f5e1bffc5243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  busIndex: 0
+  busIndex: 2
   spatialBlendType: 1
   spatialBlend: 1
   isSelected: 0

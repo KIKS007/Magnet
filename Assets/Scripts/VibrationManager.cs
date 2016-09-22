@@ -38,6 +38,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		gamepad4 = ReInput.players.GetPlayer (4);
 
 		GlobalVariables.Instance.OnGameOver += SlowlyStopVibration;
+		GlobalVariables.Instance.OnPause += SlowlyStopVibration;
 	}
 	
 	// Update is called once per frame
