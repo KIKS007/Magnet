@@ -29,11 +29,11 @@ public class SkyboxRotation : MonoBehaviour
 
 		if(xRotStatic == 0 && yRotStatic == 0 && zRotStatic == 0)
 		{
-			if(xRot + yRot + zRot < 0.015f)
+			if(xRot + yRot + zRot < 0.9f)
 			{
-				xRot = Random.Range(-0.015f, 0.015f);
-				yRot = Random.Range(-0.015f, 0.015f);
-				zRot = Random.Range(-0.015f, 0.015f);
+				xRot = Random.Range(-0.9f, 0.9f);
+				yRot = Random.Range(-0.9f, 0.9f);
+				zRot = Random.Range(-0.9f, 0.9f);
 			}
 
 			xRotStatic = xRot;
@@ -51,7 +51,7 @@ public class SkyboxRotation : MonoBehaviour
 
 	void Update ()
 	{
-		transform.Rotate(new Vector3(xRot, yRot, zRot));
+		transform.Rotate(new Vector3(xRot * Time.deltaTime, yRot * Time.deltaTime, zRot * Time.deltaTime));
 
 		rotationStatic = transform.rotation.eulerAngles;
 	}

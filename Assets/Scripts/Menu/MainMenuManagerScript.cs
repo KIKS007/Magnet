@@ -101,6 +101,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject overall;
 	public GameObject repulse;
 	public GameObject play;
+	public GameObject soundsBar;
 
 	[Header ("All Canvas")]
 	public GameObject mainMenuCanvas;
@@ -391,6 +392,11 @@ public class MainMenuManagerScript : MonoBehaviour
 		if(eventSyst.currentSelectedGameObject == null && gameOverCanvas.activeSelf == true)
 		{
 			restart.GetComponent<Button>().Select();
+		}
+
+		if(eventSyst.currentSelectedGameObject == null && soundsMenuCanvas.activeSelf == true)
+		{
+			soundsBar.GetComponent<Scrollbar>().Select();
 		}
 
 		if(crushMenuCanvas.activeSelf == true || footballMenuCanvas.activeSelf == true || hitMenuCanvas.activeSelf == true || bombMenuCanvas.activeSelf == true || repulseMenuCanvas.activeSelf == true)
@@ -1149,7 +1155,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		
 		soundsMenuContent.DOAnchorPos(new Vector2(0, 0), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
 
-		overall.GetComponent<Scrollbar>().Select();
+		soundsBar.GetComponent<Scrollbar>().Select();
 	}
 	
 	public IEnumerator ExitSounds ()
