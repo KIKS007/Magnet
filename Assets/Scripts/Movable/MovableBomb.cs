@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using DarkTonic.MasterAudio;
 
 public class MovableBomb : MovableScript 
 {
 	public GameObject playerHolding;
 
 	[Header ("Explosion")]
+	[SoundGroupAttribute]
+	public string explosionSound;
+	[SoundGroupAttribute]
+	public string lastSecondsSound;
 	public float explosionForce = 10;
 	public float explosionRadius = 3;
 	public LayerMask explosionMask;
@@ -168,6 +173,9 @@ public class MovableBomb : MovableScript
 		}
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+
+		MasterAudio.StopAllOfSound(lastSecondsSound);
+		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 
 		ExplosionFX ();
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using DarkTonic.MasterAudio;
 
 public class BombManager : MonoBehaviour 
 {
@@ -15,12 +16,16 @@ public class BombManager : MonoBehaviour
 	public float timeBetweenSpawn = 2;
 
 	[Header ("Timer")]
+	[SoundGroupAttribute]
+	public string lastSecondsSound;
 	public Text[] timerTexts = new Text[0];
 	public float timer;
 	public string timerClock;
 	public float timeBeforeEndGame = 2;
 
 	private bool firstSpawn = true;
+
+	private bool lastSeconds = false;
 
 	// Use this for initialization
 	void Start () 
@@ -67,6 +72,12 @@ public class BombManager : MonoBehaviour
 	void Update () 
 	{
 		playersList = GameObject.FindGameObjectsWithTag("Player");
+
+		if(bomb.activeSelf == true && !lastSeconds && timer < 4)
+		{
+			lastSeconds = true;
+			MasterAudio.PlaySound3DAtTransformAndForget (lastSecondsSound, bomb.transform);
+		}
 	}
 
 	IEnumerator StartTimer ()
@@ -80,18 +91,18 @@ public class BombManager : MonoBehaviour
 	{
 		timer -= Time.deltaTime;
 
-		string seconds = Mathf.Floor(timer % 60).ToString("00");
-
-		//timerClock = minutes + ":" + seconds;
-		timerClock = seconds;
-
-		for(int i = 0; i < timerTexts.Length; i++)
-			timerTexts[i].text = timerClock;
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
 
 		if(timer > 0)
 		{
+			string seconds = Mathf.Floor(timer % 60).ToString("00");
+
+			//timerClock = minutes + ":" + seconds;
+			timerClock = seconds;
+
+			for(int i = 0; i < timerTexts.Length; i++)
+				timerTexts[i].text = timerClock;
+
 			StartCoroutine (Timer ());
 		}
 

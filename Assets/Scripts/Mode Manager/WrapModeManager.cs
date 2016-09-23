@@ -32,17 +32,19 @@ public class WrapModeManager : MonoBehaviour
 	{
 		timer -= Time.deltaTime;
 
-		string minutes = Mathf.Floor(timer / 60).ToString("0");
-		string seconds = Mathf.Floor(timer % 60).ToString("00");
-
-		timerClock = minutes + ":" + seconds;
-
-		transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		if(timer > 0)
+		{
+			string minutes = Mathf.Floor(timer / 60).ToString("0");
+			string seconds = Mathf.Floor(timer % 60).ToString("00");
+			
+			timerClock = minutes + ":" + seconds;
+			
+			transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = timerClock;
+			
 			StartCoroutine (Timer ());
+		}
 
 		else
 		{
