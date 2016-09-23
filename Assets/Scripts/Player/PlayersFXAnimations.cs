@@ -60,6 +60,8 @@ public class PlayersFXAnimations : MonoBehaviour
 	void Update () 
 	{
 		//TrailLength ();
+
+		dashAvailableFX.startRotation = transform.rotation.eulerAngles.y;
 	}
 
 	void TrailLength ()

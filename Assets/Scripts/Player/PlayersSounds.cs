@@ -49,6 +49,9 @@ public class PlayersSounds : MonoBehaviour
 		playerScript.OnStun += Stun;
 		playerScript.OnDash += Dash;
 		playerScript.OnDeath += Death;
+
+		GlobalVariables.Instance.OnGameOver += FadeSounds;
+		GlobalVariables.Instance.OnPause += FadeSounds;
 	}
 	
 	// Update is called once per frame
@@ -113,5 +116,21 @@ public class PlayersSounds : MonoBehaviour
 	void Death ()
 	{
 		MasterAudio.PlaySound3DFollowTransformAndForget (deathSound, transform);
+	}
+
+	void OnDisable ()
+	{
+		FadeSounds ();
+	}
+
+	void OnDestroy ()
+	{
+		FadeSounds ();
+	}
+
+	void FadeSounds ()
+	{
+		MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> MasterAudio.StopAllOfSound(attractingSound));
+		MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> MasterAudio.StopAllOfSound(repulsingSound));
 	}
 }

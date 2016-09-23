@@ -781,6 +781,61 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1418569660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1418569662}
+  - 114: {fileID: 1418569661}
+  m_Layer: 0
+  m_Name: (singleton) GameSoundsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1418569661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1418569660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4e1134c46eab3d48bc5e7b2ec89cb8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slowMoEffectMusicEnabled: 1
+  toggleEnableSloMoEffect: {fileID: 0}
+  playListSource: {fileID: 1211676634}
+  timeScaleRatio: 7
+  slowMotweenDuration: 0.5
+  soundsBar: {fileID: 0}
+  playlistBar: {fileID: 0}
+  toggleMuteSounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  toggleMuteMusic:
+  - {fileID: 0}
+  - {fileID: 0}
+  soundsMute: 0
+  musicMute: 0
+  soundsVolumeTest: ShootWavy2
+--- !u!4 &1418569662
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1418569660}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
 --- !u!1 &1437567657
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,6 +901,7 @@ MonoBehaviour:
   - {fileID: 149876, guid: 382af989118e05947b529f10e0c3ef61, type: 2}
   - {fileID: 181482, guid: 04dc6598c6e008c4eb9101b405e4469a, type: 2}
   - {fileID: 151408, guid: a326599b4f5d126439a9603a53687a4e, type: 2}
+  - {fileID: 189104, guid: 46fd80cd541aca941875d0719d7b0945, type: 2}
   attractFX:
   - {fileID: 189984, guid: 49987dc28b02c934fb650062941784b9, type: 2}
   - {fileID: 196376, guid: aae0debfa0b8d75409a9d09f42612c05, type: 2}
@@ -862,7 +918,7 @@ MonoBehaviour:
   MovableExplosion: {fileID: 166398, guid: f26bbc20591261e4fb62fe7a7f279ad6, type: 2}
   PlayerSpawnParticles: {fileID: 165514, guid: 978ecf91ecbc2464783de9a03edbef72, type: 2}
   ParticulesClonesParent: {fileID: 595958288}
-  firstSceneToLoad: Bomb
+  firstSceneToLoad: Crush
   WhichModeLoaded: 0
   CurrentModeLoaded: 
   Stun: 0

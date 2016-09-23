@@ -19,7 +19,7 @@ public class PlayersHit : PlayersGameplay
 	{
 		DeathParticles (other);
 
-		StartCoroutine (Hit ());
+		Hit ();
 	}
 
 	void DeathParticles (Collision other)
@@ -35,16 +35,7 @@ public class PlayersHit : PlayersGameplay
 		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	void SpawnParticles ()
-	{
-		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
-
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		//instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
-		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
-	}
-
-	IEnumerator Hit ()
+	void Hit ()
 	{
 		if(playerState == PlayerState.Holding)
 		{
@@ -55,55 +46,9 @@ public class PlayersHit : PlayersGameplay
 
 		OnDeathVoid ();
 
-		DeactivatePlayer ();
-
-		yield return new WaitForSeconds(timeBetweenSpawn);
-
-		Vector3 newPos = new Vector3();
-
-		do
-		{
-			newPos = new Vector3 (Random.Range (-24, 24 + 1), transform.position.y, Random.Range (-14, 14 + 1));
-		}
-		while(Physics.CheckSphere(newPos, 3, checkSphereLayer));
-
-		transform.position = newPos;
+		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, timeBetweenSpawn);
 
 		playerState = PlayerState.None;
 		speed = originalSpeed;
-
-		ActivatePlayer ();
-
-		SpawnParticles ();
-	}
-
-	void ActivatePlayer ()
-	{
-		GetComponent<MeshRenderer> ().enabled = true;
-		GetComponent<Collider> ().enabled = true;
-		GetComponent<Rigidbody> ().useGravity = true;
-
-		GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		for(int i = 0; i < transform.childCount; i++)
-		{
-			transform.GetChild (i).gameObject.SetActive (true);
-		}
-	}
-
-	void DeactivatePlayer ()
-	{
-		GetComponent<MeshRenderer> ().enabled = false;
-		GetComponent<Collider> ().enabled = false;
-		GetComponent<Rigidbody> ().useGravity = false;
-
-		GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		for(int i = 0; i < transform.childCount; i++)
-		{
-			transform.GetChild (i).gameObject.SetActive (false);
-		}
 	}
 }

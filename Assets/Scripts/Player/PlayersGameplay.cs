@@ -559,7 +559,7 @@ public class PlayersGameplay : MonoBehaviour
 		StartCoroutine(Stun ());
 	}
 
-	protected IEnumerator Stun ()
+	protected virtual IEnumerator Stun ()
 	{
 		if(playerState == PlayerState.Holding)
 		{
@@ -682,13 +682,13 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	protected void OnDestroy ()
+	protected virtual void OnDestroy ()
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
 	}
 
-	protected void OnDisable ()
+	protected virtual void OnDisable ()
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);

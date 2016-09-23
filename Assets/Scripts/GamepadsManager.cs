@@ -140,6 +140,9 @@ public class GamepadsManager : Singleton<GamepadsManager>
 				SetControllerNumber (i);
 			}
 		}
+
+		//Enable Possiblity to play alone with one gamepad
+		GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
 	}
 
 	void SetControllerNumber (int whichNumber)

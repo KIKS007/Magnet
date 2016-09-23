@@ -3,6 +3,7 @@ using System.Collections;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class GameSoundsManager : Singleton<GameSoundsManager> 
 {
@@ -33,15 +34,17 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	private float previousVolumeSounds;
 	private float previousVolumePlaylist;
 
+	private bool loading = true;
+
 	void Start ()
 	{
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
 
-		if (PlayerPrefs.HasKey ("SlowMotionEffectEnable"))
+		if (PlayerPrefs.HasKey ("SlowMotionEffectEnable") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
 
-		else
+		else if(SceneManager.GetActiveScene().name != "Scene Testing")
 		{
 			toggleMuteSounds [0].SetActive (true);
 			toggleMuteSounds [1].SetActive (false);
@@ -61,22 +64,24 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	public void SetSoundsVolume ()
 	{
-		if(toggleMuteSounds[0].activeSelf == false && !muting)
+		if(!loading)
 		{
-			toggleMuteSounds [0].SetActive (true);
-			toggleMuteSounds [1].SetActive (false);
-		}
-		
-		float volume = soundsBar.value * initialSoundsVolume;
-		
-		MasterAudio.MasterVolumeLevel = volume;
-
-		if(canPlaySoundTest)
-		{
-			MasterAudio.PlaySound3DAtVector3 (soundsVolumeTest, Vector3.zero);
-			StartCoroutine (PlaySoundWait ());
-		}
-		
+			if(toggleMuteSounds[0].activeSelf == false && !muting)
+			{
+				toggleMuteSounds [0].SetActive (true);
+				toggleMuteSounds [1].SetActive (false);
+			}
+			
+			float volume = soundsBar.value * initialSoundsVolume;
+			
+			MasterAudio.MasterVolumeLevel = volume;
+			
+			if(canPlaySoundTest)
+			{
+				MasterAudio.PlaySound3DAtVector3 (soundsVolumeTest, Vector3.zero);
+				StartCoroutine (PlaySoundWait ());
+			}
+		}		
 	}
 
 	IEnumerator PlaySoundWait ()
@@ -90,15 +95,18 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		
 	public void SetPlaylistVolume ()
 	{
-		if(toggleMuteMusic[0].activeSelf == false && !muting)
+		if(!loading)
 		{
-			toggleMuteMusic [0].SetActive (true);
-			toggleMuteMusic [1].SetActive (false);
+			if(toggleMuteMusic[0].activeSelf == false && !muting)
+			{
+				toggleMuteMusic [0].SetActive (true);
+				toggleMuteMusic [1].SetActive (false);
+			}
+			
+			float volume = playlistBar.value * initialPlaylistVolume;
+			
+			MasterAudio.PlaylistMasterVolume = volume;		
 		}
-		
-		float volume = playlistBar.value * initialPlaylistVolume;
-		
-		MasterAudio.PlaylistMasterVolume = volume;		
 	}
 
 	public void ToggleMuteSounds ()
@@ -190,7 +198,9 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	public override void OnDestroy ()
 	{
-		SavePlayerPrefs ();
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			SavePlayerPrefs ();
+		
 		//Debug.Log ("Data Saved");
 
 		base.OnDestroy ();
@@ -226,7 +236,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	void LoadPlayersPrefs ()
 	{
 		//Debug.Log ("Data Loaded");
-		muting = true;
+		loading = true;
 
 		if(PlayerPrefs.GetInt ("SlowMotionEffectEnable") == 1)
 		{
@@ -274,6 +284,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 			MasterAudio.PlaylistMasterVolume = PlayerPrefs.GetFloat("MusicVolume");
 		}
 
-		muting = false;	
+		loading = false;
 	}
 }

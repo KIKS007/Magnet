@@ -4,44 +4,71 @@ using DG.Tweening;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
-	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)
+	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
 	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
-		Vector3[] allScales = new Vector3[allMovables.Length];
+		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn));
+	}
+
+	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0)
+	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 newPos = new Vector3();
 
-		for(int i = 0; i < allMovables.Length; i++)
+		player.SetActive (false);
+
+		/*	//Deactivate Player
+		player.GetComponent<MeshRenderer> ().enabled = false;
+		player.GetComponent<Collider> ().enabled = false;
+		player.GetComponent<Rigidbody> ().useGravity = false;
+
+		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;*/
+
+		for(int i = 0; i < transform.childCount; i++)
 		{
-			allScales [i] = allMovables [i].transform.lossyScale;
-			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
-		}
-
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
-
-		for(int i = 0; i < allMovables.Length; i++)
-		{
-			Vector3 newPos = new Vector3 ();
-
-			do
-			{
-				newPos = new Vector3(Random.Range(-24, 24 + 1), 3, Random.Range(-14, 14 + 1));
-			}
-			while(Physics.CheckSphere(newPos, 3, layer));
-
-			yield return new WaitForSeconds (durationBetweenSpawn);
-
-			allMovables [i].gameObject.SetActive(true);
-
-			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
-
-			allMovables [i].transform.position = newPos;
-			allMovables [i].transform.rotation = Quaternion.Euler(Vector3.zero);
-
-			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = true;
-			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = true;
-
+			player.transform.GetChild (i).gameObject.SetActive (false);
 			yield return null;
 		}
+
+		yield return new WaitForSeconds (timeBeforeSpawn);
+
+		do
+		{
+			newPos = new Vector3 (Random.Range (-24, 24 + 1), player.transform.position.y, Random.Range (-14, 14 + 1));
+			yield return null;	
+		}
+		while(Physics.CheckSphere(newPos, 3, layer));
+
+		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+
+		player.transform.position = newPos;
+		SpawnParticles (player);
+
+		player.SetActive (true);
+
+		/*//Activate Player
+		player.GetComponent<MeshRenderer> ().enabled = true;
+		player.GetComponent<Collider> ().enabled = true;
+		player.GetComponent<Rigidbody> ().useGravity = true;
+
+		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;*/
+
+		for(int i = 0; i < transform.childCount; i++)
+		{
+			player.transform.GetChild (i).gameObject.SetActive (true);
+			yield return null;
+		}
+	}
+
+	void SpawnParticles (GameObject player)
+	{
+		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, player.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<Renderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
 	public void SetPlayersPositions2Team (Transform[] team1Positions, Transform[] team2Positions)
@@ -80,12 +107,54 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
 	}
 
+	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)
+	{
+		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+		Vector3[] allScales = new Vector3[allMovables.Length];
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+
+		for(int i = 0; i < allMovables.Length; i++)
+		{
+			allScales [i] = allMovables [i].transform.lossyScale;
+			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
+		}
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		for(int i = 0; i < allMovables.Length; i++)
+		{
+			Vector3 newPos = new Vector3 ();
+
+			do
+			{
+				newPos = new Vector3(Random.Range(-24, 24 + 1), 3, Random.Range(-14, 14 + 1));
+			}
+			while(Physics.CheckSphere(newPos, 3, layer));
+
+			yield return new WaitForSeconds (durationBetweenSpawn);
+
+			allMovables [i].gameObject.SetActive(true);
+
+			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
+
+			allMovables [i].transform.position = newPos;
+			allMovables [i].transform.rotation = Quaternion.Euler(Vector3.zero);
+			allMovables [i].GetComponent<Rigidbody> ().velocity = Vector3.zero;
+			allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = true;
+			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = true;
+
+			yield return null;
+		}
+	}
+
 	public void SpawnExistingMovableVoid (GameObject movable, Vector3 position)
 	{
 		StartCoroutine (SpawnExistingMovable (movable, position));
 	}
 
-	public IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position)
+	IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position)
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
@@ -112,9 +181,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		yield return null;
 	}
-
-
-
+		
 	public void SpawnExistingMovableRandom (GameObject movable)
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);

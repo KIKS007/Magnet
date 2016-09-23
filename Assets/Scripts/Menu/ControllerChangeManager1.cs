@@ -52,7 +52,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad4Color = gamepadsLines [3].GetComponent<Text> ().color;
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
-		ReInput.ControllerConnectedEvent += GetPlayersEvent;
+		ReInput.ControllerConnectedEvent += GetPlayers;
 		ReInput.ControllerConnectedEvent += GamepadDisplay;
 
 		ReInput.ControllerPreDisconnectEvent += GamepadDisplay;
@@ -95,7 +95,21 @@ public class ControllerChangeManager1 : MonoBehaviour
 		}
 	}
 
-	void GetPlayersEvent (ControllerStatusChangedEventArgs arg)
+	void GetPlayers (ControllerStatusChangedEventArgs arg)
+	{
+		mouseKeyboard = ReInput.players.GetPlayer (0);
+		gamepad1 = ReInput.players.GetPlayer (1);
+		gamepad2 = ReInput.players.GetPlayer (2);
+		gamepad3 = ReInput.players.GetPlayer (3);
+		gamepad4 = ReInput.players.GetPlayer (4);
+
+		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
+		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
+		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
+		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
+	}
+
+	void GetPlayers ()
 	{
 		mouseKeyboard = ReInput.players.GetPlayer (0);
 		gamepad1 = ReInput.players.GetPlayer (1);
@@ -138,20 +152,6 @@ public class ControllerChangeManager1 : MonoBehaviour
 			}
 			
 		}
-	}
-
-	void GetPlayers ()
-	{
-		mouseKeyboard = ReInput.players.GetPlayer (0);
-		gamepad1 = ReInput.players.GetPlayer (1);
-		gamepad2 = ReInput.players.GetPlayer (2);
-		gamepad3 = ReInput.players.GetPlayer (3);
-		gamepad4 = ReInput.players.GetPlayer (4);
-
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
-		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
-		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
-		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
 	}
 
 	void GetInput ()
@@ -254,7 +254,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
+			/*if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
 			{
 				gamepadsLines [0].GetComponent<Text> ().DOColor(gamepad1Color, durationColor);
 				gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
@@ -266,7 +266,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 				gamepadsLines [0].GetComponent<Text> ().DOColor (disableColor, durationColor);
 				gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
 				gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
-			}
+			}*/
 			
 			if(XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == false)
 			{
@@ -319,7 +319,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
-		if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
+		/*if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
 		{
 			gamepadsLines [0].GetComponent<Text> ().DOColor(gamepad1Color, durationColor);
 			gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
@@ -333,7 +333,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 			gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
 			sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 			imagesNumber [1] = 0;
-		}
+		}*/
 
 		if(XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == false)
 		{
