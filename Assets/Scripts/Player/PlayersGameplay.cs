@@ -134,7 +134,6 @@ public class PlayersGameplay : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-		StartCoroutine (WaitTillPlayerEnabled ());
 
 		DOTween.Init ();
 
@@ -163,6 +162,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected void OnEnable ()
 	{
+		StartCoroutine (WaitTillPlayerEnabled ());
+
 		playerState = PlayerState.None;
 		dashState = DashState.CanDash;
 	}
@@ -692,6 +693,9 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
+
+		StopCoroutine (OnPlayerStateChange ());
+		StopCoroutine (OnDashAvailableEvent ());
 	}
 
 	protected IEnumerator OnDashAvailableEvent ()

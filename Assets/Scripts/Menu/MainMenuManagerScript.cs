@@ -93,6 +93,10 @@ public class MainMenuManagerScript : MonoBehaviour
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
 	public string returnSound;
+	[SoundGroupAttribute]
+	public string openMenuSound;
+	[SoundGroupAttribute]
+	public string closeMenuSound;
 
 	[Header ("Buttons To Select When Nothing Is")]
 	public GameObject start;
@@ -503,6 +507,12 @@ public class MainMenuManagerScript : MonoBehaviour
 			StartCoroutine (ExitBomb ());
 			Tweening ();
 		}
+
+		if(trainingMenuCanvas.activeSelf == true)
+		{
+			StartCoroutine (ExitTraining ());
+			Tweening ();
+		}
 	}
 
 	void TextResume ()
@@ -648,7 +658,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			//Wait Slowmotion
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforePause));
 
-
+			MasterAudio.PlaySound (openMenuSound);
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayBackwards();
 			mainCamera.transform.DOMove (pausePosition, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -673,6 +683,8 @@ public class MainMenuManagerScript : MonoBehaviour
 			smallLogo.DOAnchorPos(new Vector2(0, 400), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(durationCancel));
+
+			MasterAudio.PlaySound (closeMenuSound);
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenAnimation>().();
 			mainCamera.transform.DOMove (cameraPosBeforePause, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -876,6 +888,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		choosePlayerCanvas.SetActive (false);
 
 		startRect.anchoredPosition = new Vector2 (offScreenX, yPositions[2]);
+
+		MasterAudio.PlaySound (closeMenuSound);
 
 		//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayForward();
 		mainCamera.transform.DOMove (playPosition, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -1802,6 +1816,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		quitRect.anchoredPosition = new Vector2(offScreenX, yPositions [6]);
 		resumeRect.anchoredPosition = new Vector2(offScreenX, yPositions [1] - 16);
 
+		MasterAudio.PlaySound (openMenuSound);
+
 		loadModeScript.ReloadSceneVoid ();
 
 		LoadMainMenu ();
@@ -1844,6 +1860,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		yield return myTween.WaitForCompletion ();
 
 		gameOverCanvas.SetActive (false);
+
+		MasterAudio.PlaySound (closeMenuSound);
 
 		loadModeScript.RestartSceneVoid ();
 	}

@@ -3101,6 +3101,48 @@ RectTransform:
   m_AnchoredPosition: {x: -640, y: -97}
   m_SizeDelta: {x: 556.2, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &117020856
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -43
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 93
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &117200008
 GameObject:
   m_ObjectHideFlags: 0
@@ -13757,48 +13799,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 284528767}
---- !u!1001 &289722423
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -43
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 93
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: m_RootOrder
-      value: 11
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &298470429
 GameObject:
   m_ObjectHideFlags: 0
@@ -17306,6 +17306,7 @@ MonoBehaviour:
   playListSource: {fileID: 1402476358}
   timeScaleRatio: 7
   slowMotweenDuration: 0.5
+  cubeSpawnSound: CubeSpawn
   soundsBar: {fileID: 1760947434}
   playlistBar: {fileID: 1118046358}
   toggleMuteSounds:
@@ -25910,9 +25911,17 @@ Prefab:
       value: 
       objectReference: {fileID: 13738959}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: goWinner
+      propertyPath: goTrainingContent
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 481944075}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: backButtonsCanvas
+      value: 
+      objectReference: {fileID: 540709871}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: backButtonsContent
+      value: 
+      objectReference: {fileID: 528146551}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: start
       value: 
@@ -25942,6 +25951,14 @@ Prefab:
       value: 
       objectReference: {fileID: 1371212674}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: soundsBar
+      value: 
+      objectReference: {fileID: 1760947432}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: bomb
+      value: 
+      objectReference: {fileID: 718454786}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: mainMenuCanvas
       value: 
       objectReference: {fileID: 2101717714}
@@ -25957,6 +25974,10 @@ Prefab:
       propertyPath: soundsMenuCanvas
       value: 
       objectReference: {fileID: 734879660}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: graphicsMenuCanvas
+      value: 
+      objectReference: {fileID: 728319023}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: playersMenuCanvas
       value: 
@@ -25986,6 +26007,10 @@ Prefab:
       value: 
       objectReference: {fileID: 2093315226}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: trainingMenuCanvas
+      value: 
+      objectReference: {fileID: 1149651864}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: footballMenuCanvas
       value: 
       objectReference: {fileID: 723406153}
@@ -26002,10 +26027,6 @@ Prefab:
       value: 
       objectReference: {fileID: 107808127}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: backButtonsCanvas
-      value: 
-      objectReference: {fileID: 540709871}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: instructionsMenuContent
       value: 
       objectReference: {fileID: 1493841049}
@@ -26017,6 +26038,10 @@ Prefab:
       propertyPath: soundsMenuContent
       value: 
       objectReference: {fileID: 1106301725}
+    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
+      propertyPath: graphicsMenuContent
+      value: 
+      objectReference: {fileID: 1009394030}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: playersMenuContent
       value: 
@@ -26042,45 +26067,13 @@ Prefab:
       value: 
       objectReference: {fileID: 707579445}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: backButtonsContent
-      value: 
-      objectReference: {fileID: 528146551}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: graphicsMenuCanvas
-      value: 
-      objectReference: {fileID: 728319023}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: graphicsMenuContent
-      value: 
-      objectReference: {fileID: 1009394030}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: backButtonsInitialPos.x
-      value: 0
+      propertyPath: pausePosition.z
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: backButtonsInitialPos.y
-      value: 0
+      propertyPath: gameOverPosition.z
+      value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: maxYGamepad
-      value: 900
-      objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: soundsBar
-      value: 
-      objectReference: {fileID: 1760947432}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: bomb
-      value: 
-      objectReference: {fileID: 718454786}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: goTrainingContent
-      value: 
-      objectReference: {fileID: 481944075}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: trainingMenuCanvas
-      value: 
-      objectReference: {fileID: 1149651864}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
   m_IsPrefabParent: 0

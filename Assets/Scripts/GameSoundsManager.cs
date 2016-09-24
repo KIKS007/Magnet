@@ -14,7 +14,11 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public float timeScaleRatio = 1;
 	public float slowMotweenDuration;
 
-	[Header ("Sounds Menu")]
+	[Header ("Sounds")]
+	[SoundGroupAttribute]
+	public string cubeSpawnSound;
+
+	[Header ("Sounds Options")]
 	public Scrollbar soundsBar;
 	public Scrollbar playlistBar;
 	public GameObject[] toggleMuteSounds = new GameObject[2];

@@ -53,12 +53,6 @@ public class PlayersSounds : MonoBehaviour
 		GlobalVariables.Instance.OnGameOver += FadeSounds;
 		GlobalVariables.Instance.OnPause += FadeSounds;
 	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		
-	}
 
 	void Attracting ()
 	{
@@ -71,10 +65,8 @@ public class PlayersSounds : MonoBehaviour
 		if(playerScript.playerState != PlayerState.Attracting && MasterAudio.GetGroupVolume(attractingSound) != 0)
 			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration);
 		
-
 		if(playerScript.playerState != PlayerState.Attracting && MasterAudio.GetGroupVolume(attractingSound) == 0)
 			MasterAudio.StopAllOfSound(attractingSound);
-		
 	}
 
 	void Repulsing ()
@@ -120,17 +112,12 @@ public class PlayersSounds : MonoBehaviour
 
 	void OnDisable ()
 	{
-		FadeSounds ();
-	}
-
-	void OnDestroy ()
-	{
-		FadeSounds ();
+		//FadeSounds ();
 	}
 
 	void FadeSounds ()
 	{
-		MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> MasterAudio.StopAllOfSound(attractingSound));
-		MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> MasterAudio.StopAllOfSound(repulsingSound));
+		MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration);
+		MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration);
 	}
 }

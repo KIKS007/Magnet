@@ -90,7 +90,7 @@ MonoBehaviour:
   modesDescriptionOffScreen: 700
   oneGamepadDisconnected: 0
   gamepadsDisconnectedCanvas: {fileID: 0}
-  maxYGamepad: 850
+  maxYGamepad: 900
   minYGamepad: 588
   gamepadsDisconnected:
   - {fileID: 0}
@@ -131,11 +131,14 @@ MonoBehaviour:
   goBombContent: {fileID: 0}
   goHitContent: {fileID: 0}
   goCrushContent: {fileID: 0}
+  goTrainingContent: {fileID: 0}
   backButtonsCanvas: {fileID: 0}
   backButtonsContent: {fileID: 0}
   backButtonsInitialPos: {x: 0, y: 0}
   easeTypeMainMenu: 10
   returnSound: ChoixMenu_Retour
+  openMenuSound: OpenMenu
+  closeMenuSound: CloseMenu
   start: {fileID: 0}
   sounds: {fileID: 0}
   no: {fileID: 0}
@@ -143,6 +146,8 @@ MonoBehaviour:
   overall: {fileID: 0}
   repulse: {fileID: 0}
   play: {fileID: 0}
+  soundsBar: {fileID: 0}
+  bomb: {fileID: 0}
   mainMenuCanvas: {fileID: 0}
   instructionsMenuCanvas: {fileID: 0}
   chooseOptionsMenuCanvas: {fileID: 0}
@@ -155,6 +160,7 @@ MonoBehaviour:
   repulseMenuCanvas: {fileID: 0}
   bombMenuCanvas: {fileID: 0}
   crushMenuCanvas: {fileID: 0}
+  trainingMenuCanvas: {fileID: 0}
   footballMenuCanvas: {fileID: 0}
   hitMenuCanvas: {fileID: 0}
   chooseTeamCanvas: {fileID: 0}

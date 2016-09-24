@@ -17,7 +17,7 @@ public class CameraScreenShake : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		initialRotation = new Vector3 (90, 1, 1);
+		initialRotation = new Vector3 (90, 2, 2);
 		//initialRotation = transform.rotation.eulerAngles;
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;

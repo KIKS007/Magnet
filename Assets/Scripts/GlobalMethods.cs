@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
@@ -15,20 +16,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 newPos = new Vector3();
 
 		player.SetActive (false);
-
-		/*	//Deactivate Player
-		player.GetComponent<MeshRenderer> ().enabled = false;
-		player.GetComponent<Collider> ().enabled = false;
-		player.GetComponent<Rigidbody> ().useGravity = false;
-
-		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;*/
-
-		for(int i = 0; i < transform.childCount; i++)
-		{
-			player.transform.GetChild (i).gameObject.SetActive (false);
-			yield return null;
-		}
 
 		yield return new WaitForSeconds (timeBeforeSpawn);
 
@@ -47,20 +34,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		SpawnParticles (player);
 
 		player.SetActive (true);
-
-		/*//Activate Player
-		player.GetComponent<MeshRenderer> ().enabled = true;
-		player.GetComponent<Collider> ().enabled = true;
-		player.GetComponent<Rigidbody> ().useGravity = true;
-
-		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;*/
-
-		for(int i = 0; i < transform.childCount; i++)
-		{
-			player.transform.GetChild (i).gameObject.SetActive (true);
-			yield return null;
-		}
 	}
 
 	void SpawnParticles (GameObject player)
@@ -145,6 +118,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = true;
 			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = true;
 
+			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
+
 			yield return null;
 		}
 	}
@@ -179,6 +154,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		movable.transform.position = newPos;
 
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
+
 		yield return null;
 	}
 		
@@ -205,6 +182,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
 		movable.transform.position = newPos;
+
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)

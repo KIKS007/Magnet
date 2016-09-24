@@ -11,11 +11,13 @@ public class DynamicCamera : MonoBehaviour
 
 	public List<DynamicCameraSettings> modesSettingsList;
 
+
 	[Header ("Current Camera Lerp")]
 	public float cameraZoomLerp = 0.1f;
 	public float cameraMovementLerp = 0.1f;
 
 	[Header ("Current Zoom Settings")]
+	public Vector3 cameraOffset = new Vector3(0, 0, 0);
 	public float cameraYMin = 15;
 	public float distanceMin = 0;
 	public float distanceRatio = 1;
@@ -114,6 +116,9 @@ public class DynamicCamera : MonoBehaviour
 		centerPosTemp = centerPosTemp / playersList.Length;
 		centerPosTemp.y = transform.position.y;
 
+		centerPosTemp.x += cameraOffset.x;
+		centerPosTemp.z += cameraOffset.z;
+
 		centerPos = centerPosTemp;
 	}
 
@@ -126,7 +131,7 @@ public class DynamicCamera : MonoBehaviour
 
 
 			Vector3 newPos = transform.position;
-			newPos.y = cameraYMin + yPos;
+			newPos.y = cameraYMin + yPos + cameraOffset.y;
 
 			//Zoom Lerp
 			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp);

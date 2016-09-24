@@ -345,7 +345,7 @@ MonoBehaviour:
   playersNumber: 0
   firstBombTimer: 30
   secondBombTimer: 20
-  thirdBombTimer: 5
+  thirdBombTimer: 10
   timeBeforeFirstSpawn: 0.5
   timeBetweenSpawn: 2
   lastSecondsSound: TicTacBomb
