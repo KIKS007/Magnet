@@ -43,6 +43,8 @@ public class PlayersSounds : MonoBehaviour
 
 		playerScript.OnPlayerstateChange += Attracting;
 		playerScript.OnPlayerstateChange += Repulsing;
+		playerScript.OnAttracting += Attracting;
+		playerScript.OnRepulsing += Repulsing;
 
 		playerScript.OnHold += OnHold;
 		playerScript.OnShoot += Shoot;
@@ -54,35 +56,34 @@ public class PlayersSounds : MonoBehaviour
 		GlobalVariables.Instance.OnPause += FadeSounds;
 	}
 
+	private bool fadeInAttraction = false;
+	private bool fadeOutAttraction = false;
+
 	void Attracting ()
 	{
-		if(playerScript.playerState == PlayerState.Attracting && MasterAudio.GetGroupVolume(attractingSound) != attractingVolume)
+		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != attractingVolume && !fadeInAttraction)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (attractingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, attractingVolume, fadeDuration);
+			MasterAudio.FadeSoundGroupToVolume (attractingSound, attractingVolume, fadeDuration, ()=> fadeInAttraction = false);
 		}
 
-		if(playerScript.playerState != PlayerState.Attracting && MasterAudio.GetGroupVolume(attractingSound) != 0)
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration);
-		
-		if(playerScript.playerState != PlayerState.Attracting && MasterAudio.GetGroupVolume(attractingSound) == 0)
-			MasterAudio.StopAllOfSound(attractingSound);
+		if(playerScript.cubesAttracted.Count == 0 && MasterAudio.GetGroupVolume(attractingSound) != 0 && !fadeOutAttraction)
+			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> fadeOutAttraction = false);			
 	}
+
+	private bool fadeInRepulsion = false;
+	private bool fadeOutRepulsion = false;
 
 	void Repulsing ()
 	{
-		if(playerScript.playerState == PlayerState.Repulsing && MasterAudio.GetGroupVolume(repulsingSound) != repulsingVolume)
+		if(playerScript.cubesRepulsed.Count > 0 && MasterAudio.GetGroupVolume(repulsingSound) != repulsingVolume && !fadeInRepulsion)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (repulsingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (repulsingSound, repulsingVolume, fadeDuration);
+			MasterAudio.FadeSoundGroupToVolume (repulsingSound, repulsingVolume, fadeDuration, ()=> fadeInRepulsion = false);
 		}
 
-		if(playerScript.playerState != PlayerState.Repulsing && MasterAudio.GetGroupVolume(repulsingSound) != 0)
-			MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration);
-
-
-		if(playerScript.playerState != PlayerState.Repulsing && MasterAudio.GetGroupVolume(repulsingSound) == 0)
-			MasterAudio.StopAllOfSound(repulsingSound);
+		if(playerScript.cubesRepulsed.Count == 0 && MasterAudio.GetGroupVolume(repulsingSound) != 0 && !fadeOutRepulsion)
+			MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> fadeOutRepulsion = false);
 	}
 
 	void OnHold ()

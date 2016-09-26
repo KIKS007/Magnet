@@ -62,6 +62,8 @@ public class PlayersManikin : PlayersGameplay
 	{
 		playerState = PlayerState.Stunned;
 
+		OnStunVoid ();
+
 		speed = stunnedSpeed;
 
 		yield return new WaitForSeconds(stunnedDuration);
@@ -75,6 +77,8 @@ public class PlayersManikin : PlayersGameplay
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			playerState = PlayerState.Dead;
+
+			OnDeathVoid ();
 
 			gameObject.SetActive (false);
 		}

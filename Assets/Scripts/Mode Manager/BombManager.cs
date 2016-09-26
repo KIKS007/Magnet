@@ -149,6 +149,8 @@ public class BombManager : MonoBehaviour
 				StartCoroutine(GameEnd ());
 				break;
 			}
+
+			bomb.tag = "Movable";
 		}
 
 	}

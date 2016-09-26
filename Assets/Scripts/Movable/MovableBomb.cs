@@ -22,6 +22,8 @@ public class MovableBomb : MovableScript
 	public float getToPlayerForce = 2;
 	public float distanceFactor = 2;
 
+	private bool trackingPlayer = false;
+
 	protected override void Start ()
 	{
 		tag = "Untagged";
@@ -45,7 +47,7 @@ public class MovableBomb : MovableScript
 			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
 
-		if(hold == false && currentVelocity > 0)
+		if(hold == false && currentVelocity > 0 && !trackingPlayer)
 		{
 			if(currentVelocity > higherVelocity)
 			{
@@ -100,7 +102,8 @@ public class MovableBomb : MovableScript
 			&& gameObject.tag == "ThrownMovable" 
 			&& playerThatThrew == null)
 		{
-			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+			if(!trackingPlayer)
+				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
@@ -133,7 +136,8 @@ public class MovableBomb : MovableScript
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
-			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+			if(!trackingPlayer)
+				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
 			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
@@ -170,8 +174,11 @@ public class MovableBomb : MovableScript
 
 	public IEnumerator Explode ()
 	{
+		trackingPlayer = true;
+		
 		if (!hold)
 		{
+			tag = "ThrownMovable";
 			yield return StartCoroutine (GetToPlayerPosition ());
 		}
 
@@ -188,6 +195,7 @@ public class MovableBomb : MovableScript
 		gameObject.SetActive (false);
 
 		playerHolding = null;
+		trackingPlayer = false;
 	}
 
 	void ExplosionFX ()
@@ -228,10 +236,12 @@ public class MovableBomb : MovableScript
 			{
 				Vector3 direction = (playerHolding.transform.position - transform.position);
 				direction.Normalize ();
-				float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 
-				//rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
-				rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
+				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
+
+				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
+
+				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
 
 				yield return null;
 			}

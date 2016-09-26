@@ -50,8 +50,6 @@ public class MagnetZoneScript : MonoBehaviour
 					{
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
 						{
-							characterScript.Attraction (objectHit.collider.gameObject);
-
 							if (!other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().attracedBy.Add (character.gameObject);
 
@@ -60,12 +58,12 @@ public class MagnetZoneScript : MonoBehaviour
 								characterScript.cubesAttracted.Add (other.gameObject);
 								fxAnimationsScript.StartCoroutine ("AttractionFX", other.gameObject);
 							}
+						
+							characterScript.Attraction (objectHit.collider.gameObject);
 						}
 
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
 						{
-							characterScript.Repulsion (objectHit.collider.gameObject);	
-
 							if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().repulsedBy.Add (character.gameObject);
 
@@ -73,8 +71,9 @@ public class MagnetZoneScript : MonoBehaviour
 							{
 								characterScript.cubesRepulsed.Add (other.gameObject);
 								fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
-
 							}
+
+							characterScript.Repulsion (objectHit.collider.gameObject);	
 						}
 					}
 				}

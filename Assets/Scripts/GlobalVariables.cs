@@ -16,6 +16,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnPlaying;
 	public event EventHandler OnPause;
 	public event EventHandler OnResume;
+	public event EventHandler OnMainMenu;
 
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
@@ -39,15 +40,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Players States")]
 	public int NumberOfPlayers;
-
 	public int NumberOfDisabledPlayers;
 
-	public int[] TeamChoice = new int[] {-1, -1, -1, -1};
-
-	public List<GameObject> Team1 = new List<GameObject>();
-	public List<GameObject> Team2 = new List<GameObject>();
-	public List<GameObject> Team3 = new List<GameObject>();
-	public List<GameObject> Team4 = new List<GameObject>();
 
 	[Header ("Cubes Color")]
 	public Color cubeColorplayer1;
@@ -251,5 +245,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		yield return null;
 
 		StartCoroutine (OnModeStartedEvent ());
+	}
+
+	public void OnMainMenuVoid ()
+	{
+		if (OnMainMenu != null)
+			OnMainMenu ();
 	}
 }

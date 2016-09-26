@@ -79,68 +79,58 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void GetInput ()
 	{
-		if (mouseKeyboard.GetAxis("Move Horizontal") < 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxisRaw("Move Horizontal") < 0 && !keyboardMoving)
 		{
 			GoOnTheLeft (0);
-			StartCoroutine (GapBetweenInputs (0));
 		}
 
-		if (mouseKeyboard.GetAxis("Move Horizontal") > 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxisRaw("Move Horizontal") > 0 && !keyboardMoving)
 		{
 			GoOnTheRight (0);
-			StartCoroutine (GapBetweenInputs (0));
 		}
 
 
-		if (gamepad1.GetAxis("Move Horizontal") < 0 && !gamepad1Moving)
+		if (gamepad1.GetAxisRaw("Move Horizontal") < 0 && !gamepad1Moving)
 		{
 			GoOnTheLeft (1);
-			StartCoroutine (GapBetweenInputs (1));
 		}
 
-		if (gamepad1.GetAxis("Move Horizontal") > 0 && !gamepad1Moving)
+		if (gamepad1.GetAxisRaw("Move Horizontal") > 0 && !gamepad1Moving)
 		{
 			GoOnTheRight (1);
-			StartCoroutine (GapBetweenInputs (1));
 		}
 
 
-		if (gamepad2.GetAxis("Move Horizontal") < 0 && !gamepad2Moving)
+		if (gamepad2.GetAxisRaw("Move Horizontal") < 0 && !gamepad2Moving)
 		{
 			GoOnTheLeft (2);
-			StartCoroutine (GapBetweenInputs (2));
 		}
 
-		if (gamepad2.GetAxis("Move Horizontal") > 0 && !gamepad2Moving)
+		if (gamepad2.GetAxisRaw("Move Horizontal") > 0 && !gamepad2Moving)
 		{
 			GoOnTheRight (2);
-			StartCoroutine (GapBetweenInputs (2));
 		}
 
 
-		if (gamepad3.GetAxis("Move Horizontal") < 0 && !gamepad3Moving)
+		if (gamepad3.GetAxisRaw("Move Horizontal") < 0 && !gamepad3Moving)
 		{
 			GoOnTheLeft (3);
-			StartCoroutine (GapBetweenInputs (3));
 		}
 
-		if (gamepad3.GetAxis("Move Horizontal") > 0 && !gamepad3Moving)
+		if (gamepad3.GetAxisRaw("Move Horizontal") > 0 && !gamepad3Moving)
 		{
 			GoOnTheRight (3);
-			StartCoroutine (GapBetweenInputs (3));
 		}
 
 
-		if (gamepad4.GetAxis("Move Horizontal") < 0 && !gamepad4Moving)
+		if (gamepad4.GetAxisRaw("Move Horizontal") < 0 && !gamepad4Moving)
 		{
 			GoOnTheLeft (4);
-			StartCoroutine (GapBetweenInputs (4));
 		}
 
-		if (gamepad4.GetAxis("Move Horizontal") > 0 && !gamepad4Moving)
+		if (gamepad4.GetAxisRaw("Move Horizontal") > 0 && !gamepad4Moving)
 		{
 			GoOnTheRight (4);
-			StartCoroutine (GapBetweenInputs (4));
 		}
 	}
 		
@@ -286,67 +276,67 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
-		if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
+		if(XCI.IsPluggedIn(1) && sliderRect[1].gameObject.activeSelf == false)
 		{
 			gamepadsLines [0].GetComponent<Text> ().DOColor(gamepad1Color, durationColor);
 			gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-			gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (true);
+			sliderRect[1].gameObject.SetActive (true);
 		}
 
-		if(!XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == true)
+		if(!XCI.IsPluggedIn(1) && sliderRect[1].gameObject.activeSelf == true)
 		{
 			gamepadsLines [0].GetComponent<Text> ().DOColor (disableColor, durationColor);
 			gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-			gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
+			sliderRect[1].gameObject.SetActive (false);
 			sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 			imagesNumber [1] = 0;
 		}
 
-		if(XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == false)
+		if(XCI.IsPluggedIn(2) && sliderRect[2].gameObject.activeSelf == false)
 		{
 			gamepadsLines [1].GetComponent<Text> ().DOColor(gamepad2Color, durationColor);
 			gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-			gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (true);
+			sliderRect[2].gameObject.SetActive (true);
 		}
 
-		if(!XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == true)
+		if(!XCI.IsPluggedIn(2) && sliderRect[2].gameObject.activeSelf == true)
 		{
 			gamepadsLines [1].GetComponent<Text> ().DOColor (disableColor, durationColor);
 			gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-			gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (false);
+			sliderRect[2].gameObject.SetActive (false);
 			sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 			imagesNumber [2] = 0;
 		}
 
-		if(XCI.IsPluggedIn(3) && gamepadsLines [2].transform.GetChild (1).gameObject.activeSelf == false)
+		if(XCI.IsPluggedIn(3) && sliderRect[3].gameObject.activeSelf == false)
 		{
 			gamepadsLines [2].GetComponent<Text> ().DOColor(gamepad3Color, durationColor);
 			gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-			gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (true);
+			sliderRect[3].gameObject.SetActive (true);
 		}
 
-		if(!XCI.IsPluggedIn(3) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == true)
+		if(!XCI.IsPluggedIn(3) && sliderRect[3].gameObject.activeSelf == true)
 		{
 			gamepadsLines [2].GetComponent<Text> ().DOColor (disableColor, durationColor);
 			gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-			gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (false);
+			sliderRect[3].gameObject.SetActive (false);
 			sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 			imagesNumber [3] = 0;
 
 		}
 
-		if(XCI.IsPluggedIn(4) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == false)
+		if(XCI.IsPluggedIn(4) && sliderRect[4].gameObject.activeSelf == false)
 		{
 			gamepadsLines [3].GetComponent<Text> ().DOColor(gamepad4Color, durationColor);
 			gamepadsLines [3].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-			gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (true);
+			sliderRect[4].gameObject.SetActive (true);
 		}
 
-		if(!XCI.IsPluggedIn(4) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == true)
+		if(!XCI.IsPluggedIn(4) && sliderRect[4].gameObject.activeSelf == true)
 		{
 			gamepadsLines [3].GetComponent<Text> ().DOColor (disableColor, durationColor);
 			gamepadsLines [3].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-			gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (false);
+			sliderRect[4].gameObject.SetActive (false);
 			sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 			imagesNumber [4] = 0;
 
@@ -748,24 +738,26 @@ public class ControllerChangeManager1 : MonoBehaviour
 	}
 
 
-	void GoOnTheRight (int controllerNumber)
+	public void GoOnTheRight (int controllerNumber)
 	{
+		StartCoroutine (GapBetweenInputs (controllerNumber));
+
 		switch (imagesNumber[controllerNumber])
 		{
 		case 0:
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [1], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 1;
 			break;
 		case 1 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [2], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 2;
 			break;
 		case 2 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [3], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 3;
 			break;
 		case 3 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [4], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [4], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 4;
 			break;
 
@@ -779,27 +771,29 @@ public class ControllerChangeManager1 : MonoBehaviour
 			OnControllerChange ();
 	}
 
-	void GoOnTheLeft (int controllerNumber)
+	public void GoOnTheLeft (int controllerNumber)
 	{
+		StartCoroutine (GapBetweenInputs (controllerNumber));
+
 		switch (imagesNumber[controllerNumber])
 		{
 		case 0 :
 			break;
 
 		case 1 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [0], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 0;
 			break;
 		case 2 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [1], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 1;
 			break;
 		case 3 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [2], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 2;
 			break;
 		case 4 :
-			sliderRect [controllerNumber].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
+			sliderRect [controllerNumber].DOAnchorPos (new Vector2(imagesAlignedPos [3], sliderRect[controllerNumber].anchoredPosition.y), durationImageMovement);
 			imagesNumber [controllerNumber] = 3;
 			break;
 

@@ -51,16 +51,6 @@ public class FootballModeManager : MonoBehaviour
 		}
 	}
 
-	void OnEnable ()
-	{
-		ChooseTeamScript.OnTeamChange += FindPlayersPosition;
-	}
-
-	void OnDisable ()
-	{
-		ChooseTeamScript.OnTeamChange -= FindPlayersPosition;
-	}
-
 	void Update ()
 	{
 		
@@ -68,7 +58,6 @@ public class FootballModeManager : MonoBehaviour
 
 	void FindPlayersPosition ()
 	{
-		GlobalMethods.Instance.SetPlayersPositions2Team (team1Positions, team2Positions);
 	}
 
 	public void GoalScoreVoid (int whichGoal, GameObject ball)

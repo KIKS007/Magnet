@@ -716,6 +716,12 @@ public class PlayersGameplay : MonoBehaviour
 			OnDeath ();
 	}
 
+	protected void OnStunVoid ()
+	{
+		if (OnStun != null)
+			OnStun ();
+	}
+
 	protected bool CanMoveRight ()
 	{
 		if (Physics.CheckSphere (new Vector3 (transform.position.x + 1.2f, transform.position.y, transform.position.z), checkSphereRadius, collisionsMask))

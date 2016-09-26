@@ -127,7 +127,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject trainingMenuCanvas;
 	public GameObject footballMenuCanvas;
 	public GameObject hitMenuCanvas;
-	public GameObject chooseTeamCanvas;
 	public GameObject choosePlayerCanvas;
 
 	[Header ("All Contents")]
@@ -139,7 +138,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public RectTransform creditsMenuContent;
 	public RectTransform quitMenuContent;
 	public RectTransform chooseModeContent;
-	public RectTransform chooseTeamContent;
 	public RectTransform choosePlayerContent;
 
 	private RectTransform startRect;
@@ -226,9 +224,9 @@ public class MainMenuManagerScript : MonoBehaviour
 		bombMenuCanvas.SetActive(false);
 		footballMenuCanvas.SetActive(false);
 		hitMenuCanvas.SetActive(false);
-		chooseTeamCanvas.SetActive(false);
 		gameOverCanvas.SetActive(false);
 		choosePlayerCanvas.SetActive (false);
+		quitMenuCanvas.SetActive (false);
 
 		mainMenuCanvas.SetActive(true);
 		start.GetComponent<Button>().Select();
@@ -774,49 +772,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	}
 
-	bool CorrectTeams ()
-	{
-		GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
-
-		for(int i = 0; i < GlobalVariables.Instance.TeamChoice.Length; i++)
-		{
-			if (GlobalVariables.Instance.TeamChoice [i] == -1)
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-		}
-
-		if (GlobalVariables.Instance.NumberOfDisabledPlayers >= 3)
-			return false;
-
-		else if(GlobalVariables.Instance.NumberOfPlayers == 2)
-		{
-			if(GlobalVariables.Instance.Team1.Count == 2 || GlobalVariables.Instance.Team2.Count == 2 || GlobalVariables.Instance.Team3.Count == 2 || GlobalVariables.Instance.Team4.Count == 2)
-				return false;
-			else
-				return true;
-		}
-
-		else if(GlobalVariables.Instance.NumberOfPlayers == 3)
-		{
-			if(GlobalVariables.Instance.Team1.Count == 3 || GlobalVariables.Instance.Team2.Count == 3 || GlobalVariables.Instance.Team3.Count == 3 || GlobalVariables.Instance.Team4.Count == 3)
-				return false;
-			else
-				return true;
-		}
-
-		else if(GlobalVariables.Instance.NumberOfPlayers == 4)
-		{
-			if(GlobalVariables.Instance.Team1.Count == 4 || GlobalVariables.Instance.Team2.Count == 4 || GlobalVariables.Instance.Team3.Count == 4 || GlobalVariables.Instance.Team4.Count == 4)
-				return false;
-			else
-				return true;
-		}
-
-		else
-			return true;
-
-	}
-
 	public void StartModeVoid ()
 	{
 		if(!tweening)
@@ -882,7 +837,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 
-		chooseTeamCanvas.SetActive(false);
 		crushMenuCanvas.SetActive(false);
 		footballMenuCanvas.SetActive(false);
 		hitMenuCanvas.SetActive(false);
@@ -1821,6 +1775,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		resumeRect.anchoredPosition = new Vector2(offScreenX, yPositions [1] - 16);
 
 		MasterAudio.PlaySound (openMenuSound);
+
+		GlobalVariables.Instance.OnMainMenuVoid ();
 
 		loadModeScript.ReloadSceneVoid ();
 

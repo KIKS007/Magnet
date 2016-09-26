@@ -17,6 +17,10 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Shoot FX Settings")]
 	public Vector3 shootPosOffset;
 
+	[Header ("Stun FX Settings")]
+	public MeshRenderer[] playerMaterials = new MeshRenderer[0];
+	public float[] stunFXDurations = new float[6];
+
 	[Header ("Dash Available FX")]
 	public ParticleSystem dashAvailableFX;
 
@@ -38,6 +42,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnShoot += ShootFX;
 		playerScript.OnDashAvailable += DashAvailableFX;
 		playerScript.OnDash += StopDashAvailable;
+		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
 
 		switch(gameObject.name)
 		{
@@ -103,6 +108,57 @@ public class PlayersFXAnimations : MonoBehaviour
 	void ShootFX ()
 	{
 		Instantiate (GlobalVariables.Instance.shootFX [PlayerNumber], transform.position + shootPosOffset, transform.rotation);
+	}
+
+	IEnumerator StunFX ()
+	{
+		float[] stunFXDurationsTemp = stunFXDurations;
+		stunFXDurationsTemp [0] = stunFXDurations [0] + Random.Range (-0.005f, 0.005f);
+		stunFXDurationsTemp [1] = stunFXDurationsTemp [0];
+
+		stunFXDurationsTemp [2] = stunFXDurations [2] + Random.Range (-0.005f, 0.005f);
+		stunFXDurationsTemp [3] = stunFXDurationsTemp [2];
+
+		stunFXDurationsTemp [4] = stunFXDurations [4] + Random.Range (-0.005f, 0.005f);
+		stunFXDurationsTemp [5] = stunFXDurations [5] + Random.Range (-0.005f, 0.005f);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+
+		yield return new WaitForSeconds (stunFXDurationsTemp[0]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		yield return new WaitForSeconds (stunFXDurationsTemp[1]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+		
+		yield return new WaitForSeconds (stunFXDurationsTemp[2]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+		
+		yield return new WaitForSeconds (stunFXDurationsTemp[3]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+		
+		yield return new WaitForSeconds (stunFXDurationsTemp[4]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		yield return new WaitForSeconds (stunFXDurationsTemp[5]);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+
+		yield return new WaitUntil(()=> playerScript.playerState != PlayerState.Stunned);
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 	}
 
 	void DashAvailableFX ()

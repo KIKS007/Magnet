@@ -44,42 +44,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<Renderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	public void SetPlayersPositions2Team (Transform[] team1Positions, Transform[] team2Positions)
-	{
-		if (GlobalVariables.Instance.Team1.Count == 1)
-			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [0].position;
-
-		if (GlobalVariables.Instance.Team2.Count == 1)
-			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [0].position;
-
-		if (GlobalVariables.Instance.Team1.Count == 2)
-		{
-			int randomInt = Random.Range(1, 2 + 1);
-
-			GlobalVariables.Instance.Team1 [0].transform.position = team1Positions [randomInt].position;;
-
-			if(randomInt == 1)
-				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [2].position;
-			else
-				GlobalVariables.Instance.Team1 [1].transform.position = team1Positions [1].position;
-		}
-
-		if (GlobalVariables.Instance.Team2.Count == 2)
-		{
-			int randomInt = Random.Range(1, 2 + 1);
-
-			GlobalVariables.Instance.Team2 [0].transform.position = team2Positions [randomInt].position;;
-
-			if(randomInt == 1)
-				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [2].position;
-			else
-				GlobalVariables.Instance.Team2 [1].transform.position = team2Positions [1].position;
-		}
-
-		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
-			GlobalVariables.Instance.EnabledPlayersList [i].transform.LookAt (new Vector3 (0, 0, 0));
-	}
-
 	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)
 	{
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");

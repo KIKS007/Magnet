@@ -63,6 +63,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
 
 		GlobalVariables.Instance.OnModeStarted += SetGamePlaylist;
+		GlobalVariables.Instance.OnMainMenu += SetMenuPlaylist;
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
@@ -74,6 +75,14 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		{
 			MasterAudio.ChangePlaylistByName ("Game", false);
 			playlistCont.PlayRandomSong ();
+		}
+	}
+
+	void SetMenuPlaylist ()
+	{
+		if(playlistCont.PlaylistName != "Menu Ambient")
+		{
+			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
 		}
 	}
 
