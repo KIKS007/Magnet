@@ -15,6 +15,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public float slowMotweenDuration;
 
 	[Header ("Sounds")]
+	public PlaylistController playlistCont;
 	[SoundGroupAttribute]
 	public string cubeSpawnSound;
 
@@ -25,7 +26,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public GameObject[] toggleMuteMusic = new GameObject[2];
 	public bool soundsMute = false;
 	public bool musicMute = false;
-
 	[SoundGroupAttribute]
 	public string soundsVolumeTest;
 
@@ -62,8 +62,19 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
 
-		MasterAudio.StartPlaylist ("Game");
-		MasterAudio.TriggerRandomPlaylistClip ();
+		GlobalVariables.Instance.OnModeStarted += SetGamePlaylist;
+
+		//MasterAudio.StartPlaylist ("Game");
+		//MasterAudio.TriggerRandomPlaylistClip ();
+	}
+
+	void SetGamePlaylist ()
+	{
+		if(playlistCont.PlaylistName != "Game")
+		{
+			MasterAudio.ChangePlaylistByName ("Game", false);
+			playlistCont.PlayRandomSong ();
+		}
 	}
 
 	public void SetSoundsVolume ()

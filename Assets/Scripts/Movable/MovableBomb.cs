@@ -12,6 +12,9 @@ public class MovableBomb : MovableScript
 	public string explosionSound;
 	[SoundGroupAttribute]
 	public string lastSecondsSound;
+	[SoundGroupAttribute]
+	public string cubeTrackingSound;
+
 	public float explosionForce = 10;
 	public float explosionRadius = 3;
 	public LayerMask explosionMask;
@@ -175,6 +178,7 @@ public class MovableBomb : MovableScript
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
 		MasterAudio.StopAllOfSound(lastSecondsSound);
+		MasterAudio.StopAllOfSound(cubeTrackingSound);
 		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 
 		ExplosionFX ();

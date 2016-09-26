@@ -1918,7 +1918,7 @@ MonoBehaviour:
   onHoldSound: 
   shootSound: ShootWavy2
   stunSound: AvatarHit
-  dashSound: Menu2
+  dashSound: Dash2
   deathSound: ShootImpact1
 --- !u!135 &13545702
 SphereCollider:

@@ -349,6 +349,7 @@ MonoBehaviour:
   timeBeforeFirstSpawn: 0.5
   timeBetweenSpawn: 2
   lastSecondsSound: TicTacBomb
+  cubeTrackingSound: CubeTracking
   timerTexts:
   - {fileID: 1456759496}
   - {fileID: 1602191626}
@@ -517,6 +518,7 @@ MonoBehaviour:
   playerHolding: {fileID: 0}
   explosionSound: BoumBomb
   lastSecondsSound: TicTacBomb
+  cubeTrackingSound: CubeTracking
   explosionForce: 50
   explosionRadius: 50
   explosionMask:

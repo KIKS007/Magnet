@@ -18,6 +18,9 @@ public class BombManager : MonoBehaviour
 	[Header ("Timer")]
 	[SoundGroupAttribute]
 	public string lastSecondsSound;
+	[SoundGroupAttribute]
+	public string cubeTrackingSound;
+
 	public Text[] timerTexts = new Text[0];
 	public float timer;
 	public string timerClock;
@@ -111,8 +114,10 @@ public class BombManager : MonoBehaviour
 			for(int i = 0; i < timerTexts.Length; i++)
 				timerTexts[i].text = "00";
 			
+			MasterAudio.PlaySound3DAtTransformAndForget (cubeTrackingSound, bomb.transform);
 			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
 	
+
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
 
 			playersNumber--;

@@ -1323,7 +1323,7 @@ MonoBehaviour:
   onHoldSound: 
   shootSound: ShootWavy2
   stunSound: AvatarHit
-  dashSound: Menu2
+  dashSound: Dash2
   deathSound: 
 --- !u!114 &11479534
 MonoBehaviour:

@@ -92,6 +92,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
+	public string gameStartSound;
+	[SoundGroupAttribute]
 	public string returnSound;
 	[SoundGroupAttribute]
 	public string openMenuSound;
@@ -604,6 +606,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator StartScreen ()
 	{
+		MasterAudio.PlaySound (gameStartSound);
+
 		logoMenu.transform.parent.GetChild(1).gameObject.SetActive(false);
 
 		logoMenu.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 365),  shrinkDuration);
