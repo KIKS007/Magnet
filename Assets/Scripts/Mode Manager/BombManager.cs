@@ -39,6 +39,9 @@ public class BombManager : MonoBehaviour
 		/*for(int i = 0; i < timerTexts.Length; i++)
 			timerTexts[i].text = "0";*/
 
+		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
+		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
+
 		StartCoroutine (Setup ());
 	}
 

@@ -134,7 +134,6 @@ public class PlayersGameplay : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-
 		DOTween.Init ();
 
 		GetControllerNumber ();
@@ -150,6 +149,12 @@ public class PlayersGameplay : MonoBehaviour
 
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
 		magnetPoint = transform.GetChild (1).transform;
+
+		/*OnStun += () => Debug.Log ("Stunned : " + name);
+		OnShoot += () => Debug.Log ("Shoot : " + name);
+		OnHold += () => Debug.Log ("Hold : " + name);
+		OnAttracted += () => Debug.Log ("Attract : " + name);
+		OnDash += () => Debug.Log ("Dash : " + name);*/
 	}
 
 	protected IEnumerator WaitTillPlayerEnabled ()
@@ -199,13 +204,13 @@ public class PlayersGameplay : MonoBehaviour
 			if (playerState == PlayerState.Repulsing && !player.GetButton ("Repulse"))
 				playerState = PlayerState.None;
 
+			if (dashState != DashState.Dashing && playersHit.Count > 0)
+				playersHit.Clear ();
+
 			StatsButton ();
 
 			OnAttractedOnRepulsed ();
 		}
-
-		Pause ();
-
 	}
 
 	protected virtual void ActivateFunctions ()
@@ -376,6 +381,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (OnShoot != null)
 			OnShoot ();
+
 	}
 
 	public virtual void Repulsion (GameObject movable)
@@ -465,19 +471,14 @@ public class PlayersGameplay : MonoBehaviour
 				OnRepulsed ();
 		}
 	}
-		
-	protected void Pause ()
-	{
-		if(player.GetButtonDown("Start"))
-		{
-			mainMenuScript.GamePauseResumeVoid ();
-		}
-	}
 
 	protected void StatsButton ()
 	{
 		
 	}
+
+
+	private List<GameObject> playersHit = new List<GameObject> ();
 
 	protected virtual void OnCollisionStay (Collision other)
 	{
@@ -488,10 +489,11 @@ public class PlayersGameplay : MonoBehaviour
 			DeathParticles ();
 		}
 
-		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
+		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 		{
 			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
 			{
+				playersHit.Add (other.gameObject);
 				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
 
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
@@ -506,13 +508,13 @@ public class PlayersGameplay : MonoBehaviour
 			Death ();
 
 			DeathParticles ();
-
 		}
 
-		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing)
+		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 		{
 			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
 			{
+				playersHit.Add (other.gameObject);
 				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
 
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
@@ -551,7 +553,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(aim.magnitude > rightJoystickDeadzone)
 		{
-			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
+			//transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
+			//playerRigidbody.MoveRotation(Quaternion.Euler (new Vector3 (transform.eulerAngles.x, Mathf.Atan2 (player.GetAxisRaw ("Aim Horizontal"), player.GetAxisRaw ("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
+			playerRigidbody.rotation = Quaternion.Euler (new Vector3 (transform.eulerAngles.x, Mathf.Atan2 (player.GetAxisRaw ("Aim Horizontal"), player.GetAxisRaw ("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
 		}
 	}
 
@@ -564,19 +568,22 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(playerState == PlayerState.Holding)
 		{
+			playerState = PlayerState.Stunned;
 			Shoot ();
 		}
+		
+		if (OnStun != null)
+			OnStun ();
 
 		playerState = PlayerState.Stunned;
 
 		speed = stunnedSpeed;
 
-		if (OnStun != null)
-			OnStun ();
-
 		yield return new WaitForSeconds(stunnedDuration);
 
-		playerState = PlayerState.None;
+		if(playerState == PlayerState.Stunned)
+			playerState = PlayerState.None;
+		
 		speed = originalSpeed;
 	}
 

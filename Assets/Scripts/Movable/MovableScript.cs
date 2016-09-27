@@ -40,7 +40,6 @@ public class MovableScript : MonoBehaviour
 
 	[HideInInspector]
 	public Transform player;
-	[HideInInspector]
 	public GameObject playerThatThrew;
 	[HideInInspector]
 	public GameObject playerHit;
@@ -175,17 +174,17 @@ public class MovableScript : MonoBehaviour
 			HitPlayer (other);	
 		}			
 		
-
+		
 		if(other.gameObject.tag == "Movable")
 		{
 			HitOtherMovable (other);
 		}
-
+		
 		//Touched Wall
 		if(other.gameObject.layer == 16)
 		{
 			HitWall (other);
-		}
+		}			
 	}
 
 	protected virtual void HitPlayer (Collision other)
@@ -216,8 +215,6 @@ public class MovableScript : MonoBehaviour
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
-			playerThatThrew = null;
 		}
 	}
 
@@ -316,6 +313,5 @@ public class MovableScript : MonoBehaviour
 	{
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
-		playerThatThrew = null;
 	}
 }

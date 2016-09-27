@@ -28,6 +28,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 
 	private PlayersGameplay playerScript;
+	private PlayersSounds playerSoundsScript;
 
 	private TrailRenderer trail;
 
@@ -37,6 +38,7 @@ public class PlayersFXAnimations : MonoBehaviour
 	void Start () 
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
+		playerSoundsScript = GetComponent<PlayersSounds> ();
 		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 
 		playerScript.OnShoot += ShootFX;
@@ -60,13 +62,31 @@ public class PlayersFXAnimations : MonoBehaviour
 			break;
 		}
 	}
+
+	void OnEnable ()
+	{
+		for (int i = 0; i < playerMaterials.Length; i++)
+			if(playerMaterials[i] != null)
+				playerMaterials [i].material.EnableKeyword ("_EMISSION");
+	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
 		//TrailLength ();
 
-		dashAvailableFX.startRotation = transform.rotation.eulerAngles.y;
+		if(dashAvailableFX.isPlaying)
+		{
+			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];
+			dashAvailableFX.GetParticles (particlesList);
+
+			for (int i = 0; i < particlesList.Length; i++)
+				particlesList [i].rotation = transform.rotation.eulerAngles.y;
+
+			dashAvailableFX.SetParticles (particlesList, particlesList.Length);
+			dashAvailableFX.startRotation = transform.rotation.eulerAngles.y;
+		}
+
 	}
 
 	void TrailLength ()
@@ -125,40 +145,56 @@ public class PlayersFXAnimations : MonoBehaviour
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
+		playerSoundsScript.StunOFF ();
+
 		yield return new WaitForSeconds (stunFXDurationsTemp[0]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
+		playerSoundsScript.StunON ();
+
 		yield return new WaitForSeconds (stunFXDurationsTemp[1]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
-		
+
+		playerSoundsScript.StunOFF ();
+
 		yield return new WaitForSeconds (stunFXDurationsTemp[2]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
-		
+
+		playerSoundsScript.StunON ();
+
 		yield return new WaitForSeconds (stunFXDurationsTemp[3]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
-		
+
+		playerSoundsScript.StunOFF ();
+
 		yield return new WaitForSeconds (stunFXDurationsTemp[4]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[5]);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
+		playerSoundsScript.StunOFF ();
+
 		yield return new WaitUntil(()=> playerScript.playerState != PlayerState.Stunned);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		playerSoundsScript.StunEND ();
 	}
 
 	void DashAvailableFX ()

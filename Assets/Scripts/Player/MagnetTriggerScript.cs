@@ -46,6 +46,7 @@ public class MagnetTriggerScript : MonoBehaviour
 	public void GetMovable (Collider other)
 	{
 		other.tag = "HoldMovable";
+
 		other.gameObject.GetComponent<MovableScript>().hold = true;
 		other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
 		other.gameObject.GetComponent<MovableScript>().player = transform.parent;
@@ -53,8 +54,8 @@ public class MagnetTriggerScript : MonoBehaviour
 		other.gameObject.GetComponent<MovableScript>().GetRigidbodySettings();
 		Destroy (other.GetComponent<Rigidbody>());
 
-		other.transform.SetParent(transform.parent);
 		character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
+		other.transform.SetParent(transform.parent);
 
 		Vector3 v3 = magnetPoint.localPosition;
 		v3.x = 0f;

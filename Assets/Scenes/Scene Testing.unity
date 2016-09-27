@@ -130,18 +130,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2084138, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: modesSettingsList.Array.data[0].cameraZoomLerp
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400114, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
-      propertyPath: modesSettingsList.Array.data[0].cameraMovementLerp
-      value: 0.1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7ccb4d36d051cab47aeed0c54aa1a1d1, type: 2}
   m_IsPrefabParent: 0
@@ -791,14 +779,6 @@ Prefab:
       propertyPath: m_Name
       value: MasterAudio (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: playListExpanded
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
-      propertyPath: areGroupsExpanded
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
   m_IsPrefabParent: 0
@@ -834,6 +814,13 @@ MonoBehaviour:
   playListSource: {fileID: 1211676634}
   timeScaleRatio: 7
   slowMotweenDuration: 0.5
+  menuSubmit: 
+  menuCancel: 
+  menuNavigation: 
+  gameStartSound: 
+  openMenuSound: 
+  closeMenuSound: 
+  gamepadDisconnectionSound: 
   playlistCont: {fileID: 0}
   cubeSpawnSound: 
   soundsBar: {fileID: 0}

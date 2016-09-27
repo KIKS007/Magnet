@@ -1512,7 +1512,9 @@ MonoBehaviour:
   repulsingSound: Repulsion_Player1
   onHoldSound: 
   shootSound: ShootWavy2
-  stunSound: AvatarHit
+  stunONSound: StunnedOn
+  stunOFFSound: StunnedOff
+  stunENDSound: StunnedEnd
   dashSound: Dash2
   deathSound: 
 --- !u!114 &11460404

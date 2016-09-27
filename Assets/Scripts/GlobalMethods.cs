@@ -21,7 +21,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3 (Random.Range (-24, 24 + 1), player.transform.position.y, Random.Range (-14, 14 + 1));
+			newPos = new Vector3 (Random.Range (-20f, 20f), player.transform.position.y, Random.Range (-10f, 10f));
 			yield return null;	
 		}
 		while(Physics.CheckSphere(newPos, 3, layer));
@@ -64,7 +64,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			do
 			{
-				newPos = new Vector3(Random.Range(-24, 24 + 1), 3, Random.Range(-14, 14 + 1));
+				newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
 			}
 			while(Physics.CheckSphere(newPos, 3, layer));
 
@@ -133,7 +133,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-24, 24 + 1), 3, Random.Range(-14, 14 + 1));
+			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
 		}
 		while(Physics.CheckSphere(newPos, 3, layer));
 

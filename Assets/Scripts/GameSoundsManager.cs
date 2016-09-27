@@ -8,11 +8,27 @@ using UnityEngine.SceneManagement;
 public class GameSoundsManager : Singleton<GameSoundsManager> 
 {
 	[Header ("Slow Mo Effect")]
-	public bool slowMoEffectMusicEnabled = true;
+	public bool slowMoEffectMusicEnabled = false;
 	public Toggle toggleEnableSloMoEffect;
 	public GameObject playListSource;
 	public float timeScaleRatio = 1;
 	public float slowMotweenDuration;
+
+	[Header ("Menu Sounds")]
+	[SoundGroupAttribute]
+	public string menuSubmit;
+	[SoundGroupAttribute]
+	public string menuCancel;
+	[SoundGroupAttribute]
+	public string menuNavigation;
+	[SoundGroupAttribute]
+	public string gameStartSound;
+	[SoundGroupAttribute]
+	public string openMenuSound;
+	[SoundGroupAttribute]
+	public string closeMenuSound;
+	[SoundGroupAttribute]
+	public string gamepadDisconnectionSound;
 
 	[Header ("Sounds")]
 	public PlaylistController playlistCont;
@@ -38,7 +54,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	private float previousVolumeSounds;
 	private float previousVolumePlaylist;
 
-	private bool loading = true;
+	private bool loading = false;
 
 	void Start ()
 	{
@@ -56,7 +72,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 			toggleMuteMusic [0].SetActive (true);
 			toggleMuteMusic [1].SetActive (false);
 
-			toggleEnableSloMoEffect.isOn = true;
+			toggleEnableSloMoEffect.isOn = false;
 		}
 
 
@@ -69,7 +85,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		//MasterAudio.TriggerRandomPlaylistClip ();
 	}
 
-	void SetGamePlaylist ()
+	public void SetGamePlaylist ()
 	{
 		if(playlistCont.PlaylistName != "Game")
 		{
@@ -78,12 +94,27 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		}
 	}
 
-	void SetMenuPlaylist ()
+	public void SetMenuPlaylist ()
 	{
 		if(playlistCont.PlaylistName != "Menu Ambient")
 		{
 			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
 		}
+	}
+
+	public void MenuSubmit ()
+	{
+		MasterAudio.PlaySound (menuSubmit);
+	}
+
+	public void MenuCancel ()
+	{
+		MasterAudio.PlaySound (menuCancel);
+	}
+
+	public void MenuNavigation ()
+	{
+		MasterAudio.PlaySound (menuNavigation);
 	}
 
 	public void SetSoundsVolume ()
@@ -232,6 +263,8 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	void SavePlayerPrefs ()
 	{
+		Debug.Log ("Data Saved");
+
 		PlayerPrefs.SetInt ("SlowMotionEffectEnable", slowMoEffectMusicEnabled ? 1 : 0);
 
 		if(soundsMute)
@@ -259,7 +292,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	void LoadPlayersPrefs ()
 	{
-		//Debug.Log ("Data Loaded");
+		Debug.Log ("Data Loaded");
 		loading = true;
 
 		if(PlayerPrefs.GetInt ("SlowMotionEffectEnable") == 1)

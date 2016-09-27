@@ -87,6 +87,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnPauseEvent ());
 		StartCoroutine (OnModeStartedEvent ());
+
+		OnPlaying += HideMouseCursor;
+		OnPause += DisplayMouseCursor;
+		OnGameOver += DisplayMouseCursor;
 	}
 		
 	void Update ()
@@ -142,6 +146,22 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		NumberOfPlayers = EnabledPlayersList.Count;
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
+	}
+
+	void HideMouseCursor ()
+	{
+		if(ControllerNumberPlayer1 != 0 && ControllerNumberPlayer2 != 0 && ControllerNumberPlayer3 != 0 && ControllerNumberPlayer4 != 0)
+		{
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
+	}
+
+	void DisplayMouseCursor ()
+	{
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+
 	}
 
 	public void SetWhichModeEnum ()

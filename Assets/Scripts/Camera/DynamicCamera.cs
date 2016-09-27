@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System;
 
 public class DynamicCamera : MonoBehaviour 
@@ -13,6 +14,7 @@ public class DynamicCamera : MonoBehaviour
 
 
 	[Header ("Current Camera Lerp")]
+	public List<GameObject> otherTargetsList = new List<GameObject>();	
 	public float cameraZoomLerp = 0.1f;
 	public float cameraMovementLerp = 0.1f;
 
@@ -28,7 +30,8 @@ public class DynamicCamera : MonoBehaviour
 
 	private Vector3 centerPos = new Vector3(0, 0, 0);
 
-	private GameObject[] playersList;	 
+	private GameObject[] playersList = new GameObject[0];	 
+	public List<GameObject> targetsList = new List<GameObject>();	
 
 	// Use this for initialization
 	void Awake () 
@@ -38,12 +41,23 @@ public class DynamicCamera : MonoBehaviour
 			modesSettingsList [i].cameraMovementLerp = cameraMovementLerp * Time.fixedDeltaTime / 0.02f;
 			modesSettingsList [i].cameraZoomLerp = cameraZoomLerp * Time.fixedDeltaTime / 0.02f;
 		}
+
+		//GlobalVariables.Instance.OnGameOver += () => targetList = new GameObject[0];
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
+		targetsList.Clear ();
+
 		playersList = GameObject.FindGameObjectsWithTag("Player");
+
+		for (int i = 0; i < playersList.Length; i++)
+			targetsList.Add (playersList [i]);
+
+		for (int i = 0; i < otherTargetsList.Count(); i++)
+			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)
+				targetsList.Add (otherTargetsList [i]);
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
@@ -63,14 +77,14 @@ public class DynamicCamera : MonoBehaviour
 
 	void FindLargestDistance ()
 	{
-		if(playersList.Length > 1)
+		/*if(playersList.Count() > 1)
 		{
 			float distanceTemp = 0;
 
 			if (Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position) > distanceTemp)
 				distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position);
 
-			if(playersList.Length > 2)
+			if(playersList.Count() > 2)
 			{
 				if (Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position) > distanceTemp)
 					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position);
@@ -79,7 +93,7 @@ public class DynamicCamera : MonoBehaviour
 					distanceTemp = Vector3.Distance (playersList [1].transform.position, playersList [2].transform.position);
 			}
 
-			if(playersList.Length > 3)
+			if(playersList.Count() > 3)
 			{
 				if (Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position) > distanceTemp)
 					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position);
@@ -92,7 +106,23 @@ public class DynamicCamera : MonoBehaviour
 			}
 
 			largestDistance = distanceTemp;
-		}			
+		}*/
+
+		if(targetsList.Count > 1)
+		{
+			float distanceTemp = 0;
+
+			for(int i = 0; i < targetsList.Count (); i++)
+			{
+				for(int j = 0; j < targetsList.Count (); j++)
+				{
+					if (Vector3.Distance (targetsList [i].transform.position, targetsList [j].transform.position) > distanceTemp)
+						distanceTemp = Vector3.Distance (targetsList [i].transform.position, targetsList [j].transform.position);
+				}				
+			}
+
+			largestDistance = distanceTemp;
+		}
 	}
 
 	void FindYPosition ()
@@ -110,10 +140,10 @@ public class DynamicCamera : MonoBehaviour
 	{
 		Vector3 centerPosTemp = new Vector3 ();
 
-		for (int i = 0; i < playersList.Length; i++)
-			centerPosTemp += playersList [i].transform.position;
+		for (int i = 0; i < targetsList.Count (); i++)
+			centerPosTemp += targetsList [i].transform.position;
 
-		centerPosTemp = centerPosTemp / playersList.Length;
+		centerPosTemp = centerPosTemp / targetsList.Count ();
 		centerPosTemp.y = transform.position.y;
 
 		centerPosTemp.x += cameraOffset.x;

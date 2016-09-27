@@ -15,7 +15,13 @@ public class PlayersSounds : MonoBehaviour
 	[SoundGroupAttribute]
 	public string shootSound;
 	[SoundGroupAttribute]
-	public string stunSound;
+	public string hitSound;
+	[SoundGroupAttribute]
+	public string stunONSound;
+	[SoundGroupAttribute]
+	public string stunOFFSound;
+	[SoundGroupAttribute]
+	public string stunENDSound;
 	[SoundGroupAttribute]
 	public string dashSound;
 	[SoundGroupAttribute]
@@ -48,9 +54,9 @@ public class PlayersSounds : MonoBehaviour
 
 		playerScript.OnHold += OnHold;
 		playerScript.OnShoot += Shoot;
-		playerScript.OnStun += Stun;
 		playerScript.OnDash += Dash;
 		playerScript.OnDeath += Death;
+		playerScript.OnStun += Hit;
 
 		GlobalVariables.Instance.OnGameOver += FadeSounds;
 		GlobalVariables.Instance.OnPause += FadeSounds;
@@ -96,9 +102,24 @@ public class PlayersSounds : MonoBehaviour
 		MasterAudio.PlaySound3DFollowTransformAndForget (shootSound, transform);
 	}
 
-	void Stun ()
+	void Hit ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (stunSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (hitSound, transform);
+	}
+
+	public void StunON ()
+	{
+		MasterAudio.PlaySound3DFollowTransformAndForget (stunONSound, transform);
+	}
+
+	public void StunOFF ()
+	{
+		MasterAudio.PlaySound3DFollowTransformAndForget (stunOFFSound, transform);
+	}
+
+	public void StunEND ()
+	{
+		MasterAudio.PlaySound3DFollowTransformAndForget (stunENDSound, transform);
 	}
 
 	void Dash ()
@@ -108,7 +129,7 @@ public class PlayersSounds : MonoBehaviour
 
 	void Death ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (deathSound, transform);
+		MasterAudio.PlaySound3DAtVector3AndForget (deathSound, transform.position);
 	}
 
 	void OnDisable ()

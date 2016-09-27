@@ -98,58 +98,55 @@ public class MovableBomb : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player"  
-			&& gameObject.tag == "ThrownMovable" 
-			&& playerThatThrew == null)
+		if(tag == "Movable" && other.gameObject.tag == "Player" || tag == "ThrownMovable" && other.gameObject.tag == "Player")
 		{
-			if(!trackingPlayer)
-				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+			if(playerThatThrew == null)
+			{
+				if(!trackingPlayer && playerThatThrew != null)
+					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
-			playerHolding = other.gameObject;
+				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				playerHolding = other.gameObject;
 
-			playerHit = other.gameObject;
+				playerHit = other.gameObject;
 
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			}
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-		}
+			else if(other.collider.GetComponent<PlayersGameplay>().playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
+			{
+				if(!trackingPlayer && playerThatThrew != null)
+					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-		if(other.collider.tag == "Player"  
-			&& gameObject.tag == "Movable")
-		{
-			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
-			playerHolding = other.gameObject;
+				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				playerHolding = other.gameObject;
 
-			playerHit = other.gameObject;
+				playerHit = other.gameObject;
 
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			}
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-		}
+			else if(playerThatThrew != other.gameObject)
+			{
+				if(!trackingPlayer && playerThatThrew != null)
+					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-		if(other.collider.tag == "Player" 
-			&& gameObject.tag == "ThrownMovable" 
-			&& other.gameObject.name != playerThatThrew.name)
-		{
-			if(!trackingPlayer)
-				StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				playerHolding = other.gameObject;
 
-			//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
-			other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
-			playerHolding = other.gameObject;
+				playerHit = other.gameObject;
 
-			playerHit = other.gameObject;
-		
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-		
-			playerThatThrew = null;
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			}
 		}
 	}
 

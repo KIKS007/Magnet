@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DarkTonic.MasterAudio;
+using Rewired;
 
 public class MainMenuManagerScript : MonoBehaviour
 {
@@ -89,16 +91,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	[Header ("Ease")]
 	public Ease easeTypeMainMenu;
-
-	[Header ("Menu Sounds")]
-	[SoundGroupAttribute]
-	public string gameStartSound;
-	[SoundGroupAttribute]
-	public string returnSound;
-	[SoundGroupAttribute]
-	public string openMenuSound;
-	[SoundGroupAttribute]
-	public string closeMenuSound;
 
 	[Header ("Buttons To Select When Nothing Is")]
 	public GameObject start;
@@ -282,14 +274,28 @@ public class MainMenuManagerScript : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+		List<Player> playersListTemp = new List<Player> (ReInput.players.GetPlayers ());
+
 		if(startScreen == true)
 		{
-			if(Input.GetAxisRaw("Submit") > 0 || Input.GetKeyDown(KeyCode.Mouse0))
+			for(int i = 0; i < playersListTemp.Count; i++)
 			{
-				startScreen = false;
+				if(playersListTemp[i].GetButton("Submit") || playersListTemp[i].GetButton("Start") || Input.GetMouseButtonDown(0))
+				{
+					startScreen = false;
+					
+					StartCoroutine(StartScreen ());
+					Tweening ();
+				}
+			}
+		}
 
-				StartCoroutine(StartScreen ());
-				Tweening ();
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+		{
+			for(int i = 0; i < playersListTemp.Count; i++)
+			{
+				if (playersListTemp [i].GetButton ("Start"))
+					GamePauseResumeVoid ();
 			}
 		}
 
@@ -302,87 +308,90 @@ public class MainMenuManagerScript : MonoBehaviour
 			backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsContent.anchoredPosition.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
 
 
-		if(Input.GetAxisRaw("Cancel") > 0 && !tweening)
-        {
-
-			if(instructionsMenuCanvas.activeSelf == true)
+		for(int i = 0; i < playersListTemp.Count; i++)
+		{
+			if(playersListTemp[i].GetButton("Cancel") && !tweening)
 			{
-				ExitInstructions ();
-				Tweening ();
+				
+				if(instructionsMenuCanvas.activeSelf == true)
+				{
+					ExitInstructions ();
+					Tweening ();
+				}
+				
+				if(chooseOptionsMenuCanvas.activeSelf == true && playersMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
+				{
+					ExitOptions ();
+					Tweening ();
+				}
+				
+				if(creditsMenuCanvas.activeSelf == true)
+				{
+					ExitCredits ();
+					Tweening ();
+				}
+				
+				if(quitMenuCanvas.activeSelf == true)
+				{
+					ExitQuit ();
+					Tweening ();
+				}
+				
+				if(playersMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine("ExitPlayers");
+					Tweening ();
+				}
+				
+				if(soundsMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine("ExitSounds");
+					Tweening ();
+				}
+				
+				if(graphicsMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine("ExitGraphics");
+					Tweening ();
+				}
+				
+				if(chooseModeCanvas.activeSelf == true)
+				{
+					ExitChooseMode ();
+					Tweening ();
+				}
+				
+				if(crushMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine (ExitCrush ());
+					Tweening ();
+				}
+				
+				if(hitMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine (ExitHit ());
+					Tweening ();
+				}
+				
+				if(repulseMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine (ExitRepulse ());
+					Tweening ();
+				}
+				
+				if(bombMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine (ExitBomb ());
+					Tweening ();
+				}
+				
+				if(trainingMenuCanvas.activeSelf == true)
+				{
+					StartCoroutine (ExitTraining ());
+					Tweening ();
+				}
 			}
-
-			if(chooseOptionsMenuCanvas.activeSelf == true && playersMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
-			{
-				ExitOptions ();
-				Tweening ();
-			}
-
-			if(creditsMenuCanvas.activeSelf == true)
-			{
-				ExitCredits ();
-				Tweening ();
-			}
-
-			if(quitMenuCanvas.activeSelf == true)
-			{
-				ExitQuit ();
-				Tweening ();
-			}
-
-			if(playersMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine("ExitPlayers");
-				Tweening ();
-			}
-
-			if(soundsMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine("ExitSounds");
-				Tweening ();
-			}
-
-			if(graphicsMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine("ExitGraphics");
-				Tweening ();
-			}
-
-			if(chooseModeCanvas.activeSelf == true)
-			{
-				ExitChooseMode ();
-				Tweening ();
-			}
-
-			if(crushMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine (ExitCrush ());
-				Tweening ();
-			}
-
-			if(hitMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine (ExitHit ());
-				Tweening ();
-			}
-
-			if(repulseMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine (ExitRepulse ());
-				Tweening ();
-			}
-
-			if(bombMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine (ExitBomb ());
-				Tweening ();
-			}
-
-			if(trainingMenuCanvas.activeSelf == true)
-			{
-				StartCoroutine (ExitTraining ());
-				Tweening ();
-			}
-        }
+		}
 
 		if(eventSyst.currentSelectedGameObject == null && mainMenuCanvas.activeSelf == true)
 		{
@@ -604,7 +613,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	IEnumerator StartScreen ()
 	{
-		MasterAudio.PlaySound (gameStartSound);
+		MasterAudio.PlaySound (GameSoundsManager.Instance.gameStartSound);
 
 		logoMenu.transform.parent.GetChild(1).gameObject.SetActive(false);
 
@@ -660,7 +669,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			//Wait Slowmotion
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforePause));
 
-			MasterAudio.PlaySound (openMenuSound);
+			MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayBackwards();
 			mainCamera.transform.DOMove (pausePosition, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -686,7 +695,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(durationCancel));
 
-			MasterAudio.PlaySound (closeMenuSound);
+			MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
 
 			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenAnimation>().();
 			mainCamera.transform.DOMove (cameraPosBeforePause, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -847,7 +856,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		startRect.anchoredPosition = new Vector2 (offScreenX, yPositions[2]);
 
-		MasterAudio.PlaySound (closeMenuSound);
+		MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
 
 		//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DOTweenPath>().DOPlayForward();
 		mainCamera.transform.DOMove (playPosition, cameraMovementDuration).SetEase(cameraEaseMovement);
@@ -1774,7 +1783,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		quitRect.anchoredPosition = new Vector2(offScreenX, yPositions [6]);
 		resumeRect.anchoredPosition = new Vector2(offScreenX, yPositions [1] - 16);
 
-		MasterAudio.PlaySound (openMenuSound);
+		MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
 
 		GlobalVariables.Instance.OnMainMenuVoid ();
 
@@ -1821,7 +1830,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		gameOverCanvas.SetActive (false);
 
-		MasterAudio.PlaySound (closeMenuSound);
+		MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
 
 		loadModeScript.RestartSceneVoid ();
 	}
@@ -1840,6 +1849,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void PlayReturnSound ()
 	{
-		MasterAudio.PlaySound (returnSound);
+		MasterAudio.PlaySound (GameSoundsManager.Instance.menuCancel);
 	}
 }

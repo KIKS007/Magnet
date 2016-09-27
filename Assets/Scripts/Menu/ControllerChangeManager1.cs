@@ -10,6 +10,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 {
 	public event EventHandler OnControllerChange;
 
+	public GameObject[] gamepadsConnectText = new GameObject[4];
+
 	public GameObject[] gamepadsLines = new GameObject[4];
 
 	public RectTransform[] sliderRect = new RectTransform[5];
@@ -53,9 +55,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
 		ReInput.ControllerConnectedEvent += GetPlayers;
-		ReInput.ControllerConnectedEvent += GamepadDisplay;
+		ReInput.ControllerConnectedEvent += GamepadConnectedDisplay;
 
-		ReInput.ControllerPreDisconnectEvent += GamepadDisplay;
+		ReInput.ControllerPreDisconnectEvent += GamepadDisconnectedDisplay;
 		ReInput.ControllerPreDisconnectEvent += ResetGamepadOnDisconnect;
 
 		ReInput.ControllerPreDisconnectEvent += UpdateGlobalVariables;
@@ -75,6 +77,20 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		if(getInput)
 			GetInput ();
+
+		DisplayConnectGamepadsText ();
+	}
+
+	void DisplayConnectGamepadsText ()
+	{
+		for(int i = 0; i < gamepadsConnectText.Length; i++)
+		{
+			if(sliderRect[i+1].gameObject.activeSelf == true && gamepadsConnectText [i].activeSelf == true)
+				gamepadsConnectText [i].SetActive (false);
+
+			if(sliderRect[i+1].gameObject.activeSelf == false && gamepadsConnectText [i].activeSelf == false)
+				gamepadsConnectText [i].SetActive (true);
+		}
 	}
 
 	void GetInput ()
@@ -208,66 +224,66 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
 	}
 
-	void GamepadDisplay (ControllerStatusChangedEventArgs arg)
+	void GamepadConnectedDisplay (ControllerStatusChangedEventArgs arg)
 	{
 		disableColor = new Color(103, 103, 103, 255) / 255;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			if(XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == false)
+			switch (arg.name)
 			{
+			case "XInput Gamepad 1":
 				gamepadsLines [0].GetComponent<Text> ().DOColor(gamepad1Color, durationColor);
 				gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-				gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (true);
-			}
-
-			if(!XCI.IsPluggedIn(1) && gamepadsLines [0].transform.GetChild (1).gameObject.activeSelf == true)
-			{
-				gamepadsLines [0].GetComponent<Text> ().DOColor (disableColor, durationColor);
-				gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-				gamepadsLines [0].transform.GetChild (1).gameObject.SetActive (false);
-			}
-
-			if(XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == false)
-			{
+				sliderRect[1].gameObject.SetActive (true);
+				break;
+			case "XInput Gamepad 2":
 				gamepadsLines [1].GetComponent<Text> ().DOColor(gamepad2Color, durationColor);
 				gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-				gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (true);
-			}
-
-			if(!XCI.IsPluggedIn(2) && gamepadsLines [1].transform.GetChild (1).gameObject.activeSelf == true)
-			{
-				gamepadsLines [1].GetComponent<Text> ().DOColor (disableColor, durationColor);
-				gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-				gamepadsLines [1].transform.GetChild (1).gameObject.SetActive (false);
-			}
-
-			if(XCI.IsPluggedIn(3) && gamepadsLines [2].transform.GetChild (1).gameObject.activeSelf == false)
-			{
+				sliderRect[2].gameObject.SetActive (true);
+				break;
+			case "XInput Gamepad 3":
 				gamepadsLines [2].GetComponent<Text> ().DOColor(gamepad3Color, durationColor);
 				gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-				gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (true);
-			}
-
-			if(!XCI.IsPluggedIn(3) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == true)
-			{
-				gamepadsLines [2].GetComponent<Text> ().DOColor (disableColor, durationColor);
-				gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-				gamepadsLines [2].transform.GetChild (1).gameObject.SetActive (false);
-			}
-
-			if(XCI.IsPluggedIn(4) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == false)
-			{
+				sliderRect[3].gameObject.SetActive (true);
+				break;
+			case "XInput Gamepad 4":
 				gamepadsLines [3].GetComponent<Text> ().DOColor(gamepad4Color, durationColor);
 				gamepadsLines [3].transform.GetChild (0).GetComponent<Image> ().DOFade (1, durationColor);
-				gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (true);
+				sliderRect[4].gameObject.SetActive (true);
+				break;
 			}
+		}
+	}
 
-			if(!XCI.IsPluggedIn(4) && gamepadsLines [3].transform.GetChild (1).gameObject.activeSelf == true)
+	void GamepadDisconnectedDisplay (ControllerStatusChangedEventArgs arg)
+	{
+		disableColor = new Color(103, 103, 103, 255) / 255;
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			switch (arg.name)
 			{
+			case "XInput Gamepad 1":
+				gamepadsLines [0].GetComponent<Text> ().DOColor (disableColor, durationColor);
+				gamepadsLines [0].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
+				sliderRect[1].gameObject.SetActive (false);
+				break;
+			case "XInput Gamepad 2":
+				gamepadsLines [1].GetComponent<Text> ().DOColor (disableColor, durationColor);
+				gamepadsLines [1].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
+				sliderRect[2].gameObject.SetActive (false);
+				break;
+			case "XInput Gamepad 3":
+				gamepadsLines [2].GetComponent<Text> ().DOColor (disableColor, durationColor);
+				gamepadsLines [2].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
+				sliderRect[3].gameObject.SetActive (false);
+				break;
+			case "XInput Gamepad 4":
 				gamepadsLines [3].GetComponent<Text> ().DOColor (disableColor, durationColor);
 				gamepadsLines [3].transform.GetChild (0).GetComponent<Image> ().DOFade (0.5f, durationColor);
-				gamepadsLines [3].transform.GetChild (1).gameObject.SetActive (false);
+				sliderRect[4].gameObject.SetActive (false);
+				break;
 			}
 		}
 	}
@@ -656,8 +672,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 				imagesNumber [4] = 0;
 				EraseControllerNumbers (4);
 				break;
-			}
-			
+			}			
 		}
 	}
 
