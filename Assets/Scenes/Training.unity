@@ -3597,7 +3597,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &657604203
 Transform:
   m_ObjectHideFlags: 0
@@ -4690,10 +4690,6 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
-  collisionsMask:
-    serializedVersion: 2
-    m_Bits: 0
-  checkSphereRadius: 0.1
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
@@ -9415,10 +9411,6 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
-  collisionsMask:
-    serializedVersion: 2
-    m_Bits: 0
-  checkSphereRadius: 0.1
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
@@ -10379,10 +10371,6 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
-  collisionsMask:
-    serializedVersion: 2
-    m_Bits: 0
-  checkSphereRadius: 0.1
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10
@@ -13589,10 +13577,6 @@ MonoBehaviour:
   stunnedSpeed: 8
   maxVelocity: 0
   gravity: 100
-  collisionsMask:
-    serializedVersion: 2
-    m_Bits: 0
-  checkSphereRadius: 0.1
   attractionForce: 10
   shootForce: 200
   repulsionForce: 10

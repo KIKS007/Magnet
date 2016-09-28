@@ -15,125 +15,104 @@ Material:
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
-      data:
-        first:
-          name: _Layer1
-        second:
-          m_Texture: {fileID: 2800000, guid: 5dd09cae55293e147817ac93510194c7, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Layer2
-        second:
-          m_Texture: {fileID: 2800000, guid: d37b7d354a030a041af417b0a908547c, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _AlphaL2
-        second:
-          m_Texture: {fileID: 2800000, guid: 8b0db89cb010faa469d097ab10d911d8, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Layer3
-        second:
-          m_Texture: {fileID: 2800000, guid: aec8ee41990b93c489b0968f38b28b98, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _AlphaL3
-        second:
-          m_Texture: {fileID: 2800000, guid: 6ada28538acd1f347833fe7234c68749, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Layer4
-        second:
-          m_Texture: {fileID: 2800000, guid: 480e16a2cb7ba6c49baf207f2debe457, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _AlphaL4
-        second:
-          m_Texture: {fileID: 2800000, guid: 23d933a35a16e984fa3649b72dc813b2, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Layer5
-        second:
-          m_Texture: {fileID: 2800000, guid: fa4307b7e00c58f49b6b014b0c63b0fe, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _AlphaL5
-        second:
-          m_Texture: {fileID: 2800000, guid: 2cd528cf6816dc2429166f49a2ee1237, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Opatexture
-        second:
-          m_Texture: {fileID: 2800000, guid: 23733f148814b8b47a2a4a5eb9e0892c, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Neutral
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _node_4295
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
+    - first:
+        name: _AlphaL2
+      second:
+        m_Texture: {fileID: 2800000, guid: 8b0db89cb010faa469d097ab10d911d8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _AlphaL3
+      second:
+        m_Texture: {fileID: 2800000, guid: 6ada28538acd1f347833fe7234c68749, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _AlphaL4
+      second:
+        m_Texture: {fileID: 2800000, guid: 23d933a35a16e984fa3649b72dc813b2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _AlphaL5
+      second:
+        m_Texture: {fileID: 2800000, guid: 2cd528cf6816dc2429166f49a2ee1237, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Layer1
+      second:
+        m_Texture: {fileID: 2800000, guid: 5dd09cae55293e147817ac93510194c7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Layer2
+      second:
+        m_Texture: {fileID: 2800000, guid: d37b7d354a030a041af417b0a908547c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Layer3
+      second:
+        m_Texture: {fileID: 2800000, guid: aec8ee41990b93c489b0968f38b28b98, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Layer4
+      second:
+        m_Texture: {fileID: 2800000, guid: 480e16a2cb7ba6c49baf207f2debe457, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Layer5
+      second:
+        m_Texture: {fileID: 2800000, guid: fa4307b7e00c58f49b6b014b0c63b0fe, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Neutral
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Opatexture
+      second:
+        m_Texture: {fileID: 2800000, guid: 23733f148814b8b47a2a4a5eb9e0892c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _node_4295
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
-      data:
-        first:
-          name: _Cutoff
-        second: 0.5
-      data:
-        first:
-          name: _Opacity
-        second: 1
-      data:
-        first:
-          name: _Lerp
-        second: 0
-      data:
-        first:
-          name: _node_8973
-        second: 0
-      data:
-        first:
-          name: _LerpLitUnlit
-        second: 1
+    - first:
+        name: _Cutoff
+      second: 0.5
+    - first:
+        name: _Lerp
+      second: 0
+    - first:
+        name: _LerpLitUnlit
+      second: 1
+    - first:
+        name: _Opacity
+      second: 1
+    - first:
+        name: _node_8973
+      second: 0
     m_Colors:
-      data:
-        first:
-          name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _node_9969
-        second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
-      data:
-        first:
-          name: _Emissive
-        second: {r: 0.45588237, g: 0, b: 0, a: 1}
-      data:
-        first:
-          name: _node_381
-        second: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - first:
+        name: _Color
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _Emissive
+      second: {r: 0.45588237, g: 0, b: 0, a: 1}
+    - first:
+        name: _node_381
+      second: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - first:
+        name: _node_9969
+      second: {r: 1, g: 0.07352942, b: 0.51440114, a: 1}
