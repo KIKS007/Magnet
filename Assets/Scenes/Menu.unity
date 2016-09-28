@@ -19845,6 +19845,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.size
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.x
       value: -43
@@ -19876,6 +19880,446 @@ Prefab:
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_RootOrder
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: showGroupSelect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11408070, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11427184, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449622, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11446682, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: busFilter
+      value: '[All]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010728239556, guid: 3443f5d71d390134da9737b6b25f8b64,
+        type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11475474, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412074, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011190227110, guid: 3443f5d71d390134da9737b6b25f8b64,
+        type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11487860, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013387720544, guid: 3443f5d71d390134da9737b6b25f8b64,
+        type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011983644988, guid: 3443f5d71d390134da9737b6b25f8b64,
+        type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11439938, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11444436, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11465796, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: isSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: useGroupTemplates
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: groupByBus
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: useTextGroupFilter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: textGroupFilter
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: areGroupsExpanded
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: showLocalization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: showAdvancedSettings
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: showMusicDucking
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[0].soundType
+      value: Attraction_Player1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[0].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[0].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[0].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[1].soundType
+      value: Attraction_Player2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[1].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[1].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[1].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[2].soundType
+      value: Attraction_Player3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[2].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[2].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[2].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[3].soundType
+      value: Attraction_Player4
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[3].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[3].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[3].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[4].soundType
+      value: AvatarHit
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[4].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[4].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[4].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[5].soundType
+      value: Dash2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[5].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[5].unduckTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[5].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[6].soundType
+      value: Death_Electricity
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[6].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[6].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[6].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[7].soundType
+      value: Repulsion_Player1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[7].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[7].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[7].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[8].soundType
+      value: Repulsion_Player2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[8].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[8].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[8].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[9].soundType
+      value: Repulsion_Player3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[9].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[9].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[9].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[10].soundType
+      value: Repulsion_Player4
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[10].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[10].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[10].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[11].soundType
+      value: ShootCube2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[11].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[11].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[11].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[12].soundType
+      value: StunnedEnd
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[12].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[12].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[12].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[13].soundType
+      value: StunnedOff
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[13].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[13].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[13].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[14].soundType
+      value: StunnedOn
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[14].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[14].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[14].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[15].soundType
+      value: BoumBomb
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[15].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[15].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[15].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[16].soundType
+      value: CubeHitWall
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[16].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[16].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[16].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[17].soundType
+      value: CubeSpawn
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[17].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[17].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[17].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[18].soundType
+      value: CubeTracking
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[18].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[18].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[18].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[19].soundType
+      value: TicTacBomb
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[19].riseVolStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[19].unduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: musicDuckingSounds.Array.data[19].duckedVolumeCut
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: enableMusicDucking
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: defaultUnduckTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: playListExpanded
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11439938, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: groupMasterVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11475474, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
+      propertyPath: groupMasterVolume
+      value: 0.3653846
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}

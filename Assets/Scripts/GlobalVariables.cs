@@ -152,14 +152,14 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		if(ControllerNumberPlayer1 != 0 && ControllerNumberPlayer2 != 0 && ControllerNumberPlayer3 != 0 && ControllerNumberPlayer4 != 0)
 		{
-			Cursor.lockState = CursorLockMode.Locked;
+			//Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
 		}
 	}
 
 	void DisplayMouseCursor ()
 	{
-		Cursor.lockState = CursorLockMode.None;
+		//Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
 
 	}
