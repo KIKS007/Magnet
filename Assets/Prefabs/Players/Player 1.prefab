@@ -1510,13 +1510,14 @@ MonoBehaviour:
   fadeDuration: 0.5
   attractingSound: Attraction_Player1
   repulsingSound: Repulsion_Player1
-  onHoldSound: 
-  shootSound: ShootWavy2
+  onHoldSound: '[None]'
+  shootSound: ShootCube2
+  hitSound: AvatarHit
   stunONSound: StunnedOn
   stunOFFSound: StunnedOff
   stunENDSound: StunnedEnd
   dashSound: Dash2
-  deathSound: 
+  deathSound: '[None]'
 --- !u!114 &11460404
 MonoBehaviour:
   m_ObjectHideFlags: 1

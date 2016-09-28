@@ -13229,7 +13229,7 @@ MonoBehaviour:
   - {fileID: 2009271633}
   soundsMute: 0
   musicMute: 0
-  soundsVolumeTest: ShootWavy2
+  soundsVolumeTest: ShootCube2
 --- !u!4 &341229901
 Transform:
   m_ObjectHideFlags: 0
@@ -18063,7 +18063,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 599197271}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f06e26fa9c636494b9aa09076589eac1, type: 3}
   m_Name: 
@@ -19847,15 +19847,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -43
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 20
+      value: 93
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalRotation.x
@@ -32256,7 +32256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.517}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -43194,7 +43194,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1538319520}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f06e26fa9c636494b9aa09076589eac1, type: 3}
   m_Name: 
@@ -56629,7 +56629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.517}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

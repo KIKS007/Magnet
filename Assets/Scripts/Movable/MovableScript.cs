@@ -24,9 +24,11 @@ public class MovableScript : MonoBehaviour
 	[Header ("Gravity")]
 	public float gravity = 0;
 
+	[Header ("Sounds")]
 	[SoundGroupAttribute]
-	static string wallHitSound = "Impact";
-	private bool canPlaySound = true;
+	public string wallHitSound;
+
+	protected bool canPlaySound = true;
 
 	protected float timeTween = 0.5f;
 
@@ -40,11 +42,13 @@ public class MovableScript : MonoBehaviour
 
 	[HideInInspector]
 	public Transform player;
+	[HideInInspector]
 	public GameObject playerThatThrew;
 	[HideInInspector]
 	public GameObject playerHit;
 	[HideInInspector]
 	public MeshFilter cubeMeshFilter;
+	[HideInInspector]
 	public Material cubeMaterial;
 
 	// Use this for initialization
@@ -228,7 +232,8 @@ public class MovableScript : MonoBehaviour
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
 
-		StartCoroutine(HitSound ());
+		if(canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			StartCoroutine(HitSound ());
 	}
 
 	protected virtual void HitWall (Collision other)
@@ -241,10 +246,9 @@ public class MovableScript : MonoBehaviour
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
 
-		if(other.gameObject.tag == "Wall" && canPlaySound)
-		{
+		if(other.gameObject.tag == "Wall" && canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			StartCoroutine(HitSound ());
-		}
+		
 	}
 
 	IEnumerator HitSound ()

@@ -2022,13 +2022,14 @@ MonoBehaviour:
   fadeDuration: 0.5
   attractingSound: Attraction_Player4
   repulsingSound: Repulsion_Player4
-  onHoldSound: 
-  shootSound: ShootWavy2
+  onHoldSound: '[None]'
+  shootSound: ShootCube2
+  hitSound: AvatarHit
   stunONSound: StunnedOn
   stunOFFSound: StunnedOff
   stunENDSound: StunnedEnd
   dashSound: Dash2
-  deathSound: ShootImpact1
+  deathSound: '[None]'
 --- !u!135 &13545702
 SphereCollider:
   m_ObjectHideFlags: 1
