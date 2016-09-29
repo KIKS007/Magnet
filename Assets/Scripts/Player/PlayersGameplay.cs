@@ -105,7 +105,7 @@ public class PlayersGameplay : MonoBehaviour
 	protected Transform movableParent;
 	protected Transform magnetPoint;
 
-	protected float lerpHold = 0.2f;
+	protected float lerpHold = 0.05f;
 
 	[HideInInspector]
 	public Rigidbody playerRigidbody;
@@ -177,16 +177,6 @@ public class PlayersGameplay : MonoBehaviour
 			if(playerRigidbody.velocity.magnitude > maxVelocity)
 				maxVelocity = playerRigidbody.velocity.magnitude;
 
-
-			if(playerState == PlayerState.Holding)
-			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
-
-				if (OnHolding != null)
-					OnHolding ();
-			}
-
 			ActivateFunctions ();
 
 			if(playerState == PlayerState.Stunned)
@@ -256,6 +246,15 @@ public class PlayersGameplay : MonoBehaviour
 			if(dashState != DashState.Dashing)
 				playerRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
 
+
+			if(playerState == PlayerState.Holding)
+			{
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+
+				if (OnHolding != null)
+					OnHolding ();
+			}
 
 			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
@@ -410,7 +409,6 @@ public class PlayersGameplay : MonoBehaviour
 	public virtual void OnHoldMovable (GameObject movable)
 	{
 		playerState = PlayerState.Holding;
-		holdMovableRB = movable.GetComponent<Rigidbody>();
 		holdMovableTransform = movable.GetComponent<Transform>();
 		movable.GetComponent<MovableScript> ().OnHold ();
 
@@ -472,9 +470,9 @@ public class PlayersGameplay : MonoBehaviour
 			DeathParticles ();
 		}
 
-		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		if(other.collider.tag != "HoldMovable")
 		{
-			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+			if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 			{
 				playersHit.Add (other.gameObject);
 				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
@@ -493,9 +491,9 @@ public class PlayersGameplay : MonoBehaviour
 			DeathParticles ();
 		}
 
-		if(other.gameObject.tag == "Player" && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		if(other.collider.tag != "HoldMovable")
 		{
-			if (other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+			if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 			{
 				playersHit.Add (other.gameObject);
 				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();

@@ -32,7 +32,7 @@ public class PlayersHit : PlayersGameplay
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 		instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
-		instantiatedParticles.GetComponent<Renderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
 	}
 
 	void Hit ()

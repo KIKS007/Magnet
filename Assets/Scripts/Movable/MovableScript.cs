@@ -55,6 +55,27 @@ public class MovableScript : MonoBehaviour
 	protected virtual void Start () 
 	{
 		tag = "Untagged";
+		hold = false;
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
+		GetRigidbodySettings ();
+
+		cubeMaterial.SetFloat ("_Lerp", 0);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+
+		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
+
+		tag = "Movable";
+	}
+
+	protected virtual void OnEnable ()
+	{
+		tag = "Untagged";
+		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
@@ -276,7 +297,7 @@ public class MovableScript : MonoBehaviour
 		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
 
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<Renderer>().material.color = color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
 
 		return instantiatedParticles;
 	}
@@ -288,7 +309,7 @@ public class MovableScript : MonoBehaviour
 		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
 
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<Renderer>().material.color = color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
 
 		return instantiatedParticles;
 	}

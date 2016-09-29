@@ -6,14 +6,15 @@ public class ParticlesMaterial : MonoBehaviour
 	private Renderer rend;
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		rend = GetComponent<ParticleSystemRenderer> ();
+		rend.material.SetColor("_EmissionColor", rend.material.color);
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		rend.material.SetColor("_EmmissionColor", rend.material.color);
+		rend.material.SetColor("_EmissionColor", rend.material.color);
 	}
 }

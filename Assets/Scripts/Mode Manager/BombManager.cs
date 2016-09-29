@@ -153,6 +153,7 @@ public class BombManager : MonoBehaviour
 				break;
 			}
 
+			lastSeconds = false;
 			bomb.tag = "Movable";
 		}
 

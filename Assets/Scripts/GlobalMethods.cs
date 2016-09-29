@@ -39,9 +39,9 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	void SpawnParticles (GameObject player)
 	{
 		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, player.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
-
+	
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<Renderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
 	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)

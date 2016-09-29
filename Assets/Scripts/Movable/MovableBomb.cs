@@ -27,6 +27,25 @@ public class MovableBomb : MovableScript
 	protected override void Start ()
 	{
 		tag = "Untagged";
+		hold = false;
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
+		GetRigidbodySettings ();
+
+		cubeMaterial.SetFloat ("_Lerp", 0);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+
+		tag = "Movable";
+	}
+
+	protected override void OnEnable ()
+	{
+		tag = "Untagged";
+		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
@@ -98,14 +117,13 @@ public class MovableBomb : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(tag == "Movable" && other.gameObject.tag == "Player" || tag == "ThrownMovable" && other.gameObject.tag == "Player")
+		if(tag == "Movable" && other.gameObject.tag == "Player" || tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
 			if(playerThatThrew == null)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 				playerHolding = other.gameObject;
 
@@ -121,7 +139,6 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 				playerHolding = other.gameObject;
 
@@ -137,7 +154,6 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				//other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
 				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
 				playerHolding = other.gameObject;
 
@@ -148,6 +164,20 @@ public class MovableBomb : MovableScript
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
 		}
+
+		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer)
+		{
+			Debug.Log ("Bomb Hit");
+			hold = true;
+			playerHolding = other.gameObject;
+
+			playerHit = other.gameObject;
+
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+		}
+
 	}
 
 	public override void OnHold ()
@@ -171,11 +201,11 @@ public class MovableBomb : MovableScript
 
 	public IEnumerator Explode ()
 	{
-		trackingPlayer = true;
-		
 		if (!hold)
 		{
+			trackingPlayer = true;
 			tag = "ThrownMovable";
+
 			yield return StartCoroutine (GetToPlayerPosition ());
 		}
 
@@ -187,12 +217,12 @@ public class MovableBomb : MovableScript
 
 		ExplosionFX ();
 
-		//playerHolding.GetComponent<PlayersGameplay> ().DeathParticles ();
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
 		gameObject.SetActive (false);
 
 		playerHolding = null;
 		trackingPlayer = false;
+		hold = false;
 	}
 
 	void ExplosionFX ()
@@ -235,15 +265,16 @@ public class MovableBomb : MovableScript
 				direction.Normalize ();
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
-
+				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
 				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
 
-				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
-
-				yield return null;
+				yield return new WaitForFixedUpdate();
 			}
 			else
+			{
+				trackingPlayer = false;
 				break;
+			}
 		}
 	}
 }

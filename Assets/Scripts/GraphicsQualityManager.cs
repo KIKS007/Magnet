@@ -42,8 +42,8 @@ public class GraphicsQualityManager : MonoBehaviour
 	public void HighQuality ()
 	{
 		Debug.Log ("high");
-		slowmoScript.initialFixedDelta = 0.005f;
-		Time.fixedDeltaTime = 0.005f;
+		//slowmoScript.initialFixedDelta = 0.005f;
+		//Time.fixedDeltaTime = 0.005f;
 		QualitySettings.SetQualityLevel (5, true);
 		PlayerPrefs.SetInt ("QualityLevel", 2);
 	}
@@ -51,8 +51,8 @@ public class GraphicsQualityManager : MonoBehaviour
 	public void MediumQuality ()
 	{
 		Debug.Log ("medium");
-		slowmoScript.initialFixedDelta = 0.0075f;
-		Time.fixedDeltaTime = 0.0075f;
+		//slowmoScript.initialFixedDelta = 0.0075f;
+		//Time.fixedDeltaTime = 0.0075f;
 		QualitySettings.SetQualityLevel (4, true);
 		PlayerPrefs.SetInt ("QualityLevel", 1);
 	}
@@ -60,8 +60,8 @@ public class GraphicsQualityManager : MonoBehaviour
 	public void LowQuality ()
 	{
 		Debug.Log ("low");
-		slowmoScript.initialFixedDelta = 0.01f;
-		Time.fixedDeltaTime = 0.01f;
+		//slowmoScript.initialFixedDelta = 0.01f;
+		//Time.fixedDeltaTime = 0.01f;
 		QualitySettings.SetQualityLevel (3, true);
 		PlayerPrefs.SetInt ("QualityLevel", 0);
 	}

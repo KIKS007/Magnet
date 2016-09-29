@@ -20,9 +20,14 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
-	//public bool GamePaused = true;
-	//public bool GameOver = true;
 	public bool FirstGameLaunch = true;
+
+	[Header ("Scenes")]
+	public string firstSceneToLoad = "Crush";
+	public WhichMode WhichModeLoaded;
+	public string CurrentModeLoaded = "";
+
+	public bool Stun = false;
 
 	[Header ("Controller Numbers")]
 	public int ControllerNumberPlayer1 = -1;
@@ -66,14 +71,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject MovableExplosion;
 	public GameObject PlayerSpawnParticles;
 	public Transform ParticulesClonesParent;
-
-
-	[Header ("Others")]
-	public string firstSceneToLoad = "Crush";
-	public WhichMode WhichModeLoaded;
-	public string CurrentModeLoaded = "";
-
-	public bool Stun = false;
 
 	void Start ()
 	{
