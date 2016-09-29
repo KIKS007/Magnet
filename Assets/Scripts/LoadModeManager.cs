@@ -22,17 +22,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public static GameObject player3;
 	public static GameObject player4;
 
-	public static GameObject mirrorForward;
-	public static GameObject mirrorBackward;
-	public static GameObject mirrorRight;
-	public static GameObject mirrorLeft;
-
-	public static GameObject probeForward;
-	public static GameObject probeBackward;
-	public static GameObject probeRight;
-	public static GameObject probeLeft;
-
-	private GameObject reflection;
 	private Transform mainCamera;
 
 	// Use this for initialization
@@ -48,6 +37,20 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator FirstLoadedScene (string sceneToLoad)
 	{
+		for (int i = 0; i < SceneManager.sceneCount; i++)
+		{
+			if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
+			{
+				string name = SceneManager.GetSceneAt (i).name;
+				yield return SceneManager.UnloadScene (name);
+			}
+		}
+
+		if(SceneManager.GetSceneByName(sceneToLoad).isLoaded)
+		{
+			yield return SceneManager.UnloadScene (sceneToLoad);
+		}
+
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
@@ -72,8 +75,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad)
 		{
-			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
-
 			StatsManager.Instance.ResetStats (true);
 
 			StartCoroutine (LoadScene (sceneToLoad));
@@ -81,8 +82,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		
 		else if(GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 		{
-			mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
-
 			StatsManager.Instance.ResetStats (true);
 
 			GlobalVariables.Instance.GameState = GameStateEnum.Over;
@@ -122,8 +121,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	public void RestartSceneVoid ()
 	{
-		mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
-
 		StartCoroutine (RestartScene ());
 	}
 
@@ -167,8 +164,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	public void ReloadSceneVoid ()
 	{
-		mainCamera.GetComponent<ProbesPlacement> ().followCamera = false;
-
 		StartCoroutine (ReloadScene ());
 	}
 
@@ -244,28 +239,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 				player4 = players [i];
 		}
 
-		reflection = GameObject.FindGameObjectWithTag ("Reflection");
+		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.Find("Environment").transform.GetComponentInChildren<MirrorReflection>();
 
 		UpdateGlobalVariables ();
-
-		if(reflection != null)
-		{
-			mirrorForward = reflection.transform.GetChild (0).GetChild (0).gameObject;
-			mirrorBackward = reflection.transform.GetChild (0).GetChild (1).gameObject;
-			mirrorRight = reflection.transform.GetChild (0).GetChild (2).gameObject;
-			mirrorLeft = reflection.transform.GetChild (0).GetChild (3).gameObject;
-
-			probeForward = reflection.transform.GetChild (1).GetChild (0).gameObject;
-			probeBackward = reflection.transform.GetChild (1).GetChild (1).gameObject;
-			probeRight = reflection.transform.GetChild (1).GetChild (2).gameObject;
-			probeLeft = reflection.transform.GetChild (1).GetChild (3).gameObject;
-
-			mainCamera.GetComponent<ProbesPlacement> ().GetReflectionGameObjects ();
-			mainCamera.GetComponent<ProbesPlacement> ().followCamera = true;
-		}
-		else
-			Debug.Log("No Reflection");
-
 	}
 
 	void UpdateGlobalVariables ()

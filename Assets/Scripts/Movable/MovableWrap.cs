@@ -82,7 +82,7 @@ public class MovableWrap : MovableScript
 				&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
 				&& gameObject.tag == "ThrownMovable")
 			{
-				other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 				hasWrapped = false;
 
 				playerHit = other.gameObject;

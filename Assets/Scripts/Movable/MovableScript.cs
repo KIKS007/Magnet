@@ -219,7 +219,7 @@ public class MovableScript : MonoBehaviour
 			&& gameObject.tag == "ThrownMovable" 
 			&& playerThatThrew == null)
 		{
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
 			playerHit = other.gameObject;
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
@@ -232,7 +232,7 @@ public class MovableScript : MonoBehaviour
 			&& gameObject.tag == "ThrownMovable" 
 			&& other.gameObject.name != playerThatThrew.name)
 		{
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid();
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
 			playerHit = other.gameObject;
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();

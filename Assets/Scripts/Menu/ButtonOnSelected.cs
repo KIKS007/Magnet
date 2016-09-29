@@ -7,7 +7,7 @@ using DG.Tweening;
 
 public class ButtonOnSelected : MonoBehaviour
 {
-	public Image otherButton;
+	private Image otherButton;
 
 	private static float scaleOnSelected = 1.1f;
 
@@ -17,10 +17,15 @@ public class ButtonOnSelected : MonoBehaviour
 
 	public bool scaleChangement = true;
 
+	void Start ()
+	{
+		otherButton = GetComponent<Image> ();
+	}
+
 	public void OnSelect () 
 	{
 		selected = true;
-		otherButton.color = new Color (3, 0, 255, 255) / 255;
+		//otherButton.color = new Color (3, 0, 255, 255) / 255;
 
 		if(scaleChangement)
 			otherButton.gameObject.GetComponent<RectTransform>().DOScale(scaleOnSelected, scaleOnDuration);
@@ -29,7 +34,7 @@ public class ButtonOnSelected : MonoBehaviour
 	public void OnDeselect () 
 	{
 		selected = false;
-		otherButton.color = new Color (255, 255, 255, 255) / 255;
+		//otherButton.color = new Color (255, 255, 255, 255) / 255;
 
 		if(scaleChangement)
 			otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, scaleOnDuration);
@@ -43,7 +48,7 @@ public class ButtonOnSelected : MonoBehaviour
 		}
 		
 		selected = true;
-		otherButton.color = new Color (3, 0, 255, 255) / 255;
+		//otherButton.color = new Color (3, 0, 255, 255) / 255;
 		
 		if(scaleChangement)
 			otherButton.gameObject.GetComponent<RectTransform>().DOScale(scaleOnSelected, scaleOnDuration);

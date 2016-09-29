@@ -32,6 +32,12 @@ public class SlowMotionCamera : MonoBehaviour
 	public float vignettingBlur;
 	public float vignettingChromaticAberration;
 
+	[Header ("Mirror Effect")]
+	public bool mirrorEffectEnabled = false;
+	public float mirrorTweenDuration = 0.5f;
+	public float initialOffset = 0.5f;
+	public float modifiedOffset;
+
 	[Header ("Pause SlowMo")]
 	public float timeTweenPause;
 	public float timeTweenEffectPause;
@@ -50,6 +56,8 @@ public class SlowMotionCamera : MonoBehaviour
 	public int slowMoNumber = 0;
 
 	private float bloomInitialIntensity;
+
+	public MirrorReflection mirrorScript;
 
 	void Awake ()
 	{
@@ -125,6 +133,9 @@ public class SlowMotionCamera : MonoBehaviour
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, vignettingChromaticAberration, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, vignettingIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 
+		if(mirrorEffectEnabled && mirrorScript != null)
+			DOTween.To(()=> mirrorScript.m_ClipPlaneOffset, x=> mirrorScript.m_ClipPlaneOffset =x, modifiedOffset, mirrorTweenDuration).SetEase(easetype).SetId("StartSlowMotion");
+
 		StartCoroutine(SlowMotionDuration (slowMoNumber));
 	}
 
@@ -147,6 +158,9 @@ public class SlowMotionCamera : MonoBehaviour
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, 0f, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, 0f, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
 		DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, 0f, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");	
+
+		if(mirrorEffectEnabled && mirrorScript != null)
+			DOTween.To(()=> mirrorScript.m_ClipPlaneOffset, x=> mirrorScript.m_ClipPlaneOffset =x, initialOffset, mirrorTweenDuration).SetEase(easetype).SetId("StartSlowMotion");
 	}
 
 	public void StartPauseSlowMotion ()

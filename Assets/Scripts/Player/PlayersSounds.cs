@@ -15,7 +15,9 @@ public class PlayersSounds : MonoBehaviour
 	[SoundGroupAttribute]
 	public string shootSound;
 	[SoundGroupAttribute]
-	public string hitSound;
+	public string cubeHitSound;
+	[SoundGroupAttribute]
+	public string dashHitSound;
 	[SoundGroupAttribute]
 	public string stunONSound;
 	[SoundGroupAttribute]
@@ -56,7 +58,8 @@ public class PlayersSounds : MonoBehaviour
 		playerScript.OnShoot += Shoot;
 		playerScript.OnDash += Dash;
 		playerScript.OnDeath += Death;
-		playerScript.OnStun += Hit;
+		playerScript.OnCubeHit += CubeHit;
+		playerScript.OnDashHit += DashHit;
 
 		GlobalVariables.Instance.OnGameOver += FadeSounds;
 		GlobalVariables.Instance.OnPause += FadeSounds;
@@ -102,9 +105,14 @@ public class PlayersSounds : MonoBehaviour
 		MasterAudio.PlaySound3DFollowTransformAndForget (shootSound, transform);
 	}
 
-	void Hit ()
+	void CubeHit ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (hitSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (cubeHitSound, transform);
+	}
+
+	void DashHit ()
+	{
+		MasterAudio.PlaySound3DFollowTransformAndForget (dashHitSound, transform);
 	}
 
 	public void StunON ()

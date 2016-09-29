@@ -48,6 +48,8 @@ public class PlayersGameplay : MonoBehaviour
 	public event EventHandler OnHold;
 	public event EventHandler OnShoot;
 	public event EventHandler OnStun;
+	public event EventHandler OnCubeHit;
+	public event EventHandler OnDashHit;
 	public event EventHandler OnDash;
 	public event EventHandler OnDashAvailable;
 	public event EventHandler OnDeath;
@@ -192,8 +194,6 @@ public class PlayersGameplay : MonoBehaviour
 
 			if (dashState != DashState.Dashing && playersHit.Count > 0)
 				playersHit.Clear ();
-
-			StatsButton ();
 
 			OnAttractedOnRepulsed ();
 		}
@@ -452,13 +452,7 @@ public class PlayersGameplay : MonoBehaviour
 				OnRepulsed ();
 		}
 	}
-
-	protected void StatsButton ()
-	{
-		
-	}
-
-
+				
 	private List<GameObject> playersHit = new List<GameObject> ();
 
 	protected virtual void OnCollisionStay (Collision other)
@@ -475,7 +469,7 @@ public class PlayersGameplay : MonoBehaviour
 			if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 			{
 				playersHit.Add (other.gameObject);
-				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
+				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid (false);
 
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 			}
@@ -496,7 +490,7 @@ public class PlayersGameplay : MonoBehaviour
 			if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 			{
 				playersHit.Add (other.gameObject);
-				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid ();
+				other.gameObject.GetComponent<PlayersGameplay> ().StunVoid (false);
 
 				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 			}
@@ -540,12 +534,12 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-	public virtual void StunVoid ()
+	public virtual void StunVoid (bool cubeHit)
 	{
-		StartCoroutine(Stun ());
+		StartCoroutine(Stun (cubeHit));
 	}
 
-	protected virtual IEnumerator Stun ()
+	protected virtual IEnumerator Stun (bool cubeHit)
 	{
 		if(playerState == PlayerState.Holding)
 		{
@@ -555,6 +549,12 @@ public class PlayersGameplay : MonoBehaviour
 		
 		if (OnStun != null)
 			OnStun ();
+
+		if (cubeHit && OnCubeHit != null)
+			OnCubeHit ();
+
+		if (!cubeHit && OnDashHit != null)
+			OnDashHit ();
 
 		playerState = PlayerState.Stunned;
 
@@ -579,10 +579,10 @@ public class PlayersGameplay : MonoBehaviour
 		movementTemp = movementTemp.normalized;
 
 		float dashSpeedTemp = dashSpeed;
+		Tween tween = null;
 
-		DOTween.To (() => dashSpeedTemp, x => dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetId("Dash").OnUpdate(
-			()=> playerRigidbody.velocity = movementTemp * dashSpeedTemp);
-		
+		tween = DOTween.To (() => dashSpeedTemp, x => dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetId("Dash").OnUpdate(()=>
+			DashVelocityTimeScale(tween, movementTemp, dashSpeedTemp));
 
 		yield return new WaitForSeconds (dashDuration - 0.05f);
 
@@ -591,6 +591,12 @@ public class PlayersGameplay : MonoBehaviour
 		yield return new WaitForSeconds (dashCooldown);
 
 		dashState = DashState.CanDash;
+	}
+
+	void DashVelocityTimeScale (Tween tween, Vector3 movementTemp, float dashSpeedTemp)
+	{
+		tween.timeScale = Time.timeScale;
+		playerRigidbody.velocity = movementTemp * dashSpeedTemp;
 	}
 		
 	protected IEnumerator OnPlayerStateChange ()
@@ -637,9 +643,7 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if (OnDeath != null)
-				OnDeath ();
-
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 			if(playerState == PlayerState.Holding)
 			{
@@ -681,6 +685,9 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration (controllerNumber);
+
+		if (playerState == PlayerState.Dead && OnDeath != null)
+			OnDeath ();
 
 		StopCoroutine (OnPlayerStateChange ());
 		StopCoroutine (OnDashAvailableEvent ());

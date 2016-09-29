@@ -24,7 +24,7 @@ public class BombManager : MonoBehaviour
 	public Text[] timerTexts = new Text[0];
 	public float timer;
 	public string timerClock;
-	public float timeBeforeEndGame = 2;
+	public float timeBeforeEndGame = 1;
 
 	private bool firstSpawn = true;
 

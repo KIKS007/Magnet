@@ -243,7 +243,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		logoMenu.gameObject.SetActive(true);
 		logoMenu.transform.parent.GetChild(1).gameObject.SetActive(true);
 
-		GameObject.FindGameObjectWithTag("MainCamera").transform.position = new Vector3 (-140, pausePosition.y, pausePosition.z);
+		GameObject.FindGameObjectWithTag("MainCamera").transform.position = new Vector3 (-150, pausePosition.y, pausePosition.z);
 
 		controllerManager = choosePlayerContent.GetComponent<ControllerChangeManager1> ();
 

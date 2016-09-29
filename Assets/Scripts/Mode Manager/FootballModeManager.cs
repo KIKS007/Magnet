@@ -23,7 +23,7 @@ public class FootballModeManager : MonoBehaviour
 	public Text goalScoreRightSide;
 	public Text goalScoreLeftSide;
 
-	public float timeBeforeEndGame = 2;
+	public float timeBeforeEndGame = 1;
 
 	public LayerMask sphereLayer;
 

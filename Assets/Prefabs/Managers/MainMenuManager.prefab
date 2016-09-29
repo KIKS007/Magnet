@@ -25,6 +25,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -116,9 +117,9 @@ MonoBehaviour:
   - 0.5
   timeBeforePause: 0
   timeBeforeUnpause: 0
-  pausePosition: {x: -48, y: 93, z: 15}
+  pausePosition: {x: -48, y: 104, z: 18}
   playPosition: {x: 0, y: 60, z: 0}
-  gameOverPosition: {x: 48, y: 93, z: 15}
+  gameOverPosition: {x: 48, y: 104, z: 18}
   cameraMovementDuration: 1.2
   cameraEaseMovement: 6
   gameOverCanvas: {fileID: 0}
@@ -136,9 +137,6 @@ MonoBehaviour:
   backButtonsContent: {fileID: 0}
   backButtonsInitialPos: {x: 0, y: 0}
   easeTypeMainMenu: 10
-  returnSound: ChoixMenu_Retour
-  openMenuSound: OpenMenu
-  closeMenuSound: CloseMenu
   start: {fileID: 0}
   sounds: {fileID: 0}
   no: {fileID: 0}
@@ -163,7 +161,6 @@ MonoBehaviour:
   trainingMenuCanvas: {fileID: 0}
   footballMenuCanvas: {fileID: 0}
   hitMenuCanvas: {fileID: 0}
-  chooseTeamCanvas: {fileID: 0}
   choosePlayerCanvas: {fileID: 0}
   instructionsMenuContent: {fileID: 0}
   optionsMenuContent: {fileID: 0}
@@ -173,7 +170,6 @@ MonoBehaviour:
   creditsMenuContent: {fileID: 0}
   quitMenuContent: {fileID: 0}
   chooseModeContent: {fileID: 0}
-  chooseTeamContent: {fileID: 0}
   choosePlayerContent: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:

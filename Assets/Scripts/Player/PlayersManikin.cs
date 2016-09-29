@@ -58,7 +58,7 @@ public class PlayersManikin : PlayersGameplay
 		}
 	}
 
-	protected override IEnumerator Stun ()
+	protected override IEnumerator Stun (bool cubeHit)
 	{
 		playerState = PlayerState.Stunned;
 
@@ -79,6 +79,8 @@ public class PlayersManikin : PlayersGameplay
 			playerState = PlayerState.Dead;
 
 			OnDeathVoid ();
+
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 			gameObject.SetActive (false);
 		}

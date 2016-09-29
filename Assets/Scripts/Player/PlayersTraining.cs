@@ -10,11 +10,12 @@ public class PlayersTraining : PlayersGameplay
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			OnDeathVoid ();
 
+			OnDeathVoid ();
 
 			if(playerState == PlayerState.Holding)
 			{
+				playerState = PlayerState.Dead;
 				Transform holdMovableTemp = null;
 
 				for(int i = 0; i < transform.childCount; i++)
@@ -31,6 +32,9 @@ public class PlayersTraining : PlayersGameplay
 					}
 				}
 			}
+
+			playerState = PlayerState.Dead;
+
 
 			for(int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
 			{

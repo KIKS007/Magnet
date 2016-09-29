@@ -29,6 +29,8 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public string closeMenuSound;
 	[SoundGroupAttribute]
 	public string gamepadDisconnectionSound;
+	[SoundGroupAttribute]
+	public string winSound;
 
 	[Header ("Sounds")]
 	public PlaylistController playlistCont;
@@ -80,6 +82,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 		GlobalVariables.Instance.OnModeStarted += SetGamePlaylist;
 		GlobalVariables.Instance.OnMainMenu += SetMenuPlaylist;
+		GlobalVariables.Instance.OnGameOver += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();

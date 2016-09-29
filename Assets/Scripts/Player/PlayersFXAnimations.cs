@@ -21,6 +21,9 @@ public class PlayersFXAnimations : MonoBehaviour
 	public MeshRenderer[] playerMaterials = new MeshRenderer[0];
 	public float[] stunFXDurations = new float[6];
 
+	[Header ("Dash FX")]
+	public ParticleSystem dashFX;
+
 	[Header ("Dash Available FX")]
 	public ParticleSystem dashAvailableFX;
 
@@ -45,6 +48,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnDashAvailable += DashAvailableFX;
 		playerScript.OnDash += StopDashAvailable;
 		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
+		playerScript.OnDash += EnableDashFX;
 
 		switch(gameObject.name)
 		{
@@ -87,6 +91,8 @@ public class PlayersFXAnimations : MonoBehaviour
 			dashAvailableFX.startRotation = transform.rotation.eulerAngles.y;
 		}
 
+		if (dashFX != null && playerScript.dashState != DashState.Dashing)
+			DisableDashFX ();		
 	}
 
 	void TrailLength ()
@@ -123,6 +129,18 @@ public class PlayersFXAnimations : MonoBehaviour
 			trail.time = 0f;
 			trail.startWidth = 0f;
 		}
+	}
+
+	void EnableDashFX ()
+	{
+		if(dashFX != null)
+			dashFX.Play ();
+	}
+
+	void DisableDashFX ()
+	{
+		if(dashFX != null)
+			dashFX.Stop ();
 	}
 
 	void ShootFX ()

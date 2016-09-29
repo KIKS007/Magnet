@@ -86,8 +86,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnModeStartedEvent ());
 
 		OnPlaying += HideMouseCursor;
-		OnPause += DisplayMouseCursor;
-		OnGameOver += DisplayMouseCursor;
 	}
 		
 	void Update ()
@@ -95,7 +93,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if(Stun)
 		{
 			Stun = false;
-			Player2.GetComponent<PlayersGameplay> ().StunVoid ();
+			Player2.GetComponent<PlayersGameplay> ().StunVoid (false);
+		}
+
+		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+
+		if (GameState != GameStateEnum.Playing && mouseMovement.magnitude > 1 && Cursor.visible == false)
+		{
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
 		}
 	}
 
@@ -149,16 +155,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		if(ControllerNumberPlayer1 != 0 && ControllerNumberPlayer2 != 0 && ControllerNumberPlayer3 != 0 && ControllerNumberPlayer4 != 0)
 		{
-			//Cursor.lockState = CursorLockMode.Locked;
+			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
 		}
-	}
-
-	void DisplayMouseCursor ()
-	{
-		//Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-
 	}
 
 	public void SetWhichModeEnum ()
