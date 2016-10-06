@@ -5,110 +5,131 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class ButtonOnSelected : MonoBehaviour
+public class ButtonOnSelected : EventTrigger
 {
-	private Image otherButton;
+	[Header ("On Selected Feedback")]
+	public bool selected;
+	public bool scaleChangement = true;
 
+	private Text text;
+
+	private static Color colorIdle;
+	private static Color colorSelected;
+	private static Color colorClick;
+
+	private RectTransform otherButton;
+	
 	private static float scaleOnSelected = 1.1f;
-
 	private static float scaleOnDuration = 0.5f;
 
-	public bool selected;
+	private EventSystem eventSys;
 
-	public bool scaleChangement = true;
+	private Button button;
+
+	private bool mainButton;
 
 	void Start ()
 	{
-		otherButton = GetComponent<Image> ();
+		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
+		otherButton = GetComponent<RectTransform> ();
+		text = transform.GetChild (0).GetComponent<Text> ();
+		button = GetComponent<Button> ();
+
+		if (tag == "MainButton")
+		{
+			mainButton = true;
+			text.color = GlobalVariables.Instance.mainButtonIdleColorText;
+		}
+		else
+		{
+			mainButton = false;
+			text.color = GlobalVariables.Instance.secondaryButtonIdleColorText;
+		}
+	}
+
+	void Update ()
+	{
+		if(otherButton.GetComponent<Button>().interactable == true)
+		{
+			if(eventSys.currentSelectedGameObject == gameObject)
+				text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonHighlightedColorText;
+			
+			else
+				text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
+		}
 	}
 
 	public void OnSelect () 
 	{
 		selected = true;
-		//otherButton.color = new Color (3, 0, 255, 255) / 255;
 
 		if(scaleChangement)
-			otherButton.gameObject.GetComponent<RectTransform>().DOScale(scaleOnSelected, scaleOnDuration);
+			otherButton.DOScale(scaleOnSelected, scaleOnDuration);
 	}
 
 	public void OnDeselect () 
 	{
 		selected = false;
-		//otherButton.color = new Color (255, 255, 255, 255) / 255;
 
 		if(scaleChangement)
-			otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, scaleOnDuration);
+			otherButton.DOScale(1, scaleOnDuration);
 	}
 	
 	public void OnPointerEnter () 
 	{
-		foreach(ButtonOnSelected buttonSelect in FindObjectsOfType<ButtonOnSelected>())
-		{
-			buttonSelect.OnDeselect ();
-		}
+		eventSys.SetSelectedGameObject (null);
+		eventSys.SetSelectedGameObject (gameObject);
 		
 		selected = true;
-		//otherButton.color = new Color (3, 0, 255, 255) / 255;
 		
 		if(scaleChangement)
-			otherButton.gameObject.GetComponent<RectTransform>().DOScale(scaleOnSelected, scaleOnDuration);
+			otherButton.DOScale(scaleOnSelected, scaleOnDuration);
 	}
 
-	/*
-	public void OnSelect (BaseEventData eventData) 
+	void IdleColor ()
 	{
-		selected = true;
-		otherButton.color = new Color (3, 0, 255, 255) / 255;
-
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1.05f, 0.2f);
+		text.color = colorIdle;
 	}
 
-	public void OnDeselect (BaseEventData eventData) 
+	void SelectedColor ()
 	{
-		selected = false;
-		otherButton.color = new Color (255, 255, 255, 255) / 255;
-
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, 0.2f);
+		text.color = colorSelected;
 	}
 
-	public void OnSubmit (BaseEventData eventData)
+	void ClickColor ()
 	{
-
-		selected = false;
-		otherButton.color = new Color (255, 255, 255, 255) / 255;
-		
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, 0.2f);
+		text.color = colorClick;
 	}
 
-
-
-	public void OnPointerEnter (PointerEventData eventData) 
+	public override void OnPointerEnter( PointerEventData data )
 	{
-		foreach(ButtonOnSelected buttonSelect in FindObjectsOfType<ButtonOnSelected>())
-		{
-			buttonSelect.Deselect ();
-		}
-
-		selected = true;
-		otherButton.color = new Color (3, 0, 255, 255) / 255;
-		
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1.05f, 0.2f);
+		OnPointerEnter ();
+		GameSoundsManager.Instance.MenuNavigation ();
 	}
 
-	public void OnPointerClick (PointerEventData eventData)
+	public override void OnPointerExit( PointerEventData data )
 	{
-		selected = false;
-		otherButton.color = new Color (255, 255, 255, 255) / 255;
-		
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, 0.2f);
+		OnDeselect ();
 	}
 
-	public void OnPointerExit (PointerEventData eventData) 
+	public override void OnPointerClick( PointerEventData data )
 	{
-		selected = false;
-		otherButton.color = new Color (255, 255, 255, 255) / 255;
-		
-		otherButton.gameObject.GetComponent<RectTransform>().DOScale(1, 0.2f);
+		OnSelect ();
 	}
-	*/
+
+	public override void OnSelect( BaseEventData data )
+	{
+		OnSelect ();
+		GameSoundsManager.Instance.MenuNavigation ();
+	}
+
+	public override void OnDeselect( BaseEventData data )
+	{
+		OnDeselect ();
+	}
+
+	public override void OnSubmit( BaseEventData data )
+	{
+		OnDeselect ();
+	}
 }

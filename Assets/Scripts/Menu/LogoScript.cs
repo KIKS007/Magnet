@@ -5,58 +5,52 @@ using DG.Tweening;
 
 public class LogoScript : MonoBehaviour 
 {
+	[Header ("Cube Effect")]
+	public Image logoCube;
+	public bool enableCubeEffect = true;
+	public Color cubeInitialColor;
+	public Color cubeModifiedColor;
 	public float durationCube;
 	public float durationCube2;
 
+	[Header ("Font Effect")]
+	public Image logoPolice;
+	public bool enableFontEffect = true;
+	public Color fontInitialColor;
+	public Color fontModifiedColor;
 	public float durationPolice;
 	public float durationPolice2;
 
-	public Image logoCube;
-	public Image logoPolice;
 
 	// Use this for initialization
 	void Start () 
 	{
-		RoseToBlue ();
-		LightToDark ();
+		CubeNewColor ();
+		FontNewColor ();
+	}
+
+	void CubeNewColor ()
+	{
+		if(enableCubeEffect)
+			logoCube.DOColor(cubeModifiedColor, durationCube).OnComplete(CubeInitialColor);
 	}
 	
-	// Update is called once per frame
-	void Update () 
+	void CubeInitialColor ()
 	{
-		
-	}
-
-	/*void RoseToBlue ()
-	{
-		logoCube.DOColor(new Color (255, 197, 233, 255) / 255, durationCube).OnComplete(BlueToRose);
-	}
-
-	void BlueToRose ()
-	{
-		logoCube.DOColor(new Color (239, 99, 255, 255) / 255, durationCube2).OnComplete(RoseToBlue);
-	}*/
-
-
-
-	void RoseToBlue ()
-	{
-		logoCube.DOColor(new Color (255, 159, 223, 255) / 255, durationCube).OnComplete(BlueToRose);
-	}
-	
-	void BlueToRose ()
-	{
-		logoCube.DOColor(new Color (255, 197, 233, 255) / 255, durationCube2).OnComplete(RoseToBlue);
+		if(enableCubeEffect)
+			logoCube.DOColor(cubeInitialColor, durationCube2).OnComplete(CubeNewColor);
 	}
 
 
-	void LightToDark ()
+	void FontNewColor ()
 	{
-		logoPolice.DOColor(new Color (140, 140, 140, 255) / 255, durationPolice).OnComplete(DarkToLight);
+		if(enableFontEffect)
+			logoPolice.DOColor(fontModifiedColor, durationPolice).OnComplete(FontInitialColor);
 	}
 
-	void DarkToLight ()
+	void FontInitialColor ()
 	{
-		logoPolice.DOColor(new Color (255, 255, 255, 255) / 255, durationPolice2).OnComplete(LightToDark);
+		if(enableFontEffect)
+			logoPolice.DOColor(fontInitialColor, durationPolice2).OnComplete(FontNewColor);
 	}
 }

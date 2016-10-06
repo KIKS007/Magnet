@@ -41,6 +41,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tweening: 0
+  easeTypeMainMenu: 6
+  eventSyst: {fileID: 0}
+  durationSubmit: 0.15
+  durationCancel: 0.15
+  durationContent: 0.15
+  delaySubmit:
+  - 0
+  - 0.05
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  delayCancel:
+  - 0
+  - 0.05
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
+  pausePosition: {x: -48, y: 104, z: 18}
+  playPosition: {x: 0, y: 60, z: 0}
+  gameOverPosition: {x: 48, y: 104, z: 18}
+  cameraMovementDuration: 0.8
+  cameraEaseMovement: 6
   offScreenX: -1600
   onScreenX: -650
   screenCenterY: -200
@@ -56,12 +80,12 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  eventSyst: {fileID: 0}
   smallLogo: {fileID: 0}
   logoMenu: {fileID: 0}
   shrinkDuration: 0.5
   cameraNewXPosition: -43
   textToResume: {fileID: 0}
+  textToResumeDuration: 0.15
   topMenuButtons:
   - {fileID: 0}
   - {fileID: 0}
@@ -75,10 +99,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   modesDescription:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  modesTeam:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -98,30 +118,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  durationSubmit: 0.25
-  durationCancel: 0.25
-  durationContent: 0.25
-  delaySubmit:
-  - 0
-  - 0.1
-  - 0.2
-  - 0.3
-  - 0.4
-  - 0.5
-  delayCancel:
-  - 0
-  - 0.1
-  - 0.2
-  - 0.3
-  - 0.4
-  - 0.5
-  timeBeforePause: 0
-  timeBeforeUnpause: 0
-  pausePosition: {x: -48, y: 104, z: 18}
-  playPosition: {x: 0, y: 60, z: 0}
-  gameOverPosition: {x: 48, y: 104, z: 18}
-  cameraMovementDuration: 1.2
-  cameraEaseMovement: 6
   gameOverCanvas: {fileID: 0}
   restart: {fileID: 0}
   gameOverButton: {fileID: 0}
@@ -136,7 +132,6 @@ MonoBehaviour:
   backButtonsCanvas: {fileID: 0}
   backButtonsContent: {fileID: 0}
   backButtonsInitialPos: {x: 0, y: 0}
-  easeTypeMainMenu: 10
   start: {fileID: 0}
   sounds: {fileID: 0}
   no: {fileID: 0}

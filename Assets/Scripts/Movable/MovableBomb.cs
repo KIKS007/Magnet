@@ -109,8 +109,8 @@ public class MovableBomb : MovableScript
 				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 			}
 		}
 	}
@@ -187,6 +187,11 @@ public class MovableBomb : MovableScript
 		playerHolding = player.gameObject;
 	}
 
+	public override void OnRelease ()
+	{
+		
+	}
+
 	public void ResetColor ()
 	{
 		if(cubeMaterial == null)
@@ -195,8 +200,8 @@ public class MovableBomb : MovableScript
 		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 	}
 
 	public IEnumerator Explode ()

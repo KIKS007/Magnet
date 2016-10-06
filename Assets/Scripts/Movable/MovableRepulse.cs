@@ -80,18 +80,18 @@ public class MovableRepulse : MovableScript
 	void SetColor ()
 	{
 		if(movableZone == RepulseTriggerZones.Zone1 && movableMaterial.color != zonesColors[0])
-			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[0], timeTween);
+			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[0], toColorDuration);
 
 		if(movableZone == RepulseTriggerZones.Zone2 && movableMaterial.color != zonesColors[1])
-			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[1], timeTween);
+			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[1], toColorDuration);
 
 		if(movableZone == RepulseTriggerZones.Zone3 && movableMaterial.color != zonesColors[2])
-			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[2], timeTween);
+			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[2], toColorDuration);
 
 		if(movableZone == RepulseTriggerZones.Zone4 && movableMaterial.color != zonesColors[3])
-			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[3], timeTween);
+			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, zonesColors[3], toColorDuration);
 
 		if(movableZone == RepulseTriggerZones.None && movableMaterial.color != Color.white)
-			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, Color.white, timeTween);
+			DOTween.To(()=> movableMaterial.color, x=> movableMaterial.color =x, Color.white, toColorDuration);
 	}
 }

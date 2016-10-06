@@ -15,7 +15,6 @@ GameObject:
   - 92: {fileID: 9224262}
   - 124: {fileID: 12492916}
   - 81: {fileID: 8150878}
-  - 114: {fileID: 11463970}
   - 114: {fileID: 11467490}
   - 114: {fileID: 11412352}
   - 114: {fileID: 11457044}
@@ -305,6 +304,10 @@ MonoBehaviour:
   vignettingIntensity: 0.36
   vignettingBlur: 0.1
   vignettingChromaticAberration: 12
+  mirrorEffectEnabled: 0
+  mirrorTweenDuration: 0.5
+  initialOffset: 0.5
+  modifiedOffset: 0
   timeTweenPause: 0.05
   timeTweenEffectPause: 0.1
   slowMotion: 0
@@ -313,6 +316,7 @@ MonoBehaviour:
   initialFixedDelta: 0
   initialMaximumDelta: 0
   slowMoNumber: 0
+  mirrorScript: {fileID: 0}
 --- !u!114 &11457044
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -324,26 +328,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe422fcf3d1e8943aed8dfb3cfafe7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &11463970
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d3aeaf27b72d004484d15eb0a516bce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  forwardWall: {fileID: 0}
-  backwardWall: {fileID: 0}
-  rightWall: {fileID: 0}
-  leftWall: {fileID: 0}
-  forwardProbe: {fileID: 0}
-  backwardProbe: {fileID: 0}
-  rightProbe: {fileID: 0}
-  leftProbe: {fileID: 0}
-  followCamera: 1
 --- !u!114 &11466250
 MonoBehaviour:
   m_ObjectHideFlags: 1

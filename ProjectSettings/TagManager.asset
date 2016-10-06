@@ -22,6 +22,8 @@ TagManager:
   - PlayerChosen
   - Roof
   - Particles_FX
+  - EventSystem
+  - MainButton
   layers:
   - Default
   - TransparentFX

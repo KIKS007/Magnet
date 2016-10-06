@@ -59,7 +59,7 @@ public class MagnetZoneScript : MonoBehaviour
 								fxAnimationsScript.StartCoroutine ("AttractionFX", other.gameObject);
 							}
 						
-							characterScript.Attraction (objectHit.collider.gameObject);
+							//characterScript.Attraction (objectHit.collider.gameObject);
 						}
 
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
@@ -73,7 +73,7 @@ public class MagnetZoneScript : MonoBehaviour
 								fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
 							}
 
-							characterScript.Repulsion (objectHit.collider.gameObject);	
+							//characterScript.Repulsion (objectHit.collider.gameObject);	
 						}
 					}
 				}

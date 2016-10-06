@@ -96,16 +96,17 @@ public class PlayersGameplay : MonoBehaviour
 	public float stunnedDuration = 1;
 
 	[Header ("Dash")]
-	public float dashSpeed = 70;
-	public float dashDuration = 0.3f;
-	public float dashCooldown = 1.2f;
-	public Ease dashEase = Ease.OutQuad;
+	public float dashSpeed = 100;
+	public float dashDuration = 0.12f;
+	public float dashCooldown = 1f;
+	public AnimationCurve dashEase;
 
 	public List<GameObject> cubesAttracted = new List<GameObject> ();
 	public List<GameObject> cubesRepulsed = new List<GameObject> ();
 
 	protected Transform movableParent;
-	protected Transform magnetPoint;
+	[HideInInspector]
+	public Transform magnetPoint;
 
 	protected float lerpHold = 0.05f;
 
@@ -146,7 +147,8 @@ public class PlayersGameplay : MonoBehaviour
 		originalSpeed = speed;
 
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
-		magnetPoint = transform.GetChild (1).transform;
+		magnetPoint = transform.GetChild (0).transform;
+		transform.GetChild (2).GetComponent<MagnetTriggerScript> ().magnetPoint = magnetPoint;
 
 		/*OnStun += () => Debug.Log ("Stunned : " + name);
 		OnShoot += () => Debug.Log ("Shoot : " + name);
@@ -259,6 +261,18 @@ public class PlayersGameplay : MonoBehaviour
 			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
 			playerRigidbody.AddForce (-Vector3.up * gravity, ForceMode.Acceleration);
+
+			if(cubesAttracted.Count > 0)
+			{
+				for (int i = 0; i < cubesAttracted.Count; i++)
+					Attraction (cubesAttracted [i]);
+			}
+
+			if(cubesRepulsed.Count > 0)
+			{
+				for (int i = 0; i < cubesRepulsed.Count; i++)
+					Repulsion (cubesRepulsed [i]);
+			}
 		}
 	}
 
@@ -337,7 +351,7 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
-		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
+		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Acceleration);
 
 		if (OnAttracting != null)
 			OnAttracting ();
@@ -348,6 +362,7 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
 
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+		holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease ();
 		holdMovableTransform.transform.SetParent(null);
 		holdMovableTransform.transform.SetParent(movableParent);
 		holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
@@ -373,7 +388,7 @@ public class PlayersGameplay : MonoBehaviour
 			playerState = PlayerState.Repulsing;
 
 			Vector3 movableRepulsion = movable.transform.position - transform.position;
-			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Acceleration);
 
 			if (OnRepulsing != null)
 				OnRepulsing ();
@@ -579,11 +594,22 @@ public class PlayersGameplay : MonoBehaviour
 		movementTemp = movementTemp.normalized;
 
 		float dashSpeedTemp = dashSpeed;
-		Tween tween = null;
+		float futureTime = Time.time + dashDuration;
+		float start = futureTime - Time.time;
 
-		tween = DOTween.To (() => dashSpeedTemp, x => dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetId("Dash").OnUpdate(()=>
-			DashVelocityTimeScale(tween, movementTemp, dashSpeedTemp));
+		StartCoroutine (DashEnd ());
 
+		while(Time.time <= futureTime)
+		{
+			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time)/start) * dashSpeed;
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1/Time.timeScale;
+
+			yield return new WaitForFixedUpdate ();
+		}
+	}
+
+	IEnumerator DashEnd ()
+	{
 		yield return new WaitForSeconds (dashDuration - 0.05f);
 
 		dashState = DashState.Cooldown;
@@ -591,12 +617,6 @@ public class PlayersGameplay : MonoBehaviour
 		yield return new WaitForSeconds (dashCooldown);
 
 		dashState = DashState.CanDash;
-	}
-
-	void DashVelocityTimeScale (Tween tween, Vector3 movementTemp, float dashSpeedTemp)
-	{
-		tween.timeScale = Time.timeScale;
-		playerRigidbody.velocity = movementTemp * dashSpeedTemp;
 	}
 		
 	protected IEnumerator OnPlayerStateChange ()

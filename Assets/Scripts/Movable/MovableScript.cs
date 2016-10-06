@@ -6,7 +6,10 @@ using DarkTonic.MasterAudio;
 
 public class MovableScript : MonoBehaviour 
 {
+	public enum CubeColor {Neutral, Blue, Pink, Green, Yellow} ;
+
 	[Header ("Informations")]
+	public CubeColor cubeColor;
 	public float higherVelocity;
 	public float currentVelocity;
 	public float limitVelocity = 80f;
@@ -30,7 +33,8 @@ public class MovableScript : MonoBehaviour
 
 	protected bool canPlaySound = true;
 
-	protected float timeTween = 0.5f;
+	protected float toColorDuration = 0.5f;
+	protected float toNeutralDuration = 1.5f;
 
 	protected Rigidbody rigidbodyMovable;
 
@@ -122,54 +126,45 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void SetCubeColor ()
 	{
-		/*if(hold == true && movableRenderer.material.color == Color.white)
-		{
-			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, transform.parent.GetComponent<Renderer>().material.color, timeTween);
-		}
-
-		if(hold == false && movableRenderer.material.color != Color.white && gameObject.tag == "Movable")
-		{
-			DOTween.To(()=> movableRenderer.material.color, x=> movableRenderer.material.color =x, Color.white, timeTween);
-		}*/
-
 		if(hold)
 		{
 			Color cubeCorrectColor = new Color ();
+			CubeColor cubeColorTest = CubeColor.Neutral;
 
 			switch(player.name)
 			{
 			case "Player 1":
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
+				cubeColorTest = CubeColor.Blue;
 				break;
 			case "Player 2":
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
+				cubeColorTest = CubeColor.Pink;
 				break;
 			case "Player 3":
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
+				cubeColorTest = CubeColor.Green;
 				break;
 			case "Player 4":
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
+				cubeColorTest = CubeColor.Yellow;
 				break;
 			}
 
-			if (cubeMaterial.GetColor("_Color") != cubeCorrectColor)
-			{
-				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
-			}
-				
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween");
+			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 		}
 
-		if(!hold && tag != "ThrownMovable" && cubeMaterial.GetColor("_Color") != GlobalVariables.Instance.cubeNeutralColor)
+		if(!hold && tag != "ThrownMovable")
 		{
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, timeTween).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, timeTween).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
+			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 		}
 
 		GetComponent<Renderer> ().material.color = cubeMaterial.GetColor ("_Color");
@@ -259,16 +254,21 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitWall (Collision other)
 	{
-		float numberOfParticlesFloat = (0.2f * rigidbodyMovable.velocity.magnitude);
+		/*float numberOfParticlesFloat = (0.2f * rigidbodyMovable.velocity.magnitude);
 		int numberOfParticles = (int) numberOfParticlesFloat;
 
 		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
-		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);*/
 
 		if(other.gameObject.tag == "Wall" && canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);
+
 			StartCoroutine(HitSound ());
+		}
 		
 	}
 
@@ -288,6 +288,19 @@ public class MovableScript : MonoBehaviour
 		yield return new WaitForSeconds (0.05f);
 
 		canPlaySound = true;
+	}
+
+	public virtual GameObject InstantiateImpactFX (ContactPoint contact)
+	{
+		GameObject prefab = GlobalVariables.Instance.wallImpactFX [(int)cubeColor];
+
+		Vector3 pos = contact.point;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+
+		return instantiatedParticles;
 	}
 
 	public virtual GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)
@@ -339,4 +352,10 @@ public class MovableScript : MonoBehaviour
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
+
+	public virtual void OnRelease ()
+	{
+		
+	}
+
 }

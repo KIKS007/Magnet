@@ -63,6 +63,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject[] explosionFX = new GameObject[4];
 	public GameObject[] attractFX = new GameObject[4];
 	public GameObject[] repulseFX = new GameObject[4];
+	public GameObject[] wallImpactFX = new GameObject[5];
 
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;
@@ -71,6 +72,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject MovableExplosion;
 	public GameObject PlayerSpawnParticles;
 	public Transform ParticulesClonesParent;
+
+	[Header ("Buttons Sprites")]
+	public Color mainButtonIdleColorText;
+	public Color mainButtonHighlightedColorText;
+	public Color secondaryButtonIdleColorText;
+	public Color secondaryButtonHighlightedColorText;
 
 	void Start ()
 	{

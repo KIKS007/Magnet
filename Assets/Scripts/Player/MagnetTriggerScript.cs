@@ -6,6 +6,7 @@ using Rewired;
 
 public class MagnetTriggerScript : MonoBehaviour 
 {	
+	[HideInInspector]
 	public Transform magnetPoint;
 
 	private Transform character;

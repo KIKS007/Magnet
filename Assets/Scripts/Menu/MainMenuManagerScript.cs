@@ -12,6 +12,28 @@ public class MainMenuManagerScript : MonoBehaviour
 {
 	public bool tweening;
 
+	[Header ("Ease")]
+	public Ease easeTypeMainMenu;
+
+	[Header ("Event System")]
+	public EventSystem eventSyst;
+
+	[Header ("Animations Duration")]
+	public float durationSubmit;
+	public float durationCancel;
+	public float durationContent;
+
+	[Header ("Animations Delay")]
+	public float[] delaySubmit;
+	public float[] delayCancel;
+
+	[Header ("Camera Movements")]
+	public Vector3 pausePosition = new Vector3 (-48, 93, 16);
+	public Vector3 playPosition = new Vector3 (0, 30, 0);
+	public Vector3 gameOverPosition = new Vector3 (48, 93, 16);
+	public float cameraMovementDuration = 1.2f;
+	public Ease cameraEaseMovement = Ease.InOutCubic;
+
 	[Header ("Positions")]
 	public float offScreenX = -1400;
 	public float onScreenX = -580;
@@ -20,22 +42,19 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float topYpositionButton = 404;
 	public float[] yPositions = new float[9];
 
-	[Header ("Event System")]
-	public EventSystem eventSyst;
-
 	[Header ("Logos")]
 	public RectTransform smallLogo;
 	public GameObject logoMenu;
 	public float shrinkDuration = 0.5f;
 	public float cameraNewXPosition = -48;
 	public RectTransform textToResume;
+	public float textToResumeDuration;
 
 	[Header ("Head Buttons")]
 	public RectTransform[] topMenuButtons;
 
 	[Header ("Choose Mode Menu")]
 	public GameObject[] modesDescription = new GameObject[4];
-	public GameObject[] modesTeam = new GameObject[3];
 	public RectTransform playButton;
 	public float playButtonMinY = -700;
 	public float playButtonMaxY = -457;
@@ -50,26 +69,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float maxYGamepad;
 	public float minYGamepad;
 	public RectTransform[] gamepadsDisconnected = new RectTransform[4];
-
-	[Header ("Animations Duration")]
-	public float durationSubmit;
-	public float durationCancel;
-	public float durationContent;
-
-	[Header ("Animations Delay")]
-	public float[] delaySubmit;
-	public float[] delayCancel;
-
-	[Header ("Pause SlowMotion")]
-	public float timeBeforePause;
-	public float timeBeforeUnpause;
-
-	[Header ("Camera Movements")]
-	public Vector3 pausePosition = new Vector3 (-48, 93, 16);
-	public Vector3 playPosition = new Vector3 (0, 30, 0);
-	public Vector3 gameOverPosition = new Vector3 (48, 93, 16);
-	public float cameraMovementDuration = 1.2f;
-	public Ease cameraEaseMovement = Ease.InOutCubic;
 
 	[Header ("Game Over Menu")]
 	public GameObject gameOverCanvas;
@@ -88,9 +87,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject backButtonsCanvas;
 	public RectTransform backButtonsContent;
 	public Vector2 backButtonsInitialPos;
-
-	[Header ("Ease")]
-	public Ease easeTypeMainMenu;
 
 	[Header ("Buttons To Select When Nothing Is")]
 	public GameObject start;
@@ -196,11 +192,11 @@ public class MainMenuManagerScript : MonoBehaviour
 		soundsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
 		graphicsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
 
-		repulseButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(0).GetComponent<RectTransform>();
-		bombButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
-		hitButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
-		crushButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(3).GetComponent<RectTransform>();
-		trainingButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(4).GetComponent<RectTransform>();
+		bombButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(0).GetComponent<RectTransform>();
+		crushButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
+		trainingButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
+		repulseButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(3).GetComponent<RectTransform>();
+		hitButtonRect = chooseModeCanvas.transform.GetChild(1).GetChild(4).GetComponent<RectTransform>();
 
 
 		instructionsMenuCanvas.SetActive(false);
@@ -282,10 +278,13 @@ public class MainMenuManagerScript : MonoBehaviour
 			{
 				if(playersListTemp[i].GetButton("Submit") || playersListTemp[i].GetButton("Start") || Input.GetMouseButtonDown(0))
 				{
-					startScreen = false;
-					
-					StartCoroutine(StartScreen ());
-					Tweening ();
+					if(startScreen == true)
+					{
+						startScreen = false;
+						
+						StartCoroutine(StartScreen ());
+						Tweening ();
+					}
 				}
 			}
 		}
@@ -408,11 +407,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			no.GetComponent<Button>().Select();
 		}
 
-		if(eventSyst.currentSelectedGameObject == null && chooseModeCanvas.activeSelf == true)
-		{
-			repulse.GetComponent<Button>().Select();
-		}
-
 		if(eventSyst.currentSelectedGameObject == null && gameOverCanvas.activeSelf == true)
 		{
 			restart.GetComponent<Button>().Select();
@@ -529,13 +523,13 @@ public class MainMenuManagerScript : MonoBehaviour
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !tweening && !oneGamepadDisconnected)
 		{
 			if(textToResume.anchoredPosition.y != -517 && !DOTween.IsTweening("TextToResume"))
-				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -517), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
+				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -517), textToResumeDuration).SetEase (easeTypeMainMenu).SetId("TextToResume");
 		}
 
 		else 
 		{
 			if(textToResume.anchoredPosition.y != -700 && !DOTween.IsTweening("TextToResume"))
-				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -700), durationContent).SetEase (easeTypeMainMenu).SetId("TextToResume");
+				textToResume.DOAnchorPos (new Vector2 (textToResume.anchoredPosition.x, -600), textToResumeDuration).SetEase (easeTypeMainMenu).SetId("TextToResume");
 		}
 	}
 
@@ -666,8 +660,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			Tweening ();
 
 			mainCamera.GetComponent<SlowMotionCamera> ().StartPauseSlowMotion ();
-			//Wait Slowmotion
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforePause));
 
 			MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
 
@@ -703,8 +695,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(cameraMovementDuration));
 
 			mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
-			//Wait Slowmotion
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeUnpause));
 
 			mainMenuCanvas.SetActive(false);
 
@@ -1000,7 +990,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		chooseModeContent.DOAnchorPos(new Vector2(0, 0), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
 
-		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
+		bombButtonRect.transform.GetComponent<Button>().Select();
 	}
 
 	public void ExitChooseMode ()
@@ -1363,7 +1353,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		crushButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
 
-		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
+		bombButtonRect.transform.GetComponent<Button>().Select();
 
 		PlayReturnSound ();
 	}
@@ -1495,7 +1485,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
 
-		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
+		bombButtonRect.transform.GetComponent<Button>().Select();
 
 		PlayReturnSound ();
 	}
@@ -1560,7 +1550,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		bombButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening); 
 
-		bombButtonRect.transform.GetChild(1).GetComponent<Button>().Select();
+		bombButtonRect.transform.GetComponent<Button>().Select();
 
 		PlayReturnSound ();
 	}

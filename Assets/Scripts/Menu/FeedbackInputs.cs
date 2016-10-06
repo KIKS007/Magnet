@@ -10,6 +10,8 @@ public class FeedbackInputs : MonoBehaviour
 
 	public WhichButton whichbutton;
 
+	public Sprite modifiedSprite;
+
 	public string whichAction;
 
 	public float movementMultiplicator;
@@ -30,10 +32,13 @@ public class FeedbackInputs : MonoBehaviour
 	private Vector2 initialPos;
 	//private Vector2 mouseInitialPos;
 
+	private Sprite initialSprite;
+
 	// Use this for initialization
 	void Start () 
 	{
 		ReInput.ControllerConnectedEvent += GetPlayersEvent;
+		initialSprite = GetComponent<Image> ().sprite;
 
 		GetPlayers ();
 
@@ -161,6 +166,8 @@ public class FeedbackInputs : MonoBehaviour
 
 	void Feedback ()
 	{
+		GetComponent<Image> ().sprite = modifiedSprite;
+
 		transform.DOScale (modifiedScale, 0.2f);
 
 		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
@@ -172,6 +179,8 @@ public class FeedbackInputs : MonoBehaviour
 
 	void ResetFeedback ()
 	{
+		GetComponent<Image> ().sprite = initialSprite;
+
 		transform.DOScale (originScale, 0.2f);
 
 		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)

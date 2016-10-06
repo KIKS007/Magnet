@@ -10,6 +10,9 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	public WhichButton whichButton;
 
+	public Sprite modifiedSprite;
+	private Sprite initialSprite;
+
 	public Player mouseKeyboard;
 	public Player gamepad1;
 	public Player gamepad2;
@@ -30,6 +33,9 @@ public class BackButtonsFeedback : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		if(GetComponent<Image>() != null)
+			initialSprite = GetComponent<Image> ().sprite;
+
 		GetPlayers ();
 
 		rect = GetComponent<RectTransform> ();
@@ -101,20 +107,30 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	void Esc ()
 	{
+		GetComponent<Image> ().sprite = modifiedSprite;
+
 		rect.DOScale (modifiedScale, tweenDuration).SetEase (theEase).OnComplete ( ()=> rect.DOScale (initialScale, 0.2f));
 
-		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => GetComponent<Image> ().DOColor(initialColor, tweenDuration));
+		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => ResetFeedback());
 	}
 
 	void B ()
 	{
+		GetComponent<Image> ().sprite = modifiedSprite;
+
 		rect.DOScale (modifiedScale, tweenDuration).SetEase (theEase).OnComplete ( ()=> rect.DOScale (initialScale, 0.2f));
 
-		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => GetComponent<Image> ().DOColor(initialColor, tweenDuration));
+		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => ResetFeedback ());
 	}
 
 	public void BackText ()
 	{
 		rect.DOAnchorPos(new Vector2(initialPos.x + 25, initialPos.y), tweenDuration).SetEase(Ease.OutQuad).OnComplete( ()=> rect.DOAnchorPos(initialPos, tweenDuration * 0.5f));
+	}
+
+	void ResetFeedback ()
+	{
+		GetComponent<Image> ().DOColor (initialColor, tweenDuration);
+		GetComponent<Image> ().sprite = initialSprite;
 	}
 }

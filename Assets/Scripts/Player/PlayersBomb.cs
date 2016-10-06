@@ -7,7 +7,7 @@ public class PlayersBomb : PlayersGameplay
 	{
 		if(playerState != PlayerState.Holding && playerState != PlayerState.Dead)
 		{
-			transform.GetChild (3).GetComponent<MagnetTriggerScript> ().GetMovable (other);
+			transform.GetChild (2).GetComponent<MagnetTriggerScript> ().GetMovable (other);
 		}
 	}
 }

@@ -8,8 +8,6 @@ public class ResolutionManager : Singleton<ResolutionManager>
 {
 	public Vector2 currentScreenRes = new Vector2();
 
-	public GameObject[] toggleScreenText = new GameObject[2];
-
     // Fixed aspect ratio parameters
     static public bool FixedAspectRatio = true;
     static public float TargetAspectRatio = 16f / 9f;
@@ -58,18 +56,6 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
 			Screen.SetResolution(DisplayResolution.width, DisplayResolution.height, true);
 		}	
-
-
-		if(Screen.fullScreen)
-		{
-			toggleScreenText [0].SetActive (false);
-			toggleScreenText [1].SetActive (true);
-		}
-		else
-		{
-			toggleScreenText [0].SetActive (true);
-			toggleScreenText [1].SetActive (false);
-		}
 	}
 
 	void InitResolutions()
@@ -155,16 +141,10 @@ public class ResolutionManager : Singleton<ResolutionManager>
 		if(Screen.fullScreen)
 		{
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
-
-			toggleScreenText [0].SetActive (false);
-			toggleScreenText [1].SetActive (true);
 		}
 		else
 		{
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
-
-			toggleScreenText [0].SetActive (true);
-			toggleScreenText [1].SetActive (false);
 		}
     }
 
@@ -173,17 +153,6 @@ public class ResolutionManager : Singleton<ResolutionManager>
 		bool fullScreenTemp = Screen.fullScreen;
 
 		yield return new WaitUntil (() => fullScreenTemp != Screen.fullScreen);
-
-		if(Screen.fullScreen)
-		{
-			toggleScreenText [0].SetActive (false);
-			toggleScreenText [1].SetActive (true);
-		}
-		else
-		{
-			toggleScreenText [0].SetActive (true);
-			toggleScreenText [1].SetActive (false);
-		}
 
 		StartCoroutine (WaitForFullscreenChange ());
 	}

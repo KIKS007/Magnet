@@ -40,8 +40,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	[Header ("Sounds Options")]
 	public Scrollbar soundsBar;
 	public Scrollbar playlistBar;
-	public GameObject[] toggleMuteSounds = new GameObject[2];
-	public GameObject[] toggleMuteMusic = new GameObject[2];
 	public bool soundsMute = false;
 	public bool musicMute = false;
 	[SoundGroupAttribute]
@@ -68,12 +66,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 		else if(SceneManager.GetActiveScene().name != "Scene Testing")
 		{
-			toggleMuteSounds [0].SetActive (true);
-			toggleMuteSounds [1].SetActive (false);
-
-			toggleMuteMusic [0].SetActive (true);
-			toggleMuteMusic [1].SetActive (false);
-
 			toggleEnableSloMoEffect.isOn = false;
 		}
 
@@ -123,13 +115,7 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public void SetSoundsVolume ()
 	{
 		if(!loading)
-		{
-			if(toggleMuteSounds[0].activeSelf == false && !muting)
-			{
-				toggleMuteSounds [0].SetActive (true);
-				toggleMuteSounds [1].SetActive (false);
-			}
-			
+		{			
 			float volume = soundsBar.value * initialSoundsVolume;
 			
 			MasterAudio.MasterVolumeLevel = volume;
@@ -155,12 +141,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	{
 		if(!loading)
 		{
-			if(toggleMuteMusic[0].activeSelf == false && !muting)
-			{
-				toggleMuteMusic [0].SetActive (true);
-				toggleMuteMusic [1].SetActive (false);
-			}
-			
 			float volume = playlistBar.value * initialPlaylistVolume;
 			
 			MasterAudio.PlaylistMasterVolume = volume;		
@@ -169,42 +149,34 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	public void ToggleMuteSounds ()
 	{
-		if(toggleMuteSounds [0].activeSelf == true)
+		if(soundsMute == false)
 		{
 			muting = true;
 			soundsMute = true;
 			previousVolumeSounds = soundsBar.value;
-			toggleMuteSounds [0].SetActive (false);
-			toggleMuteSounds [1].SetActive (true);
 			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, 0, 0.2f).OnComplete(()=> muting = false);
 		}
 		else
 		{
 			muting = true;
 			soundsMute = false;
-			toggleMuteSounds [0].SetActive (true);
-			toggleMuteSounds [1].SetActive (false);
 			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, previousVolumeSounds, 0.2f).OnComplete(()=> muting = false);
 		}
 	}
 
 	public void ToggleMuteMusic ()
 	{
-		if(toggleMuteMusic [0].activeSelf == true)
+		if(musicMute == false)
 		{
 			muting = true;
 			musicMute = true;
 			previousVolumePlaylist = playlistBar.value;
-			toggleMuteMusic [0].SetActive (false);
-			toggleMuteMusic [1].SetActive (true);
 			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, 0, 0.2f).OnComplete(()=> muting = false);
 		}
 		else
 		{
 			muting = true;
 			musicMute = false;
-			toggleMuteMusic [0].SetActive (true);
-			toggleMuteMusic [1].SetActive (false);
 			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, previousVolumePlaylist, 0.2f).OnComplete(()=> muting = false);
 		}
 	}
@@ -313,16 +285,12 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		{
 			soundsMute = true;
 			previousVolumeSounds = PlayerPrefs.GetFloat("PreviousVolumeSounds");
-			toggleMuteSounds [0].SetActive (false);
-			toggleMuteSounds [1].SetActive (true);
 			soundsBar.value = 0;
 			MasterAudio.MasterVolumeLevel = 0;
 		}
 		else
 		{
 			soundsMute = false;
-			toggleMuteSounds [0].SetActive (true);
-			toggleMuteSounds [1].SetActive (false);
 			soundsBar.value = PlayerPrefs.GetFloat("SoundsVolume");
 			MasterAudio.MasterVolumeLevel = PlayerPrefs.GetFloat("SoundsVolume");
 		}
@@ -331,15 +299,11 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		{
 			musicMute = true;
 			previousVolumePlaylist = PlayerPrefs.GetFloat("PreviousVolumePlaylist");
-			toggleMuteMusic [0].SetActive (false);
-			toggleMuteMusic [1].SetActive (true);
 			playlistBar.value = 0;
 			MasterAudio.PlaylistMasterVolume = 0;
 		}
 		else
 		{
-			toggleMuteMusic [0].SetActive (true);
-			toggleMuteMusic [1].SetActive (false);
 			playlistBar.value = PlayerPrefs.GetFloat("MusicVolume");
 			MasterAudio.PlaylistMasterVolume = PlayerPrefs.GetFloat("MusicVolume");
 		}
