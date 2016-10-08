@@ -13,18 +13,12 @@ public class ButtonOnSelected : EventTrigger
 
 	private Text text;
 
-	private static Color colorIdle;
-	private static Color colorSelected;
-	private static Color colorClick;
-
 	private RectTransform otherButton;
 	
 	private static float scaleOnSelected = 1.1f;
 	private static float scaleOnDuration = 0.5f;
 
 	private EventSystem eventSys;
-
-	private Button button;
 
 	private bool mainButton;
 
@@ -33,7 +27,6 @@ public class ButtonOnSelected : EventTrigger
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		otherButton = GetComponent<RectTransform> ();
 		text = transform.GetChild (0).GetComponent<Text> ();
-		button = GetComponent<Button> ();
 
 		if (tag == "MainButton")
 		{
@@ -84,21 +77,6 @@ public class ButtonOnSelected : EventTrigger
 		
 		if(scaleChangement)
 			otherButton.DOScale(scaleOnSelected, scaleOnDuration);
-	}
-
-	void IdleColor ()
-	{
-		text.color = colorIdle;
-	}
-
-	void SelectedColor ()
-	{
-		text.color = colorSelected;
-	}
-
-	void ClickColor ()
-	{
-		text.color = colorClick;
 	}
 
 	public override void OnPointerEnter( PointerEventData data )

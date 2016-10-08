@@ -50,7 +50,6 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 	private bool canPlaySoundTest = true;
 
-	private bool muting = false;
 	private float previousVolumeSounds;
 	private float previousVolumePlaylist;
 
@@ -151,16 +150,14 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	{
 		if(soundsMute == false)
 		{
-			muting = true;
 			soundsMute = true;
 			previousVolumeSounds = soundsBar.value;
-			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, 0, 0.2f).OnComplete(()=> muting = false);
+			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, 0, 0.2f);
 		}
 		else
 		{
-			muting = true;
 			soundsMute = false;
-			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, previousVolumeSounds, 0.2f).OnComplete(()=> muting = false);
+			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, previousVolumeSounds, 0.2f);
 		}
 	}
 
@@ -168,16 +165,14 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	{
 		if(musicMute == false)
 		{
-			muting = true;
 			musicMute = true;
 			previousVolumePlaylist = playlistBar.value;
-			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, 0, 0.2f).OnComplete(()=> muting = false);
+			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, 0, 0.2f);
 		}
 		else
 		{
-			muting = true;
 			musicMute = false;
-			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, previousVolumePlaylist, 0.2f).OnComplete(()=> muting = false);
+			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, previousVolumePlaylist, 0.2f);
 		}
 	}
 

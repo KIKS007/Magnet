@@ -1611,6 +1611,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	public void LoadMainMenu ()
 	{
+		float timeTemp = Time.time;
+
 		Tweening ();
 
 		if(instructionsRect.anchoredPosition.x == onScreenX)
@@ -1694,7 +1696,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			smallLogo.DOAnchorPos(new Vector2(0, 0), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 		if(backButtonsContent.anchoredPosition.x != offScreenX)
-			backButtonsContent.DOAnchorPos (new Vector2(offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId("BackButtons");
+			backButtonsContent.DOAnchorPos (new Vector2 (offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId ("BackButtons").OnComplete (()=> TestDebug(timeTemp));
 
 		instructionsMenuCanvas.SetActive(false);
 		chooseOptionsMenuCanvas.SetActive(false);
@@ -1708,6 +1710,12 @@ public class MainMenuManagerScript : MonoBehaviour
 	}
 		
 
+	void TestDebug (float timeTemp)
+	{
+		Debug.Log ("Time tween : " + (Time.time - timeTemp).ToString());
+		Debug.Log (durationSubmit.ToString());			
+		Debug.Log (durationCancel.ToString());			
+	}
 
 
 	public void GameOverMenuVoid ()
