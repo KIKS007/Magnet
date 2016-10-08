@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameStateEnum {Playing, Paused, Over};
 
-public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushOut};
+public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushOut, Training};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {

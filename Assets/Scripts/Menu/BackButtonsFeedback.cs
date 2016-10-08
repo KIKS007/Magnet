@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using DG.Tweening;
 using Rewired;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class BackButtonsFeedback : MonoBehaviour 
 {

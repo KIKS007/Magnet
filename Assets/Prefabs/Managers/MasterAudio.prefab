@@ -1218,7 +1218,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131454}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -43, y: 104, z: 18}
+  m_LocalPosition: {x: 0, y: 20, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -4295,7 +4295,7 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 3f5bbc04f9bcbdd48880c11e60337795, type: 3}
       songName: Sometimes I eat planets
       resourceFileName: 
-      volume: 0.5
+      volume: 0.35
       pitch: 1
       isExpanded: 1
       isLoop: 0
@@ -4343,7 +4343,7 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 7ef3b398e76343640b568c00238457fe, type: 3}
       songName: L'Equarrisseur
       resourceFileName: 
-      volume: 0.5
+      volume: 0.35
       pitch: 1
       isExpanded: 1
       isLoop: 0
@@ -4359,7 +4359,7 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 0c0a5b8af92bee843b7a9a1e9bfea7ac, type: 3}
       songName: Crispy Chicken
       resourceFileName: 
-      volume: 0.5
+      volume: 0.3
       pitch: 1
       isExpanded: 1
       isLoop: 0
@@ -4375,7 +4375,7 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 7e790378a50b7f34dbb9e58ebe47b720, type: 3}
       songName: Death Dance
       resourceFileName: 
-      volume: 0.7
+      volume: 0.4
       pitch: 1
       isExpanded: 1
       isLoop: 0

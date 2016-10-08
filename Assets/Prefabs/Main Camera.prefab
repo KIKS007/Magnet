@@ -184,25 +184,19 @@ MonoBehaviour:
     cameraYMin: 20
     distanceMin: 0
     distanceRatio: 0.5
-  - whichMode: 1
-    cameraZoomLerp: 0.1
-    cameraMovementLerp: 0.1
-    cameraYMin: 15
-    distanceMin: 0
-    distanceRatio: 1
   - whichMode: 2
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
     cameraYMin: 20
     distanceMin: 0
     distanceRatio: 0.5
-  - whichMode: 3
+  - whichMode: 4
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
-    cameraYMin: 15
+    cameraYMin: 20
     distanceMin: 0
-    distanceRatio: 1
-  - whichMode: 4
+    distanceRatio: 0.5
+  - whichMode: 8
     cameraZoomLerp: 0.1
     cameraMovementLerp: 0.1
     cameraYMin: 20
@@ -211,7 +205,7 @@ MonoBehaviour:
   otherTargetsList: []
   cameraZoomLerp: 0.1
   cameraMovementLerp: 0.1
-  cameraOffset: {x: 0, y: 0, z: -0}
+  cameraOffset: {x: 0, y: 0, z: 0}
   cameraYMin: 30
   distanceMin: 15
   distanceRatio: 0.5
@@ -247,7 +241,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 144148}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fceaeb339b971b429c4cc600acabd13, type: 3}
   m_Name: 
@@ -272,11 +266,13 @@ MonoBehaviour:
   flareColorB: {r: 0.4, g: 0.8, b: 0.8, a: 0.75}
   flareColorC: {r: 0.8, g: 0.4, b: 0.8, a: 0.75}
   flareColorD: {r: 0.8, g: 0.4, b: 0, a: 0.75}
-  lensFlareVignetteMask: {fileID: 0}
-  lensFlareShader: {fileID: 0}
-  screenBlendShader: {fileID: 0}
-  blurAndFlaresShader: {fileID: 0}
-  brightPassFilterShader: {fileID: 0}
+  lensFlareVignetteMask: {fileID: 2800000, guid: 95ef4804fe0be4c999ddaa383536cde8,
+    type: 3}
+  lensFlareShader: {fileID: 4800000, guid: 459fe69d2f6d74ddb92f04dbf45a866b, type: 3}
+  screenBlendShader: {fileID: 4800000, guid: 7856cbff0a0ca45c787d5431eb805bb0, type: 3}
+  blurAndFlaresShader: {fileID: 4800000, guid: be6e39cf196f146d5be72fbefb18ed75, type: 3}
+  brightPassFilterShader: {fileID: 4800000, guid: 0aeaa4cb29f5d4e9c8455f04c8575c8c,
+    type: 3}
 --- !u!114 &11424106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -462,20 +458,20 @@ MonoBehaviour:
       reflectionBlur: 1
       reflectBackfaces: 1
     intensitySettings:
-      reflectionMultiplier: 1.495
+      reflectionMultiplier: 1
       fadeDistance: 100
       fresnelFade: 1
       fresnelFadePower: 1
     screenEdgeMask:
       intensity: 0.03
-  m_Shader: {fileID: 4800000, guid: 7e2fcc83af19e744787647ec0ac5d42c, type: 3}
+  m_Shader: {fileID: 0}
 --- !u!114 &114000011349101262
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c80dd1799114df044b53d28c1a762b4b, type: 3}
   m_Name: 
