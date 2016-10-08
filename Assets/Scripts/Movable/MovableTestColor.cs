@@ -8,7 +8,6 @@ public class MovableTestColor : MonoBehaviour
 	public float timeBeforeColor;
 	public float timeBeforeNeutral;
 	private Material cubeMaterial;
-	private MeshFilter cubeMeshFilter;
 
 	// Use this for initialization
 	void Start () 
@@ -17,17 +16,12 @@ public class MovableTestColor : MonoBehaviour
 		GameObject.FindGameObjectWithTag ("MainCamera").transform.rotation = Quaternion.Euler(Vector3.zero);
 
 		cubeMaterial = transform.GetChild (0).GetComponent<Renderer> ().material;
-		cubeMeshFilter = transform.GetChild (1).GetComponent<MeshFilter> ();
 	}
 
 	void OnEnable ()
 	{
 		cubeMaterial = transform.GetChild (0).GetComponent<Renderer> ().material;
-		cubeMeshFilter = transform.GetChild (1).GetComponent<MeshFilter> ();cubeMaterial.SetFloat ("_Lerp", 0);
-
 		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-
-		//cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 
 		StopCoroutine (ColorTest ());
 		StartCoroutine (ColorTest ());

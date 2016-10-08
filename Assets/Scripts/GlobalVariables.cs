@@ -85,10 +85,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void Start ()
 	{
-		googleAnalytics.StartSession ();
-		googleAnalytics.DispatchHits ();
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+		{
+			googleAnalytics.StartSession ();
+			googleAnalytics.DispatchHits ();
+			googleAnalytics.LogEvent ("Test", "Setup", "Google", 1);			
+		}
 
-		googleAnalytics.LogEvent ("Test", "Setup", "Google", 1);
 
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
@@ -172,7 +175,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (ControllerNumberPlayer1 == 0)
 		{
-			Debug.Log ("Bite 1");
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			Cursor.SetCursor (mouseCursor[0], Vector2.zero, CursorMode.Auto);
@@ -180,7 +182,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (ControllerNumberPlayer2 == 0)
 		{
-			Debug.Log ("Bite 2");
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			Cursor.SetCursor (mouseCursor[1], Vector2.zero, CursorMode.Auto);
@@ -188,7 +189,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (ControllerNumberPlayer3 == 0)
 		{
-			Debug.Log ("Bite 3");
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			Cursor.SetCursor (mouseCursor[2], Vector2.zero, CursorMode.Auto);
@@ -196,7 +196,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (ControllerNumberPlayer4 == 0)
 		{
-			Debug.Log ("Bite 4");
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			Cursor.SetCursor (mouseCursor[3], Vector2.zero, CursorMode.Auto);

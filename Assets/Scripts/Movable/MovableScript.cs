@@ -156,6 +156,8 @@ public class MovableScript : MonoBehaviour
 
 			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween");
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+
+			StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
 		}
 
 		if(!hold && tag != "ThrownMovable")
@@ -165,9 +167,18 @@ public class MovableScript : MonoBehaviour
 
 			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+
+			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, toNeutralDuration));
 		}
 
 		GetComponent<Renderer> ().material.color = cubeMaterial.GetColor ("_Color");
+	}
+
+	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
+	{
+		yield return new WaitForSeconds (waitTime * 0.5f);
+
+		cubeColor = whichColor;
 	}
 
 	protected virtual void FixedUpdate () 

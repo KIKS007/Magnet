@@ -1713,8 +1713,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	void TestDebug (float timeTemp)
 	{
 		Debug.Log ("Time tween : " + (Time.time - timeTemp).ToString());
-		Debug.Log (durationSubmit.ToString());			
-		Debug.Log (durationCancel.ToString());			
 	}
 
 

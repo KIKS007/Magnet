@@ -20,7 +20,7 @@ public class MovableBomb : MovableScript
 	public LayerMask explosionMask;
 
 	public float getToPlayerForce = 2;
-	public float distanceFactor = 2;
+	//public float distanceFactor = 2;
 
 	private bool trackingPlayer = false;
 

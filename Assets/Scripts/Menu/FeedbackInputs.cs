@@ -9,8 +9,11 @@ public class FeedbackInputs : MonoBehaviour
 	public enum WhichButton {GamepadButton, KeyboardOrMouseButton, LeftJoystick, RightJoystick, Mouse};
 
 	public WhichButton whichbutton;
+	public Transform descriptionText;
 
 	public Sprite modifiedSprite;
+	public Sprite alternateSprite;
+	public Sprite modifiedAlternateSprite;
 
 	public string whichAction;
 
@@ -21,6 +24,7 @@ public class FeedbackInputs : MonoBehaviour
 
 	public float originScale;
 	public float modifiedScale;
+	public float modifiedScaleText;
 
 	public Color modifiedColor;
 
@@ -59,28 +63,92 @@ public class FeedbackInputs : MonoBehaviour
 		{
 			if(Input.GetKey(keycode) || Input.GetKeyDown(keycode))
 			{
-				Feedback ();
 				keyPressed = true;
+
+				GetComponent<Image> ().sprite = modifiedSprite;
+
+				transform.DOScale (modifiedScale, 0.2f);
+
+				if(descriptionText != null)
+				{
+					descriptionText.DOScale (modifiedScaleText, 0.2f);
+					descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
+
+				}
+
+				if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+					transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
+
+				if(transform.gameObject.GetComponent<Image> () != null)
+					transform.gameObject.GetComponent<Image> ().color = modifiedColor;
 			}
 			
 			if(Input.GetKeyUp(keycode))
 			{
-				ResetFeedback ();
 				keyPressed = false;
+
+				GetComponent<Image> ().sprite = initialSprite;
+
+				transform.DOScale (originScale, 0.2f);
+
+				if(descriptionText != null)
+				{
+					descriptionText.DOScale (originScale, 0.2f);
+					descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
+
+				}
+
+				if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+					transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
+
+				if(transform.gameObject.GetComponent<Image> () != null)
+					transform.gameObject.GetComponent<Image> ().color = Color.white;
 			}
 
 			if(keycodeAlternate != KeyCode.None)
 			{
 				if(Input.GetKey(keycodeAlternate) || Input.GetKeyDown(keycodeAlternate))
 				{
-					Feedback ();
 					keyPressed = true;
+
+					GetComponent<Image> ().sprite = modifiedAlternateSprite;
+
+					transform.DOScale (modifiedScale, 0.2f);
+
+					if(descriptionText != null)
+					{
+						descriptionText.DOScale (modifiedScaleText, 0.2f);
+						descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
+
+					}
+
+					if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+						transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
+
+					if(transform.gameObject.GetComponent<Image> () != null)
+						transform.gameObject.GetComponent<Image> ().color = modifiedColor;
 				}
 				
 				if(Input.GetKeyUp(keycodeAlternate))
 				{
-					ResetFeedback ();
 					keyPressed = false;
+
+					GetComponent<Image> ().sprite = alternateSprite;
+
+					transform.DOScale (originScale, 0.2f);
+
+					if(descriptionText != null)
+					{
+						descriptionText.DOScale (originScale, 0.2f);
+						descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
+
+					}
+
+					if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+						transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
+
+					if(transform.gameObject.GetComponent<Image> () != null)
+						transform.gameObject.GetComponent<Image> ().color = Color.white;
 				}				
 			}
 		}
@@ -186,6 +254,13 @@ public class FeedbackInputs : MonoBehaviour
 
 		transform.DOScale (modifiedScale, 0.2f);
 
+		if(descriptionText != null)
+		{
+			descriptionText.DOScale (modifiedScaleText, 0.2f);
+			descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
+			
+		}
+
 		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
 
@@ -198,6 +273,13 @@ public class FeedbackInputs : MonoBehaviour
 		GetComponent<Image> ().sprite = initialSprite;
 
 		transform.DOScale (originScale, 0.2f);
+	
+		if(descriptionText != null)
+		{
+			descriptionText.DOScale (originScale, 0.2f);
+			descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
+			
+		}
 
 		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;

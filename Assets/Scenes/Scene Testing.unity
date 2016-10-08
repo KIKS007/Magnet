@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.19410557, g: 0.020444116, b: 0.06423728, a: 1}
+  m_IndirectSpecularColor: {r: 0.2794002, g: 0.047721088, b: 0.1108545, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -924,7 +924,7 @@ MonoBehaviour:
   googleAnalytics: {fileID: 992894219}
   GameState: 2
   FirstGameLaunch: 1
-  firstSceneToLoad: Crush
+  firstSceneToLoad: Bomb
   WhichModeLoaded: 0
   CurrentModeLoaded: 
   Stun: 0
