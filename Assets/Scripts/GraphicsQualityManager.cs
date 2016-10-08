@@ -15,6 +15,10 @@ public class GraphicsQualityManager : MonoBehaviour
 
 		if(PlayerPrefs.HasKey("QualityLevel"))
 		{
+			qualityToggles [0].isOn = false;
+			qualityToggles [1].isOn = false;
+			qualityToggles [2].isOn = false;
+
 			switch(PlayerPrefs.GetInt("QualityLevel"))
 			{
 			case 2:

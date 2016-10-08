@@ -18,6 +18,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnResume;
 	public event EventHandler OnMainMenu;
 
+	public GoogleAnalyticsV3 googleAnalytics;
+
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
 	public bool FirstGameLaunch = true;
@@ -42,11 +44,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject Player4;
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 
-
 	[Header ("Players States")]
 	public int NumberOfPlayers;
 	public int NumberOfDisabledPlayers;
 
+	[Header ("Cubes Stripes")]
+	public ControllerChangeManager1 controllerManager;
+	public Texture2D[] mouseCursor = new Texture2D[4];
 
 	[Header ("Cubes Color")]
 	public Color cubeColorplayer1;
@@ -81,6 +85,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void Start ()
 	{
+		googleAnalytics.StartSession ();
+		googleAnalytics.DispatchHits ();
+
+		googleAnalytics.LogEvent ("Test", "Setup", "Google", 1);
+
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 		
@@ -156,6 +165,42 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		NumberOfPlayers = EnabledPlayersList.Count;
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
+	}
+
+	public void SetPlayerMouseCursor ()
+	{
+
+		if (ControllerNumberPlayer1 == 0)
+		{
+			Debug.Log ("Bite 1");
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			Cursor.SetCursor (mouseCursor[0], Vector2.zero, CursorMode.Auto);
+		}
+
+		if (ControllerNumberPlayer2 == 0)
+		{
+			Debug.Log ("Bite 2");
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			Cursor.SetCursor (mouseCursor[1], Vector2.zero, CursorMode.Auto);
+		}
+
+		if (ControllerNumberPlayer3 == 0)
+		{
+			Debug.Log ("Bite 3");
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			Cursor.SetCursor (mouseCursor[2], Vector2.zero, CursorMode.Auto);
+		}
+
+		if (ControllerNumberPlayer4 == 0)
+		{
+			Debug.Log ("Bite 4");
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			Cursor.SetCursor (mouseCursor[3], Vector2.zero, CursorMode.Auto);
+		}
 	}
 
 	void HideMouseCursor ()

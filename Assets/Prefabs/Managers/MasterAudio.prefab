@@ -4238,7 +4238,7 @@ MonoBehaviour:
   playlistControllerPrefab: {fileID: 400000, guid: 8d628ddcfa7a21e49a762de30fc7e9dd,
     type: 2}
   persistBetweenScenes: 1
-  areGroupsExpanded: 1
+  areGroupsExpanded: 0
   soundGroupTemplate: {fileID: 400008, guid: 877a3a4bf0a4abf43aba41125e1d3101, type: 2}
   soundGroupVariationTemplate: {fileID: 400000, guid: 08eea2d8c4572c7479da53cfbc14bde6,
     type: 2}
@@ -4277,7 +4277,7 @@ MonoBehaviour:
   showGizmos: 1
   showAdvancedSettings: 0
   showLocalization: 0
-  playListExpanded: 0
+  playListExpanded: 1
   playlistsExpanded: 1
   musicSpatialBlendType: 0
   musicSpatialBlend: 0
@@ -4286,7 +4286,7 @@ MonoBehaviour:
   newGroupSpatialType: 1
   newGroupSpatialBlend: 1
   musicPlaylists:
-  - isExpanded: 0
+  - isExpanded: 1
     playlistName: Game
     songTransitionType: 1
     MusicSettings:
@@ -4327,7 +4327,7 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 902ae475174bbef4f82babc67ab0245c, type: 3}
       songName: Meteor Spice
       resourceFileName: 
-      volume: 0.5
+      volume: 0.4
       pitch: 1
       isExpanded: 1
       isLoop: 0
@@ -4354,13 +4354,45 @@ MonoBehaviour:
       songStartedCustomEvent: 
       songChangedEventExpanded: 0
       songChangedCustomEvent: 
+    - alias: 
+      audLocation: 0
+      clip: {fileID: 8300000, guid: 0c0a5b8af92bee843b7a9a1e9bfea7ac, type: 3}
+      songName: Crispy Chicken
+      resourceFileName: 
+      volume: 0.5
+      pitch: 1
+      isExpanded: 1
+      isLoop: 0
+      customStartTime: 0
+      lastKnownTimePoint: 0
+      songIndex: 0
+      songStartedEventExpanded: 0
+      songStartedCustomEvent: 
+      songChangedEventExpanded: 0
+      songChangedCustomEvent: 
+    - alias: 
+      audLocation: 0
+      clip: {fileID: 8300000, guid: 7e790378a50b7f34dbb9e58ebe47b720, type: 3}
+      songName: Death Dance
+      resourceFileName: 
+      volume: 0.7
+      pitch: 1
+      isExpanded: 1
+      isLoop: 0
+      customStartTime: 0
+      lastKnownTimePoint: 0
+      songIndex: 0
+      songStartedEventExpanded: 0
+      songStartedCustomEvent: 
+      songChangedEventExpanded: 0
+      songChangedCustomEvent: 
     bulkLocationMode: 0
     crossfadeMode: 0
     crossFadeTime: 1
     fadeInFirstSong: 0
     fadeOutLastSong: 0
     resourceClipsAllLoadAsync: 1
-  - isExpanded: 1
+  - isExpanded: 0
     playlistName: Menu Ambient
     songTransitionType: 1
     MusicSettings:
@@ -4506,7 +4538,7 @@ MonoBehaviour:
   defaultDuckedVolumeCut: -6
   crossFadeTime: 2
   _masterPlaylistVolume: 0.9
-  showGroupSelect: 1
+  showGroupSelect: 0
   hideGroupsWithNoActiveVars: 0
   newEventName: my event
   showCustomEvents: 0
@@ -6440,7 +6472,7 @@ MonoBehaviour:
   spatialBlend: 1
   isSelected: 0
   isExpanded: 1
-  groupMasterVolume: 1
+  groupMasterVolume: 0.48076922
   retriggerPercentage: 50
   curVariationMode: 0
   alwaysHighestPriority: 0

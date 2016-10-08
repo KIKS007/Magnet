@@ -24,6 +24,7 @@ TagManager:
   - Particles_FX
   - EventSystem
   - MainButton
+  - ControllerChangeManager
   layers:
   - Default
   - TransparentFX

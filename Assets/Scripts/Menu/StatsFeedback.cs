@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class StatsFeedback : MonoBehaviour 
 {
-	public enum WhichStatType {Player, Most, Total, Winner, Wins, WinsInARow, EachPlayerWin, GameDuration};
+	public enum WhichStatType {Player, Most, Total, Winner, MostWins, WinsInARow, EachPlayerWin, GameDuration};
 
 	public WhichStatType whichStatType;
 	public WhichStat whichStat;
@@ -146,7 +146,7 @@ public class StatsFeedback : MonoBehaviour
 		case WhichStatType.Winner:
 			return true;
 
-		case WhichStatType.Wins:
+		case WhichStatType.MostWins:
 			if (stats.mostStatsList [6].statNumber >= minimumNumber)
 				return true;
 			else
@@ -194,7 +194,7 @@ public class StatsFeedback : MonoBehaviour
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
-		case WhichStatType.Wins:
+		case WhichStatType.MostWins:
 			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
@@ -242,8 +242,8 @@ public class StatsFeedback : MonoBehaviour
 			case WhichStatType.Winner:
 				WinnerStat ();
 				break;
-			case WhichStatType.Wins:
-				Wins ();
+			case WhichStatType.MostWins:
+				MostWins ();
 				break;
 			case WhichStatType.WinsInARow:
 				WinsInARow ();
@@ -312,11 +312,67 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			number = stats.playerStatsList [(int)whichPlayer].shots;
 			break;
+		case WhichStat.Wins:
+			
+			switch (whichPlayer)
+			{
+			case WhichPlayer.Player1:
+				if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+				{
+					textComponent.enabled = true;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
+				}
+				else
+				{
+					textComponent.enabled = false;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
+				}
+				break;
+			case WhichPlayer.Player2:
+				if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+				{
+					textComponent.enabled = true;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
+				}
+				else
+				{
+					textComponent.enabled = false;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
+				}
+				break;
+			case WhichPlayer.Player3:
+				if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+				{
+					textComponent.enabled = true;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
+				}
+				else
+				{
+					textComponent.enabled = false;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
+				}
+				break;
+			case WhichPlayer.Player4:
+				if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+				{
+					textComponent.enabled = true;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
+				}
+				else
+				{
+					textComponent.enabled = false;
+					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
+				}
+				break;
+			}
+			textComponent.text = color + stats.playerStatsList [(int)whichPlayer].wins.ToString () + "</color>";
+			number = stats.playerStatsList [(int)whichPlayer].wins;
+			break;
 		}
 
 		if(number != 0)
 			textComponent.enabled = true;
-		else
+		else if(whichStat != WhichStat.Wins)
 			textComponent.enabled = false;
 	}
 
@@ -439,7 +495,7 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.enabled = false;
 	}
 
-	void Wins ()
+	void MostWins ()
 	{
 		string color = "";
 		string number = stats.mostStatsList [6].statNumber.ToString ();

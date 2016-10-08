@@ -11,8 +11,8 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: IronEqual
-  productName: 'Repulse : Galactic Rivals'
-  defaultCursor: {fileID: 2800000, guid: 99da75d6f3bdd2d428f97b61e65f2ec1, type: 3}
+  productName: 'REPULSE : Galactic Rivals'
+  defaultCursor: {fileID: 2800000, guid: 9c9d84a94ec224b4a9e9610fd6c7dfd3, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenStyle: 0
   m_ShowUnitySplashScreen: 1

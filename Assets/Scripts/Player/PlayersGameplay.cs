@@ -56,6 +56,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	public event EventHandler OnPlayerstateChange;
 
+	protected GoogleAnalyticsV3 googleAnalytics;
+
 	[Header ("States")]
 	public Team team;
 	public PlayerState playerState = PlayerState.None;
@@ -133,7 +135,7 @@ public class PlayersGameplay : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-		DOTween.Init ();
+		googleAnalytics = GlobalVariables.Instance.googleAnalytics;
 
 		GetControllerNumber ();
 
@@ -351,7 +353,7 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
-		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Acceleration);
+		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
 
 		if (OnAttracting != null)
 			OnAttracting ();
@@ -388,7 +390,7 @@ public class PlayersGameplay : MonoBehaviour
 			playerState = PlayerState.Repulsing;
 
 			Vector3 movableRepulsion = movable.transform.position - transform.position;
-			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Acceleration);
+			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
 
 			if (OnRepulsing != null)
 				OnRepulsing ();
@@ -610,7 +612,7 @@ public class PlayersGameplay : MonoBehaviour
 
 	IEnumerator DashEnd ()
 	{
-		yield return new WaitForSeconds (dashDuration - 0.05f);
+		yield return new WaitForSeconds (dashDuration);
 
 		dashState = DashState.Cooldown;
 

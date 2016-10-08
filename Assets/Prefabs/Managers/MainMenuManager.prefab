@@ -80,6 +80,10 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  kickLogo: {fileID: 0}
+  steamLogo: {fileID: 0}
+  offY: 777
+  onY: 540
   smallLogo: {fileID: 0}
   logoMenu: {fileID: 0}
   shrinkDuration: 0.5
@@ -107,23 +111,34 @@ MonoBehaviour:
   playButtonMaxY: -600
   playButtonDuration: 0.25
   modesDescriptionXPos: 693
-  modesDescriptionOnScreen: 242
+  modesDescriptionOnScreen: 430
   modesDescriptionOffScreen: 700
   oneGamepadDisconnected: 0
   gamepadsDisconnectedCanvas: {fileID: 0}
   maxYGamepad: 900
-  minYGamepad: 588
+  minYGamepad: 607
   gamepadsDisconnected:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  delayGO: 0.01
+  onXGO: 606
+  offXGO: 1788
+  initialPanelSize: {x: 1001, y: 939}
+  modifiedPanelSize: {x: 1001, y: 193}
   gameOverCanvas: {fileID: 0}
   restart: {fileID: 0}
+  playerScore:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  panelBackground: {fileID: 0}
   gameOverButton: {fileID: 0}
   restartButton: {fileID: 0}
   menuButton: {fileID: 0}
-  bottomYPosition: -550
+  bottomYPosition: -514
   goRepulseContent: {fileID: 0}
   goBombContent: {fileID: 0}
   goHitContent: {fileID: 0}
@@ -141,6 +156,7 @@ MonoBehaviour:
   play: {fileID: 0}
   soundsBar: {fileID: 0}
   bomb: {fileID: 0}
+  keryann: {fileID: 0}
   mainMenuCanvas: {fileID: 0}
   instructionsMenuCanvas: {fileID: 0}
   chooseOptionsMenuCanvas: {fileID: 0}

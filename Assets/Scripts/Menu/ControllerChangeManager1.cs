@@ -46,6 +46,13 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	public bool getInput = true;
 
+	void Awake ()
+	{
+		OnControllerChange += UpdateGlobalVariables;
+		OnControllerChange += UpdatePlayersControllers;
+		OnControllerChange += GlobalVariables.Instance.SetPlayerMouseCursor;
+	}
+
 	void Start ()
 	{
 		imagesAlignedPos [0] = logoRect [0].anchoredPosition.x;
@@ -63,8 +70,6 @@ public class ControllerChangeManager1 : MonoBehaviour
 		ReInput.ControllerPreDisconnectEvent += UpdateGlobalVariables;
 		ReInput.ControllerPreDisconnectEvent += UpdatePlayersControllers;
 
-		OnControllerChange += UpdateGlobalVariables;
-		OnControllerChange += UpdatePlayersControllers;
 
 		GetPlayersAndControllers ();
 

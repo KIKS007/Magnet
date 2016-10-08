@@ -17,6 +17,7 @@ public class FeedbackInputs : MonoBehaviour
 	public float movementMultiplicator;
 
 	public KeyCode keycode;
+	public KeyCode keycodeAlternate;
 
 	public float originScale;
 	public float modifiedScale;
@@ -66,6 +67,21 @@ public class FeedbackInputs : MonoBehaviour
 			{
 				ResetFeedback ();
 				keyPressed = false;
+			}
+
+			if(keycodeAlternate != KeyCode.None)
+			{
+				if(Input.GetKey(keycodeAlternate) || Input.GetKeyDown(keycodeAlternate))
+				{
+					Feedback ();
+					keyPressed = true;
+				}
+				
+				if(Input.GetKeyUp(keycodeAlternate))
+				{
+					ResetFeedback ();
+					keyPressed = false;
+				}				
 			}
 		}
 
