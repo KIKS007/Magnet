@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DarkTonic.MasterAudio;
 using Rewired;
+using GameAnalyticsSDK;
 
 public class MainMenuManagerScript : MonoBehaviour
 {
@@ -43,10 +44,9 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float[] yPositions = new float[9];
 
 	[Header ("Kick & Steam Logos")]
-	public RectTransform kickLogo;
-	public RectTransform steamLogo;
-	public float offY;
-	public float onY;
+	public RectTransform kickSteamLogos;
+	public float offX;
+	public float onX;
 
 	[Header ("Logos")]
 	public RectTransform smallLogo;
@@ -451,7 +451,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		//SetButtonsNavigation ();
 
-		if(mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected && kickLogo.anchoredPosition.y != onY)
+		if(mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected && kickSteamLogos.anchoredPosition.x != onX)
 		{
 			if(!DOTween.IsTweening("Logos") && !DOTween.IsTweening("PauseMovement"))
 				LogosKickSteamOn ();
@@ -459,7 +459,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		if(mainMenuCanvas.activeSelf == false || oneGamepadDisconnected || DOTween.IsTweening("PauseMovement"))
 		{
-			if(!DOTween.IsTweening("Logos") && kickLogo.anchoredPosition.y != offY)
+			if(!DOTween.IsTweening("Logos") && kickSteamLogos.anchoredPosition.x != offX)
 				LogosKickSteamOff ();
 		}
 
@@ -821,6 +821,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		switch (GlobalVariables.Instance.CurrentModeLoaded)
 		{
 		case "Crush":
+			GameAnalytics.NewDesignEvent("Crush Mode");		
+
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			crushButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [5]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			crushMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -845,6 +847,8 @@ public class MainMenuManagerScript : MonoBehaviour
 			myTween = choosePlayerContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
 			break;
 		case "Bomb":
+			GameAnalytics.NewDesignEvent("Bomb Mode");		
+
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			bombButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [3]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			bombMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -853,6 +857,8 @@ public class MainMenuManagerScript : MonoBehaviour
 			myTween = choosePlayerContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
 			break;
 		case "Training":
+			GameAnalytics.NewDesignEvent("Training Mode");		
+
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			trainingButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [4]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			trainingMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -892,14 +898,12 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void LogosKickSteamOn ()
 	{
-		kickLogo.DOAnchorPos (new Vector2 (kickLogo.anchoredPosition.x, onY), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("Logos");
-		steamLogo.DOAnchorPos (new Vector2 (steamLogo.anchoredPosition.x, onY), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("Logos");
+		kickSteamLogos.DOAnchorPos (new Vector2 (onX, kickSteamLogos.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("Logos");
 	}
 
 	void LogosKickSteamOff ()
 	{
-		kickLogo.DOAnchorPos (new Vector2 (kickLogo.anchoredPosition.x, offY), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("Logos");
-		steamLogo.DOAnchorPos (new Vector2 (steamLogo.anchoredPosition.x, offY), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("Logos");
+		kickSteamLogos.DOAnchorPos (new Vector2 (offX, kickSteamLogos.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("Logos");
 	}
 
 
@@ -907,6 +911,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Instructions Menu");
 			StartCoroutine("LoadInstructions");
 			Tweening ();
 		}
@@ -944,6 +949,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Options Menu");
 			StartCoroutine("LoadOptions");
 			Tweening ();
 		}
@@ -996,6 +1002,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("ChooseMode Menu");
 			StartCoroutine(LoadChooseMode ());
 			Tweening ();
 		}
@@ -1048,6 +1055,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Credits Menu");
 			StartCoroutine("LoadCredits");
 			Tweening ();
 		}
@@ -1087,6 +1095,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Quit Menu");
 			StartCoroutine("LoadQuit");
 			Tweening ();
 		}
@@ -1175,6 +1184,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Sounds Menu");
 			StartCoroutine("LoadSounds");
 			Tweening ();
 		}
@@ -1224,6 +1234,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Graphics Menu");
 			StartCoroutine(LoadGraphics ());
 			Tweening ();
 		}		
@@ -1340,6 +1351,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Bomb Menu");
 			StartCoroutine(LoadBomb ());
 			Tweening ();
 		}
@@ -1473,6 +1485,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Crush Menu");
 			StartCoroutine(LoadCrush ());
 			Tweening ();
 		}
@@ -1538,6 +1551,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Training Menu");
 			StartCoroutine(LoadTraining ());
 			Tweening ();
 		}
@@ -1598,11 +1612,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		PlayReturnSound ();
 	}
-
-	public void LoadModeSelection ()
-	{
-		SceneManager.LoadScene("ModeSelection");
-	}
 		
 	public void ExitGame ()
 	{
@@ -1612,6 +1621,8 @@ public class MainMenuManagerScript : MonoBehaviour
 	public void LoadMainMenu ()
 	{
 		float timeTemp = Time.time;
+
+		GameAnalytics.NewDesignEvent ("Main Menu");
 
 		Tweening ();
 
@@ -1720,6 +1731,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
+			GameAnalytics.NewDesignEvent ("Results Menu");
 			Tweening ();
 			StartCoroutine (GameOverMenu ());
 		}

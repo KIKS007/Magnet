@@ -75,12 +75,6 @@ public class FeedbackInputs : MonoBehaviour
 					descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
 
 				}
-
-				if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
-					transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
-
-				if(transform.gameObject.GetComponent<Image> () != null)
-					transform.gameObject.GetComponent<Image> ().color = modifiedColor;
 			}
 			
 			if(Input.GetKeyUp(keycode))
@@ -97,12 +91,6 @@ public class FeedbackInputs : MonoBehaviour
 					descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
 
 				}
-
-				if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
-					transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
-
-				if(transform.gameObject.GetComponent<Image> () != null)
-					transform.gameObject.GetComponent<Image> ().color = Color.white;
 			}
 
 			if(keycodeAlternate != KeyCode.None)
@@ -119,14 +107,7 @@ public class FeedbackInputs : MonoBehaviour
 					{
 						descriptionText.DOScale (modifiedScaleText, 0.2f);
 						descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
-
 					}
-
-					if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
-						transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
-
-					if(transform.gameObject.GetComponent<Image> () != null)
-						transform.gameObject.GetComponent<Image> ().color = modifiedColor;
 				}
 				
 				if(Input.GetKeyUp(keycodeAlternate))

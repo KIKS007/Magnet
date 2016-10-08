@@ -22,7 +22,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	void Awake () 
 	{
 		ReInput.ControllerConnectedEvent += OnGamepadConnectedOrDisconneted;
-		ReInput.ControllerPreDisconnectEvent += OnGamepadConnectedOrDisconneted;
+		ReInput.ControllerDisconnectedEvent += OnGamepadConnectedOrDisconneted;
 
 		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
 

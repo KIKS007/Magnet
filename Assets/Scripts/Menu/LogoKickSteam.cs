@@ -18,14 +18,10 @@ public class LogoKickSteam : EventTrigger
 
 	private EventSystem eventSys;
 
-	private GameObject newButton;
-
 	void Start ()
 	{
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		otherButton = GetComponent<RectTransform> ();
-
-		newButton = GameObject.Find ("NewButton");
 	}
 
 	void Update ()

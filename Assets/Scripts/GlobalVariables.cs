@@ -18,8 +18,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnResume;
 	public event EventHandler OnMainMenu;
 
-	public GoogleAnalyticsV3 googleAnalytics;
-
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Over;
 	public bool FirstGameLaunch = true;
@@ -85,14 +83,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void Start ()
 	{
-		if(SceneManager.GetActiveScene().name != "Scene Testing")
-		{
-			googleAnalytics.StartSession ();
-			googleAnalytics.DispatchHits ();
-			googleAnalytics.LogEvent ("Test", "Setup", "Google", 1);			
-		}
-
-
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 		

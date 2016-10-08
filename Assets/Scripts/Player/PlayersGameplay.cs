@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
+using GameAnalyticsSDK;
 
 public enum Team
 {
@@ -55,8 +56,6 @@ public class PlayersGameplay : MonoBehaviour
 	public event EventHandler OnDeath;
 
 	public event EventHandler OnPlayerstateChange;
-
-	protected GoogleAnalyticsV3 googleAnalytics;
 
 	[Header ("States")]
 	public Team team;
@@ -132,10 +131,12 @@ public class PlayersGameplay : MonoBehaviour
 	protected bool hasAttracted;
 	protected bool hasRepulsed;
 
+	protected float startModeTime;
+
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-		googleAnalytics = GlobalVariables.Instance.googleAnalytics;
+		GlobalVariables.Instance.OnModeStarted += StartModeTime;
 
 		GetControllerNumber ();
 
@@ -151,12 +152,6 @@ public class PlayersGameplay : MonoBehaviour
 		movableParent = GameObject.FindGameObjectWithTag ("MovableParent").transform;
 		magnetPoint = transform.GetChild (0).transform;
 		transform.GetChild (2).GetComponent<MagnetTriggerScript> ().magnetPoint = magnetPoint;
-
-		/*OnStun += () => Debug.Log ("Stunned : " + name);
-		OnShoot += () => Debug.Log ("Shoot : " + name);
-		OnHold += () => Debug.Log ("Hold : " + name);
-		OnAttracted += () => Debug.Log ("Attract : " + name);
-		OnDash += () => Debug.Log ("Dash : " + name);*/
 	}
 
 	protected IEnumerator WaitTillPlayerEnabled ()
@@ -165,6 +160,11 @@ public class PlayersGameplay : MonoBehaviour
 
 		StartCoroutine (OnPlayerStateChange ());
 		StartCoroutine (OnDashAvailableEvent ());
+	}
+
+	protected void StartModeTime ()
+	{
+		startModeTime = Time.unscaledTime;
 	}
 
 	protected void OnEnable ()
@@ -665,6 +665,10 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			GameAnalytics.NewDesignEvent ("Player Life Duration", (int)(Time.unscaledTime - startModeTime));
+
+			Debug.Log(name + " died after " + (long)(Time.unscaledTime - startModeTime) + " " + "seconds");
+
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 			if(playerState == PlayerState.Holding)
