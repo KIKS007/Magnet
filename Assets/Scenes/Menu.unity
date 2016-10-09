@@ -808,7 +808,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Options
+  m_Text: Settings
 --- !u!222 &72630745
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1688,7 +1688,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Options
+  m_Text: Settings
 --- !u!222 &123994913
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1807,7 +1807,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.000030517578, y: -131.00002}
-  m_SizeDelta: {x: 212.7, y: 91.7}
+  m_SizeDelta: {x: 230.3, y: 91.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &131596593
 MonoBehaviour:
@@ -1841,9 +1841,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Hold to Attract
+  m_Text: 'Hold to Attract /
 
-    Release to Shoot'
+    Repulse when holding cube'
 --- !u!222 &131596594
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3579,7 +3579,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: -39}
+  m_AnchoredPosition: {x: 507, y: -52}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &214169912
@@ -3634,7 +3634,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> won <color=#00D5FFFF>2</color> times in
+    a row !
 --- !u!222 &214169914
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5148,6 +5149,80 @@ MonoBehaviour:
   delegates: []
   selected: 0
   scaleChangement: 1
+--- !u!1 &334445548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 334445549}
+  - 222: {fileID: 334445551}
+  - 114: {fileID: 334445550}
+  m_Layer: 5
+  m_Name: IronEqual Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &334445549
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 334445548}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 816852344}
+  m_RootOrder: 0
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 634.00006, y: -1.0000305}
+  m_SizeDelta: {x: 959, y: 209}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &334445550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 334445548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: badac0eb853408242885c610ff11b284, type: 3}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 5
+    m_MaxSize: 38
+    m_Alignment: 3
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "An \nIronEqual \nGame"
+--- !u!222 &334445551
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 334445548}
 --- !u!1 &335089152
 GameObject:
   m_ObjectHideFlags: 0
@@ -5237,7 +5312,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: ' <color=#00D5FFFF>Player 1</color> wins !'
 --- !u!222 &335089156
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5371,6 +5446,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 851419636}
+  - {fileID: 816852344}
   - {fileID: 1821662643}
   m_Father: {fileID: 466087563}
   m_RootOrder: 15
@@ -5584,7 +5660,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &348187673
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6099,8 +6175,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 736, y: 430}
-  m_SizeDelta: {x: 678, y: 148.9}
+  m_AnchoredPosition: {x: 736, y: 402}
+  m_SizeDelta: {x: 678, y: 205}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &374777660
 MonoBehaviour:
@@ -6128,13 +6204,14 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Use the cubes to crush your friends against deadly walls
+  m_Text: Push your friends on the death rays to eliminate them. Don't get pushed
+    on the death rays. Last man standing wins.
 --- !u!222 &374777661
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6358,7 +6435,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Hold to Repulse
+  m_Text: Hold to Repel
 --- !u!222 &393517394
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7946,7 +8023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 737f6801ba26a404b9377679ad8df5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://twitter.com/NielsTiercelin
+  url: http://bit.ly/2dJXkDN
   onX: 182
   offX: 400
   roleTweenDuration: 0.2
@@ -8424,7 +8501,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Move Character
+  m_Text: Move
 --- !u!222 &540562181
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8870,7 +8947,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 99}
+  m_AnchoredPosition: {x: 507, y: 86}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &566313783
@@ -8925,7 +9002,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> has a  <color=#00D5FFFF>0</color> % aim
+    accuracy
 --- !u!222 &566313785
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9898,7 +9976,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -942, y: 100.1}
-  m_SizeDelta: {x: 115.8, y: 53}
+  m_SizeDelta: {x: 118.24, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &613636264
 MonoBehaviour:
@@ -10055,13 +10133,13 @@ Prefab:
       value: 
       objectReference: {fileID: 1698447697}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: kickLogo
+      propertyPath: kickSteamLogos
       value: 
-      objectReference: {fileID: 597524784}
+      objectReference: {fileID: 1721533091}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: steamLogo
+      propertyPath: ironEqualLogo
       value: 
-      objectReference: {fileID: 411483747}
+      objectReference: {fileID: 816852344}
     - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
       propertyPath: smallLogo
       value: 
@@ -10350,26 +10428,6 @@ Prefab:
       propertyPath: choosePlayerContent
       value: 
       objectReference: {fileID: 707579445}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: onY
-      value: 460
-      objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: onXGO
-      value: 606
-      objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: offXGO
-      value: 1788
-      objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: offX
-      value: 950
-      objectReference: {fileID: 0}
-    - target: {fileID: 11485478, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
-      propertyPath: kickSteamLogos
-      value: 
-      objectReference: {fileID: 1721533091}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 45d1291221ccf4b35bb1566e55540e70, type: 2}
   m_IsPrefabParent: 0
@@ -10480,8 +10538,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 736.23, y: 430}
-  m_SizeDelta: {x: 678, y: 148.9}
+  m_AnchoredPosition: {x: 736.23, y: 389}
+  m_SizeDelta: {x: 678, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &653147863
 MonoBehaviour:
@@ -10509,14 +10567,14 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Touch your friends with the bomb cube to pass it to them and avoid to have
-    the bomb at the end of the timer !
+  m_Text: "If you keep the cube at the end of the timer, you explode with it. Throw
+    the cube at your opponents so they'll explode when you won't.\r\n"
 --- !u!222 &653147864
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10591,7 +10649,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: -39}
+  m_AnchoredPosition: {x: 507, y: -52}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &658837830
@@ -10646,7 +10704,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> won <color=#00D5FFFF>2</color> times in
+    a row !
 --- !u!222 &658837832
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11285,7 +11344,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &684709877
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11541,7 +11600,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 699050915}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0000027817}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -11549,7 +11608,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -25.249992, y: 121}
+  m_AnchoredPosition: {x: -25.250061, y: 162.00009}
   m_SizeDelta: {x: 627.5, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &699050917
@@ -11717,7 +11776,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 99}
+  m_AnchoredPosition: {x: 507, y: 86}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &699773156
@@ -11772,7 +11831,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> has a  <color=#00D5FFFF>0</color> % aim
+    accuracy
 --- !u!222 &699773158
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13090,7 +13150,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: ' <color=#00D5FFFF>Player 1</color> wins !'
 --- !u!222 &779149342
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13835,6 +13895,181 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 815282422}
+--- !u!1 &816852343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 816852344}
+  - 222: {fileID: 816852346}
+  - 114: {fileID: 816852345}
+  - 114: {fileID: 816852349}
+  - 114: {fileID: 816852348}
+  - 114: {fileID: 816852347}
+  m_Layer: 5
+  m_Name: Logo IE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &816852344
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children:
+  - {fileID: 334445549}
+  m_Father: {fileID: 338972843}
+  m_RootOrder: 1
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1500, y: 361.99963}
+  m_SizeDelta: {x: 679, y: 679}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &816852345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: fccac9b470a303c4aa6ffeb2e63acd51, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+--- !u!222 &816852346
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+--- !u!114 &816852347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 816852348}
+          m_MethodName: GetToURL
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: www.ironequal.com
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
+        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  - eventID: 15
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 816852348}
+          m_MethodName: GetToURL
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: www.ironequal.com
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
+        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  delegates: []
+--- !u!114 &816852348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267871bda55b78c47a6ee231daacf4dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+  delegates: []
+  selected: 0
+  scaleChangement: 1
+--- !u!114 &816852349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 816852343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.8235294, g: 0.8295848, b: 0.8295848, a: 1}
+    m_PressedColor: {r: 0.6691177, g: 0.6691177, b: 0.6691177, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 816852345}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &819259475
 GameObject:
   m_ObjectHideFlags: 0
@@ -14066,7 +14301,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 229}
+  m_AnchoredPosition: {x: 507, y: 216}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &845998572
@@ -14084,8 +14319,8 @@ MonoBehaviour:
   whichStat: 0
   whichPlayer: 4
   playerNameAtFirst: 1
-  beforeNumberText: made most hits, with
-  afterNumberText: hits !
+  beforeNumberText: 'made the most hits: '
+  afterNumberText: '!'
   displayCondition: 0
   minimumNumber: 0
 --- !u!114 &845998573
@@ -14121,7 +14356,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: '<color=#00D5FFFF>Player 1</color> made the most hits:  <color=#00D5FFFF>0</color>
+    !'
 --- !u!222 &845998574
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15462,7 +15698,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Shoot Direction
+  m_Text: Aim
 --- !u!222 &921548696
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16887,7 +17123,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -580, y: 273}
+  m_AnchoredPosition: {x: -650, y: 409}
   m_SizeDelta: {x: 556.2, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &989284041
@@ -19867,7 +20103,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Pierrick
+  m_Text: Radiant
 --- !u!222 &1158436288
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20211,7 +20447,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1180688456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21095,7 +21331,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -642, y: 100.1}
-  m_SizeDelta: {x: 115.8, y: 53}
+  m_SizeDelta: {x: 118.24, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1209318492
 MonoBehaviour:
@@ -21709,7 +21945,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: ' <color=#00D5FFFF>Player 1</color> wins !'
 --- !u!222 &1260709607
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21945,7 +22181,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: ' <color=#00D5FFFF>Player 1</color> '
 --- !u!222 &1265506271
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21987,7 +22223,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 229}
+  m_AnchoredPosition: {x: 507, y: 216}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1273873566
@@ -22005,8 +22241,8 @@ MonoBehaviour:
   whichStat: 0
   whichPlayer: 4
   playerNameAtFirst: 1
-  beforeNumberText: made most hits, with
-  afterNumberText: hits !
+  beforeNumberText: 'made the most hits: '
+  afterNumberText: '!'
   displayCondition: 0
   minimumNumber: 0
 --- !u!114 &1273873567
@@ -22042,7 +22278,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: '<color=#00D5FFFF>Player 1</color> made the most hits:  <color=#00D5FFFF>0</color>
+    !'
 --- !u!222 &1273873568
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22158,7 +22395,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Toggle Windowed Screen
+  m_Text: Enable Windowed Screen
 --- !u!222 &1282192805
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22352,7 +22589,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 99}
+  m_AnchoredPosition: {x: 507, y: 86}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1301244486
@@ -22407,7 +22644,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> has a  <color=#00D5FFFF>0</color> % aim
+    accuracy
 --- !u!222 &1301244488
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22504,7 +22742,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &1303310249
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23282,7 +23520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 737f6801ba26a404b9377679ad8df5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://twitter.com/KeryannM
+  url: http://bit.ly/2dALMEj
   onX: 182
   offX: 400
   roleTweenDuration: 0.2
@@ -23551,7 +23789,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: 229}
+  m_AnchoredPosition: {x: 507, y: 216}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1360514850
@@ -23569,8 +23807,8 @@ MonoBehaviour:
   whichStat: 0
   whichPlayer: 4
   playerNameAtFirst: 1
-  beforeNumberText: made the most hits, with
-  afterNumberText: hits !
+  beforeNumberText: 'made the most hits: '
+  afterNumberText: '!'
   displayCondition: 0
   minimumNumber: 0
 --- !u!114 &1360514851
@@ -23606,7 +23844,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: '<color=#00D5FFFF>Player 1</color> made the most hits:  <color=#00D5FFFF>0</color>
+    !'
 --- !u!222 &1360514852
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23711,14 +23950,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children:
-  - {fileID: 1783257202}
+  m_Children: []
   m_Father: {fileID: 1683808674}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 736, y: 430}
-  m_SizeDelta: {x: 678, y: 148.9}
+  m_AnchoredPosition: {x: 736, y: 384}
+  m_SizeDelta: {x: 678, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1366967845
 MonoBehaviour:
@@ -23746,14 +23984,15 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Train yourself attracting, repulsing, dashing and shooting cubes before
-    fighting your friends
+  m_Text: Accustom yourself to the game mechanics. Try to dash, attract and repulse
+    cubes at the other players or dummies. Then get serious and move on to the other
+    competitive modes!
 --- !u!222 &1366967846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24026,7 +24265,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Shoot Direction
+  m_Text: Aim
 --- !u!222 &1391126526
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24103,7 +24342,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 424, y: -39}
+  m_AnchoredPosition: {x: 507, y: -52}
   m_SizeDelta: {x: 627, y: 91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1398432354
@@ -24158,7 +24397,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: <color=#00D5FFFF>Player 1</color> won <color=#00D5FFFF>2</color> times in
+    a row !
 --- !u!222 &1398432356
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25724,7 +25964,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sounds
+  m_Text: Audio
 --- !u!222 &1475515705
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26016,7 +26256,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -124, y: -180}
-  m_SizeDelta: {x: 207.27, y: 122.3}
+  m_SizeDelta: {x: 230.4, y: 122.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1506579617
 MonoBehaviour:
@@ -26044,16 +26284,15 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 25
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Hold to Attract
+  m_Text: 'Hold to Attract /
 
-
-    Release to Shoot'
+    Repulse when holding cube'
 --- !u!222 &1506579618
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27021,7 +27260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 737f6801ba26a404b9377679ad8df5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://soundcloud.com/radiantprk
+  url: http://bit.ly/2dVzNOp
   onX: 182
   offX: 400
   roleTweenDuration: 0.2
@@ -27140,7 +27379,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -342, y: 100.1}
-  m_SizeDelta: {x: 115.8, y: 53}
+  m_SizeDelta: {x: 118.24, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564547423
 MonoBehaviour:
@@ -28551,6 +28790,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 989284039}
+  - {fileID: 1783257202}
   - {fileID: 1366967844}
   m_Father: {fileID: 1149651865}
   m_RootOrder: 1
@@ -30183,15 +30423,15 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1783257201}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0000027817}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
-  m_Father: {fileID: 1366967844}
-  m_RootOrder: 0
+  m_Father: {fileID: 1683808674}
+  m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -25.249992, y: 121}
+  m_AnchoredPosition: {x: 710.75006, y: 551.00006}
   m_SizeDelta: {x: 627.5, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1783257203
@@ -31058,7 +31298,7 @@ RectTransform:
   - {fileID: 515693703}
   - {fileID: 1561755763}
   m_Father: {fileID: 338972843}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -31247,7 +31487,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enable music slow motion effect
+  m_Text: Affect Music during Slow Motion
 --- !u!222 &1829929614
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31562,7 +31802,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -492, y: 100.1}
-  m_SizeDelta: {x: 115.8, y: 53}
+  m_SizeDelta: {x: 118.24, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1869360053
 MonoBehaviour:
@@ -31825,7 +32065,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Hold to Repulse
+  m_Text: Hold to Repel
 --- !u!222 &1874848088
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32200,7 +32440,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -792, y: 100.1}
-  m_SizeDelta: {x: 115.8, y: 53}
+  m_SizeDelta: {x: 118.24, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1909271605
 MonoBehaviour:
@@ -32622,7 +32862,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1933608631}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0000027817}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -32630,7 +32870,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -25.249992, y: 121}
+  m_AnchoredPosition: {x: -25.249878, y: 149.00003}
   m_SizeDelta: {x: 627.5, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1933608633
@@ -32857,7 +33097,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -580, y: 273}
+  m_AnchoredPosition: {x: -650, y: 409}
   m_SizeDelta: {x: 556.2, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1951123692
@@ -33362,7 +33602,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Move Character
+  m_Text: Move
 --- !u!222 &1975876288
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33570,7 +33810,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &1988362010
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34162,7 +34402,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sounds
+  m_Text: Audio
 --- !u!222 &2004593078
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34401,7 +34641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 737f6801ba26a404b9377679ad8df5ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: https://soundcloud.com/lo-c-bourdrel
+  url: http://bit.ly/2cZLSWS
   onX: 182
   offX: 400
   roleTweenDuration: 0.2

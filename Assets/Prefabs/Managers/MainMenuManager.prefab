@@ -80,10 +80,12 @@ MonoBehaviour:
   - 0
   - 0
   - 0
-  kickLogo: {fileID: 0}
-  steamLogo: {fileID: 0}
-  offY: 777
-  onY: 540
+  kickSteamLogos: {fileID: 0}
+  offX: 950
+  onX: 0
+  ironEqualLogo: {fileID: 0}
+  offXIE: 1500
+  onXIE: 621
   smallLogo: {fileID: 0}
   logoMenu: {fileID: 0}
   shrinkDuration: 0.5

@@ -25,16 +25,16 @@ MonoBehaviour:
   UserMessagesFailed: 0
   CustomArea: 
   gameKey:
-  - 7379e0475562e86fde45d959d9af2774
+  - f1bbce81c22203ff886daaed7cf549fc
   secretKey:
-  - 7f4df9fb76386426dd02e26d7e162b6783ee1955
+  - 397d043bde7e0fc2236b763ba63c2e2982133502
   Build:
   - 0.1
   SelectedPlatformStudio:
   - IronEqual
   SelectedPlatformGame:
   - 'REPULSE: Galactic Rivals'
-  SelectedPlatformGameID: c3760000
+  SelectedPlatformGameID: c6760000
   SelectedStudio: 01000000
   SelectedGame: 01000000
   NewVersion: 
@@ -86,7 +86,7 @@ MonoBehaviour:
   SubmitFpsCritical: 1
   FpsCriticalThreshold: 20
   FpsCirticalSubmitInterval: 1
-  PlatformFoldOut: 00
+  PlatformFoldOut: 01
   CustomDimensions01FoldOut: 0
   CustomDimensions02FoldOut: 0
   CustomDimensions03FoldOut: 0

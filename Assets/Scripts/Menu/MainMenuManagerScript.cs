@@ -48,6 +48,11 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float offX;
 	public float onX;
 
+	[Header ("IronEqual Logo")]
+	public RectTransform ironEqualLogo;
+	public float offXIE;
+	public float onXIE;
+
 	[Header ("Logos")]
 	public RectTransform smallLogo;
 	public GameObject logoMenu;
@@ -461,6 +466,22 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			if(!DOTween.IsTweening("Logos") && kickSteamLogos.anchoredPosition.x != offX)
 				LogosKickSteamOff ();
+		}
+
+		if(creditsMenuCanvas.activeSelf == true && !oneGamepadDisconnected && ironEqualLogo.anchoredPosition.x != onXIE)
+		{
+			if(!DOTween.IsTweening("IronEqualLogo"))
+			{
+				ironEqualLogo.DOAnchorPos (new Vector2 (onXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("IronEqualLogo");
+			}
+		}
+
+		if(creditsMenuCanvas.activeSelf == false || oneGamepadDisconnected)
+		{
+			if(!DOTween.IsTweening("IronEqualLogo") && ironEqualLogo.anchoredPosition.x != offXIE)
+			{
+				ironEqualLogo.DOAnchorPos (new Vector2 (offXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("IronEqualLogo");
+			}
 		}
 
 		TextResume ();

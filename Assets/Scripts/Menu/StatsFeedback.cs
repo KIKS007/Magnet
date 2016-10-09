@@ -173,6 +173,7 @@ public class StatsFeedback : MonoBehaviour
 		string color = "";
 		string secondText;
 
+
 		switch (whichStatType)
 		{
 		case WhichStatType.Player:
