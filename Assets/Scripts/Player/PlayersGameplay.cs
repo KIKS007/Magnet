@@ -665,10 +665,7 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			GameAnalytics.NewDesignEvent ("Player Life Duration", (int)(Time.unscaledTime - startModeTime));
-
-			Debug.Log(name + " died after " + (long)(Time.unscaledTime - startModeTime) + " " + "seconds");
-
+			GameAnalytics.NewDesignEvent ("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
 
 			if(playerState == PlayerState.Holding)

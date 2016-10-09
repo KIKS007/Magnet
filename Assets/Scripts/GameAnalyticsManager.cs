@@ -4,14 +4,22 @@ using GameAnalyticsSDK;
 
 public class GameAnalyticsManager : Singleton<GameAnalyticsManager> 
 {
-	public void CreditLinks (string whichLink)
+	private int gamesCount = 0;
+
+	void Start ()
 	{
-		GameAnalytics.NewDesignEvent (whichLink);
+		GlobalVariables.Instance.OnModeStarted += StartModeTimer;
+		GlobalVariables.Instance.OnGameOver += StopModeTimer;
 	}
 
-	public void PlayersNumber ()
+	public void GamesCount ()
 	{
-		GameAnalytics.NewDesignEvent ("Players Number", GlobalVariables.Instance.NumberOfPlayers);
+		gamesCount++;
+	}
+
+	void OnApplicationQuit ()
+	{
+		GameAnalytics.NewDesignEvent ("Game:GamesCount", gamesCount);
 	}
 
 	public void PlayersControllers ()
@@ -34,14 +42,26 @@ public class GameAnalyticsManager : Singleton<GameAnalyticsManager>
 		if (GlobalVariables.Instance.ControllerNumberPlayer4 > 0)
 			gamepads += 1;
 		
-		string playersControllers = "Mouse : " + mouseKeyboard + " ; Gamepads : " + gamepads + " ; Gamepads Plugged : " + GamepadsManager.Instance.numberOfGamepads;
 
-		GameAnalytics.NewDesignEvent ("Players Controllers = " + playersControllers);
+		GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + "Mouse", mouseKeyboard);
 
-		GameAnalytics.NewDesignEvent ("Mouse Controller", mouseKeyboard);
+		if(GamepadsManager.Instance.numberOfGamepads == 0 && gamepads == 1)
+			GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":GamepadsPlugged:" + GamepadsManager.Instance.numberOfGamepads, -1f);
+		else
+			GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":GamepadsPlugged:" + GamepadsManager.Instance.numberOfGamepads, gamepads);
+	}
 
-		GameAnalytics.NewDesignEvent ("Gamepads Controllers", gamepads);
+	private float startModeTime;
 
-		GameAnalytics.NewDesignEvent ("Gamepads Plugged", GamepadsManager.Instance.numberOfGamepads);
+	void StartModeTimer ()
+	{
+		startModeTime = Time.unscaledTime;
+	}
+
+	void StopModeTimer ()
+	{
+		int modeDuration = (int)(Time.unscaledTime - startModeTime);
+
+		GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":PlayerCount:" + GlobalVariables.Instance.NumberOfPlayers, modeDuration);
 	}
 }

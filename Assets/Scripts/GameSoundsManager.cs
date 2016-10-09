@@ -4,6 +4,7 @@ using DarkTonic.MasterAudio;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using GameAnalyticsSDK;
 
 public class GameSoundsManager : Singleton<GameSoundsManager> 
 {
@@ -304,5 +305,14 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 		}
 
 		loading = false;
+	}
+
+	void OnApplicationQuit ()
+	{
+		float soundsMuteTemp = soundsMute ? 1f : 0f;
+		float musicMuteTemp = musicMute ? 1f : 0f;
+
+		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "SoundsMute", soundsMuteTemp);
+		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "MuteMusic", musicMuteTemp);
 	}
 }

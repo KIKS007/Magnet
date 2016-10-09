@@ -13,6 +13,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 {
 	public event EventHandler OnGameOver;
 	public event EventHandler OnModeStarted;
+	public event EventHandler OnModeEnded;
 	public event EventHandler OnPlaying;
 	public event EventHandler OnPause;
 	public event EventHandler OnResume;
@@ -93,6 +94,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnPauseEvent ());
 		StartCoroutine (OnModeStartedEvent ());
+		StartCoroutine (OnModeEndedEvent ());
 
 		OnPlaying += HideMouseCursor;
 	}
@@ -229,6 +231,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		case "PushOut":
 			WhichModeLoaded = WhichMode.PushOut;
 			break;
+		case "Training":
+			WhichModeLoaded = WhichMode.Training;
+			break;
 		}
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
@@ -246,6 +251,20 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		yield return null;
 
 		StartCoroutine (OnGameOverEvent ());
+	}
+
+	IEnumerator OnModeEndedEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+
+		if (OnModeEnded != null)
+			OnModeEnded ();
+
+		yield return null;
+
+		StartCoroutine (OnModeEndedEvent ());
 	}
 
 	IEnumerator OnPlayingEvent ()

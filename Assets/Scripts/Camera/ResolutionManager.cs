@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using GameAnalyticsSDK;
 
 public class ResolutionManager : Singleton<ResolutionManager>
 {
@@ -99,6 +100,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 		if(!exactRes)
 			Debug.Log("Closest Res with " + ScreenResolutions[screenResIndex].x + " width");
 
+		GameAnalytics.NewDesignEvent ("Menu:" + "Resolution:" + ScreenResolutions[screenResIndex].x.ToString());
+		Debug.Log("Menu:" + "Resolution:" + ScreenResolutions[screenResIndex].x.ToString());
 	}
 
 

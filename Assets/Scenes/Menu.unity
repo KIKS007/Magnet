@@ -6158,7 +6158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &389671812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13779,7 +13779,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 134996123}
-        m_MethodName: PlayersNumber
+        m_MethodName: GamesCount
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -33085,7 +33085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameState: 2
   FirstGameLaunch: 1
-  firstSceneToLoad: Test
+  firstSceneToLoad: Crush
   WhichModeLoaded: 0
   CurrentModeLoaded: 
   Stun: 0

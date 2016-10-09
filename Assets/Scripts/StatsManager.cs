@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using GameAnalyticsSDK;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
 public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins};
@@ -35,6 +36,8 @@ public class StatsManager : Singleton<StatsManager>
 
 	void Awake ()
 	{
+		GlobalVariables.Instance.OnModeEnded += UpdateTotalStats;
+
 		SetupLists ();
 
 		StartCoroutine (StartTimer ());
@@ -586,6 +589,162 @@ public class StatsManager : Singleton<StatsManager>
 		gameDuration = minutes + ":" + seconds;
 
 		StartCoroutine (Timer ());
+	}
+
+	private int totalScorePlayer1 = -1;
+	private int totalDashPlayer1 = -1;
+	private int totalShotPlayer1 = -1;
+	private int totalHitPlayer1 = -1;
+
+	private int totalScorePlayer2 = -1;
+	private int totalDashPlayer2 = -1;
+	private int totalShotPlayer2 = -1;
+	private int totalHitPlayer2 = -1;
+
+	private int totalScorePlayer3 = -1;
+	private int totalDashPlayer3 = -1;
+	private int totalShotPlayer3 = -1;
+	private int totalHitPlayer3 = -1;
+
+	private int totalScorePlayer4 = -1;
+	private int totalDashPlayer4 = -1;
+	private int totalShotPlayer4 = -1;
+	private int totalHitPlayer4 = -1;
+
+	void UpdateTotalStats ()
+	{
+		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+		{
+			if (totalScorePlayer1 == -1)
+				totalScorePlayer1 = 0;
+
+			if (totalDashPlayer1 == -1)
+				totalDashPlayer1 = 0;
+
+			if (totalShotPlayer1 == -1)
+				totalShotPlayer1 = 0;
+
+			if (totalHitPlayer1 == -1)
+				totalHitPlayer1 = 0;
+
+			totalScorePlayer1 += playerStatsList [0].wins;
+			totalDashPlayer1 += playerStatsList [0].dash;
+			totalShotPlayer1 += playerStatsList [0].shots;
+			totalHitPlayer1 += playerStatsList [0].frags;
+		}
+		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+		{
+			if (totalScorePlayer2 == -1)
+				totalScorePlayer2 = 0;
+
+			if (totalDashPlayer2 == -1)
+				totalDashPlayer2 = 0;
+
+			if (totalShotPlayer2 == -1)
+				totalShotPlayer2 = 0;
+
+			if (totalHitPlayer2 == -1)
+				totalHitPlayer2 = 0;
+
+			totalScorePlayer2 += playerStatsList [1].wins;
+			totalDashPlayer2 += playerStatsList [1].dash;
+			totalShotPlayer2 += playerStatsList [1].shots;
+			totalHitPlayer2 += playerStatsList [1].frags;
+		}
+		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+		{
+			if (totalScorePlayer3 == -1)
+				totalScorePlayer3 = 0;
+
+			if (totalDashPlayer3 == -1)
+				totalDashPlayer3 = 0;
+
+			if (totalShotPlayer3 == -1)
+				totalShotPlayer3 = 0;
+
+			if (totalHitPlayer3 == -1)
+				totalHitPlayer3 = 0;
+
+			totalScorePlayer3 += playerStatsList [2].wins;
+			totalDashPlayer3 += playerStatsList [2].dash;
+			totalShotPlayer3 += playerStatsList [2].shots;
+			totalHitPlayer3 += playerStatsList [2].frags;
+		}
+		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+		{
+			if (totalScorePlayer4 == -1)
+				totalScorePlayer4 = 0;
+
+			if (totalDashPlayer4 == -1)
+				totalDashPlayer4 = 0;
+
+			if (totalShotPlayer4 == -1)
+				totalShotPlayer4 = 0;
+
+			if (totalHitPlayer4 == -1)
+				totalHitPlayer4 = 0;
+
+			totalScorePlayer4 += playerStatsList [3].wins;
+			totalDashPlayer4 += playerStatsList [3].dash;
+			totalShotPlayer4 += playerStatsList [3].shots;
+			totalHitPlayer4 += playerStatsList [3].frags;
+		}
+	}
+
+	void SendStats ()
+	{
+		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+		{
+			if(totalShotPlayer1 != -1)
+				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString () + ":Score", totalScorePlayer1);
+			if(totalDashPlayer1 != -1)
+				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer1);
+			if(totalHitPlayer1 != -1)
+				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer1);
+			if(totalShotPlayer1 != -1)
+				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer1);
+		}
+
+		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+		{
+			if(totalScorePlayer2 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer2);
+			if(totalDashPlayer2 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer2);
+			if(totalHitPlayer2 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer2);
+			if(totalShotPlayer2 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer2);
+		}
+
+		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+		{
+			if(totalScorePlayer3 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer3);
+			if(totalDashPlayer3 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer3);
+			if(totalHitPlayer3 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer3);
+			if(totalShotPlayer3 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer3);
+		}
+
+		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+		{
+			if(totalScorePlayer4 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer4);
+			if(totalDashPlayer4 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer4);
+			if(totalHitPlayer4 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer4);
+			if(totalShotPlayer4 != -1)
+			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer4);
+		}
+	}
+
+	void OnApplicationQuit ()
+	{
+		SendStats ();
 	}
 }
 

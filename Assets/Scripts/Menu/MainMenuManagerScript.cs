@@ -821,8 +821,6 @@ public class MainMenuManagerScript : MonoBehaviour
 		switch (GlobalVariables.Instance.CurrentModeLoaded)
 		{
 		case "Crush":
-			GameAnalytics.NewDesignEvent("Crush Mode");		
-
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			crushButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [5]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			crushMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -847,8 +845,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			myTween = choosePlayerContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
 			break;
 		case "Bomb":
-			GameAnalytics.NewDesignEvent("Bomb Mode");		
-
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			bombButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [3]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			bombMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -857,8 +853,6 @@ public class MainMenuManagerScript : MonoBehaviour
 			myTween = choosePlayerContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
 			break;
 		case "Training":
-			GameAnalytics.NewDesignEvent("Training Mode");		
-
 			playButton.DOAnchorPos (new Vector2 (playButton.anchoredPosition.x, playButtonMinY), playButtonDuration).SetEase (easeTypeMainMenu);
 			trainingButtonRect.DOAnchorPos (new Vector2 (offScreenX, yPositions [4]), durationSubmit).SetDelay (delaySubmit [0]).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
 			trainingMenuCanvas.transform.GetChild (0).GetComponent<RectTransform> ().DOAnchorPos (new Vector2 (offScreenX, topYpositionButton), durationSubmit).SetEase (easeTypeMainMenu).SetId ("MainMenuTween");
@@ -867,7 +861,9 @@ public class MainMenuManagerScript : MonoBehaviour
 			myTween = choosePlayerContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
 			break;
 		}
-			
+
+		GameAnalytics.NewDesignEvent("Menu:" + GlobalVariables.Instance.CurrentModeLoaded.ToString());		
+
 		smallLogo.DOAnchorPos(new Vector2(0, 400), durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		yield return myTween.WaitForCompletion ();
 
@@ -911,7 +907,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Instructions Menu");
+			GameAnalytics.NewDesignEvent("Menu:" + "Instructions");		
 			StartCoroutine("LoadInstructions");
 			Tweening ();
 		}
@@ -949,7 +945,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Options Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Options");
 			StartCoroutine("LoadOptions");
 			Tweening ();
 		}
@@ -1002,7 +998,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("ChooseMode Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "ChooseMode");
 			StartCoroutine(LoadChooseMode ());
 			Tweening ();
 		}
@@ -1055,7 +1051,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Credits Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Credits");
 			StartCoroutine("LoadCredits");
 			Tweening ();
 		}
@@ -1095,7 +1091,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Quit Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Quit");
 			StartCoroutine("LoadQuit");
 			Tweening ();
 		}
@@ -1184,7 +1180,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Sounds Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds");
 			StartCoroutine("LoadSounds");
 			Tweening ();
 		}
@@ -1234,7 +1230,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Graphics Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Graphics");
 			StartCoroutine(LoadGraphics ());
 			Tweening ();
 		}		
@@ -1351,7 +1347,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Bomb Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "ChooseMode:" + "Bomb");
 			StartCoroutine(LoadBomb ());
 			Tweening ();
 		}
@@ -1485,7 +1481,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Crush Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "ChooseMode:" + "Crush");
 			StartCoroutine(LoadCrush ());
 			Tweening ();
 		}
@@ -1551,7 +1547,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Training Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "ChooseMode:" + "Training");
 			StartCoroutine(LoadTraining ());
 			Tweening ();
 		}
@@ -1622,7 +1618,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		float timeTemp = Time.time;
 
-		GameAnalytics.NewDesignEvent ("Main Menu");
+		GameAnalytics.NewDesignEvent ("Menu:" + "MainMenu");
 
 		Tweening ();
 
@@ -1723,7 +1719,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void TestDebug (float timeTemp)
 	{
-		Debug.Log ("Time tween : " + (Time.time - timeTemp).ToString());
+		//Debug.Log ("Time tween : " + (Time.time - timeTemp).ToString());
 	}
 
 
@@ -1731,7 +1727,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		if(!tweening)
 		{
-			GameAnalytics.NewDesignEvent ("Results Menu");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Results");
 			Tweening ();
 			StartCoroutine (GameOverMenu ());
 		}
