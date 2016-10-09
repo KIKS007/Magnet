@@ -1721,10 +1721,10 @@ public class MainMenuManagerScript : MonoBehaviour
 		}
 
 		if(smallLogo.anchoredPosition.y != 0)
-			smallLogo.DOAnchorPos(new Vector2(0, 0), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+			smallLogo.DOAnchorPos(new Vector2(0, 0), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete (()=> start.GetComponent<Button>().Select());
 
 		if(backButtonsContent.anchoredPosition.x != offScreenX)
-			backButtonsContent.DOAnchorPos (new Vector2 (offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId ("BackButtons").OnComplete (()=> TestDebug(timeTemp));
+			backButtonsContent.DOAnchorPos (new Vector2 (offScreenX, backButtonsInitialPos.y), durationContent).SetEase (easeTypeMainMenu).SetId ("BackButtons");
 
 		instructionsMenuCanvas.SetActive(false);
 		chooseOptionsMenuCanvas.SetActive(false);
@@ -1734,15 +1734,11 @@ public class MainMenuManagerScript : MonoBehaviour
 		gameOverCanvas.SetActive(false);
 
 		mainMenuCanvas.SetActive(true);
-		start.GetComponent<Button>().Select();
+		eventSyst.SetSelectedGameObject (null);
+		eventSyst.SetSelectedGameObject (start.gameObject);
+		//start.GetComponent<Button>().Select();
+		start.GetComponent<ButtonOnSelected>().OnSelect();
 	}
-		
-
-	void TestDebug (float timeTemp)
-	{
-		//Debug.Log ("Time tween : " + (Time.time - timeTemp).ToString());
-	}
-
 
 	public void GameOverMenuVoid ()
 	{

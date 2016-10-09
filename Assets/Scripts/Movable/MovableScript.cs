@@ -228,7 +228,7 @@ public class MovableScript : MonoBehaviour
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
 			playerHit = other.gameObject;
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 		}
@@ -241,7 +241,7 @@ public class MovableScript : MonoBehaviour
 			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
 			playerHit = other.gameObject;
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 

@@ -76,11 +76,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject PlayerSpawnParticles;
 	public Transform ParticulesClonesParent;
 
-	[Header ("Buttons Sprites")]
+	[Header ("Buttons Color")]
 	public Color mainButtonIdleColorText;
 	public Color mainButtonHighlightedColorText;
+	public Color mainButtonClickedColorText;
 	public Color secondaryButtonIdleColorText;
 	public Color secondaryButtonHighlightedColorText;
+	public Color secondaryClickedColorText;
 
 	void Start ()
 	{

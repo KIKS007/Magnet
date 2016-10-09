@@ -57,6 +57,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 	private float bloomInitialIntensity;
 
+	[HideInInspector]
 	public MirrorReflection mirrorScript;
 
 	void Awake ()
@@ -67,6 +68,8 @@ public class SlowMotionCamera : MonoBehaviour
 		initialMaximumDelta = Time.maximumDeltaTime;
 
 		bloomInitialIntensity = gameObject.GetComponent<Bloom> ().bloomIntensity;
+
+		GlobalVariables.Instance.OnModeStarted += () => slowMoNumber = 0;
 	}
 
 	// Called when this script starts

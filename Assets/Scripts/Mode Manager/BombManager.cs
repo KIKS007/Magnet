@@ -49,9 +49,6 @@ public class BombManager : MonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		while (GlobalVariables.Instance.NumberOfPlayers == 0)
-			yield return null;
-
 		playersNumber = GlobalVariables.Instance.NumberOfPlayers;
 
 		switch(playersNumber)
@@ -201,7 +198,7 @@ public class BombManager : MonoBehaviour
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 

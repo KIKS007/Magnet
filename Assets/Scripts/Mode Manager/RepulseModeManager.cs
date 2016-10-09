@@ -128,7 +128,7 @@ public class RepulseModeManager : MonoBehaviour
 		GlobalVariables.Instance.GameState = GameStateEnum.Over;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 

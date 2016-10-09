@@ -7,6 +7,7 @@ public class VibrationManager : Singleton<VibrationManager>
 {
 	public float[] playersLeftMotor = new float[5];
 	public float[] playersRightMotor = new float[5];
+	public int[] playersVibrationCount = new int[4];
 
 	private Player gamepad1;
 	private Player gamepad2;
@@ -104,9 +105,14 @@ public class VibrationManager : Singleton<VibrationManager>
 		playersLeftMotor [whichPlayer] = leftMotor;
 		playersRightMotor [whichPlayer] = rightMotor;
 
+		playersVibrationCount [whichPlayer]++;
+
 		yield return new WaitForSeconds (duration);
 
-		StopVibration (whichPlayer);
+		if(playersVibrationCount [whichPlayer] == 1)
+			StopVibration (whichPlayer);
+
+		playersVibrationCount [whichPlayer]--;
 
 		yield return null;
 	}
@@ -116,6 +122,8 @@ public class VibrationManager : Singleton<VibrationManager>
 		Tween myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, leftMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, rightMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 
+		playersVibrationCount [whichPlayer]++;
+
 		yield return myTween.WaitForCompletion ();
 		yield return new WaitForSeconds (duration);
 
@@ -124,7 +132,10 @@ public class VibrationManager : Singleton<VibrationManager>
 
 		yield return myTween.WaitForCompletion ();
 
-		StopVibration (whichPlayer);
+		if(playersVibrationCount [whichPlayer] == 1)
+			StopVibration (whichPlayer);
+
+		playersVibrationCount [whichPlayer]--;
 
 		yield return null;
 	}
@@ -136,9 +147,14 @@ public class VibrationManager : Singleton<VibrationManager>
 			playersLeftMotor [whichPlayer] = leftMotor;
 			playersRightMotor [whichPlayer] = rightMotor;
 
+			playersVibrationCount [whichPlayer]++;
+
 			yield return new WaitForSeconds (burstDuration);
 
-			StopVibration (whichPlayer);
+			if(playersVibrationCount [whichPlayer] == 1)
+				StopVibration (whichPlayer);
+
+			playersVibrationCount [whichPlayer]--;
 
 			yield return new WaitForSeconds (durationBetweenBurst);
 		}

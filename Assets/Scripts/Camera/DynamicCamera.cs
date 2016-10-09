@@ -170,6 +170,8 @@ public class DynamicCamera : MonoBehaviour
 
 	public void GetNewSettings ()
 	{
+		bool exactSettings = false;
+
 		for(int i = 0; i < modesSettingsList.Count; i++)
 		{
 			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.WhichModeLoaded)
@@ -180,25 +182,19 @@ public class DynamicCamera : MonoBehaviour
 				cameraYMin = modesSettingsList [i].cameraYMin;
 				distanceMin = modesSettingsList [i].distanceMin;
 				distanceRatio = modesSettingsList [i].distanceRatio;
-
+				exactSettings = true;
 				break;
 			}
+		}
 
-			else
-			{
-				if(modesSettingsList[i].whichMode == WhichMode.Default)
-				{
-					cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;
-					cameraMovementLerp = modesSettingsList [i].cameraMovementLerp;
+		if(!exactSettings)
+		{
+			cameraZoomLerp = modesSettingsList [0].cameraZoomLerp;
+			cameraMovementLerp = modesSettingsList [0].cameraMovementLerp;
 
-					cameraYMin = modesSettingsList [i].cameraYMin;
-					distanceMin = modesSettingsList [i].distanceMin;
-					distanceRatio = modesSettingsList [i].distanceRatio;
-
-					break;
-				}
-
-			}
+			cameraYMin = modesSettingsList [0].cameraYMin;
+			distanceMin = modesSettingsList [0].distanceMin;
+			distanceRatio = modesSettingsList [0].distanceRatio;
 		}
 
 	}

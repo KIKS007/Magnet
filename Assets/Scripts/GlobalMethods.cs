@@ -70,17 +70,19 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
-			allMovables [i].gameObject.SetActive(true);
+			if(allMovables[i] != null)
+			{
+				allMovables [i].gameObject.SetActive (true);
 
-			allMovables [i].transform.DOScale (allScales[i], 0.8f).SetEase (Ease.OutElastic);
+				allMovables [i].transform.DOScale (allScales [i], 0.8f).SetEase (Ease.OutElastic);
 
-			allMovables [i].transform.position = newPos;
-			allMovables [i].transform.rotation = Quaternion.Euler(Vector3.zero);
-			allMovables [i].GetComponent<Rigidbody> ().velocity = Vector3.zero;
-			allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+				allMovables [i].transform.position = newPos;
+				allMovables [i].transform.rotation = Quaternion.Euler (Vector3.zero);
+				allMovables [i].GetComponent<Rigidbody> ().velocity = Vector3.zero;
+				allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
-			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = true;
-			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = true;
+				allMovables [i].transform.GetChild (1).GetComponent<Renderer> ().enabled = true;
+				allMovables [i].transform.GetChild (2).GetComponent<Renderer> ().enabled = true;}
 
 			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
 

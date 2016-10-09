@@ -10,8 +10,8 @@ public class PlayersTraining : PlayersGameplay
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-
 			OnDeathVoid ();
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
 			if(playerState == PlayerState.Holding)
 			{
