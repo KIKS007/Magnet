@@ -346,6 +346,13 @@ public class PlayersGameplay : MonoBehaviour
 				break;
 			}
 		}
+
+		if(name == "Player 3" && controllerNumber != -1)
+		{
+			Debug.Log (player.controllers.GetController(ControllerType.Joystick, 0).hardwareName);
+			Debug.Log (player.controllers.GetController(ControllerType.Joystick, 0).name);
+
+		}
 	}
 
 	public virtual void Attraction (GameObject movable)

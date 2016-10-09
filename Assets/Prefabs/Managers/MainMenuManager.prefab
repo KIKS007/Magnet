@@ -118,7 +118,7 @@ MonoBehaviour:
   oneGamepadDisconnected: 0
   gamepadsDisconnectedCanvas: {fileID: 0}
   maxYGamepad: 900
-  minYGamepad: 607
+  minYGamepad: 555
   gamepadsDisconnected:
   - {fileID: 0}
   - {fileID: 0}

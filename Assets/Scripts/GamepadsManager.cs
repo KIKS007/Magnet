@@ -28,10 +28,10 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
 
+		LoadModeManager.Instance.OnLevelLoaded += ResetUnpluggedArray;
+
 		GlobalVariables.Instance.OnModeStarted += ResetUnpluggedArray;
 		GlobalVariables.Instance.OnModeStarted += FindGamepadsPluggedAtStart;
-
-		GlobalVariables.Instance.OnGameOver += ResetUnpluggedArray;
 
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
@@ -116,6 +116,10 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 				PauseGame ();
 		}
+
+		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
+			GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamepadDisconnetedResults ();
+
 	}
 
 	void PauseGame ()
@@ -142,7 +146,8 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		}
 
 		//Enable Possiblity to play alone with one gamepad
-		GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
 	}
 
 	void SetControllerNumber (int whichNumber)

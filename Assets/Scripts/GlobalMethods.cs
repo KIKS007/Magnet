@@ -82,9 +82,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
 				allMovables [i].transform.GetChild (1).GetComponent<Renderer> ().enabled = true;
-				allMovables [i].transform.GetChild (2).GetComponent<Renderer> ().enabled = true;}
+				allMovables [i].transform.GetChild (2).GetComponent<Renderer> ().enabled = true;
+			
+				MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
+			}
 
-			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
 
 			yield return null;
 		}

@@ -182,6 +182,8 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		DOTween.Init();
 		DOTween.defaultTimeScaleIndependent = true;
+
+		GlobalVariables.Instance.OnGameOver += ResetGamepadsDisconnection;
 	}
 
     // Use this for initialization
@@ -597,30 +599,45 @@ public class MainMenuManagerScript : MonoBehaviour
 			oneGamepadDisconnected = false;
 		
 
-		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !tweening)
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && !tweening)
 		{
 			for(int i = 0; i < 4; i++)
 			{
-				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && gamepadsDisconnected[i].anchoredPosition.y != minYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && gamepadsDisconnected[i].anchoredPosition.y != minYGamepad && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
 				{
-					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, minYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, minYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected" + i.ToString());
 				}
 
-				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
 				{
-					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected" + i.ToString());
 
 				}
 			}
 		}
+	}
 
-		else
+	void ResetGamepadsDisconnection ()
+	{
+		for(int i = 0; i < 4; i++)
 		{
-			for(int i = 0; i < 4; i++)
+			if(gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
 			{
-				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && gamepadsDisconnected[i].anchoredPosition.y != maxYGamepad && !DOTween.IsTweening("GamepadDisconnected"))
-					gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected");
+				gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected" + i.ToString());
+
+				if (GlobalVariables.Instance.ControllerNumberPlayer1 == i + 1)
+					GlobalVariables.Instance.ControllerNumberPlayer1 = -1;
+
+				if (GlobalVariables.Instance.ControllerNumberPlayer2 == i + 1)
+					GlobalVariables.Instance.ControllerNumberPlayer2 = -1;
+
+				if (GlobalVariables.Instance.ControllerNumberPlayer3 == i + 1)
+					GlobalVariables.Instance.ControllerNumberPlayer3 = -1;
+
+				if (GlobalVariables.Instance.ControllerNumberPlayer4 == i + 1)
+					GlobalVariables.Instance.ControllerNumberPlayer4 = -1;
 			}
+			
 		}
 	}
 
@@ -757,6 +774,11 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	}
 
+	public void GamepadDisconnetedResults ()
+	{
+		if (gameOverCanvas.activeSelf == true)
+			MainMenuVoid ();
+	}
 
 
 	void CheckCanPlay ()
@@ -1835,7 +1857,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		
 		yield return new WaitForSeconds(0.01f);
 
-		Tween myTween = panelBackground.DOSizeDelta(modifiedPanelSize, durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);			
+		Tween myTween = panelBackground.DOSizeDelta(modifiedPanelSize, durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween");			
 		yield return myTween.WaitForCompletion ();
 		panelBackground.DOAnchorPos (new Vector2 (offXGO, panelBackground.anchoredPosition.y), durationSubmit);
 
@@ -1885,7 +1907,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		
 		yield return new WaitForSeconds(0.01f);
 
-		Tween myTween = panelBackground.DOSizeDelta(modifiedPanelSize, durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);			
+		Tween myTween = panelBackground.DOSizeDelta(modifiedPanelSize, durationSubmit).SetEase(easeTypeMainMenu).SetId("MainMenuTween");			
 		yield return myTween.WaitForCompletion ();
 		panelBackground.DOAnchorPos (new Vector2 (offXGO, panelBackground.anchoredPosition.y), durationSubmit);
 

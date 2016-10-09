@@ -36,10 +36,13 @@ public class MovableBomb : MovableScript
 
 		GetRigidbodySettings ();
 
-		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-
-		tag = "Movable";
+		if(playerHolding == null)
+		{
+			cubeMaterial.SetFloat ("_Lerp", 0);
+			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+			
+			tag = "Movable";			
+		}
 	}
 
 	protected override void OnEnable ()
@@ -54,10 +57,13 @@ public class MovableBomb : MovableScript
 
 		GetRigidbodySettings ();
 
-		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-
-		tag = "Movable";
+		if(playerHolding == null)
+		{
+			cubeMaterial.SetFloat ("_Lerp", 0);
+			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+			
+			tag = "Movable";			
+		}
 	}
 
 	protected override void Update () 
@@ -167,7 +173,6 @@ public class MovableBomb : MovableScript
 
 		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer)
 		{
-			Debug.Log ("Bomb Hit");
 			hold = true;
 			playerHolding = other.gameObject;
 
@@ -194,14 +199,19 @@ public class MovableBomb : MovableScript
 
 	public void ResetColor ()
 	{
-		if(cubeMaterial == null)
-			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+		if(playerHolding == null)
+		{
+			if(cubeMaterial == null)
+				cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+			
+			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+			
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
+			
+		}
 
-		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 	}
 
 	public IEnumerator Explode ()

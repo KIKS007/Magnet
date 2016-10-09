@@ -224,8 +224,8 @@ MonoBehaviour:
   firstBombTimer: 20
   secondBombTimer: 15
   thirdBombTimer: 10
-  timeBeforeFirstSpawn: 0.5
-  timeBetweenSpawn: 2
+  timeBeforeFirstSpawn: 0.2
+  timeBetweenSpawn: 1.5
   lastSecondsSound: TicTacBomb
   cubeTrackingSound: CubeTracking
   timerTexts:

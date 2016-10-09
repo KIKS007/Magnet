@@ -166,7 +166,7 @@ public class BombManager : MonoBehaviour
 		bomb.GetComponent<MovableBomb> ().ResetColor ();
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
 
-		yield return new WaitUntil(() => bomb.activeSelf == true);
+		yield return new WaitWhile(() => bomb.activeSelf == false);
 
 		yield return new WaitForSeconds (1.5f);
 

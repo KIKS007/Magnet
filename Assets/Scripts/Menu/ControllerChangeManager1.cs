@@ -415,7 +415,10 @@ public class ControllerChangeManager1 : MonoBehaviour
 		}
 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
+		{
+			Debug.Log ("Solo Mode");
 			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+		}
 
 
 		GlobalVariables.Instance.NumberOfPlayers = 0;
