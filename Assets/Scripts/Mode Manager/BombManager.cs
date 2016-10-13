@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using DarkTonic.MasterAudio;
+using DG.Tweening;
 
 public class BombManager : MonoBehaviour 
 {
@@ -21,7 +22,7 @@ public class BombManager : MonoBehaviour
 	[SoundGroupAttribute]
 	public string cubeTrackingSound;
 
-	public Text[] timerTexts = new Text[0];
+	public Text timerText;
 	public float timer;
 	public string timerClock;
 	public float timeBeforeEndGame = 1;
@@ -30,14 +31,22 @@ public class BombManager : MonoBehaviour
 
 	private bool lastSeconds = false;
 
+	private MovableBomb bombScript;
+
+	private int textInitialSize;
+	private Vector3 textLocalPosition;
+
 	// Use this for initialization
 	void Start () 
 	{
 		bomb = GameObject.FindGameObjectWithTag ("Movable").gameObject;
-		bomb.SetActive (false);
+		bomb.gameObject.SetActive(false);
+		bombScript = bomb.GetComponent<MovableBomb> ();
+		textInitialSize = timerText.fontSize;
+		timerText.fontSize = 0;
+		textLocalPosition = timerText.transform.parent.transform.localPosition;
 
-		/*for(int i = 0; i < timerTexts.Length; i++)
-			timerTexts[i].text = "0";*/
+		timerText.transform.parent.SetParent (null);
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
@@ -64,11 +73,16 @@ public class BombManager : MonoBehaviour
 			break;
 		}
 
+		string seconds = Mathf.Floor(timer % 60).ToString("00");
+		timerClock = seconds;
+
+		timerText.text = timerClock;
+
 		StartCoroutine (SpawnBomb ());
 
-		yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+		yield return new WaitWhile (() => bombScript.playerHolding == null);
 
-		StartCoroutine (StartTimer ());
+		StartCoroutine (Timer ());
 	}
 	
 	// Update is called once per frame
@@ -83,13 +97,6 @@ public class BombManager : MonoBehaviour
 		}
 	}
 
-	IEnumerator StartTimer ()
-	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.GetComponent<MovableBomb>() == false);
-
-		StartCoroutine (Timer ());
-	}
-
 	IEnumerator Timer ()
 	{
 		timer -= Time.deltaTime;
@@ -99,23 +106,20 @@ public class BombManager : MonoBehaviour
 		if(timer > 0)
 		{
 			string seconds = Mathf.Floor(timer % 60).ToString("00");
-
-			//timerClock = minutes + ":" + seconds;
 			timerClock = seconds;
 
-			for(int i = 0; i < timerTexts.Length; i++)
-				timerTexts[i].text = timerClock;
+			timerText.text = timerClock;
+		
 
 			StartCoroutine (Timer ());
 		}
 
 		else
 		{
-			for(int i = 0; i < timerTexts.Length; i++)
-				timerTexts[i].text = "00";
+			timerText.text = "00";
 			
 			MasterAudio.PlaySound3DAtTransformAndForget (cubeTrackingSound, bomb.transform);
-			bomb.GetComponent<MovableBomb> ().StartCoroutine ("Explode");
+			bombScript.StartCoroutine ("Explode");
 	
 
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
@@ -127,21 +131,21 @@ public class BombManager : MonoBehaviour
 			case 4:
 				timer = firstBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+				yield return new WaitWhile (() => bombScript.playerHolding == null);
 
 				StartCoroutine (Timer ());
 				break;
 			case 3:
 				timer = secondBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+				yield return new WaitWhile (() => bombScript.playerHolding == null);
 
 				StartCoroutine (Timer ());
 				break;
 			case 2:
 				timer = thirdBombTimer;
 				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bomb.GetComponent<MovableBomb> ().playerHolding == null);
+				yield return new WaitWhile (() => bombScript.playerHolding == null);
 
 				StartCoroutine (Timer ());
 				break;
@@ -149,6 +153,11 @@ public class BombManager : MonoBehaviour
 				StartCoroutine(GameEnd ());
 				break;
 			}
+
+			string seconds = Mathf.Floor(timer % 60).ToString("00");
+			timerClock = seconds;
+
+			timerText.text = timerClock;
 
 			lastSeconds = false;
 			bomb.tag = "Movable";
@@ -163,18 +172,25 @@ public class BombManager : MonoBehaviour
 
 		yield return new WaitForSeconds (timeBeforeSpawn);
 
-		bomb.GetComponent<MovableBomb> ().ResetColor ();
+		bombScript.ResetColor ();
+
+
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
 
-		yield return new WaitWhile(() => bomb.activeSelf == false);
+		yield return new WaitForSeconds (0.5f);
 
-		yield return new WaitForSeconds (1.5f);
+		timerText.transform.parent.SetParent (bomb.transform);
+		timerText.transform.parent.transform.localPosition = textLocalPosition;
+
+		DOTween.To(()=> timerText.fontSize, x=> timerText.fontSize =x, textInitialSize, 0.2f);
+
+		yield return new WaitForSeconds (1f);
 
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null)
 			playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
 
 	}
-
+		
 	IEnumerator GameEnd ()
 	{
 		playersList = GameObject.FindGameObjectsWithTag("Player");

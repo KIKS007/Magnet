@@ -13,6 +13,9 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	private Player player;
 
+	[HideInInspector]
+	public bool gettingMovable = false;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -46,6 +49,8 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	public void GetMovable (Collider other)
 	{
+		gettingMovable = true;
+
 		other.tag = "HoldMovable";
 
 		other.gameObject.GetComponent<MovableScript>().hold = true;
@@ -63,5 +68,7 @@ public class MagnetTriggerScript : MonoBehaviour
 		v3.y = (other.transform.localScale.y /2 + 0.1f) - 1;
 		v3.z = 0.5f * other.transform.localScale.z + 0.8f;
 		magnetPoint.localPosition = v3;
+
+		gettingMovable = false;
 	}
 }

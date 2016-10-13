@@ -91,31 +91,33 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
 	{
-		switch (arg.name)
-		{
-		case "XInput Gamepad 1":
-			if(gamepadsPluggedAtStart[0])
-				gamepadsUnplugged[0] = true;
-			break;
-		case "XInput Gamepad 2":
-			if(gamepadsPluggedAtStart[1])
-				gamepadsUnplugged[1] = true;
-			break;
-		case "XInput Gamepad 3":
-			if(gamepadsPluggedAtStart[2])
-				gamepadsUnplugged[2] = true;
-			break;
-		case "XInput Gamepad 4":
-			if(gamepadsPluggedAtStart[3])
-				gamepadsUnplugged[3] = true;
-			break;
-		}
-
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			switch (arg.name)
+			{
+			case "XInput Gamepad 1":
+				if(gamepadsPluggedAtStart[0])
+					gamepadsUnplugged[0] = true;
+				break;
+			case "XInput Gamepad 2":
+				if(gamepadsPluggedAtStart[1])
+					gamepadsUnplugged[1] = true;
+				break;
+			case "XInput Gamepad 3":
+				if(gamepadsPluggedAtStart[2])
+					gamepadsUnplugged[2] = true;
+				break;
+			case "XInput Gamepad 4":
+				if(gamepadsPluggedAtStart[3])
+					gamepadsUnplugged[3] = true;
+				break;
+			}
+
+
 			if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 				PauseGame ();
 		}
+
 
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 			GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamepadDisconnetedResults ();

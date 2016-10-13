@@ -61,7 +61,6 @@ public class ButtonOnSelected : EventTrigger
 
 		if(eventSys.currentSelectedGameObject != gameObject && otherButton.localScale != Vector3.one)
 			otherButton.DOScale(1, scaleOnDuration);
-
 	}
 
 	public void OnSelect () 
@@ -69,7 +68,7 @@ public class ButtonOnSelected : EventTrigger
 		selected = true;
 			
 		if(scaleChangement)
-			otherButton.DOScale(scaleOnSelected, scaleOnDuration);	
+			otherButton.DOScale(scaleOnSelected, scaleOnDuration);
 	}
 
 	public void OnDeselect () 

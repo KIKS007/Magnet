@@ -745,15 +745,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -43
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 104
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 18
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 431228, guid: 3443f5d71d390134da9737b6b25f8b64, type: 2}
       propertyPath: m_LocalRotation.x
@@ -823,7 +823,7 @@ MonoBehaviour:
   gamepadDisconnectionSound: 
   winSound: 
   playlistCont: {fileID: 0}
-  cubeSpawnSound: 
+  cubeSpawnSound: CubeSpawn
   soundsBar: {fileID: 0}
   playlistBar: {fileID: 0}
   soundsMute: 0
@@ -937,8 +937,10 @@ MonoBehaviour:
   ParticulesClonesParent: {fileID: 595958288}
   mainButtonIdleColorText: {r: 0, g: 0, b: 0, a: 0}
   mainButtonHighlightedColorText: {r: 0, g: 0, b: 0, a: 0}
+  mainButtonClickedColorText: {r: 0, g: 0, b: 0, a: 0}
   secondaryButtonIdleColorText: {r: 0, g: 0, b: 0, a: 0}
   secondaryButtonHighlightedColorText: {r: 0, g: 0, b: 0, a: 0}
+  secondaryClickedColorText: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1437567659
 Transform:
   m_ObjectHideFlags: 0
@@ -1040,6 +1042,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  playersVibrationCount: 00000000000000000000000000000000
   test: 0
   leftMotorTest: 0
   rightMotorTest: 0

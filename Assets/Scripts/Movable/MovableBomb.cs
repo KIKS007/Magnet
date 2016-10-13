@@ -123,7 +123,8 @@ public class MovableBomb : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(tag == "Movable" && other.gameObject.tag == "Player" || tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
+		if(tag == "Movable" && other.gameObject.tag == "Player" 
+			|| tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
 			if(playerThatThrew == null)
 			{

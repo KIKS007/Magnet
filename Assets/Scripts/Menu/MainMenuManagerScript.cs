@@ -678,7 +678,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		MasterAudio.PlaySound (GameSoundsManager.Instance.gameStartSound);
 
-		logoMenu.transform.parent.GetChild(1).gameObject.SetActive(false);
+		logoMenu.transform.parent.GetChild(1).GetComponent<RectTransform>().DOAnchorPosY(-630, 0.2f);
 
 		logoMenu.transform.GetChild(0).GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 365),  shrinkDuration);
 		logoMenu.transform.GetChild(1).GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 365),  shrinkDuration);

@@ -24,7 +24,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			newPos = new Vector3 (Random.Range (-20f, 20f), player.transform.position.y, Random.Range (-10f, 10f));
 			yield return null;	
 		}
-		while(Physics.CheckSphere(newPos, 3, layer));
+		while(Physics.CheckSphere(newPos, 5, layer));
 
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
@@ -44,7 +44,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0)
+	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0.1f)
 	{
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 		Vector3[] allScales = new Vector3[allMovables.Length];
@@ -66,7 +66,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			{
 				newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
 			}
-			while(Physics.CheckSphere(newPos, 3, layer));
+			while(Physics.CheckSphere(newPos, 5, layer));
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
@@ -101,26 +101,20 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
-		Vector3 newPos = new Vector3 ();
-
-		do
-		{
-			newPos = position;
-			yield return null;
-		}
-		while (Physics.CheckSphere (position, 3, layer));
+		movable.gameObject.SetActive(false);
+		
+		yield return new WaitWhile (()=> Physics.CheckSphere (position, 5, layer));
 
 		movable.transform.localScale = Vector3.zero;
-
-		movable.gameObject.SetActive(true);
 
 		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
+		movable.gameObject.SetActive(true);
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 
-		movable.transform.position = newPos;
+		movable.transform.position = position;
 
 		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
 
@@ -139,7 +133,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		{
 			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
 		}
-		while(Physics.CheckSphere(newPos, 3, layer));
+		while(Physics.CheckSphere(newPos, 5, layer));
 
 		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;

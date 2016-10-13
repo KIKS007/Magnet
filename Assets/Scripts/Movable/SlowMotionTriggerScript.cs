@@ -17,6 +17,7 @@ public class SlowMotionTriggerScript : MonoBehaviour
 			triggerEnabled = false;
 
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion ();
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().ContrastVignette(transform.position);
 		}
 
 		if (triggerEnabled && transform.parent.tag != "ThrownMovable")
