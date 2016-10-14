@@ -308,37 +308,11 @@ public class PlayersGameplay : MonoBehaviour
         {
             player = ReInput.players.GetPlayer(controllerNumber);
 
-            switch (controllerNumber)
-            {
-                case 1:
-                    foreach (Joystick j in ReInput.controllers.Joysticks)
-                    {
-                        if (j.name == "XInput Gamepad 1")
-                            player.controllers.AddController(ControllerType.Joystick, j.id, true);
-                    }
-                    break;
-                case 2:
-                    foreach (Joystick j in ReInput.controllers.Joysticks)
-                    {
-                        if (j.name == "XInput Gamepad 2")
-                            player.controllers.AddController(ControllerType.Joystick, j.id, true);
-                    }
-                    break;
-                case 3:
-                    foreach (Joystick j in ReInput.controllers.Joysticks)
-                    {
-                        if (j.name == "XInput Gamepad 3")
-                            player.controllers.AddController(ControllerType.Joystick, j.id, true);
-                    }
-                    break;
-                case 4:
-                    foreach (Joystick j in ReInput.controllers.Joysticks)
-                    {
-                        if (j.name == "XInput Gamepad 4")
-                            player.controllers.AddController(ControllerType.Joystick, j.id, true);
-                    }
-                    break;
-            }
+			for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+			{
+				if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
+					player.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+			}
         }
     }
 
@@ -553,8 +527,6 @@ public class PlayersGameplay : MonoBehaviour
     protected virtual IEnumerator Stun(bool cubeHit)
     {
         MagnetTriggerScript magnetTrigger = transform.GetChild(2).GetComponent<MagnetTriggerScript>();
-
-        float timeTest = Time.time;
 
         yield return new WaitWhile(() => magnetTrigger.gettingMovable == true);
 

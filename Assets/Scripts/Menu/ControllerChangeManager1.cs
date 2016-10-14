@@ -62,10 +62,6 @@ public class ControllerChangeManager1 : MonoBehaviour
 		imagesAlignedPos [4] = logoRect [4].anchoredPosition.x;
 
 		ReInput.ControllerConnectedEvent += GetPlayers;
-		ReInput.ControllerConnectedEvent += GamepadConnectedDisplay;
-
-		ReInput.ControllerPreDisconnectEvent += GamepadDisconnectedDisplay;
-		ReInput.ControllerPreDisconnectEvent += ResetGamepadOnDisconnect;
 
 		ReInput.ControllerPreDisconnectEvent += UpdateGlobalVariables;
 		ReInput.ControllerPreDisconnectEvent += UpdatePlayersControllers;
@@ -209,10 +205,24 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad3 = ReInput.players.GetPlayer (3);
 		gamepad4 = ReInput.players.GetPlayer (4);
 
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
-		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
-		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
-		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			switch(GamepadsManager.Instance.gamepadsList[i].GamepadId)
+			{
+			case 1:
+				gamepad1.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			case 2:
+				gamepad2.controllers.AddController (GamepadsManager.Instance.gamepadsList [i].GamepadController, true);
+				break;
+			case 3:
+				gamepad3.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			case 4:
+				gamepad4.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			}
+		}
 	}
 
 	void GetPlayers ()
@@ -223,105 +233,83 @@ public class ControllerChangeManager1 : MonoBehaviour
 		gamepad3 = ReInput.players.GetPlayer (3);
 		gamepad4 = ReInput.players.GetPlayer (4);
 
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
-		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
-		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
-		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			switch(GamepadsManager.Instance.gamepadsList[i].GamepadId)
+			{
+			case 1:
+				gamepad1.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			case 2:
+				gamepad2.controllers.AddController (GamepadsManager.Instance.gamepadsList [i].GamepadController, true);
+				break;
+			case 3:
+				gamepad3.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			case 4:
+				gamepad4.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				break;
+			}
+		}
 	}
 
-	void GamepadConnectedDisplay (ControllerStatusChangedEventArgs arg)
+	public void GamepadConnectedDisplay (int whichGamepad)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			switch (arg.name)
+			switch (whichGamepad)
 			{
-			case "XInput Gamepad 1":
+			case 1:
 				sliderRect [1].GetComponent<Button> ().interactable = true;
 				break;
-			case "XInput Gamepad 2":
+			case 2:
 				sliderRect [2].GetComponent<Button> ().interactable = true;
 				break;
-			case "XInput Gamepad 3":
+			case 3:
 				sliderRect [3].GetComponent<Button> ().interactable = true;
 				break;
-			case "XInput Gamepad 4":
+			case 4:
 				sliderRect [4].GetComponent<Button> ().interactable = true;
 				break;
 			}
 		}
 	}
 
-	void GamepadDisconnectedDisplay (ControllerStatusChangedEventArgs arg)
+	public void GamepadDisconnectedDisplay (int whichGamepad)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			switch (arg.name)
+			switch (whichGamepad)
 			{
-			case "XInput Gamepad 1":
+			case 1:
 				sliderRect [1].GetComponent<Button> ().interactable = false;
 				break;
-			case "XInput Gamepad 2":
+			case 2:
 				sliderRect [2].GetComponent<Button> ().interactable = false;
 				break;
-			case "XInput Gamepad 3":
+			case 3:
 				sliderRect [3].GetComponent<Button> ().interactable = false;
 				break;
-			case "XInput Gamepad 4":
+			case 4:
 				sliderRect [4].GetComponent<Button> ().interactable = false;
 				break;
 			}
 		}
 	}
 
-	void GamepadDisplay ()
+	public void GamepadDisplay ()
 	{
-		if(XCI.IsPluggedIn(1))
+		for(int i = 0; i < 4; i++)
 		{
-			sliderRect [1].GetComponent<Button> ().interactable = true;
-		}
+			if(GamepadsManager.Instance.gamepadsPluggedAtStart[i])
+				sliderRect [i + 1].GetComponent<Button> ().interactable = true;
 
-		if(!XCI.IsPluggedIn(1))
-		{
-			sliderRect [1].GetComponent<Button> ().interactable = false;
-			sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-			imagesNumber [1] = 0;
-		}
-
-		if(XCI.IsPluggedIn(2))
-		{
-			sliderRect [2].GetComponent<Button> ().interactable = true;
-		}
-
-		if(!XCI.IsPluggedIn(2))
-		{
-			sliderRect [2].GetComponent<Button> ().interactable = false;
-			sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-			imagesNumber [2] = 0;
-		}
-
-		if(XCI.IsPluggedIn(3))
-		{
-			sliderRect [3].GetComponent<Button> ().interactable = true;
-		}
-
-		if(!XCI.IsPluggedIn(3))
-		{
-			sliderRect [3].GetComponent<Button> ().interactable = false;
-			sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-			imagesNumber [3] = 0;
-
-		}
-
-		if(XCI.IsPluggedIn(4))
-		{
-			sliderRect [4].GetComponent<Button> ().interactable = true;
-		}
-
-		if(!XCI.IsPluggedIn(4))
-		{
-			sliderRect [4].GetComponent<Button> ().interactable = false;
-			sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-			imagesNumber [4] = 0;
+			else
+			{
+				sliderRect [i + 1].GetComponent<Button> ().interactable = false;
+				sliderRect [i + 1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [i + 1] = 0;
+			}
 
 		}
 	}
@@ -606,38 +594,32 @@ public class ControllerChangeManager1 : MonoBehaviour
 			}
 
 			GlobalVariables.Instance.ListPlayers ();
-
-			/*Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer1);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer2);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer3);
-		Debug.Log (GlobalVariables.Instance.ControllerNumberPlayer4);*/
-
 		}
 	}
 
 
-	void ResetGamepadOnDisconnect (ControllerStatusChangedEventArgs arg)
+	public void ResetGamepadOnDisconnect (int whichGamepad)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			switch (arg.name)
+			switch (whichGamepad)
 			{
-			case "XInput Gamepad 1":
+			case 1:
 				sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				imagesNumber [1] = 0;
 				EraseControllerNumbers (1);
 				break;
-			case "XInput Gamepad 2":
+			case 2:
 				sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				imagesNumber [2] = 0;
 				EraseControllerNumbers (2);
 				break;
-			case "XInput Gamepad 3":
+			case 3:
 				sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				imagesNumber [3] = 0;
 				EraseControllerNumbers (3);
 				break;
-			case "XInput Gamepad 4":
+			case 4:
 				sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
 				imagesNumber [4] = 0;
 				EraseControllerNumbers (4);

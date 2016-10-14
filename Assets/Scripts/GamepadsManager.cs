@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Rewired;
+using System;
+using System.Configuration;
+
+public enum WhichGamepadType {Xbox1, Xbox2, Xbox3, Xbox4, Custom};
 
 public class GamepadsManager : Singleton<GamepadsManager>
 {
-	public event EventHandler OnGamepadConnectionChange;
-
 	[Header ("Number of Gamepads")]
 	public int numberOfGamepads;
 
@@ -17,13 +20,18 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	[Header ("Gamepad unplugged")]
 	public bool[] gamepadsUnplugged = new bool[4] {false, false, false, false};
 
+	[Header ("Gamepad Plugged Names")]
+	public string[] gamepadsNames = new string[4];
+
+	[Header ("Gamepads List")]
+	public List<Gamepad> gamepadsList = new List<Gamepad> ();
+
+	private ControllerChangeManager1 controllerChangeManager;
 
 	// Use this for initialization
-	void Awake () 
+	void Start () 
 	{
-		ReInput.ControllerConnectedEvent += OnGamepadConnectedOrDisconneted;
-		ReInput.ControllerDisconnectedEvent += OnGamepadConnectedOrDisconneted;
-
+		ReInput.ControllerDisconnectedEvent += GamepadUnplugged;
 		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
 
 		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
@@ -33,15 +41,16 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		GlobalVariables.Instance.OnModeStarted += ResetUnpluggedArray;
 		GlobalVariables.Instance.OnModeStarted += FindGamepadsPluggedAtStart;
 
+		controllerChangeManager = GlobalVariables.Instance.controllerManager;
+
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
+
 	}
 
-	void OnGamepadConnectedOrDisconneted (ControllerStatusChangedEventArgs args)
+	void Update ()
 	{
-		if (OnGamepadConnectionChange != null)
-			OnGamepadConnectionChange ();
-
+		gamepadsNames = ReInput.controllers.GetJoystickNames ();
 		numberOfGamepads = ReInput.controllers.joystickCount;
 	}
 
@@ -50,78 +59,172 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		for (int i = 0; i < gamepadsPluggedAtStart.Length; i++)
 			gamepadsPluggedAtStart [i] = false;
 
+		CheckWhichGamepad ();
+	}
+
+	void CheckWhichGamepad ()
+	{
 		foreach(Joystick j in ReInput.controllers.Joysticks)
 		{
-			if (j.name == "XInput Gamepad 1")
-				gamepadsPluggedAtStart [0] = true;
+			bool gamepadAlreadyContained = false;
 
-			if (j.name == "XInput Gamepad 2")
-				gamepadsPluggedAtStart [1] = true;
+			for(int i = 0; i < gamepadsList.Count; i++)
+			{
+				if (gamepadsList [i].GamepadRewiredId == j.id)
+					gamepadAlreadyContained = true;
+			}
 
-			if (j.name == "XInput Gamepad 3")
-				gamepadsPluggedAtStart [2] = true;
+			if (!gamepadAlreadyContained)
+			{
+				if (j.name == "XInput Gamepad 1" || j.name == "XInput Gamepad 2" || j.name == "XInput Gamepad 3" || j.name == "XInput Gamepad 4")
+				{
+					gamepadsList.Add (new Gamepad());
+					gamepadsList [gamepadsList.Count - 1].GamepadController = ReInput.controllers.GetController(ControllerType.Joystick, j.id);
+					gamepadsList [gamepadsList.Count - 1].GamepadName = j.name;
+					gamepadsList [gamepadsList.Count - 1].GamepadIsDiconnected = false;
+					gamepadsList [gamepadsList.Count - 1].GamepadRewiredId = j.id;
+				}
 
-			if (j.name == "XInput Gamepad 4")
-				gamepadsPluggedAtStart [3] = true;
+				if(j.name == "XInput Gamepad 1")
+				{
+					gamepadsList [gamepadsList.Count - 1].GamepadType = WhichGamepadType.Xbox1;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 1;
+					gamepadsPluggedAtStart [0] = true;
+				}
+
+				else if (j.name == "XInput Gamepad 2")
+				{
+					gamepadsList [gamepadsList.Count - 1].GamepadType = WhichGamepadType.Xbox2;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 2;
+					gamepadsPluggedAtStart [1] = true;
+				}
+
+				else if (j.name == "XInput Gamepad 3")
+				{
+					gamepadsList [gamepadsList.Count - 1].GamepadType = WhichGamepadType.Xbox3;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 3;
+					gamepadsPluggedAtStart [2] = true;
+				}
+
+				else if (j.name == "XInput Gamepad 4")
+				{
+					gamepadsList [gamepadsList.Count - 1].GamepadType = WhichGamepadType.Xbox4;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 4;
+					gamepadsPluggedAtStart [3] = true;
+				}
+			}
+		}
+
+
+		foreach(Joystick j in ReInput.controllers.Joysticks)
+		{
+			bool gamepadAlreadyContained = false;
+
+			for(int i = 0; i < gamepadsList.Count; i++)
+			{
+				if (gamepadsList [i].GamepadRewiredId == j.id)
+					gamepadAlreadyContained = true;
+			}
+
+			if (!gamepadAlreadyContained)
+			{
+				gamepadsList.Add (new Gamepad());
+				gamepadsList [gamepadsList.Count - 1].GamepadController = ReInput.controllers.GetController(ControllerType.Joystick, j.id);
+				gamepadsList [gamepadsList.Count - 1].GamepadName = j.name;
+				gamepadsList [gamepadsList.Count - 1].GamepadIsDiconnected = false;
+				gamepadsList [gamepadsList.Count - 1].GamepadRewiredId = j.id;
+				gamepadsList [gamepadsList.Count - 1].GamepadType = WhichGamepadType.Custom;
+
+				if (!gamepadsPluggedAtStart [0])
+				{
+					gamepadsPluggedAtStart [0] = true;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 1;
+
+				}
+				
+
+				else if (!gamepadsPluggedAtStart [1])
+				{
+					gamepadsPluggedAtStart [1] = true;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 2;
+
+				}
+				
+
+				else if (!gamepadsPluggedAtStart [2])
+				{
+					gamepadsPluggedAtStart [2] = true;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 3;
+
+				}
+				
+
+				else if (!gamepadsPluggedAtStart [3])
+				{
+					gamepadsPluggedAtStart [3] = true;
+					gamepadsList [gamepadsList.Count - 1].GamepadId = 4;
+
+				}
+			}
 		}
 	}
 
 	void CheckIfGamepadReconnected (ControllerStatusChangedEventArgs arg)
 	{
-		switch (arg.name)
+		CheckWhichGamepad ();
+
+		for(int i = 0; i < gamepadsList.Count; i++)
 		{
-		case "XInput Gamepad 1":
-			if(gamepadsPluggedAtStart[0])
-				gamepadsUnplugged[0] = false;
-			break;
-		case "XInput Gamepad 2":
-			if(gamepadsPluggedAtStart[1])
-				gamepadsUnplugged[1] = false;
-			break;
-		case "XInput Gamepad 3":
-			if(gamepadsPluggedAtStart[2])
-				gamepadsUnplugged[2] = false;
-			break;
-		case "XInput Gamepad 4":
-			if(gamepadsPluggedAtStart[3])
-				gamepadsUnplugged[3] = false;
-			break;
+			int id = gamepadsList [i].GamepadId;
+
+			if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+			{
+				gamepadsList [i].GamepadIsDiconnected = false;
+
+
+				if(id != -1)
+				{
+					gamepadsUnplugged[gamepadsList [i].GamepadId - 1] = false;
+					controllerChangeManager.GamepadConnectedDisplay (id);
+					controllerChangeManager.GamepadDisplay ();
+				}
+
+			}
 		}
 	}
 
 	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
 	{
+		for(int i = 0; i < gamepadsList.Count; i++)
+		{
+			int id = gamepadsList [i].GamepadId;
+
+			if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+			{
+				gamepadsList [i].GamepadIsDiconnected = true;
+
+				if(id != -1)
+				{
+					controllerChangeManager.GamepadConnectedDisplay (id);
+					controllerChangeManager.ResetGamepadOnDisconnect (id);
+					controllerChangeManager.GamepadDisplay ();
+				}
+
+
+				if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && id != -1)
+					gamepadsUnplugged[id - 1] = true;
+
+			}
+		}
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			switch (arg.name)
-			{
-			case "XInput Gamepad 1":
-				if(gamepadsPluggedAtStart[0])
-					gamepadsUnplugged[0] = true;
-				break;
-			case "XInput Gamepad 2":
-				if(gamepadsPluggedAtStart[1])
-					gamepadsUnplugged[1] = true;
-				break;
-			case "XInput Gamepad 3":
-				if(gamepadsPluggedAtStart[2])
-					gamepadsUnplugged[2] = true;
-				break;
-			case "XInput Gamepad 4":
-				if(gamepadsPluggedAtStart[3])
-					gamepadsUnplugged[3] = true;
-				break;
-			}
-
-
 			if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 				PauseGame ();
 		}
 
-
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 			GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamepadDisconnetedResults ();
-
 	}
 
 	void PauseGame ()
@@ -169,4 +272,15 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			break;
 		}
 	}
+}
+
+[Serializable]
+public class Gamepad
+{
+	public WhichGamepadType GamepadType;
+	public Controller GamepadController;
+	public string GamepadName;
+	public int GamepadRewiredId;
+	public int GamepadId = -1;
+	public bool GamepadIsDiconnected = false;
 }
