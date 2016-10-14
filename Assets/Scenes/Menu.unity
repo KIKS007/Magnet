@@ -5660,7 +5660,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &348187673
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11322,7 +11322,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &684709877
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26133,7 +26133,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &1303310249
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36428,7 +36428,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 848, y: -514}
+  m_AnchoredPosition: {x: 874, y: -514}
   m_SizeDelta: {x: 444.96, y: 138.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1942413970
@@ -37293,7 +37293,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' <color=#00D5FFFF>0</color>  <color=#00D5FFFF>Player 1</color> '
+  m_Text: 
 --- !u!222 &1988362010
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -39429,11 +39429,6 @@ MonoBehaviour:
   numberOfGamepads: 0
   gamepadsPluggedAtStart: 00000000
   gamepadsUnplugged: 00000000
-  gamepadsNames:
-  - 
-  - 
-  - 
-  - 
   gamepadsList: []
 --- !u!4 &2057654297
 Transform:

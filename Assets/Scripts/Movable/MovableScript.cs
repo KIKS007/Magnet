@@ -54,11 +54,17 @@ public class MovableScript : MonoBehaviour
 	public MeshFilter cubeMeshFilter;
 	[HideInInspector]
 	public Material cubeMaterial;
+	[HideInInspector]
+	public Vector3 initialScale;
+
+	protected virtual void Awake () 
+	{
+		initialScale = transform.localScale;
+	}
 
 	// Use this for initialization
 	protected virtual void Start () 
 	{
-		tag = "Untagged";
 		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
@@ -72,13 +78,12 @@ public class MovableScript : MonoBehaviour
 		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
-
-		tag = "Movable";
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
 	}
 
 	protected virtual void OnEnable ()
 	{
-		tag = "Untagged";
 		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
@@ -92,8 +97,8 @@ public class MovableScript : MonoBehaviour
 		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
-
-		tag = "Movable";
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
 	}
 	
 	// Update is called once per frame
@@ -114,7 +119,7 @@ public class MovableScript : MonoBehaviour
 			{
 				gameObject.tag = "ThrownMovable";
 			}
-			else if(currentVelocity < limitVelocity)
+			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
 				gameObject.tag = "Movable";
 				playerThatThrew = null;

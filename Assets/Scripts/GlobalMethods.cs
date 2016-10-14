@@ -49,6 +49,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		string tagTemp = allMovables [0].tag;
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
@@ -60,6 +61,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
+			allMovables [i].tag = "Untagged";
 			Vector3 newPos = new Vector3 ();
 
 			do
@@ -75,6 +77,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				allMovables [i].gameObject.SetActive (true);
 
 				allMovables [i].transform.DOScale (allScales [i], 0.8f).SetEase (Ease.OutElastic);
+				StartCoroutine (ChangeMovableTag (allMovables [i], tagTemp, 0.8f));
 
 				allMovables [i].transform.position = newPos;
 				allMovables [i].transform.rotation = Quaternion.Euler (Vector3.zero);
@@ -102,7 +105,9 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		movable.gameObject.SetActive(false);
-		
+		string tagTemp = movable.tag;
+		movable.tag = "Untagged";
+
 		yield return new WaitWhile (()=> Physics.CheckSphere (position, 5, layer));
 
 		movable.transform.localScale = Vector3.zero;
@@ -113,6 +118,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		movable.gameObject.SetActive(true);
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
+		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
 
 		movable.transform.position = position;
 
@@ -126,6 +132,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+		movable.tag = "Untagged";
 
 		movable.transform.localScale = Vector3.zero;
 
@@ -142,7 +150,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.gameObject.SetActive(true);
 
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
-
+		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
 		movable.transform.position = newPos;
 
 		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
@@ -164,5 +172,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			}
 		}
 	}
-		
+
+	IEnumerator ChangeMovableTag (GameObject movable, string tagTemp, float timeTween)
+	{
+		yield return new WaitForSeconds (0.3f * timeTween);
+
+		movable.tag = tagTemp;
+	}
 }

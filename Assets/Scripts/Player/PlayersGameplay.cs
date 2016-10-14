@@ -308,10 +308,13 @@ public class PlayersGameplay : MonoBehaviour
         {
             player = ReInput.players.GetPlayer(controllerNumber);
 
-			for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+			if(controllerNumber > 0)
 			{
-				if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
-					player.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+				{
+					if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
+						player.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+				}
 			}
         }
     }
@@ -358,7 +361,7 @@ public class PlayersGameplay : MonoBehaviour
             playerState = PlayerState.Repulsing;
 
             Vector3 movableRepulsion = movable.transform.position - transform.position;
-            movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Force);
+			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Acceleration);
 
             if (OnRepulsing != null)
                 OnRepulsing();
@@ -640,23 +643,15 @@ public class PlayersGameplay : MonoBehaviour
             GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
-            if (playerState == PlayerState.Holding)
+			if (playerState == PlayerState.Holding)
             {
-                Transform holdMovableTemp = null;
+				Transform holdMovableTemp = transform.GetComponentInChildren<MovableBomb> ().transform;
 
-                for (int i = 0; i < transform.childCount; i++)
-                {
-                    if (transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "HoldMovable" || transform.GetChild(i).tag == "ThrownMovable")
-                    {
-                        holdMovableTemp = transform.GetChild(i);
-
-                        holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
-
-                        holdMovableTemp.transform.SetParent(null);
-                        holdMovableTemp.transform.SetParent(movableParent);
-                        holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
-                    }
-                }
+				holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
+				
+				holdMovableTemp.transform.SetParent(null);
+				holdMovableTemp.transform.SetParent(movableParent);
+				holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
             }
 
             playerState = PlayerState.Dead;

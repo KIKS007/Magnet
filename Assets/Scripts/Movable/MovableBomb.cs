@@ -26,7 +26,6 @@ public class MovableBomb : MovableScript
 
 	protected override void Start ()
 	{
-		tag = "Untagged";
 		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
@@ -40,14 +39,14 @@ public class MovableBomb : MovableScript
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
 			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-			
-			tag = "Movable";			
 		}
+
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
 	}
 
 	protected override void OnEnable ()
 	{
-		tag = "Untagged";
 		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
@@ -61,9 +60,10 @@ public class MovableBomb : MovableScript
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
 			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-			
-			tag = "Movable";			
 		}
+
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
 	}
 
 	protected override void Update () 
@@ -83,7 +83,7 @@ public class MovableBomb : MovableScript
 			{
 				gameObject.tag = "ThrownMovable";
 			}
-			else if(currentVelocity < limitVelocity)
+			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
 				gameObject.tag = "Movable";
 				playerThatThrew = null;

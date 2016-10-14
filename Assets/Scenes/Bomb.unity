@@ -221,9 +221,9 @@ MonoBehaviour:
   playersList: []
   bomb: {fileID: 58536334}
   playersNumber: 0
-  firstBombTimer: 20
-  secondBombTimer: 15
-  thirdBombTimer: 10
+  firstBombTimer: 16
+  secondBombTimer: 12
+  thirdBombTimer: 8
   timeBeforeFirstSpawn: 0.2
   timeBetweenSpawn: 1.5
   lastSecondsSound: TicTacBomb
@@ -393,6 +393,7 @@ MonoBehaviour:
   playerHit: {fileID: 0}
   cubeMeshFilter: {fileID: 0}
   cubeMaterial: {fileID: 0}
+  initialScale: {x: 0, y: 0, z: 0}
   playerHolding: {fileID: 0}
   explosionSound: BoumBomb
   lastSecondsSound: TicTacBomb
@@ -2958,10 +2959,10 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 629469488}
-  m_LocalRotation: {x: 0.70710665, y: -0, z: -0, w: 0.70710695}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.007199999, y: 0.0072000003, z: 0.0072000017}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_Children:
   - {fileID: 1456759495}
   m_Father: {fileID: 832560633}
@@ -8440,7 +8441,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: f3ae9472af2dc90469ced24deea7726c, type: 3}
-    m_FontSize: 78
+    m_FontSize: 105
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0

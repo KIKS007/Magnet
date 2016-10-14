@@ -43,8 +43,6 @@ public class MagnetTriggerScript : MonoBehaviour
 				}
 			}
 		}
-
-
 	}
 
 	public void GetMovable (Collider other)
@@ -58,15 +56,18 @@ public class MagnetTriggerScript : MonoBehaviour
 		other.gameObject.GetComponent<MovableScript>().player = transform.parent;
 
 		other.gameObject.GetComponent<MovableScript>().GetRigidbodySettings();
+
 		Destroy (other.GetComponent<Rigidbody>());
 
 		character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
 		other.transform.SetParent(transform.parent);
 
+		Vector3 scaleTemp = other.GetComponent<MovableScript> ().initialScale;
+
 		Vector3 v3 = magnetPoint.localPosition;
 		v3.x = 0f;
-		v3.y = (other.transform.localScale.y /2 + 0.1f) - 1;
-		v3.z = 0.5f * other.transform.localScale.z + 0.8f;
+		v3.y = (scaleTemp.y /2 + 0.1f) - 1;
+		v3.z = 0.5f * scaleTemp.z + 0.8f;
 		magnetPoint.localPosition = v3;
 
 		gettingMovable = false;

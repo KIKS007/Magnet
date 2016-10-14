@@ -45,8 +45,9 @@ public class BombManager : MonoBehaviour
 		textInitialSize = timerText.fontSize;
 		timerText.fontSize = 0;
 		textLocalPosition = timerText.transform.parent.transform.localPosition;
+		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
 
-		timerText.transform.parent.SetParent (null);
+		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
@@ -160,7 +161,6 @@ public class BombManager : MonoBehaviour
 			timerText.text = timerClock;
 
 			lastSeconds = false;
-			bomb.tag = "Movable";
 		}
 
 	}
@@ -173,21 +173,31 @@ public class BombManager : MonoBehaviour
 		yield return new WaitForSeconds (timeBeforeSpawn);
 
 		bombScript.ResetColor ();
+		bomb.tag = "Movable";
 
+		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
+		timerText.fontSize = 0;
 
 		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
+
+		yield return new WaitWhile (()=> bomb.activeSelf == false);
 
 		yield return new WaitForSeconds (0.5f);
 
 		timerText.transform.parent.SetParent (bomb.transform);
 		timerText.transform.parent.transform.localPosition = textLocalPosition;
+		timerText.transform.parent.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
 
 		DOTween.To(()=> timerText.fontSize, x=> timerText.fontSize =x, textInitialSize, 0.2f);
 
 		yield return new WaitForSeconds (1f);
 
-		if(bomb.GetComponent<MovableBomb>().playerHolding == null)
+		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
 			playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
+
+		else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
+			bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
 
 	}
 		

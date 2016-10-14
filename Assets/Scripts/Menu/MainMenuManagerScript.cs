@@ -458,33 +458,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		//SetButtonsNavigation ();
 
-		if(mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected && kickSteamLogos.anchoredPosition.x != onX)
-		{
-			if(!DOTween.IsTweening("Logos") && !DOTween.IsTweening("PauseMovement"))
-				LogosKickSteamOn ();
-		}
-
-		if(mainMenuCanvas.activeSelf == false || oneGamepadDisconnected || DOTween.IsTweening("PauseMovement"))
-		{
-			if(!DOTween.IsTweening("Logos") && kickSteamLogos.anchoredPosition.x != offX)
-				LogosKickSteamOff ();
-		}
-
-		if(creditsMenuCanvas.activeSelf == true && !oneGamepadDisconnected && ironEqualLogo.anchoredPosition.x != onXIE)
-		{
-			if(!DOTween.IsTweening("IronEqualLogo"))
-			{
-				ironEqualLogo.DOAnchorPos (new Vector2 (onXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("IronEqualLogo");
-			}
-		}
-
-		if(creditsMenuCanvas.activeSelf == false || oneGamepadDisconnected)
-		{
-			if(!DOTween.IsTweening("IronEqualLogo") && ironEqualLogo.anchoredPosition.x != offXIE)
-			{
-				ironEqualLogo.DOAnchorPos (new Vector2 (offXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("IronEqualLogo");
-			}
-		}
+		KickStarterSteamLogo ();
 
 		TextResume ();
 
@@ -572,6 +546,37 @@ public class MainMenuManagerScript : MonoBehaviour
 		}
 	}
 
+	void KickStarterSteamLogo ()
+	{
+		if(mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected && kickSteamLogos.anchoredPosition.x != onX)
+		{
+			if(!DOTween.IsTweening("Logos") && !DOTween.IsTweening("PauseMovement"))
+				LogosKickSteamOn ();
+		}
+		
+		if(mainMenuCanvas.activeSelf == false || oneGamepadDisconnected || DOTween.IsTweening("PauseMovement"))
+		{
+			if(!DOTween.IsTweening("Logos") && kickSteamLogos.anchoredPosition.x != offX)
+				LogosKickSteamOff ();
+		}
+		
+		if(creditsMenuCanvas.activeSelf == true && !oneGamepadDisconnected && ironEqualLogo.anchoredPosition.x != onXIE)
+		{
+			if(!DOTween.IsTweening("IronEqualLogo"))
+			{
+				ironEqualLogo.DOAnchorPos (new Vector2 (onXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("IronEqualLogo");
+			}
+		}
+		
+		if(creditsMenuCanvas.activeSelf == false || oneGamepadDisconnected)
+		{
+			if(!DOTween.IsTweening("IronEqualLogo") && ironEqualLogo.anchoredPosition.x != offXIE)
+			{
+				ironEqualLogo.DOAnchorPos (new Vector2 (offXIE, ironEqualLogo.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("IronEqualLogo");
+			}
+		}
+	}
+
 	void TextResume ()
 	{
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && mainMenuCanvas.activeSelf == true && !DOTween.IsTweening("PauseMovement") && !oneGamepadDisconnected)
@@ -589,15 +594,17 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	void GamepadsDisconnection ()
 	{
-		for(int i = 0; i < 4; i++)
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
 		{
-			if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
-				oneGamepadDisconnected = true;
-		}
-
-		if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
-			oneGamepadDisconnected = false;
-		
+			for(int i = 0; i < 4; i++)
+			{
+				if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
+					oneGamepadDisconnected = true;
+			}
+			
+			if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
+				oneGamepadDisconnected = false;
+		}		
 
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && !tweening)
 		{

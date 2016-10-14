@@ -29,7 +29,7 @@ MonoBehaviour:
   secretKey:
   - 397d043bde7e0fc2236b763ba63c2e2982133502
   Build:
-  - 0.1.5
+  - 0.1.6
   SelectedPlatformStudio:
   - IronEqual
   SelectedPlatformGame:

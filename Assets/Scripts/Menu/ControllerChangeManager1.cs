@@ -158,6 +158,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
+			GamepadsManager.Instance.FindGamepadsPluggedAtStart ();
+
 			GetPlayersAndControllers ();
 
 			GetPlayers ();
@@ -257,6 +259,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
+			Debug.Log ("Which : " + whichGamepad.ToString ());
+
 			switch (whichGamepad)
 			{
 			case 1:
@@ -279,6 +283,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
+			Debug.Log ("Which : " + whichGamepad.ToString ());
+
 			switch (whichGamepad)
 			{
 			case 1:
@@ -299,18 +305,17 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	public void GamepadDisplay ()
 	{
-		for(int i = 0; i < 4; i++)
+		for(int i = 1; i < 5; i++)
 		{
-			if(GamepadsManager.Instance.gamepadsPluggedAtStart[i])
-				sliderRect [i + 1].GetComponent<Button> ().interactable = true;
-
+			if(GamepadsManager.Instance.gamepadsPluggedAtStart[i - 1] && !GamepadsManager.Instance.gamepadsUnplugged[i - 1])
+				sliderRect [i].GetComponent<Button> ().interactable = true;
+			
 			else
 			{
-				sliderRect [i + 1].GetComponent<Button> ().interactable = false;
-				sliderRect [i + 1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [i + 1] = 0;
+				sliderRect [i].GetComponent<Button> ().interactable = false;
+				sliderRect [i].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [i] = 0;
 			}
-
 		}
 	}
 

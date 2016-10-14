@@ -42,7 +42,7 @@ public class MovableRepulse : MovableScript
 			{
 				gameObject.tag = "ThrownMovable";
 			}
-			else if(currentVelocity < limitVelocity)
+			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
 				gameObject.tag = "Movable";
 			}

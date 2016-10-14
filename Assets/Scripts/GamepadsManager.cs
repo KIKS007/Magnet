@@ -20,9 +20,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	[Header ("Gamepad unplugged")]
 	public bool[] gamepadsUnplugged = new bool[4] {false, false, false, false};
 
-	[Header ("Gamepad Plugged Names")]
-	public string[] gamepadsNames = new string[4];
-
 	[Header ("Gamepads List")]
 	public List<Gamepad> gamepadsList = new List<Gamepad> ();
 
@@ -50,11 +47,10 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void Update ()
 	{
-		gamepadsNames = ReInput.controllers.GetJoystickNames ();
 		numberOfGamepads = ReInput.controllers.joystickCount;
 	}
 
-	void FindGamepadsPluggedAtStart ()
+	public void FindGamepadsPluggedAtStart ()
 	{
 		for (int i = 0; i < gamepadsPluggedAtStart.Length; i++)
 			gamepadsPluggedAtStart [i] = false;
@@ -71,7 +67,11 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			for(int i = 0; i < gamepadsList.Count; i++)
 			{
 				if (gamepadsList [i].GamepadRewiredId == j.id)
+				{
 					gamepadAlreadyContained = true;
+					gamepadsList [i].GamepadIsDiconnected = false;
+					gamepadsPluggedAtStart [gamepadsList [i].GamepadId - 1] = true;
+				}
 			}
 
 			if (!gamepadAlreadyContained)
@@ -123,7 +123,11 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			for(int i = 0; i < gamepadsList.Count; i++)
 			{
 				if (gamepadsList [i].GamepadRewiredId == j.id)
+				{
 					gamepadAlreadyContained = true;
+					gamepadsList [i].GamepadIsDiconnected = false;
+					gamepadsPluggedAtStart [gamepadsList [i].GamepadId - 1] = true;
+				}
 			}
 
 			if (!gamepadAlreadyContained)
@@ -185,7 +189,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 				if(id != -1)
 				{
 					gamepadsUnplugged[gamepadsList [i].GamepadId - 1] = false;
-					controllerChangeManager.GamepadConnectedDisplay (id);
+					//controllerChangeManager.GamepadConnectedDisplay (id);
 					controllerChangeManager.GamepadDisplay ();
 				}
 
@@ -205,14 +209,15 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 				if(id != -1)
 				{
-					controllerChangeManager.GamepadConnectedDisplay (id);
-					controllerChangeManager.ResetGamepadOnDisconnect (id);
+					//controllerChangeManager.GamepadConnectedDisplay (id);
+					//controllerChangeManager.ResetGamepadOnDisconnect (id);
 					controllerChangeManager.GamepadDisplay ();
 				}
 
+				gamepadsUnplugged[id - 1] = true;
 
-				if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && id != -1)
-					gamepadsUnplugged[id - 1] = true;
+				/*if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && id != -1)
+					gamepadsUnplugged[id - 1] = true;*/
 
 			}
 		}

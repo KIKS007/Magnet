@@ -45,7 +45,6 @@ public class MagnetZoneScript : MonoBehaviour
 				{
 					Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
 
-
 					if(player != null)
 					{
 						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
