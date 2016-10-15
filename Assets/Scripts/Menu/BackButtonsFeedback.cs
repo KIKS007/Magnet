@@ -54,16 +54,26 @@ public class BackButtonsFeedback : MonoBehaviour
 		gamepad3 = ReInput.players.GetPlayer (3);
 		gamepad4 = ReInput.players.GetPlayer (4);
 
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
-		gamepad2.controllers.AddController (ControllerType.Joystick, 1, true);
-		gamepad3.controllers.AddController (ControllerType.Joystick, 2, true);
-		gamepad4.controllers.AddController (ControllerType.Joystick, 3, true);
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
+				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 2)
+				gamepad2.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 3)
+				gamepad3.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 4)
+				gamepad4.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(mouseKeyboard.GetButtonDown("Cancel"))
+		if(mouseKeyboard.GetButtonDown("UICancel"))
 		{
 			switch(whichButton)
 			{
@@ -76,7 +86,7 @@ public class BackButtonsFeedback : MonoBehaviour
 			}
 		}
 
-		if(gamepad1.GetButtonDown("Cancel") || gamepad2.GetButtonDown("Cancel") || gamepad3.GetButtonDown("Cancel") || gamepad4.GetButtonDown("Cancel"))
+		if(gamepad1.GetButtonDown("UICancel") || gamepad2.GetButtonDown("UICancel") || gamepad3.GetButtonDown("UICancel") || gamepad4.GetButtonDown("UICancel"))
 		{
 			switch(whichButton)
 			{

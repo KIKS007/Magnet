@@ -5,9 +5,8 @@
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Rewired Documentation | Rewired Editor</title>
 <!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
 <!-- InstanceParam name="isRoot" type="boolean" value="false" -->
+<!-- InstanceParam name="wide" type="boolean" value="false" -->
 <link href="files/css/styles.css" rel="stylesheet" type="text/css" />
 <!-- Favicons -->
 <link rel="icon" type="image/x-icon" href="/projects/rewired/files/images/favicon.ico?v=1" />
@@ -30,6 +29,7 @@
 
 <body>
 
+
 <div class="container">
   <div class="content">
 	
@@ -38,13 +38,16 @@
     <div class="page-body">
 	
     
-     
+         
 	    
       	<div class="sidebar-nav">
 	        <h4><a href="Documentation.html">Documentation</a></h4>
-            <strong>The Essentials:</strong>
+	        <ul>
+	          <li><a href="Overview.html">Overview</a></li>
+	          <li><a href="ReleaseNotes.txt">Release Notes</a></li>
+          </ul>
+	        <strong>Essentials:</strong>
             <ol>
-              <li><a href="Overview.html">Overview</a></li>
               <li><a href="Installation.html">Installation</a></li>
               <li><a href="QuickStart.html">Quick Start</a></li>
               <li><a href="BasicUsage.html">Basic Usage</a></li>
@@ -58,10 +61,18 @@
               <li><a href="Players.html">Players</a></li>
               <li><a href="Actions.html">Actions</a></li>
               <li><a href="InputBehaviors.html">Input Behaviors</a></li>
+              <li><a href="Controllers.html">Controllers</a></li>
               <li><a href="ControllerMaps.html">Controller Maps</a></li>
               <li><a href="MapCategories.html">Map Categories</a></li>
               <li><a href="ControllerMaps.html"></a><a href="Layouts.html">Layouts</a></li>
               <li><a href="CustomControllers.html">Custom Controllers</a></li>
+            </ul>
+            <strong>Extras:</strong>
+            <ul>
+              <li><a href="ControlMapper.html" title="Control Mapper">Control Mapper</a></li>
+              <li><a href="RewiredStandaloneInputModule.html">Rewired Standalone Input Module</a></li>
+	          <li><a href="UserDataStore.html" title="User Data Store">User Data Store</a></li>
+	          <li><a href="UnityInputOverride.html" title="Unity Input Override">Unity Input Override</a></li>
             </ul>
             <strong>How To's</strong>
             <ul>
@@ -72,9 +83,14 @@
               <li><a href="SupportedControllers.html" title="Supported Controllers">Supported Controllers</a></li>
               <li><a href="SpecialPlatformSupport.html" title="Special Platform Support">Special Platform Support</a></li>
 	          <li><a href="Examples.html" title="Examples">Examples</a></li>
-              <li><a href="Integration.html">Integration with Other Packages</a></li>
+              <li><a href="Integration.html">Integrations</a></li>
+	          <li><a href="Updating.html" title="Updating Rewired">Updating Rewired</a></li>
 	          <li><a href="Troubleshooting.html" title="Troubleshooting">Troubleshooting</a></li>
               <li><a href="KnownIssues.html">Known Issues</a></li>
+            </ul>
+            <strong>FAQ</strong>
+            <ul>
+            	<li><a href="FAQ.html">See all topics...</a></li>
             </ul>
             <strong>Unity Help:</strong>
             <ul>
@@ -148,18 +164,50 @@
     <td valign="top">&nbsp;</td>
   </tr>
   <tr>
-    <td valign="top">Input Sources</td>
+    <td valign="top">Input Options</td>
     <td valign="top">&nbsp;</td>
   </tr>
   <tr>
-    <td valign="top">Windows Standalone</td>
-    <td valign="top"><p>The primary input source for the Windows Standalone platform.</p>
-      <p>Raw Input - Use Raw Input for the input source.<br />
-        Direct Input - Use Direct Input for the input source. Installation of DirectX end-user runtimes may be required for Direct Input support.</p></td>
+    <td valign="top">Disable Native Input</td>
+    <td valign="top"><p>Force Unity Input to be the input source. This will disable all external input sources such as Raw Input, Direct Input, XInput, and native OSX.</p>
+      <p>WARNING:
+        Unity Input does not allow hot-plugging on most platforms. If you need hot-plugging, do not check this box.</p></td>
   </tr>
   <tr>
-    <td valign="top">Use XInput</td>
-    <td valign="top">On Windows, use XInput for compatible devices. Otherwise fall back to Raw Input or Direct Input. Installation of DirectX end-user runtimes may be required for XInput support.</td>
+    <td valign="top">Windows Standalone Input Source</td>
+    <td valign="top"><p>The primary input source for the Windows Standalone platform.</p>
+      <p>Raw Input - Use Raw Input for the input source. Note: Raw Input carries significant advantages over Direct Input such as better Bluetooth controller support, support for more elements on certain controllers, better controller recognition, etc.  Does not require any extra libraries. Windows Control Panel joystick calibration does not affect joystick axes.</p>
+      <p> Direct Input - Use Direct Input for the input source. Installation of DirectX end-user runtimes may be required for Direct Input support. Windows Control Panel joystick calibration settings affect joystick axes.</p>
+<p> SDL2 - Use SDL2 for the input source. This option requires the SDL2 runtime library to be installed. Note: SDL2 does not support as many devices as other native input sources.</p></td>
+  </tr>
+  <tr>
+    <td valign="top">Windows: Use XInput</td>
+    <td valign="top">On Windows, use XInput for compatible devices. Otherwise fall back to Raw Input or Direct Input. Installation of DirectX end-user runtimes may be required for XInput support. (Windows Vista+ include XInput support without the need for additional drivers.) Required for XBox 360 vibration support.</td>
+  </tr>
+  <tr>
+    <td valign="top">Windows: Steam Raw Input Fix</td>
+    <td valign="top"><p>Force Raw Input controllers to appear in list when using a Steam Controller along with other controllers. This is a workaround for an issue caused by Steam when a Steam Controller is used in conjunction with other Raw Input controllers that causes said Raw Input controllers to disappear once a Steam Controller is attached.</p>
+      <p>Note: When using Steam Streaming, this workaround will cause all Raw Input controllers connected to the host machine to appear to the client.</p></td>
+  </tr>
+  <tr>
+    <td valign="top">OSX Standalone Input Source</td>
+    <td valign="top"><p>The primary input source for the OSX Standalone platform.</p>
+      <p>Native - Use native input for the input source. This provides the best device support.</p>
+      <p>SDL2 - Use SDL2 for the input source. This option requires the SDL2 runtime library to be installed.         Note: SDL2 does not support as many devices as other native input sources.</p>
+<p>Unity Input - Use Unity fallback input. </p></td>
+  </tr>
+  <tr>
+    <td valign="top">Linux Standalone Input Source</td>
+    <td valign="top"><p>The primary input source for the Linux Standalone platform.</p>
+      <p>Native - Use native input for the input source. This provides the best device support.</p>
+      <p> SDL2 - Use SDL2 for the input source. May be required for Steam Streaming support in Linux. This option requires the SDL2 runtime library to be installed. Note: SDL2 does not support as many devices as other native input sources.</p>
+      <p>Unity Input - Use Unity fallback input. </p></td>
+  </tr>
+  <tr>
+    <td valign="top">Android: Support Unknown Gamepads</td>
+    <td valign="top"><p>Treat all unrecognized controllers as gamepads using the standardized Android gamepad layout. All recognized controllers will be treated normally.</p>
+      <p>Warning: While most Android gamepads conform to this layout, there are exceptions. Addtionally, with this option enabled, all unrecognized non-gamepad joystick devices used will be limited to only the set of elements available on a gamepad. If your game needs to support devices other than Android gamepads, disable this option.</p>
+      <p>This option only applies to the Android platform.</p></td>
   </tr>
   <tr>
     <td valign="top">Native Mouse Handling</td>
@@ -167,10 +215,16 @@
       <p>NOTE: This setting currently only affects the Windows Standalone platform.</p></td>
   </tr>
   <tr>
-    <td valign="top">Always use Unity Input</td>
-    <td valign="top"><p>Force Unity Input to be the input source. This will disable all external input sources such as Raw Input, Direct Input, XInput, and native OSX.</p>
-      <p>WARNING:
-        Unity Input does not allow hot-plugging on most platforms. If you need hot-plugging, do not check this box.</p></td>
+    <td valign="top">Enhanced Device Support</td>
+    <td valign="top">Enable low-level enhanced support for certain devices on certain platforms. If enhanced support is available for a particular device, this will enable device-specific features such as vibration / force feedback, lights, gyroscopes, accelerometers, touchpads, etc.</td>
+  </tr>
+  <tr>
+    <td valign="top">Default Joystick Dead Zone Type</td>
+    <td valign="top"><p>The default calculation type for joystick dead zones.</p>
+      <p>Radial: X and Y are combined and the dead zone is calculated on the length of the vector.<br />
+        Axial: X and Y axes are calculated independently.<br />
+        </p>
+  <p>This setting only applies to joysticks on recognized controllers.</p></td>
   </tr>
   <tr>
     <td valign="top">&nbsp;</td>
@@ -178,7 +232,7 @@
   </tr>
   <tr>
     <td valign="top">Joystick Auto-Assignment:</td>
-    <td valign="top">&nbsp;</td>
+    <td valign="top">NOTE: Joystick Auto-Assignment  applies to Joysticks only (controllers other than keyboard or mouse.) Joystick Auto-Assignment does not consider whether a Player has Keyboard Maps assigned, so it will not skip assigning joysticks to Players that are using the keyboard.</td>
   </tr>
   <tr>
     <td valign="top">Auto-Assign Joysticks</td>
@@ -230,7 +284,11 @@
     <td valign="top">Assign Mouse on Start</td>
     <td valign="top">Assign the mouse to this player on start.</td>
   </tr>
-</table>
+  <tr>
+    <td valign="top">Exclude Joy Auto-Assign</td>
+    <td valign="top">Determines whether joysticks can be auto-assigned to this Player.</td>
+  </tr>
+ </table>
 <p></p>
 <p><strong>To create a new Player:</strong><br />
   Click the &quot;New&quot; button below the &quot;Players:&quot; box.</p>
@@ -278,6 +336,8 @@
 <p><strong>Category Box:</strong><br />
   Select a category to see the Actions in this category.<br />
   Click &quot;Edit Categories&quot; to add or edit Action Categories.</p>
+<p><strong>Exporting Actions to Consts:</strong><br />
+  Click &quot;Export Actions to Consts&quot; to export all Actions. (See <a href="HowTos.html#exporting-actions">How To's - Exporting Actions as constants for use in scripting</a> for more information.)</p>
 <p><strong>Action Box:</strong><br />
   Select an Action to modify its properties.</p>
 <p><strong>Action Properties:</strong></p>
@@ -342,11 +402,13 @@
   </tr>
   <tr>
     <td valign="top">Digital Axis Gravity</td>
-    <td valign="top">Speed (units/sec) that the axis value falls toward 0. This only affects axis values generated by button and key presses.</td>
+    <td valign="top"><p>Speed (units/sec) that the axis value falls toward 0. This only affects axis values generated by button and key presses.</p>
+      <p>To disable digital axis smoothing, set both Digital Axis Gravity and Digital Axis Sensitivity to 1000.</p></td>
   </tr>
   <tr>
     <td valign="top">Digital Axis Sensitivity</td>
-    <td valign="top">Speed to move toward an axis value of 1.0 in units/sec. This only affects axis values generated by button and key presses.</td>
+    <td valign="top"><p>Speed to move toward an axis value of 1.0 in units/sec. This only affects axis values generated by button and key presses.</p>
+      <p>To disable digital axis smoothing, set both Digital Axis Gravity and Digital Axis Sensitivity to 1000.</p></td>
   </tr>
   <tr>
     <td valign="top">Mouse XY Axis Mode</td>
@@ -512,6 +574,10 @@
         Negative = Only the negative side of the axis.</p></td>
   </tr>
   <tr>
+    <td valign="top">Calibrate</td>
+    <td valign="top">Scale and clamp values to a min/max range and apply other calibration transformations. Disable this if you want values to pass through unmodified.</td>
+  </tr>
+  <tr>
     <td valign="top">Zero</td>
     <td valign="top">The zero point of the axis.</td>
   </tr>
@@ -573,21 +639,66 @@
 <p>The Keyboard Layouts page allows you to create and edit Keyboard Layouts.</p>
 <p>See <a href="Layouts.html">Layouts</a> for more information.</p>
 <p><strong>Layout Properties:</strong></p>
-<p>See <a href="#JoystickLayouts">Joystick Layouts</a>.</p>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="10%" valign="top">Layout Id</td>
+    <td width="90%" valign="top">Can be used to get the layout via scripting.</td>
+  </tr>
+  <tr>
+    <td valign="top">Name</td>
+    <td valign="top">The name of the layout. Used in scripting. Must be unique.</td>
+  </tr>
+  <tr>
+    <td valign="top">Description</td>
+    <td valign="top">The descriptive name that can be shown to players.</td>
+  </tr>
+</table>
+<p></p>
+<p></p>
 <hr />
 <h3><a name="MouseLayouts" id="MouseLayouts"></a>Mouse Layouts</h3>
 <p><img src="files/images/rewirededitor_mouselayouts.png" alt="Mouse Layouts" /></p>
 <p>The Mouse Layouts page allows you to create and edit Mouse Layouts.</p>
 <p>See <a href="Layouts.html">Layouts</a> for more information.</p>
 <p><strong>Layout Properties:</strong></p>
-<p>See <a href="#JoystickLayouts">Joystick Layouts</a>.</p>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="10%" valign="top">Layout Id</td>
+    <td width="90%" valign="top">Can be used to get the layout via scripting.</td>
+  </tr>
+  <tr>
+    <td valign="top">Name</td>
+    <td valign="top">The name of the layout. Used in scripting. Must be unique.</td>
+  </tr>
+  <tr>
+    <td valign="top">Description</td>
+    <td valign="top">The descriptive name that can be shown to players.</td>
+  </tr>
+</table>
+<p></p>
+<p></p>
 <hr />
 <h3><a name="CustomControllerLayouts" id="CustomControllerLayouts"></a>Custom Controller Layouts</h3>
 <p><img src="files/images/rewirededitor_customcontrollerlayouts.png" alt="Custom Controller Layouts" /></p>
 <p>The Custom Controller Layouts page allows you to create and edit Custom Controller.</p>
 <p>See <a href="Layouts.html">Layouts</a> for more information.</p>
 <p><strong>Layout Properties:</strong></p>
-<p>See <a href="#JoystickLayouts">Joystick Layouts</a>.</p>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="10%" valign="top">Layout Id</td>
+    <td width="90%" valign="top">Can be used to get the layout via scripting.</td>
+  </tr>
+  <tr>
+    <td valign="top">Name</td>
+    <td valign="top">The name of the layout. Used in scripting. Must be unique.</td>
+  </tr>
+  <tr>
+    <td valign="top">Description</td>
+    <td valign="top">The descriptive name that can be shown to players.</td>
+  </tr>
+</table>
+<p></p>
+<p></p>
 <hr />
 <h3><a name="JoystickMaps" id="JoystickMaps"></a>Joystick Maps</h3>
 <p><img src="files/images/rewirededitor_joystickmaps.png" alt="Joystick Maps" /></p>
@@ -597,7 +708,7 @@
 <p>To select a map, you must select the following: 1) A Joystick or Joystick Template, 2) a Category, and 3) a Layout.</p>
 <p><strong>Creating a new Map:</strong></p>
 <p>Select a joystick/template, a category, and a layout, then click the &quot;Create Map&quot; button. A blank map will be created. You can then add elements to the new map by clicking the &quot;New&quot; button beneath the &quot;Elements&quot; box or by clicking the &quot;Create Defaults&quot; button in the same location. &quot;Create Defaults&quot; will create a series of unassigned elements based on the current joystick. You can then assign actions to these elements. Note: &quot;Create Defaults&quot; is only enabled if the map is empty of elements.</p>
-<p>When a Joystick, Template, Category, or Layout has had a map created for it, the name will be displayed with an (*) after it.</p>
+<p>When a Joystick, Template, Category, or Layout has had a map created for it, the name will be displayed in a different color and have an * after it.</p>
 <p><strong>Deleting a Map:</strong></p>
 <p>Select a joystick/template, a category, and a layout, then click the &quot;Delete Map&quot; button.</p>
 <p><strong>Element Properties (Axis):</strong></p>
@@ -843,10 +954,12 @@
         
     </div>
   <div class="footer clearfix">
-   	<p class="left">Copyright &copy;2014 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
+   	<p class="left">Copyright &copy;2014-2016 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
   	<p class="right"><a href="http://guavaman.com/projects/rewired" title="Return to Rewired Website">Return to Rewired Website</a></p>
   </div>
   <!-- end .content --></div>
   <!-- end .container --></div>
+  
+  
 </body>
 <!-- InstanceEnd --></html>

@@ -5,9 +5,8 @@
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Rewired Documentation | Quick Start</title>
 <!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
 <!-- InstanceParam name="isRoot" type="boolean" value="false" -->
+<!-- InstanceParam name="wide" type="boolean" value="false" -->
 <link href="files/css/styles.css" rel="stylesheet" type="text/css" />
 <!-- Favicons -->
 <link rel="icon" type="image/x-icon" href="/projects/rewired/files/images/favicon.ico?v=1" />
@@ -30,6 +29,7 @@
 
 <body>
 
+
 <div class="container">
   <div class="content">
 	
@@ -38,13 +38,16 @@
     <div class="page-body">
 	
     
-     
+         
 	    
       	<div class="sidebar-nav">
 	        <h4><a href="Documentation.html">Documentation</a></h4>
-            <strong>The Essentials:</strong>
+	        <ul>
+	          <li><a href="Overview.html">Overview</a></li>
+	          <li><a href="ReleaseNotes.txt">Release Notes</a></li>
+          </ul>
+	        <strong>Essentials:</strong>
             <ol>
-              <li><a href="Overview.html">Overview</a></li>
               <li><a href="Installation.html">Installation</a></li>
               <li><a href="QuickStart.html">Quick Start</a></li>
               <li><a href="BasicUsage.html">Basic Usage</a></li>
@@ -58,10 +61,18 @@
               <li><a href="Players.html">Players</a></li>
               <li><a href="Actions.html">Actions</a></li>
               <li><a href="InputBehaviors.html">Input Behaviors</a></li>
+              <li><a href="Controllers.html">Controllers</a></li>
               <li><a href="ControllerMaps.html">Controller Maps</a></li>
               <li><a href="MapCategories.html">Map Categories</a></li>
               <li><a href="ControllerMaps.html"></a><a href="Layouts.html">Layouts</a></li>
               <li><a href="CustomControllers.html">Custom Controllers</a></li>
+            </ul>
+            <strong>Extras:</strong>
+            <ul>
+              <li><a href="ControlMapper.html" title="Control Mapper">Control Mapper</a></li>
+              <li><a href="RewiredStandaloneInputModule.html">Rewired Standalone Input Module</a></li>
+	          <li><a href="UserDataStore.html" title="User Data Store">User Data Store</a></li>
+	          <li><a href="UnityInputOverride.html" title="Unity Input Override">Unity Input Override</a></li>
             </ul>
             <strong>How To's</strong>
             <ul>
@@ -72,9 +83,14 @@
               <li><a href="SupportedControllers.html" title="Supported Controllers">Supported Controllers</a></li>
               <li><a href="SpecialPlatformSupport.html" title="Special Platform Support">Special Platform Support</a></li>
 	          <li><a href="Examples.html" title="Examples">Examples</a></li>
-              <li><a href="Integration.html">Integration with Other Packages</a></li>
+              <li><a href="Integration.html">Integrations</a></li>
+	          <li><a href="Updating.html" title="Updating Rewired">Updating Rewired</a></li>
 	          <li><a href="Troubleshooting.html" title="Troubleshooting">Troubleshooting</a></li>
               <li><a href="KnownIssues.html">Known Issues</a></li>
+            </ul>
+            <strong>FAQ</strong>
+            <ul>
+            	<li><a href="FAQ.html">See all topics...</a></li>
             </ul>
             <strong>Unity Help:</strong>
             <ul>
@@ -123,7 +139,7 @@
     <p><img src="files/images/quickstart_editor_actions1.png" alt="Actions" /></p>
     <hr />
 <p>8. For each input you will need for your game, create one Action. Create a few actions such as pictured in the example below. The selected Action's properties can be edited in the fields to the right under &quot;Properties.&quot; For movement actions, change the Type to &quot;Axis&quot;. You can give each action a Name, a Descriptive Name, and if the Type is Axis, also give it a Positive Name and a Negative Name. Hover the mouse over each property label to see a description of that property.</p>
-    <p>Note: Actions can be categorized by first creating Action Categories, but to keep this example simple, we will just leave all actions in the Default category.</p>
+    <p>Note: Actions can be categorized by first creating Action Categories (or later moved into categories), but to keep this example simple, we will just leave all actions in the Default category.</p>
     <p><img src="files/images/quickstart_editor_actions2.png" alt="Actions" /></p>
     <hr />
 <p>9. Each Action can be assigned an Input Behavior which determines how keyboard keys, buttons, and mouse axes behave. By default, all actions are assigned the &quot;Default&quot; Input Behavior. If you wish to tweak any of the settings or create new Input Behaviors, click the &quot;Input Behaviors&quot; button in the navigation bar. Hover the mouse over each property label for a description. For this guide's purposes, we will just leave the default behavior as is.</p>
@@ -169,22 +185,22 @@ using Rewired;
 [RequireComponent(typeof(CharacterController))]
 public class MyCharacter : MonoBehaviour {
 
-    public int playerId = 0; // The Rewired player id of this character
+    public int playerId = 0; <span class="comment">// The Rewired player id of this character</span>
 
     public float moveSpeed = 3.0f;
     public float bulletSpeed = 15.0f;
     public GameObject bulletPrefab;
 
-    private Player player; // The Rewired Player
+    private Player player; <span class="comment">// The Rewired Player</span>
     private CharacterController cc;
     private Vector3 moveVector;
     private bool fire;
 
     void Awake() {
-        // Get the Rewired Player object for this player and keep it for the duration of the character's lifetime
+        <span class="comment">// Get the Rewired Player object for this player and keep it for the duration of the character's lifetime</span>
         player = ReInput.players.GetPlayer(playerId);
 
-        // Get the character controller
+        <span class="comment">// Get the character controller</span>
         cc = GetComponent<CharacterController>&lt;CharacterController&gt;();
     }
 
@@ -194,21 +210,21 @@ public class MyCharacter : MonoBehaviour {
     }
 
     private void GetInput() {
-        // Get the input from the Rewired Player. All controllers that the Player owns will contribute, so it doesn't matter
-        // whether the input is coming from a joystick, the keyboard, mouse, or a custom controller.
+        <span class="comment">// Get the input from the Rewired Player. All controllers that the Player owns will contribute, so it doesn't matter</span>
+        <span class="comment">// whether the input is coming from a joystick, the keyboard, mouse, or a custom controller.</span>
 
-        moveVector.x = player.GetAxis("Move Horizontal"); // get input by name or action id
+        moveVector.x = player.GetAxis("Move Horizontal"); <span class="comment">// get input by name or action id</span>
         moveVector.y = player.GetAxis("Move Vertical");
         fire = player.GetButtonDown("Fire");
     }
 
     private void ProcessInput() {
-        // Process movement
+        <span class="comment">// Process movement</span>
         if(moveVector.x != 0.0f || moveVector.y != 0.0f) {
             cc.Move(moveVector * moveSpeed * Time.deltaTime);
         }
 
-        // Process fire
+        <span class="comment">// Process fire</span>
         if(fire) {
             GameObject bullet = (GameObject)Instantiate(bulletPrefab, transform.position + transform.right, transform.rotation);
             bullet.rigidbody.AddForce(transform.right * bulletSpeed, ForceMode.VelocityChange);
@@ -228,10 +244,12 @@ public class MyCharacter : MonoBehaviour {
         
     </div>
   <div class="footer clearfix">
-   	<p class="left">Copyright &copy;2014 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
+   	<p class="left">Copyright &copy;2014-2016 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
   	<p class="right"><a href="http://guavaman.com/projects/rewired" title="Return to Rewired Website">Return to Rewired Website</a></p>
   </div>
   <!-- end .content --></div>
   <!-- end .container --></div>
+  
+  
 </body>
 <!-- InstanceEnd --></html>

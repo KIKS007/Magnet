@@ -5,9 +5,8 @@
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Rewired Documentation | Input Manager</title>
 <!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
 <!-- InstanceParam name="isRoot" type="boolean" value="false" -->
+<!-- InstanceParam name="wide" type="boolean" value="false" -->
 <link href="files/css/styles.css" rel="stylesheet" type="text/css" />
 <!-- Favicons -->
 <link rel="icon" type="image/x-icon" href="/projects/rewired/files/images/favicon.ico?v=1" />
@@ -30,6 +29,7 @@
 
 <body>
 
+
 <div class="container">
   <div class="content">
 	
@@ -38,13 +38,16 @@
     <div class="page-body">
 	
     
-     
+         
 	    
       	<div class="sidebar-nav">
 	        <h4><a href="Documentation.html">Documentation</a></h4>
-            <strong>The Essentials:</strong>
+	        <ul>
+	          <li><a href="Overview.html">Overview</a></li>
+	          <li><a href="ReleaseNotes.txt">Release Notes</a></li>
+          </ul>
+	        <strong>Essentials:</strong>
             <ol>
-              <li><a href="Overview.html">Overview</a></li>
               <li><a href="Installation.html">Installation</a></li>
               <li><a href="QuickStart.html">Quick Start</a></li>
               <li><a href="BasicUsage.html">Basic Usage</a></li>
@@ -58,10 +61,18 @@
               <li><a href="Players.html">Players</a></li>
               <li><a href="Actions.html">Actions</a></li>
               <li><a href="InputBehaviors.html">Input Behaviors</a></li>
+              <li><a href="Controllers.html">Controllers</a></li>
               <li><a href="ControllerMaps.html">Controller Maps</a></li>
               <li><a href="MapCategories.html">Map Categories</a></li>
               <li><a href="ControllerMaps.html"></a><a href="Layouts.html">Layouts</a></li>
               <li><a href="CustomControllers.html">Custom Controllers</a></li>
+            </ul>
+            <strong>Extras:</strong>
+            <ul>
+              <li><a href="ControlMapper.html" title="Control Mapper">Control Mapper</a></li>
+              <li><a href="RewiredStandaloneInputModule.html">Rewired Standalone Input Module</a></li>
+	          <li><a href="UserDataStore.html" title="User Data Store">User Data Store</a></li>
+	          <li><a href="UnityInputOverride.html" title="Unity Input Override">Unity Input Override</a></li>
             </ul>
             <strong>How To's</strong>
             <ul>
@@ -72,9 +83,14 @@
               <li><a href="SupportedControllers.html" title="Supported Controllers">Supported Controllers</a></li>
               <li><a href="SpecialPlatformSupport.html" title="Special Platform Support">Special Platform Support</a></li>
 	          <li><a href="Examples.html" title="Examples">Examples</a></li>
-              <li><a href="Integration.html">Integration with Other Packages</a></li>
+              <li><a href="Integration.html">Integrations</a></li>
+	          <li><a href="Updating.html" title="Updating Rewired">Updating Rewired</a></li>
 	          <li><a href="Troubleshooting.html" title="Troubleshooting">Troubleshooting</a></li>
               <li><a href="KnownIssues.html">Known Issues</a></li>
+            </ul>
+            <strong>FAQ</strong>
+            <ul>
+            	<li><a href="FAQ.html">See all topics...</a></li>
             </ul>
             <strong>Unity Help:</strong>
             <ul>
@@ -110,7 +126,15 @@
     <p>Create an Input Manager in the scene from the menu:
       Window -&gt; Rewired -&gt; Create -&gt; Input Manager</p>
     <p><strong>Editing Input</strong></p>
-    <p>The <a href="RewiredEditor.html">Rewired Editor</a> allows you to create and edit input. Launch the Rewired Editor by clicking on the Rewired Input Manager in the scene hierarchy and clicking the &quot;Launch Rewired Editor&quot; button in the inspector.</p>
+<p>The <a href="RewiredEditor.html">Rewired Editor</a> allows you to create and edit input. Launch the Rewired Editor by clicking on the Rewired Input Manager in the scene hierarchy and clicking the &quot;Launch Rewired Editor&quot; button in the inspector. This will allow you to edit the input configuration data stored in the selected Rewired Input Manager.</p>
+<p><strong>Settings</strong></p>
+<p>Configure settings in <a href="RewiredEditor.html#Settings">Rewired Editor - Settings</a>.</p>
+    <p><strong>How Data is Stored</strong></p>
+    <p>Unlike most input systems, Rewired does not store its input configuration data (maps, Actions, etc.) in a single location for the entire project. Instead, the data is stored in the current Rewired Input Manager  game object. This means that you can have entirely different input setups for different scenes in your project if you like because each Rewired Input Manager is completely separate. It also means that input data is not globally available, especially in editor scripts or when Rewired has not been initialized.</p>
+    <p>At runtime, the current input configuration is loaded from the active Rewired Input Manager in the scene. To change to a completely different input configuration, you can disable one Rewired Input Manager and enable another in the editor. (Make sure you only have one active any any time or all others will be disabled.) The Rewired Input Manager can also be made into a prefab and instances placed into each scene for a shared configuration.</p>
+<p><strong>OnDestroy</strong></p>
+    <p>When the active Rewired Input Manager is destroyed, it will completely reset Rewired, thereby invalidating Player, Controller, etc. object references, losing controller assignments, etc. Any references to these objects you have in scripts will no longer be valid. You must be aware of this if destroying the Rewired Input Manager, particularly on level loading if &quot;Don't Destroy on Load&quot; is not checked.</p>
+    <p><strong>Note: </strong>This also affects runtime recompiling of scripts in the editor. When scripts are recompiled at runtime, Rewired is reset. Cached references to Rewired objects become invalid at this point, so your scripts may begin to throw null reference exceptions if this is not accounted for. <a href="Troubleshooting.html#null-reference-during-recompile">See this link for more information</a> if runtime script recompiling is part of your workflow.</p>
     <p><strong>Input Manager Inspector</strong></p>
     <p><img src="files/images/inputmanager_inspector.png" alt="Input Manager Inspector" /></p>
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -127,9 +151,10 @@
     <p><strong>Using the Rewired Input Manager in your game</strong></p>
     <p>For finished game builds, the Rewired Input Manager should exist in your initial game scene. Make sure &quot;Don't Destroy On Load&quot; is checked so Rewired will persist throughout the entire game session.</p>
     <h5>Testing Individual Scenes</h5>
-    <p>If you need to do testing on an individual scene, you can create a prefab out of your Rewired Input Manager and use an instance of that prefab in the scene you're testing. Generally, it is not a good idea for a final game build to place the prefab in every scene because you will be destroying and re-creating the Input Manager (which will completely reset Rewired) with each scene load thereby invalidating Player, Controller, etc. object references, losing controller assignments, etc.</p>
-    <p>(Note: If you make a prefab out of the Rewired Input Manager, always open the Rewired Editor on the prefab, not the one in the scene or your changes will be applied to the scene instance.)</p>
-    <p>One way to achieve a setup that allows for both testing individual scenes at will and advancing through levels in your final game is to create a script that instantiates a prefab of your Rewired Input Manager on Awake. You can put this script on a GameObject prefab instance that you place in every scene of your game. On Awake, your script should check if a Rewired Input Manager already exists in the scene first, and if it doesn't, instantiate it. Leave &quot;Don't Destroy On Load&quot; checked in the Rewired Input Manager. Finally, be sure your script has a very low number set for its <a href="http://docs.unity3d.com/Manual/class-ScriptExecution.html" target="_blank">Script Execution Order</a> -- it should execute before any other scripts (apart from Rewired's Input Manager) so that Rewired will be set up and ready by the time any other scripts in your game that rely on input make calls to Rewired.</p>
+    <p>If you need to do testing on an individual scene, as of Rewired 1.0.0.72, you can create a prefab (see note below) out of your Rewired Input Manager and place an instance of it in all your scenes, leaving &quot;Don't Destroy on Load&quot; checked. When a new scene is loaded, the additional Rewired Input Manager in the loaded scene will destroy itself automatically leaving the original intact and continuing to handle input without causing any errors.</p>
+<p>Another way to achieve a setup that allows for both testing individual scenes at will and advancing through levels in your final game is to create a script that instantiates a prefab of your Rewired Input Manager on Awake. You can put this script on a GameObject prefab instance that you place in every scene of your game. On Awake, your script should check if a Rewired Input Manager already exists in the scene first, and if it doesn't, instantiate it. Leave &quot;Don't Destroy On Load&quot; checked in the Rewired Input Manager. Finally, be sure your script has a very low number set for its <a href="http://docs.unity3d.com/Manual/class-ScriptExecution.html" target="_blank">Script Execution Order</a> -- it should execute before any other scripts (apart from Rewired's Input Manager) so that Rewired will be set up and ready by the time any other scripts in your game that rely on input make calls to Rewired. </p>
+    <p><strong>Important Note:</strong> If you make a prefab out of the Rewired Input Manager, always open the Rewired Editor on the prefab, not the one in the scene or your changes will be applied to the scene instance. If you do accidentally make changes to the instance in the scene, you can apply the changes to the prefab and everything will be in sync.</p>
+<p>&nbsp;</p>
 <div class="bottom-pager clearfix">
   <a class="back-button" href="Documentation.html" title="Documentation"><span class="button-img"></span>Documentation</a>
   <a class="forward-button" href="Players.html" title="Players"><span class="button-img"></span>Players</a>
@@ -140,10 +165,12 @@
         
     </div>
   <div class="footer clearfix">
-   	<p class="left">Copyright &copy;2014 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
+   	<p class="left">Copyright &copy;2014-2016 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
   	<p class="right"><a href="http://guavaman.com/projects/rewired" title="Return to Rewired Website">Return to Rewired Website</a></p>
   </div>
   <!-- end .content --></div>
   <!-- end .container --></div>
+  
+  
 </body>
 <!-- InstanceEnd --></html>

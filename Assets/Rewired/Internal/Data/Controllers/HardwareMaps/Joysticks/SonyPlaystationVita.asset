@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: SonyPlaystationVita
   m_EditorClassIdentifier: 
   controllerName: Sony Playstation Vita
+  editorControllerName: 
   description: 
   controllerGuid: d2aef070-7caa-42ff-b2dc-daac7e4a62b4
   templateGuids:
@@ -28,7 +29,7 @@ MonoBehaviour:
     _elementType: 0
   - _id: 3
     _name: Right Stick Y
-    _elementType: 1
+    _elementType: 0
   - _id: 4
     _name: Cross
     _elementType: 1
@@ -65,139 +66,223 @@ MonoBehaviour:
   - _id: 15
     _name: D-Pad Left
     _elementType: 1
+  - _id: 16
+    _name: Left Stick
+    _elementType: 100
+  - _id: 17
+    _name: Right Stick
+    _elementType: 100
   directInput:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       hatCount: 0
+      productName_useRegex: 0
       productName: []
       productGUID: []
       productId: 
       deviceType: 0
     elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  rawInput:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      hatCount: 0
+      productName_useRegex: 0
+      productName: []
+      productGUID: []
+      productId: 
+      deviceType: 0
+    elements:
+      compoundElements: []
       axes: []
       buttons: []
   xInput:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       subType: 
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   osx:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       hatCount: 0
+      productName_useRegex: 0
       productName: []
       manufacturer: []
       productId: 
       vendorId: 
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Windows:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_OSX:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Linux:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Android:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_iOS:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Blackberry:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_WindowsPhone8:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_XBox360:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_XBoxOne:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PS3:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PS4:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PSM:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName:
       - PS Vita
     elements:
+      compoundElements:
+      - type: 0
+        elementIdentifier: 16
+        componentElementIdentifiers: 0000000001000000
+      - type: 0
+        elementIdentifier: 17
+        componentElementIdentifiers: 0200000003000000
       axes:
       - elementIdentifier: 0
         sourceType: 1
         sourceAxis: 1
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 0
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -210,6 +295,7 @@ MonoBehaviour:
         sourceAxis: 2
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 1
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -222,6 +308,7 @@ MonoBehaviour:
         sourceAxis: 4
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 0
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -234,6 +321,7 @@ MonoBehaviour:
         sourceAxis: 5
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 1
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -247,6 +335,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 1
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -265,6 +354,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 2
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -283,6 +373,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 3
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -301,6 +392,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 4
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -319,6 +411,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 5
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -337,6 +430,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 6
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -355,6 +449,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 7
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -373,6 +468,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 8
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -391,6 +487,7 @@ MonoBehaviour:
         sourceAxis: 7
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -409,6 +506,7 @@ MonoBehaviour:
         sourceAxis: 6
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -427,6 +525,7 @@ MonoBehaviour:
         sourceAxis: 7
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 1
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -445,6 +544,7 @@ MonoBehaviour:
         sourceAxis: 6
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 1
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -462,15 +562,26 @@ MonoBehaviour:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName:
       - PS Vita
     elements:
+      compoundElements:
+      - type: 0
+        elementIdentifier: 16
+        componentElementIdentifiers: 0000000001000000
+      - type: 0
+        elementIdentifier: 17
+        componentElementIdentifiers: 0200000003000000
       axes:
       - elementIdentifier: 0
         sourceType: 1
         sourceAxis: 1
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 0
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -483,6 +594,7 @@ MonoBehaviour:
         sourceAxis: 2
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 1
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -495,6 +607,7 @@ MonoBehaviour:
         sourceAxis: 4
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 0
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -507,6 +620,7 @@ MonoBehaviour:
         sourceAxis: 5
         axisDeadZone: .200000003
         sourceButton: 0
+        sourceKeyCode: 0
         invert: 1
         sourceAxisRange: 0
         buttonAxisContribution: 0
@@ -520,6 +634,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 1
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -538,6 +653,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 2
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -556,6 +672,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 3
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -574,6 +691,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 4
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -592,6 +710,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 5
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -610,6 +729,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 6
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -628,6 +748,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 7
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -646,6 +767,7 @@ MonoBehaviour:
         sourceAxis: 0
         axisDeadZone: 0
         sourceButton: 8
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -664,6 +786,7 @@ MonoBehaviour:
         sourceAxis: 7
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -682,6 +805,7 @@ MonoBehaviour:
         sourceAxis: 6
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 0
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -700,6 +824,7 @@ MonoBehaviour:
         sourceAxis: 7
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 1
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -718,6 +843,7 @@ MonoBehaviour:
         sourceAxis: 6
         axisDeadZone: 0
         sourceButton: 0
+        sourceKeyCode: 0
         sourceAxisPole: 1
         unityHat_sourceAxis1: 0
         unityHat_sourceAxis2: 0
@@ -735,16 +861,58 @@ MonoBehaviour:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_WiiU:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
-  elementIdentifierIdCounter: 16
+  fallback_AmazonFireTV:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
+      productName: []
+    elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  ouya:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+    elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  xboxOne:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
+      productName: []
+    elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  elementIdentifierIdCounter: 18

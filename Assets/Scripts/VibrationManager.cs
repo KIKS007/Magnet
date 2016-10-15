@@ -7,7 +7,7 @@ public class VibrationManager : Singleton<VibrationManager>
 {
 	public float[] playersLeftMotor = new float[5];
 	public float[] playersRightMotor = new float[5];
-	public int[] playersVibrationCount = new int[4];
+	public int[] playersVibrationCount = new int[5];
 
 	private Player gamepad1;
 	private Player gamepad2;
@@ -29,6 +29,8 @@ public class VibrationManager : Singleton<VibrationManager>
 	public float durationBetweenBurstTest;
 
 	public float timeToStopVibration = 3;
+
+	private bool applicationIsQuitting = false;
 
 	// Use this for initialization
 	void Start () 
@@ -164,39 +166,42 @@ public class VibrationManager : Singleton<VibrationManager>
 		
 	public void StopVibration (int whichPlayer)
 	{
-		playersLeftMotor [whichPlayer] = 0;
-		playersRightMotor [whichPlayer] = 0;
-
-		switch (whichPlayer)
+		if(!applicationIsQuitting)
 		{
-		case 0:
-			foreach(Joystick j in gamepad1.controllers.Joysticks) 
+			playersLeftMotor [whichPlayer] = 0;
+			playersRightMotor [whichPlayer] = 0;
+			
+			switch (whichPlayer)
 			{
-				if(!j.supportsVibration) continue;
-				j.SetVibration(0, 0);
+			case 0:
+				foreach(Joystick j in gamepad1.controllers.Joysticks) 
+				{
+					if(!j.supportsVibration && j != null) continue;
+					j.SetVibration(0, 0);
+				}
+				break;
+			case 1:
+				foreach(Joystick j in gamepad2.controllers.Joysticks) 
+				{
+					if(!j.supportsVibration && j != null) continue;
+					j.SetVibration(0, 0);
+				}
+				break;
+			case 2:
+				foreach(Joystick j in gamepad3.controllers.Joysticks) 
+				{
+					if(!j.supportsVibration && j != null) continue;
+					j.SetVibration(0, 0);
+				}
+				break;
+			case 3:
+				foreach(Joystick j in gamepad4.controllers.Joysticks) 
+				{
+					if(!j.supportsVibration && j != null) continue;
+					j.SetVibration(0, 0);
+				}
+				break;
 			}
-			break;
-		case 1:
-			foreach(Joystick j in gamepad2.controllers.Joysticks) 
-			{
-				if(!j.supportsVibration) continue;
-				j.SetVibration(0, 0);
-			}
-			break;
-		case 2:
-			foreach(Joystick j in gamepad3.controllers.Joysticks) 
-			{
-				if(!j.supportsVibration) continue;
-				j.SetVibration(0, 0);
-			}
-			break;
-		case 3:
-			foreach(Joystick j in gamepad4.controllers.Joysticks) 
-			{
-				if(!j.supportsVibration) continue;
-				j.SetVibration(0, 0);
-			}
-			break;
 		}
 	}
 
@@ -204,25 +209,25 @@ public class VibrationManager : Singleton<VibrationManager>
 	{
 		foreach(Joystick j in gamepad1.controllers.Joysticks) 
 		{
-			if(!j.supportsVibration) continue;
+			if(!j.supportsVibration && j != null) continue;
 			j.SetVibration(0, 0);
 		}
 
 		foreach(Joystick j in gamepad2.controllers.Joysticks) 
 		{
-			if(!j.supportsVibration) continue;
+			if(!j.supportsVibration && j != null) continue;
 			j.SetVibration(0, 0);
 		}
 
 		foreach(Joystick j in gamepad3.controllers.Joysticks) 
 		{
-			if(!j.supportsVibration) continue;
+			if(!j.supportsVibration && j != null) continue;
 			j.SetVibration(0, 0);
 		}
 
 		foreach(Joystick j in gamepad4.controllers.Joysticks) 
 		{
-			if(!j.supportsVibration) continue;
+			if(!j.supportsVibration && j != null) continue;
 			j.SetVibration(0, 0);
 		}
 
@@ -255,6 +260,8 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	void OnApplicationQuit ()
 	{
+		applicationIsQuitting = true;
+
 		StopAllVibration ();
 	}
 }

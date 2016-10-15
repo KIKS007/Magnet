@@ -314,6 +314,8 @@ public class StatsManager : Singleton<StatsManager>
 			if(playerStatsList [i].shots > 0)
 			{
 				float temp = ((float)playerStatsList [i].frags / (float)playerStatsList [i].shots) * 100f;
+				if (temp > 100)
+					temp = 100;
 				playerStatsList [i].aimAccuracy = (int)temp;
 			}
 		}

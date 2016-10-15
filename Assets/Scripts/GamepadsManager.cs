@@ -112,6 +112,14 @@ public class GamepadsManager : Singleton<GamepadsManager>
 					gamepadsList [gamepadsList.Count - 1].GamepadId = 4;
 					gamepadsPluggedAtStart [3] = true;
 				}
+
+				for(int i = 0; i < gamepadsList.Count; i++)
+				{
+					if (gamepadsList [i].GamepadId == gamepadsList [gamepadsList.Count - 1].GamepadId && gamepadsList [i].GamepadRewiredId != gamepadsList [gamepadsList.Count - 1].GamepadRewiredId)
+					{
+						gamepadsList.Remove (gamepadsList [i]);
+					}
+				}
 			}
 		}
 
@@ -245,7 +253,8 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void SetupPlayersAndControllers ()
 	{
-		GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
+		//Mouse on the left
+		//GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
 
 		for(int i = 0; i < 4; i++)
 		{
@@ -265,15 +274,16 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		switch (whichNumber) 
 		{
 		case 0:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+			GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
 			break;
 		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
+			GlobalVariables.Instance.ControllerNumberPlayer2 = 2;
 			break;
 		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
+			GlobalVariables.Instance.ControllerNumberPlayer3 = 3;
 			break;
 		case 3:
+			GlobalVariables.Instance.ControllerNumberPlayer4 = 4;
 			break;
 		}
 	}

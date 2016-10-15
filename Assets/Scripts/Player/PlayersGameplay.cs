@@ -324,7 +324,9 @@ public class PlayersGameplay : MonoBehaviour
         playerState = PlayerState.Attracting;
 
         Vector3 movableAttraction = transform.position - movable.transform.position;
-        movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce, ForceMode.Force);
+
+		movableAttraction.Normalize ();
+        movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
 
         if (OnAttracting != null)
             OnAttracting();
@@ -347,7 +349,7 @@ public class PlayersGameplay : MonoBehaviour
         holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 200;
         holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
-        playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
+		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.Force);
 
         if (OnShoot != null)
             OnShoot();
@@ -361,7 +363,8 @@ public class PlayersGameplay : MonoBehaviour
             playerState = PlayerState.Repulsing;
 
             Vector3 movableRepulsion = movable.transform.position - transform.position;
-			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce, ForceMode.Acceleration);
+			movableRepulsion.Normalize ();
+			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Acceleration);
 
             if (OnRepulsing != null)
                 OnRepulsing();
@@ -673,8 +676,8 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
-            VibrationManager.Instance.StopVibration(controllerNumber);
+		/* if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
+            VibrationManager.Instance.StopVibration(controllerNumber);*/
 
         if (playerState == PlayerState.Dead && OnDeath != null)
             OnDeath();

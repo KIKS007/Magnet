@@ -218,7 +218,11 @@ public class FeedbackInputs : MonoBehaviour
 		mouseKeyboard = ReInput.players.GetPlayer (0);
 		gamepad1 = ReInput.players.GetPlayer (1);
 
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
+				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+		}
 	}
 
 	void GetPlayers ()
@@ -226,7 +230,11 @@ public class FeedbackInputs : MonoBehaviour
 		mouseKeyboard = ReInput.players.GetPlayer (0);
 		gamepad1 = ReInput.players.GetPlayer (1);
 
-		gamepad1.controllers.AddController (ControllerType.Joystick, 0, true);
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
+				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+		}
 	}
 
 	void Feedback ()

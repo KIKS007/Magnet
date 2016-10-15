@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: GoogleNexusPlayerRemote
   m_EditorClassIdentifier: 
   controllerName: Nexus Player Remote
+  editorControllerName: 
   description: 
   controllerGuid: bd9c3102-0465-4823-a1d1-61089602a217
   templateGuids: []
@@ -38,6 +39,7 @@ MonoBehaviour:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       hatCount: 0
       productName_useRegex: 0
       productName: []
@@ -45,12 +47,14 @@ MonoBehaviour:
       productId: 
       deviceType: 0
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   rawInput:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       hatCount: 0
       productName_useRegex: 0
       productName: []
@@ -58,20 +62,24 @@ MonoBehaviour:
       productId: 
       deviceType: 0
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   xInput:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       subType: 
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   osx:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       hatCount: 0
       productName_useRegex: 0
       productName: []
@@ -79,47 +87,57 @@ MonoBehaviour:
       productId: 
       vendorId: 
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Windows:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_OSX:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Linux:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Android:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName:
       - Google Nexus Remote
+      - Nexus Remote
     elements:
+      compoundElements: []
       axes: []
       buttons:
       - elementIdentifier: 0
@@ -240,110 +258,166 @@ MonoBehaviour:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Blackberry:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_WindowsPhone8:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_XBox360:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_XBoxOne:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PS3:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PS4:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PSM:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_PSVita:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_Wii:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
       axes: []
       buttons: []
   fallback_WiiU:
     matchingCriteria:
       axisCount: 0
       buttonCount: 0
+      disabled: 0
       alwaysMatch: 0
       productName_useRegex: 0
       productName: []
     elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  fallback_AmazonFireTV:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
+      productName: []
+    elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  ouya:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+    elements:
+      compoundElements: []
+      axes: []
+      buttons: []
+  xboxOne:
+    matchingCriteria:
+      axisCount: 0
+      buttonCount: 0
+      disabled: 0
+      alwaysMatch: 0
+      productName_useRegex: 0
+      productName: []
+    elements:
+      compoundElements: []
       axes: []
       buttons: []
   elementIdentifierIdCounter: 6

@@ -1,15 +1,17 @@
 ﻿// Copyright (c) 2014 Augie R. Maddox, Guavaman Enterprises. All rights reserved.
-
-using UnityEngine;
-using System.Collections.Generic;
-using Rewired.Utils;
-using Rewired.Platforms;
-
 #pragma warning disable 0219
 #pragma warning disable 0618
+#pragma warning disable 0649
 
 namespace Rewired {
 
+    using UnityEngine;
+    using System.Collections.Generic;
+    using Rewired.Platforms;
+    using Rewired.Utils;
+    using Rewired.Utils.Interfaces;
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public sealed class InputManager : InputManager_Base {
 
         protected override void DetectPlatform() {
@@ -37,7 +39,6 @@ namespace Rewired {
 
 #if UNITY_STANDALONE_OSX
             platform = Platform.OSX;
-            
 #endif
 
 #if UNITY_DASHBOARD_WIDGET
@@ -52,16 +53,16 @@ namespace Rewired {
             platform = Platform.Linux;
 #endif
 
-#if UNITY_STANDALONE
-
-#endif
-            
 #if UNITY_ANDROID
             platform = Platform.Android;
 #if !UNITY_EDITOR
-            // Handle Ouya platform
-            if(deviceName.Contains("OUYA") || deviceModel.Contains("OUYA")) {
+            // Handle special Android platforms
+            if(CheckDeviceName("OUYA", deviceName, deviceModel)) {
                 platform = Platform.Ouya;
+            } else if(CheckDeviceName("Amazon AFT.*", deviceName, deviceModel)) {
+                platform = Platform.AmazonFireTV;
+            } else if(CheckDeviceName("razer Forge", deviceName, deviceModel)) {
+                platform = Platform.RazerForgeTV;
             }
 #endif
 #endif
@@ -70,16 +71,12 @@ namespace Rewired {
             platform = Platform.Blackberry;
 #endif
 
-#if UNITY_WP8
-            platform = Platform.WindowsPhone8;
-#endif
-
-#if UNITY_IPHONE
+#if UNITY_IPHONE || UNITY_IOS
             platform = Platform.iOS;
 #endif
 
-#if UNITY_IOS
-            platform = Platform.iOS;
+#if UNITY_TVOS
+            platform = Platform.tvOS;
 #endif
 
 #if UNITY_PS3
@@ -118,12 +115,22 @@ namespace Rewired {
             platform = Platform.Flash;
 #endif
 
-#if UNITY_METRO
+#if UNITY_METRO || UNITY_WSA || UNITY_WSA_8_0 || UNITY_WSA_8_1
             platform = Platform.WindowsAppStore;
 #endif
 
-#if UNITY_WINRT
+// Windows Phone overrides Windows Store -- this is not set when doing Universal 8.1 builds
+#if UNITY_WP8 || UNITY_WP8_1 || UNITY_WP_8 || UNITY_WP_8_1 // documentation error on format of WP8 defines, so include both
+            platform = Platform.WindowsPhone8;
+#endif
 
+// Windows 8.1 Universal
+#if UNITY_WINRT_8_1 && !UNITY_WSA_8_1 // this seems to be the only way to detect this
+            
+#endif
+
+#if UNITY_WSA_10_0
+            platform = Platform.WindowsUWP;
 #endif
 
 #if UNITY_WEBGL
@@ -138,11 +145,6 @@ namespace Rewired {
 
 #endif
         }
-
-        // Initialize the Platform Manager
-        //protected override object InitializePlatform(TextAsset[] libraries, bool useXInput, UpdateLoopSetting updateLoopSetting) {
-        //    return InputManagers.PlatformManager.Initialize(libraries, useXInput, (int)updateLoopSetting);
-        //}
 
         protected override void CheckRecompile() {
 #if UNITY_EDITOR
@@ -163,7 +165,6 @@ namespace Rewired {
 #endif
         }
 
-
         protected override string GetFocusedEditorWindowTitle() {
 #if UNITY_EDITOR
             UnityEditor.EditorWindow window = UnityEditor.EditorWindow.focusedWindow;
@@ -171,6 +172,15 @@ namespace Rewired {
 #else
             return string.Empty;
 #endif
+        }
+
+        protected override IExternalTools GetExternalTools() {
+            return new ExternalTools();
+        }
+
+        private bool CheckDeviceName(string searchPattern, string deviceName, string deviceModel) {
+            return System.Text.RegularExpressions.Regex.IsMatch(deviceName, searchPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase) ||
+                System.Text.RegularExpressions.Regex.IsMatch(deviceModel, searchPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         }
     }
 }

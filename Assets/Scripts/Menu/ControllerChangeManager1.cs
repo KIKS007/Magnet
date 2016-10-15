@@ -96,56 +96,56 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void GetInput ()
 	{
-		if (mouseKeyboard.GetAxisRaw("Move Horizontal") < 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxisRaw("Move Horizontal") < -0.5f && !keyboardMoving)
 		{
 			GoOnTheLeft (0);
 		}
 
-		if (mouseKeyboard.GetAxisRaw("Move Horizontal") > 0 && !keyboardMoving)
+		if (mouseKeyboard.GetAxisRaw("Move Horizontal") > 0.5f && !keyboardMoving)
 		{
 			GoOnTheRight (0);
 		}
 
 
-		if (gamepad1.GetAxisRaw("Move Horizontal") < 0 && !gamepad1Moving)
+		if (gamepad1.GetAxisRaw("Move Horizontal") < -0.5f && !gamepad1Moving)
 		{
 			GoOnTheLeft (1);
 		}
 
-		if (gamepad1.GetAxisRaw("Move Horizontal") > 0 && !gamepad1Moving)
+		if (gamepad1.GetAxisRaw("Move Horizontal") > 0.5f && !gamepad1Moving)
 		{
 			GoOnTheRight (1);
 		}
 
 
-		if (gamepad2.GetAxisRaw("Move Horizontal") < 0 && !gamepad2Moving)
+		if (gamepad2.GetAxisRaw("Move Horizontal") < -0.5f && !gamepad2Moving)
 		{
 			GoOnTheLeft (2);
 		}
 
-		if (gamepad2.GetAxisRaw("Move Horizontal") > 0 && !gamepad2Moving)
+		if (gamepad2.GetAxisRaw("Move Horizontal") > 0.5f && !gamepad2Moving)
 		{
 			GoOnTheRight (2);
 		}
 
 
-		if (gamepad3.GetAxisRaw("Move Horizontal") < 0 && !gamepad3Moving)
+		if (gamepad3.GetAxisRaw("Move Horizontal") < -0.5f && !gamepad3Moving)
 		{
 			GoOnTheLeft (3);
 		}
 
-		if (gamepad3.GetAxisRaw("Move Horizontal") > 0 && !gamepad3Moving)
+		if (gamepad3.GetAxisRaw("Move Horizontal") > 0.5f && !gamepad3Moving)
 		{
 			GoOnTheRight (3);
 		}
 
 
-		if (gamepad4.GetAxisRaw("Move Horizontal") < 0 && !gamepad4Moving)
+		if (gamepad4.GetAxisRaw("Move Horizontal") < -0.5f && !gamepad4Moving)
 		{
 			GoOnTheLeft (4);
 		}
 
-		if (gamepad4.GetAxisRaw("Move Horizontal") > 0 && !gamepad4Moving)
+		if (gamepad4.GetAxisRaw("Move Horizontal") > 0.5f && !gamepad4Moving)
 		{
 			GoOnTheRight (4);
 		}
@@ -409,8 +409,11 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
 		{
-			Debug.Log ("Solo Mode");
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+			if(GlobalVariables.Instance.ControllerNumberPlayer1 == 0)
+				GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+
+			else
+				GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
 		}
 
 
@@ -552,6 +555,14 @@ public class ControllerChangeManager1 : MonoBehaviour
 				break;
 			}
 
+			if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
+			{
+				if(GlobalVariables.Instance.ControllerNumberPlayer1 == 0)
+					GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+
+				else
+					GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
+			}
 
 			GlobalVariables.Instance.NumberOfPlayers = 0;
 			GlobalVariables.Instance.NumberOfDisabledPlayers = 0;

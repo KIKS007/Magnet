@@ -16,9 +16,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	[Header ("Ease")]
 	public Ease easeTypeMainMenu;
 
-	[Header ("Event System")]
-	public EventSystem eventSyst;
-
 	[Header ("Animations Duration")]
 	public float durationSubmit;
 	public float durationCancel;
@@ -178,12 +175,15 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	private Vector3 cameraPosBeforePause;
 
+	private EventSystem eventSyst;
+
 	void Awake ()
 	{
 		DOTween.Init();
 		DOTween.defaultTimeScaleIndependent = true;
 
 		GlobalVariables.Instance.OnGameOver += ResetGamepadsDisconnection;
+		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 	}
 
     // Use this for initialization
@@ -297,7 +297,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			for(int i = 0; i < playersListTemp.Count; i++)
 			{
-				if(playersListTemp[i].GetButton("Submit") || playersListTemp[i].GetButton("Start") || Input.GetMouseButtonDown(0))
+				if(playersListTemp[i].GetButton("UISubmit") || playersListTemp[i].GetButton("UIStart") || Input.GetMouseButtonDown(0))
 				{
 					if(startScreen == true)
 					{
@@ -314,7 +314,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			for(int i = 0; i < playersListTemp.Count; i++)
 			{
-				if (playersListTemp [i].GetButton ("Start"))
+				if (playersListTemp [i].GetButton ("UIStart"))
 					GamePauseResumeVoid ();
 			}
 		}
@@ -330,7 +330,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		for(int i = 0; i < playersListTemp.Count; i++)
 		{
-			if(playersListTemp[i].GetButton("Cancel") && !tweening)
+			if(playersListTemp[i].GetButton("UICancel") && !tweening)
 			{
 				
 				if(instructionsMenuCanvas.activeSelf == true)

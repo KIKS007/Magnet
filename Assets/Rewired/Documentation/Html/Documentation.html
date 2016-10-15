@@ -5,9 +5,8 @@
 <!-- InstanceBeginEditable name="doctitle" -->
 <title>Rewired Documentation</title>
 <!-- InstanceEndEditable -->
-<!-- InstanceBeginEditable name="head" -->
-<!-- InstanceEndEditable -->
 <!-- InstanceParam name="isRoot" type="boolean" value="true" -->
+<!-- InstanceParam name="wide" type="boolean" value="false" -->
 <link href="files/css/styles.css" rel="stylesheet" type="text/css" />
 <!-- Favicons -->
 <link rel="icon" type="image/x-icon" href="/projects/rewired/files/images/favicon.ico?v=1" />
@@ -30,6 +29,7 @@
 
 <body>
 
+
 <div class="container">
   <div class="content">
 	
@@ -38,7 +38,7 @@
     
 	
     
-     
+         
 	    
     
     	<div class="main-body">
@@ -49,40 +49,66 @@
             </h1>
             
 			<!-- InstanceBeginEditable name="MainBody" -->
-    <h2>For Rewired version 1.0.0.44+</h2>
-    <h3>The Essentials: (Start Here)</h3>
-    <ol>
+    <h2 >For Rewired version 1.0.0.87+</h2>
+    <ul>
       <li><a href="Overview.html">Overview</a></li>
-      <li><a href="Installation.html">Installation</a></li>
-      <li><a href="QuickStart.html">Quick Start</a></li>
-      <li><a href="BasicUsage.html">Basic Usage</a></li>
-      <li><a href="Deployment.html">Deployment</a></li>
-      <li><a href="RewiredEditor.html">Rewired Editor</a></li>
-      <li><a href="http://guavaman.com/projects/rewired/docs/api-reference" target="_blank">API Reference</a></li>
+      <li><a href="ReleaseNotes.txt">Release Notes</a></li>
+    </ul>
+    <br/>
+<h3 style="background-color:#ddd">Essentials:</h3>
+    <ol>
+      <li><a href="Installation.html">Installation</a> - Walks you through the installation process.</li>
+      <li><a href="QuickStart.html">Quick Start</a> - A quick guide showing how to do basic setup. All newcomers to Rewired should follow this tutorial to understand the workflow.</li>
+      <li><a href="BasicUsage.html">Basic Usage</a> - Basic guidelines for scripting.</li>
+      <li><a href="Deployment.html">Deployment</a> - Important notes on deplyoing your game on various platforms.</li>
+      <li><a href="RewiredEditor.html">Rewired Editor</a> - Detailed information about the Rewired Input Manager editor.</li>
+      <li><a href="http://guavaman.com/projects/rewired/docs/api-reference" target="_blank">API Reference</a> - A complete reference for the Rewired scripting API.</li>
     </ol>
 	<p>&nbsp;</p>
-<h3>Concepts:</h3>
+<h3 style="background-color: #ddd">Concepts:</h3>
+<p>The topics in this section are <em>CRITICAL</em> to understanding the Rewired system. Do not skip over these sections! The answers to the vast majority of support questions I receive on a daily basis are already clearly outlined in these topics. It is very important that you take the time to read this information and familiarize yourself with the Rewired system before contacting support for basic usage and conceptual questions.</p>
 <ul>
   <li><a href="InputManager.html">Input Manager</a></li>
   <li><a href="Players.html">Players</a></li>
   <li><a href="Actions.html">Actions</a></li>
   <li><a href="InputBehaviors.html">Input Behaviors</a></li>
+  <li><a href="Controllers.html">Controllers</a></li>
   <li><a href="ControllerMaps.html">Controller Maps</a></li>
   <li><a href="MapCategories.html">Map Categories</a></li>
   <li><a href="ControllerMaps.html"></a><a href="Layouts.html">Layouts</a></li>
   <li><a href="CustomControllers.html">Custom Controllers</a></li>
 </ul>
     <p>&nbsp;</p>
-<h3>How To's:</h3>
+<h3 style="background-color:#ddd">Extras:</h3>
+    <ul>
+      <li><a href="ControlMapper.html">Control Mapper</a></li>
+      <li><a href="RewiredStandaloneInputModule.html">Rewired Standalone Input Module</a></li>
+      <li><a href="UserDataStore.html">User Data Store</a></li>
+      <li><a href="UnityInputOverride.html">Unity Input Override</a></li>
+      </ul>
+    <p>&nbsp;</p>
+<h3 style="background-color:#ddd">How To's:</h3>
 <ul>
+  <li><a href="HowTos.html#important-classes">Important classes</a></li>
   <li><a href="HowTos.html#get-player">Getting a Player</a></li>
   <li><a href="HowTos.html#get-input">Getting Input</a></li>
   <li><a href="HowTos.html#get-controller">Getting a Controller</a></li>
   <li><a href="HowTos.html#connect-disconnect-events">Receiving joystick connect and disconnect events</a></li>
   <li><a href="HowTos.html#assigning-joysticks">Assigning joysticks to players</a></li>
   <li><a href="HowTos.html#enabling-disabling-controller-maps">Enabling and disabling controller maps</a></li>
+  <li><a href="HowTos.html#managing-controller-maps-runtime">Managing controller maps at runtime</a></li>
+  <li><a href="HowTos.html#loading-controller-maps-runtime">Loading controller maps at runtime</a></li>
+  <li><a href="HowTos.html#get-element-name-for-action">Displaying a button/axis/key name to the user for an Action</a></li>
+  <li><a href="HowTos.html#display-glyph-for-action">Displaying a glyph for a controller element mapped to an Action</a></li>
+  <li><a href="HowTos.html#display-glyph-for-active-elements">Displaying a glyph for the currently active controller elements</a></li>
+  <li><a href="HowTos.html#get-contributing-input-sources">Getting contributing input sources for an Action</a><a href="#converting-scripts"></a></li>
+  <li><a href="HowTos.html#last-used-controller">Determining which controller was last used</a></li>
   <li><a href="HowTos.html#calibrating-controller-axes">Calibrating controller axes</a></li>
-  <li><a href="HowTos.html#Vibration-XInput-Controllers">Vibration/Rumble with XInput Controllers</a></li>
+  <li><a href="HowTos.html#Vibration-Rumble">Vibration/Rumble</a></li>
+  <li><a href="HowTos.html#button-combos">Handling multi-button Actions</a></li>
+  <li><a href="HowTos.html#converting-scripts">Converting scripts from UnityEngine.Input to Rewired</a></li>
+  <li><a href="HowTos.html#exporting-actions">Exporting   Actions as constants for use in scripting</a></li>
+  <li><a href="HowTos.html#actionid-property-drawer">Displaying a drop-down list of Actions in the inspector of a script</a></li>
   <li><a href="HowTos.html#press-start-to-join">Implementing a &quot;Press Start to Join&quot; controller assignment system</a></li>
   <li><a href="HowTos.html#controller-mapping-screen">Creating a controller mapping screen</a></li>
   <li><a href="HowTos.html#saving-loading-controller-maps">Saving and loading controller maps</a></li>
@@ -93,31 +119,74 @@
   <li><a href="HowTos.html#new-controller-templates">Creating new controller templates</a></li>
   <li><a href="HowTos.html#add-controller-to-existing-controller-template">Adding a controller to an existing controller template</a></li>
   <li><a href="HowTos.html#excluding-controller-definitions">Excluding controller definitions</a></li>
+  <li><a href="#identifying-recognized-controllers">Identifying recognized controllers by type</a></li>
   <li><a href="HowTos.html#identifying-joysticks-windows-fallback-or-webplayer">Identifying joysticks on Windows fallback or Windows Webplayer platforms</a></li>
+  <li><a href="HowTos.html#hide-input-settings-launcher">Hiding input settings on the Unity launcher</a></li>
+  <li><a href="HowTos.html#optimization">Optimizing performance</a></li>
   <li><a href="HowTos.html#configuring-arcadeguns-g500">Configuring ArcadeGuns G-500 AimTrak Light Guns</a></li>
   <li><a href="HowTos.html#Logitech-G27">Logitech G27 Racing Wheel Support</a></li>
   <li><a href="HowTos.html#Saitek-TPM">Saitek Pro Flight TPM Panel Support</a></li>
+  <li><a href="HowTos.html#dualshock-4-special-features">Using Sony DualShock 4 special features</a></li>
+  <li><a href="HowTos.html#raildriver-special-features">Using P.I. Engineering Rail Driver special features</a></li>
+  <li><a href="HowTos.html#xbox-one-controller-special-features">Using XBox One controller special features on XBox One platform</a><a href="HowTos.html#dualshock-4-special-features"></a></li>
+  <li><a href="HowTos.html#appletv-siri-remote">Using Apple Siri Remote on Apple TV</a></li>
   <li><a href="HowTos.html#unity-ui">Using Rewired to control Unity's new UI</a></li>
 </ul>
 <p>&nbsp;</p>
-<h3>Help:</h3>
+<h3 style="background-color:#ddd">Help:</h3>
 <ul>
   <li><a href="SupportedControllers.html" title="Supported Controllers">Supported Controllers</a></li>
-  <li><a href="SpecialPlatformSupport.html">Special Platform Support</a></li>
+  <li><a href="SpecialPlatformSupport.html">Special Platform Support</a>
+    <ul>
+      <li><a href="SpecialPlatformSupport.html#windows-app-store">Windows 8 Store</a></li>
+      <li><a href="SpecialPlatformSupport.html#windows-uwp">Windows 10 Universal</a></li>
+      <li><a href="SpecialPlatformSupport.html#ouya">OUYA</a></li>
+      <li><a href="SpecialPlatformSupport.html#xbox-one">XBox One</a></li>
+    </ul>
+  </li>
   <li><a href="Examples.html" title="Examples">Examples</a></li>
-  <li><a href="Integration.html">Integration with Other Packages</a></li>
+  <li><a href="Integration.html">Integrations</a>
+    <ul>
+      <li><a href="Integration.html#unity-ui">Unity UI</a></li>
+      <li><a href="Integration.html#UFPS">UFPS</a></li>
+      <li><a href="Integration.html#PlayMaker">PlayMaker</a></li>
+      <li><a href="Integration.html#BehaviorDesigner">Behavior Designer</a></li>
+      <li><a href="Integration.html#ThirdPersonController">Third Person Controller</a></li>
+      <li><a href="Integration.html#MotionController">Motion Controller</a></li>
+      <li><a href="Integration.html#RacingGameStarterKit">Racing Game Starter Kit</a></li>
+      <li><a href="Integration.html#GAC">GAC (Great Animation Combos) System</a></li>
+      <li><a href="Integration.html#others">Others</a></li>
+    </ul>
+  </li>
+  <li><a href="Updating.html">Updating Rewired</a></li>
   <li><a href="Troubleshooting.html" title="Troubleshooting">Troubleshooting</a><a href="SupportedControllers.html" title="Supported Controllers"></a></li>
   <li><a href="KnownIssues.html">Known Issues</a></li>
 </ul>
 <p>&nbsp;</p>
-<h3>Unity Help:</h3>
+<h3 style="background-color:#ddd">FAQ:</h3>
+<ul>
+  <li><a href="FAQ.html#does-rewired-support-x-controller">Does Rewired support this controller?</a><a href="ControlMapper.html"></a></li>
+  <li><a href="FAQ.html#addding-controller-definitions">Can you/I add support for this controller?</a><a href="RewiredStandaloneInputModule.html"></a></li>
+  <li><a href="FAQ.html#supported-platforms">Does Rewired support this platform?</a></li>
+  <li><a href="FAQ.html#where-is-data-saved">Where is Rewired's data saved?</a></li>
+  <li><a href="FAQ.html#consume-input">How do you consume/use an input?</a><a href="UserDataStore.html"></a></li>
+  <li><a href="FAQ.html#default-dead-zone">My joystick's dead zone is too large/small. How do I change it?</a></li>
+  <li><a href="FAQ.html#force-feedback">Does Rewired support force feedback?</a></li>
+  <li><a href="FAQ.html#wiiu-support">Can I use Rewired on WiiU?</a></li>
+  <li><a href="FAQ.html#webgl-joystick-recognition">Can you add joystick auto-recognition  for WebGL?</a></li>
+  <li><a href="FAQ.html#control-remapping">Can you give me a quick and simple example of how to handle control remapping?</a></li>
+  <li><a href="FAQ.html#source-code">Can I get the Rewired source code?</a></li>
+  <li><a href="FAQ.html#seat-license">What does &quot;this extension requires one licence per seat&quot; mean?</a></li>
+  </ul>
+<p>&nbsp;</p>
+<h3 style="background-color:#ddd">Unity Help:</h3>
 <ul>
   <li><a href="http://docs.unity3d.com/Manual/" target="_blank">Unity Manual</a></li>
   <li><a href="http://docs.unity3d.com/ScriptReference/" target="_blank">Unity Script Reference</a></li>
   <li><a href="http://unity3d.com/learn/tutorials/modules" target="_blank">Unity Tutorials</a></li>
 </ul>
 <p>&nbsp;</p>
-<h3>Links:</h3>
+<h3 style="background-color:#ddd">Links:</h3>
 <ul>
   <li><a href="http://guavaman.com/projects/rewired">Rewired Website</a></li>
   <li><a href="http://guavaman.com/projects/rewired/docs">Web Documentation</a></li>
@@ -127,10 +196,12 @@
         
     </div>
   <div class="footer clearfix">
-   	<p class="left">Copyright &copy;2014 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
+   	<p class="left">Copyright &copy;2014-2016 <a href="http://guavaman.com" title="Guavaman Enterprises">Guavaman Enterprises</a>. All rights reserved. No materials may be reproduced without permission.</p>
   	<p class="right"><a href="http://guavaman.com/projects/rewired" title="Return to Rewired Website">Return to Rewired Website</a></p>
   </div>
   <!-- end .content --></div>
   <!-- end .container --></div>
+  
+  
 </body>
 <!-- InstanceEnd --></html>
