@@ -73,7 +73,7 @@ public class BackButtonsFeedback : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(mouseKeyboard.GetButtonDown("UICancel"))
+		if(mouseKeyboard.GetButtonDown("UI Cancel"))
 		{
 			switch(whichButton)
 			{
@@ -86,7 +86,7 @@ public class BackButtonsFeedback : MonoBehaviour
 			}
 		}
 
-		if(gamepad1.GetButtonDown("UICancel") || gamepad2.GetButtonDown("UICancel") || gamepad3.GetButtonDown("UICancel") || gamepad4.GetButtonDown("UICancel"))
+		if(gamepad1.GetButtonDown("UI Cancel") || gamepad2.GetButtonDown("UI Cancel") || gamepad3.GetButtonDown("UI Cancel") || gamepad4.GetButtonDown("UI Cancel"))
 		{
 			switch(whichButton)
 			{

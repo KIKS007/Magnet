@@ -68,7 +68,10 @@ MonoBehaviour:
       _descriptiveName: System
       _startPlaying: 1
       _defaultJoystickMaps: []
-      _defaultMouseMaps: []
+      _defaultMouseMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
       _defaultKeyboardMaps: []
       _defaultCustomControllerMaps: []
       _startingCustomControllers: []
@@ -248,45 +251,45 @@ MonoBehaviour:
       _userAssignable: 1
       _categoryId: 0
     - _id: 11
-      _name: UISubmit
+      _name: UI Submit
       _type: 1
-      _descriptiveName: UISubmit
+      _descriptiveName: UI Submit
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
     - _id: 12
-      _name: UICancel
+      _name: UI Cancel
       _type: 1
-      _descriptiveName: UICancel
+      _descriptiveName: UI Cancel
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
     - _id: 13
-      _name: UIHorizontal
+      _name: UI Horizontal
       _type: 0
-      _descriptiveName: UIHorizontal
+      _descriptiveName: UI Horizontal
       _positiveDescriptiveName: UIRight
       _negativeDescriptiveName: UILeft
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
     - _id: 14
-      _name: UIVertical
+      _name: UI Vertical
       _type: 0
-      _descriptiveName: UIVertical
+      _descriptiveName: UI Vertical
       _positiveDescriptiveName: UIUP
       _negativeDescriptiveName: UIDown
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
     - _id: 15
-      _name: UIStart
+      _name: UI Start
       _type: 1
-      _descriptiveName: UIStart
+      _descriptiveName: UI Start
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0

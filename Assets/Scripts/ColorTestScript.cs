@@ -43,7 +43,7 @@ public class ColorTestScript : MonoBehaviour
 	{
 		if(cubeColor == CubeColor.Neutral)
 		{
-			DOTween.Pause ("CubeNeutralTween");
+			DOTween.Kill ("CubeNeutralTween");
 
 			Color cubeCorrectColor = new Color ();
 			CubeColor cubeColorTest = CubeColor.Neutral;
@@ -77,7 +77,7 @@ public class ColorTestScript : MonoBehaviour
 
 		else if(cubeColor != CubeColor.Neutral)
 		{
-			DOTween.Pause ("CubeColorTween");
+			DOTween.Kill ("CubeColorTween");
 
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");

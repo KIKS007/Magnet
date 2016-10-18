@@ -113,7 +113,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StartSlowMotion ()
 	{
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
-		DOTween.Pause ("StopSlowMotion");
+		DOTween.Kill ("StopSlowMotion");
 
 		slowMoNumber++;
 
@@ -207,7 +207,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StartPauseSlowMotion ()
 	{
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
-		DOTween.Pause ("StopSlowMotion");
+		DOTween.Kill ("StopSlowMotion");
 
 		if (OnPauseSlowMotionStart != null)
 			OnPauseSlowMotionStart ();
@@ -268,7 +268,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StartEndGameSlowMotion ()
 	{
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
-		DOTween.Pause ("StopSlowMotion");
+		DOTween.Kill ("StopSlowMotion");
 
 		slowMoNumber++;
 

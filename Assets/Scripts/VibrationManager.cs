@@ -231,18 +231,18 @@ public class VibrationManager : Singleton<VibrationManager>
 			j.SetVibration(0, 0);
 		}
 
-		DOTween.Pause ("Vibration0");
-		DOTween.Pause ("Vibration1");
-		DOTween.Pause ("Vibration2");
-		DOTween.Pause ("Vibration3");
+		DOTween.Kill ("Vibration0");
+		DOTween.Kill ("Vibration1");
+		DOTween.Kill ("Vibration2");
+		DOTween.Kill ("Vibration3");
 	}
 
 	void SlowlyStopVibration ()
 	{
-		DOTween.Pause ("Vibration0");
-		DOTween.Pause ("Vibration1");
-		DOTween.Pause ("Vibration2");
-		DOTween.Pause ("Vibration3");
+		DOTween.Kill ("Vibration0");
+		DOTween.Kill ("Vibration1");
+		DOTween.Kill ("Vibration2");
+		DOTween.Kill ("Vibration3");
 
 		DOTween.To(()=> playersLeftMotor [0], x=> playersLeftMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
 		DOTween.To(()=> playersRightMotor [0], x=> playersRightMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);

@@ -177,6 +177,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	private EventSystem eventSyst;
 
+	private Player[] playerList = new Player[5];
+
 	void Awake ()
 	{
 		DOTween.Init();
@@ -184,6 +186,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		GlobalVariables.Instance.OnGameOver += ResetGamepadsDisconnection;
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
+
 	}
 
     // Use this for initialization
@@ -268,6 +271,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			gamepadsDisconnected [i].anchoredPosition = new Vector2 (gamepadsDisconnected [i].anchoredPosition.x, maxYGamepad);
 		}
+
 	}
 
 	void SetGapsAndButtons ()
@@ -287,17 +291,50 @@ public class MainMenuManagerScript : MonoBehaviour
 			topMenuButtons [i].anchoredPosition = new Vector2 (onScreenX, topYpositionButton);
 		}
 	}
-	
+
+	void GetPlayers ()
+	{
+		playerList [0] = ReInput.players.GetPlayer (0);
+
+		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		{
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
+			{
+				playerList [1] = ReInput.players.GetPlayer (1);
+				playerList [1].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+			}
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 2)
+			{
+				playerList [2] = ReInput.players.GetPlayer (2);
+				playerList [2].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+			}
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 3)
+			{
+				playerList [3] = ReInput.players.GetPlayer (3);
+				playerList [3].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+			}
+
+			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 4)
+			{
+				playerList [4] = ReInput.players.GetPlayer (4);
+				playerList [4].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+			}
+		}
+	}
 	// Update is called once per frame
 	void Update ()
     {
 		List<Player> playersListTemp = new List<Player> (ReInput.players.GetPlayers ());
 
+		GetPlayers ();
+
 		if(startScreen == true)
 		{
-			for(int i = 0; i < playersListTemp.Count; i++)
+			for(int i = 0; i < playerList.Length; i++)
 			{
-				if(playersListTemp[i].GetButton("UISubmit") || playersListTemp[i].GetButton("UIStart") || Input.GetMouseButtonDown(0))
+				if(playerList[i] != null  && playerList[i].GetButton("UI Submit") || playerList[i] != null && playerList[i].GetButton("UI Start") || Input.GetMouseButtonDown(0))
 				{
 					if(startScreen == true)
 					{
@@ -314,7 +351,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			for(int i = 0; i < playersListTemp.Count; i++)
 			{
-				if (playersListTemp [i].GetButton ("UIStart"))
+				if (playersListTemp [i].GetButton ("UI Start"))
 					GamePauseResumeVoid ();
 			}
 		}
@@ -330,7 +367,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		for(int i = 0; i < playersListTemp.Count; i++)
 		{
-			if(playersListTemp[i].GetButton("UICancel") && !tweening)
+			if(playersListTemp[i].GetButton("UI Cancel") && !tweening)
 			{
 				
 				if(instructionsMenuCanvas.activeSelf == true)

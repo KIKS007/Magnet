@@ -89,36 +89,40 @@ public class MovableBomb : MovableScript
 				playerThatThrew = null;
 			}
 		}
+	}
 
-		if(hold)
+	protected override void SetCubeColor ()
+	{
+
+		Color cubeCorrectColor = new Color ();
+		
+		switch(player.name)
 		{
-			Color cubeCorrectColor = new Color ();
-
-			switch(player.name)
-			{
-			case "Player 1":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
-				break;
-			case "Player 2":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
-				break;
-			case "Player 3":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
-				break;
-			case "Player 4":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
-				break;
-			}
-
-			if (cubeMaterial.GetColor("_Color") != cubeCorrectColor)
-			{
-				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
-			}
+		case "Player 1":
+			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
+			break;
+		case "Player 2":
+			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
+			break;
+		case "Player 3":
+			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
+			break;
+		case "Player 4":
+			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
+			break;
 		}
+
+		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
+		{
+			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
+		}
+
+		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
+		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+		
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ()).OnComplete (()=> GetComponent<Renderer> ().material.color = cubeMaterial.GetColor ("_Color"));
+		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+
 	}
 
 	protected override void HitPlayer (Collision other)
@@ -191,6 +195,8 @@ public class MovableBomb : MovableScript
 		base.OnHold ();
 
 		playerHolding = player.gameObject;
+
+		SetCubeColor ();
 	}
 
 	public override void OnRelease ()
@@ -200,7 +206,7 @@ public class MovableBomb : MovableScript
 
 	public void ResetColor ()
 	{
-		if(playerHolding == null)
+		if(playerHolding == null && hold == false)
 		{
 			if(cubeMaterial == null)
 				cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
@@ -208,9 +214,8 @@ public class MovableBomb : MovableScript
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 			
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
-			
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
+			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 		}
 
 	}
@@ -279,6 +284,8 @@ public class MovableBomb : MovableScript
 			{
 				Vector3 direction = (playerHolding.transform.position - transform.position);
 				direction.Normalize ();
+
+				getToPlayerForce += 0.001f;
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);

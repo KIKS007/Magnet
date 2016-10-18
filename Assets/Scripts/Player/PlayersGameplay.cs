@@ -154,14 +154,6 @@ public class PlayersGameplay : MonoBehaviour
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
     }
 
-    protected IEnumerator WaitTillPlayerEnabled()
-    {
-        yield return new WaitUntil(() => gameObject.activeSelf == true);
-
-        StartCoroutine(OnPlayerStateChange());
-        StartCoroutine(OnDashAvailableEvent());
-    }
-
     protected void StartModeTime()
     {
         startModeTime = Time.unscaledTime;
@@ -174,6 +166,14 @@ public class PlayersGameplay : MonoBehaviour
         playerState = PlayerState.None;
         dashState = DashState.CanDash;
     }
+
+	protected IEnumerator WaitTillPlayerEnabled()
+	{
+		yield return new WaitUntil(() => gameObject.activeSelf == true);
+		
+		StartCoroutine(OnPlayerStateChange());
+		StartCoroutine(OnDashAvailableEvent());
+	}
 
     // Update is called once per frame
     protected virtual void Update()
@@ -337,13 +337,13 @@ public class PlayersGameplay : MonoBehaviour
         holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
 
         holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
-        holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease();
         holdMovableTransform.transform.SetParent(null);
         holdMovableTransform.transform.SetParent(movableParent);
         holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
         holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
         holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
         holdMovableTransform.gameObject.tag = "ThrownMovable";
+		holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease();
 
 
         holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 200;
@@ -648,13 +648,17 @@ public class PlayersGameplay : MonoBehaviour
 
 			if (playerState == PlayerState.Holding)
             {
-				Transform holdMovableTemp = transform.GetComponentInChildren<MovableBomb> ().transform;
-
-				holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
-				
-				holdMovableTemp.transform.SetParent(null);
-				holdMovableTemp.transform.SetParent(movableParent);
-				holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
+				for(int i = 0; i < transform.childCount; i++)
+					if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "ThrownMovable" || transform.GetChild(i).tag == "HoldMovable")
+					{
+						Transform holdMovableTemp = transform.GetChild (i).transform;
+						holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
+						
+						holdMovableTemp.transform.SetParent(null);
+						holdMovableTemp.transform.SetParent(movableParent);
+						holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
+						holdMovableTemp.GetComponent<MovableScript>().OnRelease();
+					}
             }
 
             playerState = PlayerState.Dead;

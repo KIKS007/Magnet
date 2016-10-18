@@ -23,6 +23,8 @@ GameObject:
   - 114: {fileID: 114000010926698640}
   - 114: {fileID: 114000011007174702}
   - 114: {fileID: 114000011349101262}
+  - 114: {fileID: 114000011475117862}
+  - 114: {fileID: 114000011801209778}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -69,8 +71,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 50, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -43, y: 104, z: 18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_Children:
@@ -310,8 +312,8 @@ MonoBehaviour:
   rgbSplitEnabled: 1
   rgbAmount: 12
   lensDistortionEnabled: 1
-  distortion: 0.2
-  cubicDistortion: 0.6
+  distortion: 0.3
+  cubicDistortion: 0.2
   scaleZoom: 0.9
   contrastVignetteEnabled: 1
   focusVignetteEnabled: 1
@@ -515,6 +517,39 @@ MonoBehaviour:
   startPosition: {x: 0, y: 10, z: 0}
   keySloMo: 111
   keyCubesSpawn: 99
+--- !u!114 &114000011475117862
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c7675d8cd4d746a3840eabb0f7aaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  changeDuration: 1
+  channelMixerRed: {x: -2, y: 83, z: 123}
+  channelMixerGreen: {x: 61, y: 5, z: 98}
+  channelMixerBlue: {x: 104, y: -200, z: 149}
+  channelMixerConstant: {x: 0, y: 0, z: 7}
+--- !u!114 &114000011801209778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106368}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44002857159cfa64fab24b6ec32b80de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Shader: {fileID: 4800000, guid: d5203c49c0e949f4e9b53909003b6b8f, type: 3}
+  Red: {x: 100, y: 0, z: 0}
+  Green: {x: 0, y: 100, z: 0}
+  Blue: {x: 0, y: 0, z: 100}
+  Constant: {x: 0, y: 0, z: 0}
+  e_CurrentChannel: 2
 --- !u!114 &114000013234602342
 MonoBehaviour:
   m_ObjectHideFlags: 1
