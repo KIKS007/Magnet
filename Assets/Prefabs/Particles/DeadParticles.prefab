@@ -50,7 +50,7 @@ ParticleSystem:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 151166}
   serializedVersion: 4
-  lengthInSec: 3.5
+  lengthInSec: 3000
   startDelay:
     scalar: 0
     maxCurve:
@@ -98,7 +98,7 @@ ParticleSystem:
     serializedVersion: 2
     enabled: 1
     startLifetime:
-      scalar: 3.5
+      scalar: 3000
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1735,7 +1735,7 @@ ParticleSystem:
     voxelSize: 0.5
     collisionMessages: 0
     collidesWithDynamic: 1
-    interiorCollisions: 1
+    interiorCollisions: 0
   TriggerModule:
     enabled: 0
     collisionShape0: {fileID: 0}

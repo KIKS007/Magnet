@@ -193,12 +193,14 @@ public class BombManager : MonoBehaviour
 
 		yield return new WaitForSeconds (1f);
 
-		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
-			playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
-
-		else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-			bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
-
+		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
+		{
+			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
+				playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
+			
+			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
+				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
+		}
 	}
 		
 	IEnumerator GameEnd ()

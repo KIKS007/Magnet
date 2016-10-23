@@ -43,7 +43,7 @@ public class PlayersManikin : PlayersGameplay
 		{
 			Death ();
 
-			DeathParticles ();
+			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
 		}
 	}
 
@@ -53,8 +53,9 @@ public class PlayersManikin : PlayersGameplay
 		{
 			Death ();
 
-			DeathParticles ();
+			DeathExplosionFX ();
 
+			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent<Renderer> ().material.color);
 		}
 	}
 
@@ -86,7 +87,7 @@ public class PlayersManikin : PlayersGameplay
 		}
 	}
 
-	public override void DeathParticles ()
+	public override void DeathExplosionFX ()
 	{
 		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [4], transform.position, GlobalVariables.Instance.explosionFX [4].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;

@@ -163,6 +163,8 @@ public class MovableScript : MonoBehaviour
 					DOTween.Kill ("CubeNeutralTween");
 				}
 
+				Debug.Log ("New Color : " + cubeCorrectColor);
+
 				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 				
@@ -180,6 +182,8 @@ public class MovableScript : MonoBehaviour
 				Debug.Log ("CubeColorTween is Playing");
 				DOTween.Kill ("CubeColorTween");
 			}
+
+			Debug.Log ("Neutral Color");
 
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -223,6 +227,8 @@ public class MovableScript : MonoBehaviour
 				DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
 			}
 
+			//Debug.Log ("New Color : " + cubeCorrectColor);
+
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
@@ -241,6 +247,8 @@ public class MovableScript : MonoBehaviour
 		{
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+
+			//Debug.Log ("Neutral Color");
 
 			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());

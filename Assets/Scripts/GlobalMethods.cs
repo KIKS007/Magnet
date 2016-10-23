@@ -44,9 +44,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	public IEnumerator RandomPositionMovables (float durationBetweenSpawn = 0.1f)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
 	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn));
+	}
+
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
+	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		string tagTemp = allMovables [0].tag;
@@ -83,9 +87,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				allMovables [i].transform.rotation = Quaternion.Euler (Vector3.zero);
 				allMovables [i].GetComponent<Rigidbody> ().velocity = Vector3.zero;
 				allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-				allMovables [i].transform.GetChild (1).GetComponent<Renderer> ().enabled = true;
-				allMovables [i].transform.GetChild (2).GetComponent<Renderer> ().enabled = true;
 			
 				MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
 			}
@@ -177,6 +178,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		yield return new WaitForSeconds (0.3f * timeTween);
 
-		movable.tag = tagTemp;
+		if(movable != null)
+			movable.tag = tagTemp;
 	}
 }

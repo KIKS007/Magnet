@@ -74,7 +74,7 @@ public class PlayersGameplay : MonoBehaviour
     public float maxVelocity;
     public float gravity = 100;
 
-    protected float rightJoystickDeadzone = 0.85f;
+    protected float rightJoystickDeadzone = 0.5f;
 
     [Header("Forces")]
     public float attractionForce = 10;
@@ -452,7 +452,7 @@ public class PlayersGameplay : MonoBehaviour
         {
             Death();
 
-            DeathParticles();
+			DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
         }
 
         if (other.collider.tag != "HoldMovable")
@@ -473,7 +473,8 @@ public class PlayersGameplay : MonoBehaviour
         {
             Death();
 
-            DeathParticles();
+			DeathExplosionFX ();
+			DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
         }
 
         if (other.collider.tag != "HoldMovable")
@@ -614,7 +615,7 @@ public class PlayersGameplay : MonoBehaviour
         StartCoroutine(OnPlayerStateChange());
     }
 
-    public virtual void DeathParticles()
+    public virtual void DeathExplosionFX()
     {
         int playerNumber = -1;
 
@@ -638,6 +639,18 @@ public class PlayersGameplay : MonoBehaviour
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
         instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
     }
+
+	public virtual GameObject DeathParticles (ContactPoint contact, GameObject prefab, Color color)
+	{
+		Vector3 pos = contact.point;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+
+		return instantiatedParticles;
+	}
 
     public virtual void Death()
     {

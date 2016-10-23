@@ -12,22 +12,19 @@ public class TrainingManager : MonoBehaviour
 
 	void Start ()
 	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
-
-		for (int i = 0; i < allMovables.Length; i++)
-		{
-			allMovables [i].transform.GetChild(1).GetComponent<Renderer> ().enabled = false;	
-			allMovables [i].transform.GetChild(2).GetComponent<Renderer> ().enabled = false;	
-		}
-
 		StartCoroutine (WaitForBeginning ());
 	}
 
 	IEnumerator WaitForBeginning ()
 	{
+		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+
+		for (int i = 0; i < allMovables.Length; i++)
+			allMovables [i].SetActive (false);
+
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		GlobalMethods.Instance.StartCoroutine ("RandomPositionMovables", 0.1f);
+		GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables);
 	}
 
 	// Update is called once per frame

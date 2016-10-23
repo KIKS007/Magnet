@@ -237,6 +237,7 @@ public class MovableBomb : MovableScript
 		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 
 		ExplosionFX ();
+		playerHolding.GetComponent<PlayersBomb> ().DeathParticles ();
 
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
 		gameObject.SetActive (false);
