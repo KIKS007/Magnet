@@ -72,14 +72,17 @@ MonoBehaviour:
       - _enabled: 1
         _categoryId: 0
         _layoutId: 0
-      _defaultKeyboardMaps: []
+      _defaultKeyboardMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
       _defaultCustomControllerMaps: []
       _startingCustomControllers: []
       _assignMouseOnStart: 1
       _excludeFromControllerAutoAssignment: 0
     - _id: 1
-      _name: Mouse and Keyboard
-      _descriptiveName: Mouse and Keyboard
+      _name: Keyboard
+      _descriptiveName: Keyboard
       _startPlaying: 1
       _defaultJoystickMaps: []
       _defaultMouseMaps:
@@ -151,42 +154,6 @@ MonoBehaviour:
       _assignMouseOnStart: 0
       _excludeFromControllerAutoAssignment: 0
     actions:
-    - _id: 0
-      _name: Submit
-      _type: 1
-      _descriptiveName: Submit
-      _positiveDescriptiveName: 
-      _negativeDescriptiveName: 
-      _behaviorId: 0
-      _userAssignable: 1
-      _categoryId: 0
-    - _id: 1
-      _name: Cancel
-      _type: 1
-      _descriptiveName: Cancel
-      _positiveDescriptiveName: 
-      _negativeDescriptiveName: 
-      _behaviorId: 0
-      _userAssignable: 1
-      _categoryId: 0
-    - _id: 2
-      _name: Start
-      _type: 1
-      _descriptiveName: Start
-      _positiveDescriptiveName: 
-      _negativeDescriptiveName: 
-      _behaviorId: 0
-      _userAssignable: 1
-      _categoryId: 0
-    - _id: 3
-      _name: Select
-      _type: 1
-      _descriptiveName: Select
-      _positiveDescriptiveName: 
-      _negativeDescriptiveName: 
-      _behaviorId: 0
-      _userAssignable: 1
-      _categoryId: 0
     - _id: 4
       _name: Dash
       _type: 1
@@ -272,8 +239,8 @@ MonoBehaviour:
       _name: UI Horizontal
       _type: 0
       _descriptiveName: UI Horizontal
-      _positiveDescriptiveName: UIRight
-      _negativeDescriptiveName: UILeft
+      _positiveDescriptiveName: UI Right
+      _negativeDescriptiveName: UI Left
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
@@ -281,8 +248,8 @@ MonoBehaviour:
       _name: UI Vertical
       _type: 0
       _descriptiveName: UI Vertical
-      _positiveDescriptiveName: UIUP
-      _negativeDescriptiveName: UIDown
+      _positiveDescriptiveName: UI UP
+      _negativeDescriptiveName: UI Down
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 1
@@ -309,9 +276,9 @@ MonoBehaviour:
     actionCategoryMap:
       list:
       - categoryId: 0
-        actionIds: 000000000100000002000000030000000400000005000000070000000600000008000000090000000a000000
+        actionIds: 07000000050000000800000006000000090000000a00000004000000
       - categoryId: 1
-        actionIds: 0d0000000e0000000b0000000c0000000f000000
+        actionIds: 0e0000000d0000000b0000000c0000000f000000
     inputBehaviors:
     - _id: 0
       _name: Default
@@ -519,7 +486,7 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 0
-        _keyboardKeyCode: 122
+        _keyboardKeyCode: 119
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0
@@ -530,7 +497,7 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 0
-        _keyboardKeyCode: 119
+        _keyboardKeyCode: 122
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0
@@ -552,7 +519,7 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 1
-        _keyboardKeyCode: 113
+        _keyboardKeyCode: 97
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0
@@ -563,7 +530,7 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 1
-        _keyboardKeyCode: 97
+        _keyboardKeyCode: 113
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0

@@ -37,7 +37,7 @@ public class MagnetTriggerScript : MonoBehaviour
 				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 			{
 
-				if(player != null && player.GetButton("Attract"))
+				if(player != null && player.GetButton("Attract") && !player.GetButton ("Repulse"))
 				{
 					GetMovable (other);
 				}

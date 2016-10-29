@@ -88,7 +88,8 @@ namespace Rewired.UI.ControlMapper {
         public static void SetInteractable(Selectable selectable, bool state, bool playTransition) {
             if(selectable == null) return;
 
-            if(!playTransition) {
+            if(!playTransition) 
+			{
                 // Workaround because Unity will not set the state of an element immediately if a fade is present. This causes numerous graphical issues.
                 if(selectable.transition == Selectable.Transition.ColorTint) {
                     ColorBlock colorBlock = selectable.colors;
@@ -99,7 +100,9 @@ namespace Rewired.UI.ControlMapper {
                     colorBlock.fadeDuration = prevFadeDuration;
                     selectable.colors = colorBlock;
                 }
-            } else {
+            } 
+			else 
+			{
                 selectable.interactable = state;
             }
         }

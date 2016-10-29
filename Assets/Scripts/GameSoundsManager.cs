@@ -42,7 +42,9 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public Scrollbar soundsBar;
 	public Scrollbar playlistBar;
 	public bool soundsMute = false;
+	public Toggle soundsMuteToggle;
 	public bool musicMute = false;
+	public Toggle musicMuteToggle;
 	[SoundGroupAttribute]
 	public string soundsVolumeTest;
 
@@ -283,25 +285,29 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 			previousVolumeSounds = PlayerPrefs.GetFloat("PreviousVolumeSounds");
 			soundsBar.value = 0;
 			MasterAudio.MasterVolumeLevel = 0;
+			soundsMuteToggle.isOn = true;
 		}
 		else
 		{
 			soundsMute = false;
 			soundsBar.value = PlayerPrefs.GetFloat("SoundsVolume");
 			MasterAudio.MasterVolumeLevel = PlayerPrefs.GetFloat("SoundsVolume");
+			soundsMuteToggle.isOn = false;
 		}
-
+	
 		if(PlayerPrefs.GetInt ("MusicMute") == 1)
 		{
 			musicMute = true;
 			previousVolumePlaylist = PlayerPrefs.GetFloat("PreviousVolumePlaylist");
 			playlistBar.value = 0;
 			MasterAudio.PlaylistMasterVolume = 0;
+			musicMuteToggle.isOn = true;
 		}
 		else
 		{
 			playlistBar.value = PlayerPrefs.GetFloat("MusicVolume");
 			MasterAudio.PlaylistMasterVolume = PlayerPrefs.GetFloat("MusicVolume");
+			musicMuteToggle.isOn = false;
 		}
 
 		loading = false;

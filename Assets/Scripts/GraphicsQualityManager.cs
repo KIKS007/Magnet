@@ -23,12 +23,15 @@ public class GraphicsQualityManager : MonoBehaviour
 			{
 			case 2:
 				qualityToggles [2].isOn = true;
+				HighQuality ();
 				break;
 			case 1:
 				qualityToggles [1].isOn = true;
+				MediumQuality ();
 				break;
 			case 0:
 				qualityToggles [0].isOn = true;
+				LowQuality ();
 				break;
 			}
 		}

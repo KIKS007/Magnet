@@ -54,7 +54,7 @@ public class FadeInAndOutScript : MonoBehaviour
 
 	void FadeOut ()
 	{
-		if (tweening = true)
+		if (tweening == true)
 		{
 			if(GetComponent<Text>() != null)
 			{
@@ -70,7 +70,7 @@ public class FadeInAndOutScript : MonoBehaviour
 
 	void FadeIn ()
 	{
-		if (tweening = true)
+		if (tweening == true)
 		{
 			if(GetComponent<Text>() != null)
 			{

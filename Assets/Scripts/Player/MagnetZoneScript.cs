@@ -32,6 +32,12 @@ public class MagnetZoneScript : MonoBehaviour
 
 		if (player.GetButtonUp ("Repulse"))
 			characterScript.cubesRepulsed.Clear ();
+
+		if (player.GetButton ("Repulse") && player.GetButton ("Attract"))
+		{
+			characterScript.cubesAttracted.Clear ();
+			characterScript.cubesRepulsed.Clear ();
+		}
 	}
 
 	void OnTriggerStay (Collider other)
@@ -47,7 +53,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 					if(player != null)
 					{
-						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract"))
+						if(objectHit.transform.tag == "Movable" && player.GetButton("Attract") && !player.GetButton ("Repulse"))
 						{
 							if (!other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().attracedBy.Add (character.gameObject);
@@ -61,7 +67,7 @@ public class MagnetZoneScript : MonoBehaviour
 							//characterScript.Attraction (objectHit.collider.gameObject);
 						}
 
-						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse"))
+						if(objectHit.transform.tag == "Movable" && player.GetButton("Repulse") && !player.GetButton ("Attract"))
 						{
 							if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
 								other.GetComponent<MovableScript> ().repulsedBy.Add (character.gameObject);

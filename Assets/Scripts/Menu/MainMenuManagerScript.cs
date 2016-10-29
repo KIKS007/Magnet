@@ -121,7 +121,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	public GameObject chooseOptionsMenuCanvas;
 	public GameObject soundsMenuCanvas;
 	public GameObject graphicsMenuCanvas;
-	public GameObject playersMenuCanvas;
+	public GameObject controlsMenuCanvas;
 	public GameObject creditsMenuCanvas;
 	public GameObject quitMenuCanvas;
 	public GameObject chooseModeCanvas;
@@ -138,7 +138,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	public RectTransform optionsMenuContent;
 	public RectTransform soundsMenuContent;
 	public RectTransform graphicsMenuContent;
-	public RectTransform playersMenuContent;
+	public RectTransform controlsMenuContent;
 	public RectTransform creditsMenuContent;
 	public RectTransform quitMenuContent;
 	public RectTransform chooseModeContent;
@@ -152,7 +152,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	private RectTransform resumeRect;
 
 	private RectTransform optionsButtonRect;
-	private RectTransform playersButtonRect;
+	private RectTransform controlsButtonRect;
 	private RectTransform soundsButtonRect;
 	private RectTransform graphicsButtonRect;
 
@@ -212,7 +212,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		resumeRect = mainMenuCanvas.transform.GetChild(5).GetComponent<RectTransform>();
 
 		optionsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(0).GetComponent<RectTransform>();
-		playersButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(0).GetComponent<RectTransform>();
+		controlsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(0).GetComponent<RectTransform>();
 		soundsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
 		graphicsButtonRect = chooseOptionsMenuCanvas.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
 
@@ -228,7 +228,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		creditsMenuCanvas.SetActive(false);
 		soundsMenuCanvas.SetActive(false);
 		graphicsMenuCanvas.SetActive(false);
-		playersMenuCanvas.SetActive(false);
+		controlsMenuCanvas.SetActive(false);
 		chooseModeCanvas.SetActive(false);
 		crushMenuCanvas.SetActive(false);
 		trainingMenuCanvas.SetActive(false);
@@ -334,7 +334,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			for(int i = 0; i < playerList.Length; i++)
 			{
-				if(playerList[i] != null  && playerList[i].GetButton("UI Submit") || playerList[i] != null && playerList[i].GetButton("UI Start") || Input.GetMouseButtonDown(0))
+				if(playerList[i] != null  && playerList[i].GetButtonDown("UI Submit") || playerList[i] != null && playerList[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
 				{
 					if(startScreen == true)
 					{
@@ -351,7 +351,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		{
 			for(int i = 0; i < playersListTemp.Count; i++)
 			{
-				if (playersListTemp [i].GetButton ("UI Start"))
+				if (playersListTemp [i].GetButtonDown ("UI Start"))
 					GamePauseResumeVoid ();
 			}
 		}
@@ -367,7 +367,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		for(int i = 0; i < playersListTemp.Count; i++)
 		{
-			if(playersListTemp[i].GetButton("UI Cancel") && !tweening)
+			if(playersListTemp[i].GetButtonDown("UI Cancel") && !tweening)
 			{
 				
 				if(instructionsMenuCanvas.activeSelf == true)
@@ -376,7 +376,7 @@ public class MainMenuManagerScript : MonoBehaviour
 					Tweening ();
 				}
 				
-				if(chooseOptionsMenuCanvas.activeSelf == true && playersMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
+				if(chooseOptionsMenuCanvas.activeSelf == true && controlsMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
 				{
 					ExitOptions ();
 					Tweening ();
@@ -394,10 +394,17 @@ public class MainMenuManagerScript : MonoBehaviour
 					Tweening ();
 				}
 				
-				if(playersMenuCanvas.activeSelf == true)
+				if(controlsMenuCanvas.activeSelf == true)
 				{
-					StartCoroutine("ExitPlayers");
-					Tweening ();
+					GameObject[] popup = GameObject.FindGameObjectsWithTag ("RewiredPopupWindows");
+
+					if(popup.Length == 0)
+					{
+						
+						StartCoroutine(ExitControls ());
+						Tweening ();
+					}
+
 				}
 				
 				if(soundsMenuCanvas.activeSelf == true)
@@ -510,7 +517,7 @@ public class MainMenuManagerScript : MonoBehaviour
 			Tweening ();
 		}
 
-		if(chooseOptionsMenuCanvas.activeSelf == true && playersMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
+		if(chooseOptionsMenuCanvas.activeSelf == true && controlsMenuCanvas.activeSelf == false && soundsMenuCanvas.activeSelf == false && graphicsMenuCanvas.activeSelf == false)
 		{
 			ExitOptions ();
 			Tweening ();
@@ -528,10 +535,16 @@ public class MainMenuManagerScript : MonoBehaviour
 			Tweening ();
 		}
 
-		if(playersMenuCanvas.activeSelf == true)
+		if(controlsMenuCanvas.activeSelf == true)
 		{
-			StartCoroutine("ExitPlayers");
-			Tweening ();
+			GameObject[] popup = GameObject.FindGameObjectsWithTag ("RewiredPopupWindows");
+
+			if(popup.Length == 0)
+			{
+
+				StartCoroutine(ExitControls ());
+				Tweening ();
+			}
 		}
 
 		if(soundsMenuCanvas.activeSelf == true)
@@ -1054,14 +1067,14 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		optionsMenuContent.anchoredPosition = new Vector2(offScreenX, 0);
 
-		//playersButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [3]);
+		controlsButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [2]);
 		soundsButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [3]);
 		graphicsButtonRect.anchoredPosition = new Vector2(offScreenX, yPositions [4]);
 
 		mainMenuCanvas.SetActive(false);
 		chooseOptionsMenuCanvas.SetActive(true);
 		
-		//playersButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);; 
+		controlsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		soundsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
@@ -1072,8 +1085,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	public void ExitOptions ()
 	{
-		//playersButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(LoadMainMenu); 
-		soundsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(LoadMainMenu); 
+		controlsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(LoadMainMenu); 
+		soundsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		graphicsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 		optionsMenuContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
@@ -1214,49 +1227,48 @@ public class MainMenuManagerScript : MonoBehaviour
 		PlayReturnSound ();
 	}
 
-	public void LoadPlayersVoid()
+	public void LoadControlsVoid()
 	{
 		if(!tweening)
 		{
-			StartCoroutine("LoadPlayers");
+			GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Controls");
+			StartCoroutine(LoadControls ());
 			Tweening ();
 		}
 	}
 
-	IEnumerator LoadPlayers ()
+	IEnumerator LoadControls ()
 	{
 		optionsButtonRect.DOAnchorPos(new Vector2(offScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		soundsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		graphicsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		soundsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		graphicsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 
-		Tween myTween = playersButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		Tween myTween = controlsButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		
 		yield return myTween.WaitForCompletion();
 		
-		playersMenuContent.anchoredPosition = new Vector2(offScreenX, 0);
-		
+		controlsMenuContent.anchoredPosition = new Vector2(-910, -44);
+		controlsMenuContent.gameObject.SetActive (true);
+
 		chooseOptionsMenuCanvas.SetActive(false);
-		playersMenuCanvas.SetActive(true);
+		controlsMenuCanvas.SetActive(true);
 		
-		playersMenuContent.DOAnchorPos(new Vector2(0, 0), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
+		controlsMenuContent.DOAnchorPos(new Vector2(0, -44), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
 	}
 	
-	public IEnumerator ExitPlayers ()
+	public IEnumerator ExitControls ()
 	{
-		playersMenuContent.GetComponent<ControllerChangeManager1> ().UpdateGlobalVariables ();
-		playersMenuContent.GetComponent<ControllerChangeManager1> ().UpdatePlayersControllers ();
-
-		Tween myTween = playersMenuContent.DOAnchorPos(new Vector2(offScreenX, 0), durationContent).SetEase(easeTypeMainMenu);
+		Tween myTween = controlsMenuContent.DOAnchorPos(new Vector2(-910, -44), durationContent).SetEase(easeTypeMainMenu).OnComplete (()=> controlsMenuContent.gameObject.SetActive (false));
 
 		yield return myTween.WaitForCompletion();
 
 		chooseOptionsMenuCanvas.SetActive(true);
-		playersMenuCanvas.SetActive(false);
+		controlsMenuCanvas.SetActive(false);
 
 		optionsButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnStart(Tweening).OnComplete(NotTweening);
-		playersButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		soundsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
-		graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [5]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		controlsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		soundsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
 		sounds.GetComponent<Button>().Select();
 
@@ -1276,7 +1288,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	IEnumerator LoadSounds ()
 	{
 		optionsButtonRect.DOAnchorPos(new Vector2(offScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		//playersButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		controlsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		graphicsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 	
 		
@@ -1304,7 +1316,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		soundsMenuCanvas.SetActive(false);
 		
 		optionsButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);
-		//playersButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		controlsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		soundsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 
@@ -1326,7 +1338,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	IEnumerator LoadGraphics ()
 	{
 		optionsButtonRect.DOAnchorPos(new Vector2(offScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
-		//playersButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
+		controlsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 		soundsButtonRect.DOAnchorPos(new Vector2(offScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 
 		Tween myTween = graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
@@ -1353,7 +1365,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		graphicsMenuCanvas.SetActive(false);
 		
 		optionsButtonRect.DOAnchorPos(new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay(delaySubmit[3]).SetEase(easeTypeMainMenu).SetId("MainMenuTween").OnComplete(NotTweening);
-		//playersButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
+		controlsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [2]), durationSubmit).SetDelay(delaySubmit[2]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		soundsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [3]), durationSubmit).SetDelay(delaySubmit[1]).SetEase(easeTypeMainMenu).SetId("MainMenuTween"); 
 		graphicsButtonRect.DOAnchorPos(new Vector2(onScreenX, yPositions [4]), durationSubmit).SetDelay(delaySubmit[0]).SetEase(easeTypeMainMenu).SetId("MainMenuTween");
 

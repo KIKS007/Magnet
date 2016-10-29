@@ -25,6 +25,8 @@ TagManager:
   - EventSystem
   - MainButton
   - ControllerChangeManager
+  - RewiredPopupWindows
+  - InputGridFieldButton
   layers:
   - Default
   - TransparentFX
