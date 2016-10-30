@@ -20,6 +20,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 	public List<Vector2> ScreenResolutions;
 
 	public Toggle[] resToggles = new Toggle[6];
+	public Toggle windowedToggle;
 
 	private int screenResIndex;
 
@@ -41,9 +42,15 @@ public class ResolutionManager : Singleton<ResolutionManager>
 			screenResIndex = PlayerPrefs.GetInt ("ScreenResIndex");
 
 			if(PlayerPrefs.GetInt ("Fullscreen") == 1)
+			{
+				windowedToggle.isOn = false;
 				SetResolution (screenResIndex, true);
+			}
 			else
+			{
+				windowedToggle.isOn = true;
 				SetResolution (screenResIndex, false);
+			}
 		}
 
 		SetCurrentRes ();
@@ -52,6 +59,21 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
 		//printResolution ();
     }
+
+	void Update ()
+	{
+		if(Screen.fullScreen == true && PlayerPrefs.GetInt ("Fullscreen") == 0 && windowedToggle.isOn == true)
+		{
+			SetResolution (screenResIndex, true);
+			windowedToggle.isOn = false;
+		}
+
+		if(Screen.fullScreen == false && PlayerPrefs.GetInt ("Fullscreen") == 1 && windowedToggle.isOn == false)
+		{
+			SetResolution (screenResIndex, false);
+			windowedToggle.isOn = true;
+		}
+	}
 
 	void InitResolutions()
 	{
@@ -161,7 +183,6 @@ public class ResolutionManager : Singleton<ResolutionManager>
 			SetResolution (screenResIndex, true);
 	}
 
-
 	void SetCurrentRes ()
 	{
 		currentScreenRes = new Vector2 (ScreenResolutions [screenResIndex].x, ScreenResolutions [screenResIndex].y);
@@ -184,7 +205,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 		resToggles [screenResIndex].isOn = true;
 	}
 
-	public void SetResolution(int index, bool fullScreen)
+	void SetResolution(int index, bool fullScreen)
     {
         Vector2 r = new Vector2();
      
@@ -204,6 +225,31 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
 		SetCurrentRes ();
     }
+
+	public void SetResolution(int index)
+	{
+		Vector2 r = new Vector2();
+
+		screenResIndex = index;
+		r = ScreenResolutions[screenResIndex];
+
+		PlayerPrefs.SetInt ("ScreenResIndex", screenResIndex);
+
+		// Debug.Log("Setting resolution to " + (int)r.x + "x" + (int)r.y);
+
+		if(PlayerPrefs.GetInt ("Fullscreen") == 1)
+		{
+			Screen.SetResolution((int)r.x, (int)r.y, true);
+			PlayerPrefs.SetInt ("Fullscreen", 1);
+		}
+		else
+		{
+			Screen.SetResolution((int)r.x, (int)r.y, false);
+			PlayerPrefs.SetInt ("Fullscreen", 0);
+		}
+
+		SetCurrentRes ();
+	}
 
     public void ToggleFullscreen()
     {

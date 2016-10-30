@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc7787d6920cdac4cba34c9e23ecafea, type: 3}
-  m_Name: CustomTheme
+  m_Name: CustomTheme 1
   m_EditorClassIdentifier: 
   _mainWindowBackground:
     _color: {r: 0, g: 0, b: 0, a: 0}
@@ -48,12 +48,12 @@ MonoBehaviour:
     _transition: 1
     _colors:
       m_ColorMultiplier: 1
-      m_DisabledColor: {r: 0.02076125, g: 0.14548971, b: 0.2352941, a: 1}
+      m_DisabledColor: {r: 0.14037678, g: 0.18981342, b: 0.21960784, a: 1}
       m_FadeDuration: 0.1
-      m_HighlightedColor: {r: 0.14509805, g: 0.8, b: 0.90588236, a: 1}
-      m_NormalColor: {r: 0.15294118, g: 0.4117647, b: 0.6, a: 1}
-      m_PressedColor: {r: 0, g: 0.97619057, b: 1, a: 1}
-      m_DisabledHighlightedColor: {r: 0.14509805, g: 0.8, b: 0.90588236, a: 1}
+      m_HighlightedColor: {r: 0, g: 0.41992915, b: 0.6691177, a: 1}
+      m_NormalColor: {r: 0.30048442, g: 0.39928094, b: 0.45882353, a: 1}
+      m_PressedColor: {r: 0, g: 0.62758636, b: 1, a: 1}
+      m_DisabledHighlightedColor: {r: 0, g: 0.41992915, b: 0.6691177, a: 0.49411765}
     _spriteState:
       m_DisabledSprite: {fileID: 0}
       m_HighlightedSprite: {fileID: 0}
@@ -113,15 +113,15 @@ MonoBehaviour:
       _fillClockwise: 0
       _fillOrigin: 0
   _inputGridFieldSettings:
-    _transition: 1
+    _transition: 2
     _colors:
       m_ColorMultiplier: 1
-      m_DisabledColor: {r: 0.02076125, g: 0.14548971, b: 0.2352941, a: 1}
+      m_DisabledColor: {r: 0.14037678, g: 0.18981342, b: 0.21960784, a: 1}
       m_FadeDuration: 0.1
-      m_HighlightedColor: {r: 0.14509805, g: 0.8, b: 0.90588236, a: 1}
-      m_NormalColor: {r: 0.15294118, g: 0.4117647, b: 0.6, a: 1}
-      m_PressedColor: {r: 0, g: 0.97619057, b: 1, a: 1}
-      m_DisabledHighlightedColor: {r: 0.14509805, g: 0.8, b: 0.90588236, a: 1}
+      m_HighlightedColor: {r: 0, g: 0.41992915, b: 0.6691177, a: 1}
+      m_NormalColor: {r: 0.30048442, g: 0.39928094, b: 0.45882353, a: 1}
+      m_PressedColor: {r: 0, g: 0.62758636, b: 1, a: 1}
+      m_DisabledHighlightedColor: {r: 0, g: 0.41992915, b: 0.6691177, a: 0.49411765}
     _spriteState:
       m_DisabledSprite: {fileID: 21300000, guid: 76817a5803d63464c95a4a3f5382f5e4,
         type: 3}
@@ -139,7 +139,7 @@ MonoBehaviour:
       m_DisabledHighlightedTrigger: 
     _imageSettings:
       _color: {r: 1, g: 1, b: 1, a: 1}
-      _sprite: {fileID: 21300000, guid: 1e2275caee65b7f4382e7b48d3167d80, type: 3}
+      _sprite: {fileID: 21300000, guid: a74a225d818e97c4e8310d507c46399d, type: 3}
       _materal: {fileID: 0}
       _type: 1
       _preserveAspect: 0
@@ -256,7 +256,7 @@ MonoBehaviour:
     _fillAmout: 0
     _fillClockwise: 0
     _fillOrigin: 0
-  _invertToggleDisabledColor: {r: 0.6838235, g: 0.6838235, b: 0.6838235, a: 1}
+  _invertToggleDisabledColor: {r: 0.05514802, g: 0.07456956, b: 0.08627451, a: 1}
   _calibrationValueMarker:
     _color: {r: 1, g: 1, b: 1, a: 1}
     _sprite: {fileID: 21300000, guid: 7f4e5f9eac93c0a4ab5e638adf6b02e1, type: 3}
@@ -292,7 +292,7 @@ MonoBehaviour:
     _lineSpacing: 1
     _sizeMultiplier: 1
   _inputGridFieldTextSettings:
-    _color: {r: 1, g: 1, b: 1, a: 1}
+    _color: {r: 0.31764707, g: 0.97647065, b: 1, a: 1}
     _font: {fileID: 12800000, guid: badac0eb853408242885c610ff11b284, type: 3}
     _style: 0
     _lineSpacing: 1
