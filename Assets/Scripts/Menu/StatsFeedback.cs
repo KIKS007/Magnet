@@ -268,19 +268,19 @@ public class StatsFeedback : MonoBehaviour
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
 			textComponent.text = "Player 2";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
 			textComponent.text = "Player 3";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
 			textComponent.text = "Player 4";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
@@ -314,58 +314,19 @@ public class StatsFeedback : MonoBehaviour
 			number = stats.playerStatsList [(int)whichPlayer].shots;
 			break;
 		case WhichStat.Wins:
-			
-			switch (whichPlayer)
+
+
+			if(GlobalVariables.Instance.PlayersControllerNumber[(int)whichPlayer] != -1)
 			{
-			case WhichPlayer.Player1:
-				if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-				{
-					textComponent.enabled = true;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
-				}
-				else
-				{
-					textComponent.enabled = false;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
-				}
-				break;
-			case WhichPlayer.Player2:
-				if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-				{
-					textComponent.enabled = true;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
-				}
-				else
-				{
-					textComponent.enabled = false;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
-				}
-				break;
-			case WhichPlayer.Player3:
-				if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-				{
-					textComponent.enabled = true;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
-				}
-				else
-				{
-					textComponent.enabled = false;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
-				}
-				break;
-			case WhichPlayer.Player4:
-				if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-				{
-					textComponent.enabled = true;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = true;
-				}
-				else
-				{
-					textComponent.enabled = false;
-					textComponent.transform.parent.GetComponent<Image> ().enabled = false;
-				}
-				break;
+				textComponent.enabled = true;
+				textComponent.transform.parent.GetComponent<Image> ().enabled = true;
 			}
+			else
+			{
+				textComponent.enabled = false;
+				textComponent.transform.parent.GetComponent<Image> ().enabled = false;
+			}
+
 			textComponent.text = color + stats.playerStatsList [(int)whichPlayer].wins.ToString () + "</color>";
 			number = stats.playerStatsList [(int)whichPlayer].wins;
 			break;
@@ -386,19 +347,19 @@ public class StatsFeedback : MonoBehaviour
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
 			textComponent.text = "Player 2";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
 			textComponent.text = "Player 3";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
 			textComponent.text = "Player 4";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
@@ -468,19 +429,19 @@ public class StatsFeedback : MonoBehaviour
 		{
 		case "Player 1":
 			textComponent.text = stats.winner;
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 2":
 			textComponent.text = stats.winner;
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 3":
 			textComponent.text = stats.winner;
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Player 4":
 			textComponent.text = stats.winner;
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case "Draw":
 			textComponent.text = "It's a draw !";
@@ -506,19 +467,19 @@ public class StatsFeedback : MonoBehaviour
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
 			textComponent.text = "Player 2";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
 			textComponent.text = "Player 3";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
 			textComponent.text = "Player 4";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
@@ -541,19 +502,19 @@ public class StatsFeedback : MonoBehaviour
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player2:
 			textComponent.text = "Player 2";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player3:
 			textComponent.text = "Player 3";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		case WhichPlayer.Player4:
 			textComponent.text = "Player 4";
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 			break;
 		}
 
@@ -573,10 +534,10 @@ public class StatsFeedback : MonoBehaviour
 		string number3 = stats.playerStatsList[2].wins.ToString ();
 		string number4 = stats.playerStatsList[3].wins.ToString ();
 
-		color1 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player1.GetComponent<Renderer> ().material.color) + ">";
-		color2 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player2.GetComponent<Renderer> ().material.color) + ">";
-		color3 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player3.GetComponent<Renderer> ().material.color) + ">";
-		color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Player4.GetComponent<Renderer> ().material.color) + ">";
+		color1 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[0].GetComponent<Renderer> ().material.color) + ">";
+		color2 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[1].GetComponent<Renderer> ().material.color) + ">";
+		color3 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[2].GetComponent<Renderer> ().material.color) + ">";
+		color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.Players[3].GetComponent<Renderer> ().material.color) + ">";
 
 		textComponent.text = beforeNumberText + " " + color1 + number1 + "</color>, " + color2 + number2 + "</color>, " + color3 + number3 + "</color>, " + color4 + number4 + "</color>, " + afterNumberText;
 	}

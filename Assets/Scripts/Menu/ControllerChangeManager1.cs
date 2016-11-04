@@ -174,29 +174,12 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	public void GetPlayersAndControllers ()
 	{
-		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-		{
-			sliderRect [GlobalVariables.Instance.ControllerNumberPlayer1].DOLocalMoveX (imagesAlignedPos [1], durationImageMovement);
-			imagesNumber [GlobalVariables.Instance.ControllerNumberPlayer1] = 1;
-		}
-
-		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-		{
-			sliderRect [GlobalVariables.Instance.ControllerNumberPlayer2].DOLocalMoveX (imagesAlignedPos [2], durationImageMovement);
-			imagesNumber [GlobalVariables.Instance.ControllerNumberPlayer2] = 2;
-		}
-
-		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-		{
-			sliderRect [GlobalVariables.Instance.ControllerNumberPlayer3].DOLocalMoveX (imagesAlignedPos [3], durationImageMovement);
-			imagesNumber [GlobalVariables.Instance.ControllerNumberPlayer3] = 3;
-		}
-
-		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-		{
-			sliderRect [GlobalVariables.Instance.ControllerNumberPlayer4].DOLocalMoveX (imagesAlignedPos [4], durationImageMovement);
-			imagesNumber [GlobalVariables.Instance.ControllerNumberPlayer4] = 4;
-		}
+		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+			if(GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+			{
+				sliderRect [GlobalVariables.Instance.PlayersControllerNumber[i]].DOLocalMoveX (imagesAlignedPos [i + 1], durationImageMovement);
+				imagesNumber [GlobalVariables.Instance.PlayersControllerNumber[i]] = 1;
+			}
 	}
 
 	void GetPlayers (ControllerStatusChangedEventArgs arg)
@@ -327,140 +310,26 @@ public class ControllerChangeManager1 : MonoBehaviour
 		EraseControllerNumbers (3);
 		EraseControllerNumbers (4);
 
-		switch (imagesNumber[0])
-		{
-		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-			break;
-		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 0;
-			break;
-		case 3:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 0;
-			break;
-		case 4:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 0;
-			break;
-		}
+		for(int i = 0; i < imagesNumber.Length; i++)
+			if(imagesNumber [i] > 0)
+				GlobalVariables.Instance.PlayersControllerNumber [imagesNumber [i] - 1] = i;
 
-		switch (imagesNumber[1])
-		{
-		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
-			break;
-		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
-			break;
-		case 3:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 1;
-			break;
-		case 4:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 1;
-			break;
-		}
-
-		switch (imagesNumber[2])
-		{
-		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 2;
-			break;
-		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 2;
-			break;
-		case 3:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
-			break;
-		case 4:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 2;
-			break;
-		}
-
-		switch (imagesNumber[3])
-		{
-		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 3;
-			break;
-		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 3;
-			break;
-		case 3:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 3;
-			break;
-		case 4:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
-			break;
-		}
-
-		switch (imagesNumber[4])
-		{
-		case 1:
-			GlobalVariables.Instance.ControllerNumberPlayer1 = 4;
-			break;
-		case 2:
-			GlobalVariables.Instance.ControllerNumberPlayer2 = 4;
-			break;
-		case 3:
-			GlobalVariables.Instance.ControllerNumberPlayer3 = 4;
-			break;
-		case 4:
-			GlobalVariables.Instance.ControllerNumberPlayer4 = 4;
-			break;
-		}
 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
 		{
-			if(GlobalVariables.Instance.ControllerNumberPlayer1 == 0)
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+			if(GlobalVariables.Instance.PlayersControllerNumber[0] == 0)
+				GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
 
 			else
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
+				GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
 		}
-
 
 		GlobalVariables.Instance.NumberOfPlayers = 0;
 		GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-		{
-			GlobalVariables.Instance.NumberOfPlayers++;
-		}
-		else
-		{
-			GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-		}
-
-		if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-		{
-			GlobalVariables.Instance.NumberOfPlayers++;
-
-		}
-		else
-		{
-			GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-		}
-
-		if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-		{
-			GlobalVariables.Instance.NumberOfPlayers++;
-
-		}
-		else
-		{
-			GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-		}
-
-		if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-		{
-			GlobalVariables.Instance.NumberOfPlayers++;
-
-		}
-		else
-		{
-			GlobalVariables.Instance.NumberOfDisabledPlayers++;
-		}
+		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+			if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+				GlobalVariables.Instance.NumberOfPlayers++;
 
 		GlobalVariables.Instance.ListPlayers ();
 	}
@@ -475,139 +344,26 @@ public class ControllerChangeManager1 : MonoBehaviour
 			EraseControllerNumbers (3);
 			EraseControllerNumbers (4);
 
-			switch (imagesNumber[0])
-			{
-			case 1:
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-				break;
-			case 2:
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 0;
-				break;
-			case 3:
-				GlobalVariables.Instance.ControllerNumberPlayer3 = 0;
-				break;
-			case 4:
-				GlobalVariables.Instance.ControllerNumberPlayer4 = 0;
-				break;
-			}
+			for(int i = 0; i < imagesNumber.Length; i++)
+				if(imagesNumber [i] > 0)
+					GlobalVariables.Instance.PlayersControllerNumber [imagesNumber [i] - 1] = i;
 
-			switch (imagesNumber[1])
-			{
-			case 1:
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
-				break;
-			case 2:
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
-				break;
-			case 3:
-				GlobalVariables.Instance.ControllerNumberPlayer3 = 1;
-				break;
-			case 4:
-				GlobalVariables.Instance.ControllerNumberPlayer4 = 1;
-				break;
-			}
-
-			switch (imagesNumber[2])
-			{
-			case 1:
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 2;
-				break;
-			case 2:
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 2;
-				break;
-			case 3:
-				GlobalVariables.Instance.ControllerNumberPlayer3 = 2;
-				break;
-			case 4:
-				GlobalVariables.Instance.ControllerNumberPlayer4 = 2;
-				break;
-			}
-
-			switch (imagesNumber[3])
-			{
-			case 1:
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 3;
-				break;
-			case 2:
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 3;
-				break;
-			case 3:
-				GlobalVariables.Instance.ControllerNumberPlayer3 = 3;
-				break;
-			case 4:
-				GlobalVariables.Instance.ControllerNumberPlayer4 = 3;
-				break;
-			}
-
-			switch (imagesNumber[4])
-			{
-			case 1:
-				GlobalVariables.Instance.ControllerNumberPlayer1 = 4;
-				break;
-			case 2:
-				GlobalVariables.Instance.ControllerNumberPlayer2 = 4;
-				break;
-			case 3:
-				GlobalVariables.Instance.ControllerNumberPlayer3 = 4;
-				break;
-			case 4:
-				GlobalVariables.Instance.ControllerNumberPlayer4 = 4;
-				break;
-			}
 
 			if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
 			{
-				if(GlobalVariables.Instance.ControllerNumberPlayer1 == 0)
-					GlobalVariables.Instance.ControllerNumberPlayer2 = 1;
+				if(GlobalVariables.Instance.PlayersControllerNumber[0] == 0)
+					GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
 
 				else
-					GlobalVariables.Instance.ControllerNumberPlayer1 = 1;
+					GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
 			}
 
 			GlobalVariables.Instance.NumberOfPlayers = 0;
 			GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
 
-			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-			{
-				GlobalVariables.Instance.NumberOfPlayers++;
-			}
-			else
-			{
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			}
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-			{
-				GlobalVariables.Instance.NumberOfPlayers++;
-
-			}
-			else
-			{
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			}
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-			{
-				GlobalVariables.Instance.NumberOfPlayers++;
-
-			}
-			else
-			{
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-
-			}
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-			{
-				GlobalVariables.Instance.NumberOfPlayers++;
-
-			}
-			else
-			{
-				GlobalVariables.Instance.NumberOfDisabledPlayers++;
-			}
+			for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+					GlobalVariables.Instance.NumberOfPlayers++;
 
 			GlobalVariables.Instance.ListPlayers ();
 		}
@@ -650,45 +406,25 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			if (GlobalVariables.Instance.ControllerNumberPlayer1 == whichController)
-				GlobalVariables.Instance.ControllerNumberPlayer1 = -1;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer2 == whichController)
-				GlobalVariables.Instance.ControllerNumberPlayer2 = -1;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer3 == whichController)
-				GlobalVariables.Instance.ControllerNumberPlayer3 = -1;
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer4 == whichController)
-				GlobalVariables.Instance.ControllerNumberPlayer4 = -1;
+			for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] == whichController)
+					GlobalVariables.Instance.PlayersControllerNumber[i] = -1;
 		}
 	}
 
 	public void UpdatePlayersControllers ()
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over && GlobalVariables.Instance.Player1 != null)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over && GlobalVariables.Instance.Players[0] != null)
 		{
-			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-				GlobalVariables.Instance.Player1.SetActive (true);
+			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++)
+			{
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+					GlobalVariables.Instance.Players[i].SetActive (true);
 
-			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-				GlobalVariables.Instance.Player2.SetActive (true);
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().GetControllerNumber ();
 
-			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-				GlobalVariables.Instance.Player3.SetActive (true);
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-				GlobalVariables.Instance.Player4.SetActive (true);
-
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
-
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().Controller ();
+			}
 		}
 	}
 
@@ -696,27 +432,15 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
 		{
-			if (GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
-				GlobalVariables.Instance.Player1.SetActive (true);
+			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++)
+			{
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+					GlobalVariables.Instance.Players[i].SetActive (true);
 
-			if (GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
-				GlobalVariables.Instance.Player2.SetActive (true);
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().GetControllerNumber ();
 
-			if (GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
-				GlobalVariables.Instance.Player3.SetActive (true);
-
-			if (GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
-				GlobalVariables.Instance.Player4.SetActive (true);
-
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().GetControllerNumber ();
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().GetControllerNumber ();
-
-			GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay>().Controller ();
-			GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay>().Controller ();
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().Controller ();
+			}
 		}
 	}
 

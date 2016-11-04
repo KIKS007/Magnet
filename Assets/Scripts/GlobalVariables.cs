@@ -26,21 +26,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Scenes")]
 	public string firstSceneToLoad = "Crush";
 	public WhichMode WhichModeLoaded;
+	[HideInInspector]
 	public string CurrentModeLoaded = "";
 
 	public bool Stun = false;
 
 	[Header ("Controller Numbers")]
-	public int ControllerNumberPlayer1 = -1;
-	public int ControllerNumberPlayer2 = -1;
-	public int ControllerNumberPlayer3 = -1;
-	public int ControllerNumberPlayer4 = -1;
+	public int[] PlayersControllerNumber = new int[4];
 
 	[Header ("Players")]
-	public GameObject Player1;
-	public GameObject Player2;
-	public GameObject Player3;
-	public GameObject Player4;
+	public GameObject[] Players = new GameObject[4];
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 
 	[Header ("Players States")]
@@ -106,7 +101,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if(Stun)
 		{
 			Stun = false;
-			Player2.GetComponent<PlayersGameplay> ().StunVoid (false);
+			Players[1].GetComponent<PlayersGameplay> ().StunVoid (false);
 		}
 
 		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
@@ -120,40 +115,22 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void SetPlayersControllerNumbers ()
 	{
-		Player1.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer1;
-		Player2.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer2;
-		Player3.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer3;
-		Player4.GetComponent<PlayersGameplay> ().controllerNumber = ControllerNumberPlayer4;
+		for (int i = 0; i < Players.Length; i++)
+			Players [i].GetComponent<PlayersGameplay> ().controllerNumber = PlayersControllerNumber [i];
 	}
 
 	public void ListPlayers ()
 	{
 		EnabledPlayersList.Clear ();
 
-		if (ControllerNumberPlayer1 != -1 && !EnabledPlayersList.Contains (Player1))
-			EnabledPlayersList.Add (Player1);
+		for(int i = 0; i < Players.Length; i++)
+		{
+			if (PlayersControllerNumber [i] != -1 && !EnabledPlayersList.Contains (Players [i]))
+				EnabledPlayersList.Add (Players [i]);
 
-		if (ControllerNumberPlayer2 != -1 && !EnabledPlayersList.Contains (Player2))
-			EnabledPlayersList.Add (Player2);
-
-		if (ControllerNumberPlayer3 != -1 && !EnabledPlayersList.Contains (Player3))
-			EnabledPlayersList.Add (Player3);
-
-		if (ControllerNumberPlayer4 != -1 && !EnabledPlayersList.Contains (Player4))
-			EnabledPlayersList.Add (Player4);
-
-
-		if (ControllerNumberPlayer1 == -1 && EnabledPlayersList.Contains (Player1))
-			EnabledPlayersList.Remove (Player1);
-
-		if (ControllerNumberPlayer2 == -1 && EnabledPlayersList.Contains (Player2))
-			EnabledPlayersList.Remove (Player2);
-
-		if (ControllerNumberPlayer3 == -1 && EnabledPlayersList.Contains (Player3))
-			EnabledPlayersList.Remove (Player3);
-
-		if (ControllerNumberPlayer4 == -1 && EnabledPlayersList.Contains (Player4))
-			EnabledPlayersList.Remove (Player4);
+			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
+				EnabledPlayersList.Remove (Players [i]);
+		}
 
 		PlayersNumber ();
 	}
@@ -167,38 +144,18 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public void SetPlayerMouseCursor ()
 	{
 
-		if (ControllerNumberPlayer1 == 0)
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-			Cursor.SetCursor (mouseCursor[0], Vector2.zero, CursorMode.Auto);
-		}
-
-		if (ControllerNumberPlayer2 == 0)
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-			Cursor.SetCursor (mouseCursor[1], Vector2.zero, CursorMode.Auto);
-		}
-
-		if (ControllerNumberPlayer3 == 0)
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-			Cursor.SetCursor (mouseCursor[2], Vector2.zero, CursorMode.Auto);
-		}
-
-		if (ControllerNumberPlayer4 == 0)
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
-			Cursor.SetCursor (mouseCursor[3], Vector2.zero, CursorMode.Auto);
-		}
+		for(int i = 0; i < PlayersControllerNumber.Length; i++)
+			if(PlayersControllerNumber[i] == 0)
+			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+				Cursor.SetCursor (mouseCursor[i], Vector2.zero, CursorMode.Auto);
+			}
 	}
 
 	void HideMouseCursor ()
 	{
-		if(ControllerNumberPlayer1 != 0 && ControllerNumberPlayer2 != 0 && ControllerNumberPlayer3 != 0 && ControllerNumberPlayer4 != 0)
+		if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
 		{
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;

@@ -17,11 +17,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	public MainMenuManagerScript menuScript;
 
-	public static GameObject player1;
-	public static GameObject player2;
-	public static GameObject player3;
-	public static GameObject player4;
-
 	private Transform mainCamera;
 
 	// Use this for initialization
@@ -226,17 +221,17 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		for(int i = 0; i < players.Length; i++)
 		{
-			if (players [i].name == "Player 1")
-				player1 = players [i];
+			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
+				GlobalVariables.Instance.Players [0] = players [i];
 
-			if (players [i].name == "Player 2")
-				player2 = players [i];
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
+				GlobalVariables.Instance.Players [1] = players [i];
 
-			if (players [i].name == "Player 3")
-				player3 = players [i];
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
+				GlobalVariables.Instance.Players [2] = players [i];
 
-			if (players [i].name == "Player 4")
-				player4 = players [i];
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
+				GlobalVariables.Instance.Players [3] = players [i];
 		}
 
 		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.Find("Environment").transform.GetComponentInChildren<MirrorReflection>();
@@ -246,11 +241,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	void UpdateGlobalVariables ()
 	{
-		GlobalVariables.Instance.Player1 = player1;
-		GlobalVariables.Instance.Player2 = player2;
-		GlobalVariables.Instance.Player3 = player3;
-		GlobalVariables.Instance.Player4 = player4;
-
 		StatsManager.Instance.GetPlayersEvents ();
 
 		GlobalVariables.Instance.SetPlayersControllerNumbers ();

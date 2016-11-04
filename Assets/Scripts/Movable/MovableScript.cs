@@ -135,21 +135,21 @@ public class MovableScript : MonoBehaviour
 			Color cubeCorrectColor = new Color ();
 			CubeColor cubeColorTest = CubeColor.Neutral;
 
-			switch(player.name)
+			switch(player.GetComponent <PlayersGameplay>().playerName)
 			{
-			case "Player 1":
+			case PlayerName.Player1:
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
 				cubeColorTest = CubeColor.Blue;
 				break;
-			case "Player 2":
+			case PlayerName.Player2:
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
 				cubeColorTest = CubeColor.Pink;
 				break;
-			case "Player 3":
+			case PlayerName.Player3:
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
 				cubeColorTest = CubeColor.Green;
 				break;
-			case "Player 4":
+			case PlayerName.Player4:
 				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
 				cubeColorTest = CubeColor.Yellow;
 				break;
@@ -200,21 +200,21 @@ public class MovableScript : MonoBehaviour
 		Color cubeCorrectColor = new Color ();
 		CubeColor cubeColorTest = CubeColor.Neutral;
 
-		switch(player.name)
+		switch(player.GetComponent<PlayersGameplay> ().playerName)
 		{
-		case "Player 1":
+		case PlayerName.Player1:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
 			cubeColorTest = CubeColor.Blue;
 			break;
-		case "Player 2":
+		case PlayerName.Player2:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
 			cubeColorTest = CubeColor.Pink;
 			break;
-		case "Player 3":
+		case PlayerName.Player3:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
 			cubeColorTest = CubeColor.Green;
 			break;
-		case "Player 4":
+		case PlayerName.Player4:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
 			cubeColorTest = CubeColor.Yellow;
 			break;

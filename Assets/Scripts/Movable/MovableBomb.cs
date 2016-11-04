@@ -96,18 +96,18 @@ public class MovableBomb : MovableScript
 
 		Color cubeCorrectColor = new Color ();
 		
-		switch(player.name)
+		switch(player.GetComponent <PlayersGameplay>().playerName)
 		{
-		case "Player 1":
+		case PlayerName.Player1:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
 			break;
-		case "Player 2":
+		case PlayerName.Player2:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
 			break;
-		case "Player 3":
+		case PlayerName.Player3:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
 			break;
-		case "Player 4":
+		case PlayerName.Player4:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
 			break;
 		}
@@ -249,23 +249,7 @@ public class MovableBomb : MovableScript
 
 	void ExplosionFX ()
 	{
-		int playerNumber = -1;
-
-		switch(playerHolding.name)
-		{
-		case "Player 1":
-			playerNumber = 0;
-			break;
-		case "Player 2":
-			playerNumber = 1;
-			break;
-		case "Player 3":
-			playerNumber = 2;
-			break;
-		case "Player 4":
-			playerNumber = 3;
-			break;
-		}
+		int playerNumber = (int)playerHolding.GetComponent<PlayersGameplay> ().playerName;
 
 		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;

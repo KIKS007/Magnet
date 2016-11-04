@@ -25,7 +25,7 @@ public class DemoCamera : MonoBehaviour
 
 	void StartDemo ()
 	{
-		target = GlobalVariables.Instance.Player1.GetComponent<Transform> ();
+		target = GlobalVariables.Instance.Players[0].GetComponent<Transform> ();
 
 		parent = new GameObject ();
 		parent.transform.position = target.position;

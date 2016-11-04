@@ -682,17 +682,8 @@ public class MainMenuManagerScript : MonoBehaviour
 			{
 				gamepadsDisconnected[i].DOAnchorPos (new Vector2 (gamepadsDisconnected[i].anchoredPosition.x, maxYGamepad), durationContent).SetEase (easeTypeMainMenu).SetId("GamepadDisconnected" + i.ToString());
 
-				if (GlobalVariables.Instance.ControllerNumberPlayer1 == i + 1)
-					GlobalVariables.Instance.ControllerNumberPlayer1 = -1;
-
-				if (GlobalVariables.Instance.ControllerNumberPlayer2 == i + 1)
-					GlobalVariables.Instance.ControllerNumberPlayer2 = -1;
-
-				if (GlobalVariables.Instance.ControllerNumberPlayer3 == i + 1)
-					GlobalVariables.Instance.ControllerNumberPlayer3 = -1;
-
-				if (GlobalVariables.Instance.ControllerNumberPlayer4 == i + 1)
-					GlobalVariables.Instance.ControllerNumberPlayer4 = -1;
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] == i + 1)
+					GlobalVariables.Instance.PlayersControllerNumber[i] = -1;
 			}
 			
 		}
@@ -1247,18 +1238,18 @@ public class MainMenuManagerScript : MonoBehaviour
 		
 		yield return myTween.WaitForCompletion();
 		
-		controlsMenuContent.anchoredPosition = new Vector2(-910, -44);
+		controlsMenuContent.anchoredPosition = new Vector2(-950, -56);
 		controlsMenuContent.gameObject.SetActive (true);
 
 		chooseOptionsMenuCanvas.SetActive(false);
 		controlsMenuCanvas.SetActive(true);
 		
-		controlsMenuContent.DOAnchorPos(new Vector2(0, -44), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
+		controlsMenuContent.DOAnchorPos(new Vector2(0, -56), durationContent).SetEase(easeTypeMainMenu).OnComplete(NotTweening);
 	}
 	
 	public IEnumerator ExitControls ()
 	{
-		Tween myTween = controlsMenuContent.DOAnchorPos(new Vector2(-910, -44), durationContent).SetEase(easeTypeMainMenu).OnComplete (()=> controlsMenuContent.gameObject.SetActive (false));
+		Tween myTween = controlsMenuContent.DOAnchorPos(new Vector2(-950, -56), durationContent).SetEase(easeTypeMainMenu).OnComplete (()=> controlsMenuContent.gameObject.SetActive (false));
 
 		yield return myTween.WaitForCompletion();
 
@@ -1715,8 +1706,6 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	public void LoadMainMenu ()
 	{
-		float timeTemp = Time.time;
-
 		GameAnalytics.NewDesignEvent ("Menu:" + "MainMenu");
 
 		Tweening ();

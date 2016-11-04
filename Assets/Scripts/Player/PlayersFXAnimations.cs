@@ -35,7 +35,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	private TrailRenderer trail;
 
-	private int PlayerNumber = -1;
+	private int playerNumber = -1;
 
 	// Use this for initialization
 	void Start () 
@@ -50,21 +50,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
 		playerScript.OnDash += EnableDashFX;
 
-		switch(gameObject.name)
-		{
-		case "Player 1":
-			PlayerNumber = 0;
-			break;
-		case "Player 2":
-			PlayerNumber = 1;
-			break;
-		case "Player 3":
-			PlayerNumber = 2;
-			break;
-		case "Player 4":
-			PlayerNumber = 3;
-			break;
-		}
+		playerNumber = (int)playerScript.playerName;
 	}
 
 	void OnEnable ()
@@ -145,7 +131,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	void ShootFX ()
 	{
-		Instantiate (GlobalVariables.Instance.shootFX [PlayerNumber], transform.position + shootPosOffset, transform.rotation);
+		Instantiate (GlobalVariables.Instance.shootFX [playerNumber], transform.position + shootPosOffset, transform.rotation);
 	}
 
 	IEnumerator StunFX ()
@@ -230,7 +216,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	public IEnumerator AttractionFX (GameObject whichCube)
 	{
-		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
+		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
@@ -281,7 +267,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	public IEnumerator RepulsionFX (GameObject whichCube)
 	{
-		GameObject fx = Instantiate (GlobalVariables.Instance.repulseFX [PlayerNumber], whichCube.transform.position, transform.rotation) as GameObject;
+		GameObject fx = Instantiate (GlobalVariables.Instance.repulseFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);

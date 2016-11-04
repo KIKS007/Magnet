@@ -103,15 +103,15 @@ public class StatsManager : Singleton<StatsManager>
 
 	public void GetPlayersEvents ()
 	{
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(0);
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(1);
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(2);
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(3);
+		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(0);
+		GlobalVariables.Instance.Players[1].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(1);
+		GlobalVariables.Instance.Players[2].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(2);
+		GlobalVariables.Instance.Players[3].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(3);
 
-		GlobalVariables.Instance.Player1.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(0);
-		GlobalVariables.Instance.Player2.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(1);
-		GlobalVariables.Instance.Player3.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(2);
-		GlobalVariables.Instance.Player4.GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(3);
+		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(0);
+		GlobalVariables.Instance.Players[1].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(1);
+		GlobalVariables.Instance.Players[2].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(2);
+		GlobalVariables.Instance.Players[3].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(3);
 	}
 
 	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)
@@ -265,6 +265,34 @@ public class StatsManager : Singleton<StatsManager>
 			winner = "Draw";
 			break;
 		}
+	}
+
+	public void Winner (PlayerName playerName)
+	{
+		WhichPlayer whichPlayerTemp = WhichPlayer.None;
+
+		switch (playerName)
+		{
+		case PlayerName.Player1:
+			whichPlayerTemp = WhichPlayer.Player1;
+			winner = "Player 1";
+			break;
+		case PlayerName.Player2:
+			whichPlayerTemp = WhichPlayer.Player2;
+			winner = "Player 2";
+			break;
+		case PlayerName.Player3:
+			whichPlayerTemp = WhichPlayer.Player3;
+			winner = "Player 3";
+			break;
+		case PlayerName.Player4:
+			whichPlayerTemp = WhichPlayer.Player4;
+			winner = "Player 4";
+			break;
+		}
+
+		playerStatsList [(int)playerName].wins++;
+		WinsInARow (whichPlayerTemp);
 	}
 
 	void WinsInARow (WhichPlayer whichPlayerWon)
@@ -615,7 +643,7 @@ public class StatsManager : Singleton<StatsManager>
 
 	void UpdateTotalStats ()
 	{
-		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[0] != -1)
 		{
 			if (totalScorePlayer1 == -1)
 				totalScorePlayer1 = 0;
@@ -634,7 +662,7 @@ public class StatsManager : Singleton<StatsManager>
 			totalShotPlayer1 += playerStatsList [0].shots;
 			totalHitPlayer1 += playerStatsList [0].frags;
 		}
-		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[1] != -1)
 		{
 			if (totalScorePlayer2 == -1)
 				totalScorePlayer2 = 0;
@@ -653,7 +681,7 @@ public class StatsManager : Singleton<StatsManager>
 			totalShotPlayer2 += playerStatsList [1].shots;
 			totalHitPlayer2 += playerStatsList [1].frags;
 		}
-		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[2] != -1)
 		{
 			if (totalScorePlayer3 == -1)
 				totalScorePlayer3 = 0;
@@ -672,7 +700,7 @@ public class StatsManager : Singleton<StatsManager>
 			totalShotPlayer3 += playerStatsList [2].shots;
 			totalHitPlayer3 += playerStatsList [2].frags;
 		}
-		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[3] != -1)
 		{
 			if (totalScorePlayer4 == -1)
 				totalScorePlayer4 = 0;
@@ -695,7 +723,7 @@ public class StatsManager : Singleton<StatsManager>
 
 	void SendStats ()
 	{
-		if(GlobalVariables.Instance.ControllerNumberPlayer1 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[0] != -1)
 		{
 			if(totalShotPlayer1 != -1)
 				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString () + ":Score", totalScorePlayer1);
@@ -707,7 +735,7 @@ public class StatsManager : Singleton<StatsManager>
 				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer1);
 		}
 
-		if(GlobalVariables.Instance.ControllerNumberPlayer2 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[1] != -1)
 		{
 			if(totalScorePlayer2 != -1)
 			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer2);
@@ -719,7 +747,7 @@ public class StatsManager : Singleton<StatsManager>
 			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer2);
 		}
 
-		if(GlobalVariables.Instance.ControllerNumberPlayer3 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[2] != -1)
 		{
 			if(totalScorePlayer3 != -1)
 			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer3);
@@ -731,7 +759,7 @@ public class StatsManager : Singleton<StatsManager>
 			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer3);
 		}
 
-		if(GlobalVariables.Instance.ControllerNumberPlayer4 != -1)
+		if(GlobalVariables.Instance.PlayersControllerNumber[3] != -1)
 		{
 			if(totalScorePlayer4 != -1)
 			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer4);

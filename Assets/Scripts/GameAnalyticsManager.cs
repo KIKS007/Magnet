@@ -27,19 +27,19 @@ public class GameAnalyticsManager : Singleton<GameAnalyticsManager>
 		int mouseKeyboard = 0;
 		int gamepads = 0;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 == 0 || GlobalVariables.Instance.ControllerNumberPlayer2 == 0 || GlobalVariables.Instance.ControllerNumberPlayer3 == 0 || GlobalVariables.Instance.ControllerNumberPlayer4 == 0)
+		if (GlobalVariables.Instance.PlayersControllerNumber[0] == 0 || GlobalVariables.Instance.PlayersControllerNumber[1] == 0 || GlobalVariables.Instance.PlayersControllerNumber[2] == 0 || GlobalVariables.Instance.PlayersControllerNumber[3] == 0)
 			mouseKeyboard = 1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer1 > 0)
+		if (GlobalVariables.Instance.PlayersControllerNumber[0] > 0)
 			gamepads += 1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer2 > 0)
+		if (GlobalVariables.Instance.PlayersControllerNumber[1] > 0)
 			gamepads += 1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer3 > 0)
+		if (GlobalVariables.Instance.PlayersControllerNumber[2] > 0)
 			gamepads += 1;
 
-		if (GlobalVariables.Instance.ControllerNumberPlayer4 > 0)
+		if (GlobalVariables.Instance.PlayersControllerNumber[3] > 0)
 			gamepads += 1;
 		
 

@@ -6,12 +6,6 @@ using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
 
-public enum Team
-{
-	Team1,
-	Team2
-}
-
 public enum PlayerState
 {
 	None,
@@ -29,15 +23,15 @@ public enum DashState
 	Cooldown
 }
 
-public enum RepulsionWaveState
+public enum PlayerName
 {
-	CanRepulse,
-	Repulsing,
-	Cooldown
+	Player1,
+	Player2,
+	Player3,
+	Player4
 }
 
 public delegate void EventHandler();
-
 
 public class PlayersGameplay : MonoBehaviour
 {
@@ -58,10 +52,9 @@ public class PlayersGameplay : MonoBehaviour
     public event EventHandler OnPlayerstateChange;
 
     [Header("States")]
-    public Team team;
-    public PlayerState playerState = PlayerState.None;
+	public PlayerName playerName;
+	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;
-    public RepulsionWaveState repulsionState = RepulsionWaveState.CanRepulse;
 
     [Header("Controller Number")]
     public int controllerNumber = -1;
@@ -84,13 +77,6 @@ public class PlayersGameplay : MonoBehaviour
     [Header("Deceleration")]
     [Range(0, 1)]
     public float decelerationAmount = 1;
-
-    [Header("Repulsion Wave")]
-    public bool enableRepulsionWave = false;
-    public float repulsionWaveForce = 10;
-    public float repulsionWaveRadius = 3;
-    public LayerMask repulsionWaveMask = (1 << 9) | (1 << 13);
-    public float repulsionCoolDown = 2;
 
     [Header("Stun")]
     public float stunnedRotation = 400;
@@ -133,6 +119,11 @@ public class PlayersGameplay : MonoBehaviour
 
     protected float startModeTime;
 
+	protected virtual void Awake()
+	{
+		SetPlayerName ();		
+	}
+
     // Use this for initialization
     protected virtual void Start()
     {
@@ -141,6 +132,7 @@ public class PlayersGameplay : MonoBehaviour
         GetControllerNumber();
 
         Controller();
+
 
         if (GameObject.FindGameObjectWithTag("MainMenuManager") != null)
             mainMenuScript = GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>();
@@ -153,6 +145,25 @@ public class PlayersGameplay : MonoBehaviour
         magnetPoint = transform.GetChild(0).transform;
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
     }
+
+	protected void SetPlayerName()
+	{
+		switch (gameObject.name)
+		{
+		case "Player 1":
+			playerName = PlayerName.Player1;
+			break;
+		case "Player 2":
+			playerName = PlayerName.Player2;
+			break;
+		case "Player 3":
+			playerName = PlayerName.Player3;
+			break;
+		case "Player 4":
+			playerName = PlayerName.Player4;
+			break;
+		}
+	}
 
     protected void StartModeTime()
     {
@@ -236,11 +247,6 @@ public class PlayersGameplay : MonoBehaviour
         {
             StartCoroutine(Dash());
         }
-
-        if (player.GetButtonDown("Repulse") && repulsionState == RepulsionWaveState.CanRepulse && enableRepulsionWave && playerState != PlayerState.Holding)
-        {
-            StartCoroutine(RepulsionWave());
-        }
     }
 
     protected virtual void FixedUpdate()
@@ -280,21 +286,7 @@ public class PlayersGameplay : MonoBehaviour
 
     public void GetControllerNumber()
     {
-        switch (gameObject.name)
-        {
-            case "Player 1":
-                controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer1;
-                break;
-            case "Player 2":
-                controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer2;
-                break;
-            case "Player 3":
-                controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer3;
-                break;
-            case "Player 4":
-                controllerNumber = GlobalVariables.Instance.ControllerNumberPlayer4;
-                break;
-        }
+		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
     }
 
     public void Controller()
@@ -358,43 +350,14 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void Repulsion(GameObject movable)
     {
-        if (!enableRepulsionWave)
-        {
-            playerState = PlayerState.Repulsing;
-
-            Vector3 movableRepulsion = movable.transform.position - transform.position;
-			movableRepulsion.Normalize ();
-			movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Acceleration);
-
-            if (OnRepulsing != null)
-                OnRepulsing();
-        }
-    }
-
-    protected IEnumerator RepulsionWave()
-    {
-        playerState = PlayerState.Repulsing;
-        repulsionState = RepulsionWaveState.Repulsing;
-
-        foreach (Collider other in Physics.OverlapSphere(transform.position, repulsionWaveRadius, repulsionWaveMask))
-        {
-            Vector3 repulseDirection = other.transform.position - transform.position;
-            repulseDirection.Normalize();
-
-            float explosionImpactZone = 1 - (Vector3.Distance(transform.position, other.transform.position) / repulsionWaveRadius);
-
-            if (explosionImpactZone > 0)
-            {
-                if (other.GetComponent<Rigidbody>() != null)
-                    other.GetComponent<Rigidbody>().AddForce(repulseDirection * explosionImpactZone * repulsionWaveForce, ForceMode.Impulse);
-            }
-        }
-
-        repulsionState = RepulsionWaveState.Cooldown;
-
-        yield return new WaitForSeconds(repulsionCoolDown);
-
-        repulsionState = RepulsionWaveState.CanRepulse;
+		playerState = PlayerState.Repulsing;
+		
+		Vector3 movableRepulsion = movable.transform.position - transform.position;
+		movableRepulsion.Normalize ();
+		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Acceleration);
+		
+		if (OnRepulsing != null)
+			OnRepulsing();		
     }
 
     public virtual void OnHoldMovable(GameObject movable)
@@ -617,24 +580,7 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void DeathExplosionFX()
     {
-        int playerNumber = -1;
-
-        switch (gameObject.name)
-        {
-            case "Player 1":
-                playerNumber = 0;
-                break;
-            case "Player 2":
-                playerNumber = 1;
-                break;
-            case "Player 3":
-                playerNumber = 2;
-                break;
-            case "Player 4":
-                playerNumber = 3;
-                break;
-
-        }
+		int playerNumber = (int)playerName;
 
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
         instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
