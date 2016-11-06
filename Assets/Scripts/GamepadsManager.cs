@@ -259,19 +259,13 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		for(int i = 0; i < 4; i++)
 		{
 			if (gamepadsPluggedAtStart[i])
-			{
-				SetControllerNumber (i);
-			}
+				GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
+			
 		}
 
 		//Enable Possiblity to play alone with one gamepad
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
 			GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
-	}
-
-	void SetControllerNumber (int whichNumber)
-	{
-		GlobalVariables.Instance.PlayersControllerNumber [whichNumber] = whichNumber + 1;
 	}
 }
 

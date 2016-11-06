@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 408004}
   - 33: {fileID: 3359728}
   - 23: {fileID: 2390796}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder043
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,7 +26,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 465948}
   - 108: {fileID: 10888168}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Point light (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 444756}
   - 96: {fileID: 9610200}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_TrailBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ GameObject:
   - 4: {fileID: 425150}
   - 114: {fileID: 11489520}
   - 135: {fileID: 13580590}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   - 4: {fileID: 416768}
   - 33: {fileID: 3377432}
   - 23: {fileID: 2353828}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere013
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - 114: {fileID: 11477528}
   - 114: {fileID: 11402324}
   - 64: {fileID: 6409994}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   - 4: {fileID: 499460}
   - 33: {fileID: 3386000}
   - 23: {fileID: 2326300}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder046
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - 4: {fileID: 426040}
   - 33: {fileID: 3386154}
   - 23: {fileID: 2311036}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere014
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 426492}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 438594}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: BluePlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -201,7 +201,7 @@ GameObject:
   - 4: {fileID: 420680}
   - 33: {fileID: 3398714}
   - 23: {fileID: 2314194}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder045
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - 4: {fileID: 433528}
   - 33: {fileID: 3319222}
   - 23: {fileID: 2354784}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder042
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   - 4: {fileID: 441836}
   - 33: {fileID: 3377828}
   - 23: {fileID: 2351202}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Object009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -252,7 +252,7 @@ GameObject:
   - 4: {fileID: 499836}
   - 33: {fileID: 3306022}
   - 23: {fileID: 2319402}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Object008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,7 +269,7 @@ GameObject:
   - 4: {fileID: 461468}
   - 33: {fileID: 3317256}
   - 23: {fileID: 2332254}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder044
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   - 4: {fileID: 469312}
   - 198: {fileID: 19879438}
   - 199: {fileID: 19975278}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_DispoDashBlue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1352,10 +1352,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a1563249b177a48a36f574a7f05794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  playerName: 0
   playerState: 0
   dashState: 0
-  repulsionState: 0
   controllerNumber: -1
   speed: 18
   stunnedSpeed: 8
@@ -1365,13 +1364,6 @@ MonoBehaviour:
   shootForce: 200
   repulsionForce: 10
   decelerationAmount: 1
-  enableRepulsionWave: 0
-  repulsionWaveForce: 80
-  repulsionWaveRadius: 12
-  repulsionWaveMask:
-    serializedVersion: 2
-    m_Bits: 8704
-  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 80
@@ -1494,6 +1486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magnetPoint: {fileID: 0}
+  gettingMovable: 0
 --- !u!135 &13580590
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -3299,7 +3292,7 @@ GameObject:
   - 4: {fileID: 4000010930880166}
   - 198: {fileID: 198000012067330438}
   - 199: {fileID: 199000014262046410}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_Dash
   m_TagString: Untagged
   m_Icon: {fileID: 0}

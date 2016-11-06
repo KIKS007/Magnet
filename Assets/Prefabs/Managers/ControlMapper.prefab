@@ -22,6 +22,7 @@ GameObject:
   - 222: {fileID: 222000013859278552}
   - 114: {fileID: 114000014264043478}
   - 114: {fileID: 114000011415504736}
+  - 114: {fileID: 114000011125662734}
   m_Layer: 5
   m_Name: ControllerLabel
   m_TagString: Untagged
@@ -159,6 +160,7 @@ GameObject:
   - 222: {fileID: 222000011416739516}
   - 114: {fileID: 114000010975305412}
   - 114: {fileID: 114000010357605658}
+  - 114: {fileID: 114000013612746372}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -201,7 +203,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1000010830837632
 GameObject:
   m_ObjectHideFlags: 1
@@ -229,6 +231,7 @@ GameObject:
   - 222: {fileID: 222000011730337308}
   - 114: {fileID: 114000010720465396}
   - 114: {fileID: 114000011060513832}
+  - 114: {fileID: 114000011846552022}
   m_Layer: 5
   m_Name: ControllerNameLabel
   m_TagString: Untagged
@@ -284,7 +287,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1000011340665708
 GameObject:
   m_ObjectHideFlags: 1
@@ -792,7 +795,7 @@ GameObject:
   - 114: {fileID: 114000013005356122}
   m_Layer: 5
   m_Name: ControlMapper
-  m_TagString: Untagged
+  m_TagString: ControlMapper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1645,6 +1648,19 @@ MonoBehaviour:
   _elements:
   - _themeClass: 
     _component: {fileID: 114000010720465396}
+--- !u!114 &114000011125662734
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010021493140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc5b162f01944e4895794e25edfd638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whichMapperElement: 1
+  stormFaze: {fileID: 12800000, guid: 86b6628ac1fd1f04297a60719ce1c762, type: 3}
 --- !u!114 &114000011191476042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1940,6 +1956,19 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &114000011846552022
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010989859886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc5b162f01944e4895794e25edfd638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whichMapperElement: 2
+  stormFaze: {fileID: 12800000, guid: 86b6628ac1fd1f04297a60719ce1c762, type: 3}
 --- !u!114 &114000011946208636
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2335,12 +2364,12 @@ MonoBehaviour:
   _showActionCategoryLabels: 1
   _keyboardInputFieldCount: 1
   _mouseInputFieldCount: 1
-  _controllerInputFieldCount: 1
+  _controllerInputFieldCount: 2
   _allowElementAssignmentConflicts: 0
   _actionLabelWidth: 200
-  _keyboardColMaxWidth: 250
+  _keyboardColMaxWidth: 175
   _mouseColMaxWidth: 200
-  _controllerColMaxWidth: 250
+  _controllerColMaxWidth: 450
   _inputRowHeight: 40
   _inputColumnSpacing: 40
   _inputRowCategorySpacing: 20
@@ -2356,8 +2385,8 @@ MonoBehaviour:
   _screenToggleAction: -1
   _screenOpenAction: -1
   _screenCloseAction: -1
-  _universalCancelAction: -1
-  _universalCancelClosesScreen: 1
+  _universalCancelAction: 12
+  _universalCancelClosesScreen: 0
   _showInputBehaviorSettings: 0
   _inputBehaviorSettings:
   - _inputBehaviorId: 0
@@ -2422,7 +2451,7 @@ MonoBehaviour:
     _calibrateControllerButton: {fileID: 114000010080410842}
     _doneButton: {fileID: 114000010968598370}
     _restoreDefaultsButton: {fileID: 114000011018406956}
-    _defaultSelection: {fileID: 114000010968598370}
+    _defaultSelection: {fileID: 114000011018406956}
     _fixedSelectableUIElements:
     - {fileID: 1000013158456314}
     - {fileID: 1000013710531358}
@@ -2693,6 +2722,19 @@ MonoBehaviour:
   _elements:
   - _themeClass: 
     _component: {fileID: 114000013373965278}
+--- !u!114 &114000013612746372
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010688070152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc5b162f01944e4895794e25edfd638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whichMapperElement: 3
+  stormFaze: {fileID: 12800000, guid: 86b6628ac1fd1f04297a60719ce1c762, type: 3}
 --- !u!114 &114000013637230158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3259,7 +3301,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224000010615426868
@@ -3296,8 +3338,8 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 131.66351, y: -20}
-  m_SizeDelta: {x: 163.32703, y: 40}
+  m_AnchoredPosition: {x: 129.74948, y: -20}
+  m_SizeDelta: {x: 159.49896, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000010943057356
 RectTransform:
@@ -3448,8 +3490,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 263.32703, y: 0}
-  m_SizeDelta: {x: 263.32703, y: 40}
+  m_AnchoredPosition: {x: 259.49896, y: 0}
+  m_SizeDelta: {x: 259.49896, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!224 &224000011402749826
 RectTransform:
@@ -3698,7 +3740,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 682, y: 96}
+  m_SizeDelta: {x: 710.1856, y: 96.1044}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224000012804165672
 RectTransform:
@@ -3773,8 +3815,8 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 682, y: -70}
-  m_SizeDelta: {x: 682, y: 96}
+  m_AnchoredPosition: {x: 710.1856, y: -70}
+  m_SizeDelta: {x: 710.1856, y: 96.1044}
   m_Pivot: {x: 1, y: 1}
 --- !u!224 &224000013089135650
 RectTransform:
@@ -3868,7 +3910,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 682, y: 40}
+  m_SizeDelta: {x: 710.1856, y: 40}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224000013512040246
 RectTransform:
@@ -4032,8 +4074,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 224000011024335714}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0.039999958}
-  m_AnchorMax: {x: 1, y: 0.49999997}
+  m_AnchorMin: {x: 0, y: 0.5389559}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}

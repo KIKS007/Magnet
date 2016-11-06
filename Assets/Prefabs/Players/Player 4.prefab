@@ -33,7 +33,7 @@ GameObject:
   - 4: {fileID: 406662}
   - 33: {fileID: 3371518}
   - 23: {fileID: 2379592}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder038
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ GameObject:
   - 4: {fileID: 465418}
   - 33: {fileID: 3385652}
   - 23: {fileID: 2304672}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere012
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ GameObject:
   - 4: {fileID: 456288}
   - 33: {fileID: 3395908}
   - 23: {fileID: 2306254}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Object005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,7 @@ GameObject:
   - 4: {fileID: 471972}
   - 33: {fileID: 3383060}
   - 23: {fileID: 2392074}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder040
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 478550}
   - 96: {fileID: 9665714}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_TrailYellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - 114: {fileID: 11414724}
   - 114: {fileID: 11480798}
   - 64: {fileID: 6427170}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   - 4: {fileID: 447978}
   - 198: {fileID: 19886902}
   - 199: {fileID: 19993834}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_DispoDashYellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - 4: {fileID: 402602}
   - 33: {fileID: 3317234}
   - 23: {fileID: 2380734}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   - 4: {fileID: 459416}
   - 33: {fileID: 3356648}
   - 23: {fileID: 2371236}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder039
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - 4: {fileID: 433978}
   - 33: {fileID: 3397028}
   - 23: {fileID: 2342706}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +206,7 @@ GameObject:
   - 4: {fileID: 473596}
   - 33: {fileID: 3357712}
   - 23: {fileID: 2320684}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder037
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   - 4: {fileID: 496026}
   - 33: {fileID: 3344946}
   - 23: {fileID: 2307078}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Object006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ GameObject:
   - 4: {fileID: 418030}
   - 33: {fileID: 3318598}
   - 23: {fileID: 2328154}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder036
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -257,7 +257,7 @@ GameObject:
   - 4: {fileID: 469822}
   - 33: {fileID: 3386180}
   - 23: {fileID: 2303838}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder034
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 404100}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -289,7 +289,7 @@ GameObject:
   - 4: {fileID: 431178}
   - 33: {fileID: 3361968}
   - 23: {fileID: 2362226}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere011
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   - 4: {fileID: 493266}
   - 33: {fileID: 3381852}
   - 23: {fileID: 2373656}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sphere010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -321,7 +321,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 419364}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: YellowPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +338,7 @@ GameObject:
   - 4: {fileID: 483122}
   - 33: {fileID: 3341318}
   - 23: {fileID: 2321738}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder041
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355,7 +355,7 @@ GameObject:
   - 4: {fileID: 469024}
   - 33: {fileID: 3366142}
   - 23: {fileID: 2344838}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Object007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -371,7 +371,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 410594}
   - 108: {fileID: 10830444}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Point light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,7 +388,7 @@ GameObject:
   - 4: {fileID: 411264}
   - 114: {fileID: 11403560}
   - 135: {fileID: 13545702}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MagnetTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -405,7 +405,7 @@ GameObject:
   - 4: {fileID: 487790}
   - 33: {fileID: 3337508}
   - 23: {fileID: 2356712}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder035
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1519,6 +1519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magnetPoint: {fileID: 0}
+  gettingMovable: 0
 --- !u!114 &11414724
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1542,10 +1543,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a1563249b177a48a36f574a7f05794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  playerName: 0
   playerState: 0
   dashState: 0
-  repulsionState: 0
   controllerNumber: -1
   speed: 18
   stunnedSpeed: 8
@@ -1555,13 +1555,6 @@ MonoBehaviour:
   shootForce: 200
   repulsionForce: 10
   decelerationAmount: 1
-  enableRepulsionWave: 0
-  repulsionWaveForce: 80
-  repulsionWaveRadius: 12
-  repulsionWaveMask:
-    serializedVersion: 2
-    m_Bits: 8704
-  repulsionCoolDown: 2
   stunnedRotation: 400
   stunnedDuration: 1
   dashSpeed: 80
@@ -3773,7 +3766,7 @@ GameObject:
   - 4: {fileID: 4000011164978324}
   - 198: {fileID: 198000012969798752}
   - 199: {fileID: 199000011665507672}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: FX_Dash
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -27,6 +27,8 @@ TagManager:
   - ControllerChangeManager
   - RewiredPopupWindows
   - InputGridHeaderLabel
+  - InputGridFieldButton
+  - ControlMapper
   layers:
   - Default
   - TransparentFX

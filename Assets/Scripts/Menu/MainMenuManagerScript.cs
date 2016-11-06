@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
+using Rewired.UI.ControlMapper;
 
 public class MainMenuManagerScript : MonoBehaviour
 {
@@ -179,6 +180,8 @@ public class MainMenuManagerScript : MonoBehaviour
 
 	private Player[] playerList = new Player[5];
 
+	private ControlMapper controlMapper;
+
 	void Awake ()
 	{
 		DOTween.Init();
@@ -198,6 +201,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		gameOverPosition.x = -cameraNewXPosition;
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
+
+		controlMapper = GameObject.FindGameObjectWithTag ("ControlMapper").GetComponent<ControlMapper> ();
 
 		loadModeScript = GameObject.FindObjectOfType<LoadModeManager> ();
 
@@ -1239,7 +1244,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		yield return myTween.WaitForCompletion();
 		
 		controlsMenuContent.anchoredPosition = new Vector2(-950, -56);
-		controlsMenuContent.gameObject.SetActive (true);
+		controlMapper.Open ();
+		//controlsMenuContent.gameObject.SetActive (true);
 
 		chooseOptionsMenuCanvas.SetActive(false);
 		controlsMenuCanvas.SetActive(true);
@@ -1249,7 +1255,7 @@ public class MainMenuManagerScript : MonoBehaviour
 	
 	public IEnumerator ExitControls ()
 	{
-		Tween myTween = controlsMenuContent.DOAnchorPos(new Vector2(-950, -56), durationContent).SetEase(easeTypeMainMenu).OnComplete (()=> controlsMenuContent.gameObject.SetActive (false));
+		Tween myTween = controlsMenuContent.DOAnchorPos(new Vector2(-950, -56), durationContent).SetEase(easeTypeMainMenu).OnComplete (()=> controlMapper.Close (true));
 
 		yield return myTween.WaitForCompletion();
 

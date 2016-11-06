@@ -29,8 +29,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[HideInInspector]
 	public string CurrentModeLoaded = "";
 
-	public bool Stun = false;
-
 	[Header ("Controller Numbers")]
 	public int[] PlayersControllerNumber = new int[4];
 
@@ -98,12 +96,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		
 	void Update ()
 	{
-		if(Stun)
-		{
-			Stun = false;
-			Players[1].GetComponent<PlayersGameplay> ().StunVoid (false);
-		}
-
 		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
 		if (GameState != GameStateEnum.Playing && mouseMovement.magnitude > 1 && Cursor.visible == false)
