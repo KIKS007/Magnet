@@ -16,13 +16,9 @@ public class FadeInAndOutScript : MonoBehaviour
 	private Image imageComponent;
 	private Color originalColor;
 
-	public bool tweening = false;
-
 	// Use this for initialization
 	void Start () 
 	{
-		DOTween.Init ();
-
 		if(GetComponent<Text>() != null)
 		{
 			textComponent = GetComponent<Text>();
@@ -36,51 +32,31 @@ public class FadeInAndOutScript : MonoBehaviour
 		}
 
 		FadeOut ();
-		tweening = true;
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		if (gameObject.activeInHierarchy == false && tweening)
-			tweening = false;
-
-		if (gameObject.activeInHierarchy == true && !tweening)
-		{
-			FadeOut ();
-			tweening = true;
-		}
 	}
 
 	void FadeOut ()
 	{
-		if (tweening == true)
+		if(GetComponent<Text>() != null)
 		{
-			if(GetComponent<Text>() != null)
-			{
-				textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
-			}
-			
-			if(GetComponent<Image>() != null)
-			{
-				imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
-			}			
+			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
 		}
+		
+		if(GetComponent<Image>() != null)
+		{
+			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
+		}			
 	}
 
 	void FadeIn ()
 	{
-		if (tweening == true)
+		if(GetComponent<Text>() != null)
 		{
-			if(GetComponent<Text>() != null)
-			{
-				textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
-			}
-			
-			if(GetComponent<Image>() != null)
-			{
-				imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
-			}			
+			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
 		}
+		
+		if(GetComponent<Image>() != null)
+		{
+			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
+		}			
 	}	
 }

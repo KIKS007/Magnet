@@ -2091,7 +2091,6 @@ MonoBehaviour:
   durationFadeIn: 0.7
   durationFadeOut: 0.9
   alphaMinimum: 80.8
-  tweening: 0
 --- !u!114 &146480027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8931,7 +8930,6 @@ MonoBehaviour:
   durationFadeIn: 0.7
   durationFadeOut: 0.9
   alphaMinimum: 80.8
-  tweening: 0
 --- !u!114 &572609170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11628,7 +11626,6 @@ MonoBehaviour:
   durationFadeIn: 1.5
   durationFadeOut: 1
   alphaMinimum: 100
-  tweening: 0
 --- !u!1 &699773154
 GameObject:
   m_ObjectHideFlags: 0
@@ -11819,7 +11816,6 @@ MonoBehaviour:
   durationFadeIn: 1.5
   durationFadeOut: 1
   alphaMinimum: 100
-  tweening: 0
 --- !u!1 &707579444
 GameObject:
   m_ObjectHideFlags: 0
@@ -13338,7 +13334,6 @@ MonoBehaviour:
   durationFadeIn: 0.6
   durationFadeOut: 0.9
   alphaMinimum: 75
-  tweening: 0
 --- !u!114 &808103883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15528,7 +15523,6 @@ MonoBehaviour:
   durationFadeIn: 1.5
   durationFadeOut: 1
   alphaMinimum: 100
-  tweening: 0
 --- !u!1 &937072082
 GameObject:
   m_ObjectHideFlags: 0
@@ -17260,7 +17254,6 @@ MonoBehaviour:
   durationFadeIn: 1.5
   durationFadeOut: 1
   alphaMinimum: 100
-  tweening: 0
 --- !u!1 &1053003218
 GameObject:
   m_ObjectHideFlags: 0
@@ -24704,7 +24697,6 @@ MonoBehaviour:
   durationFadeIn: 0.7
   durationFadeOut: 0.9
   alphaMinimum: 80.8
-  tweening: 0
 --- !u!114 &1431429018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25956,7 +25948,6 @@ MonoBehaviour:
   durationFadeIn: 0.7
   durationFadeOut: 0.9
   alphaMinimum: 80.8
-  tweening: 0
 --- !u!114 &1537973884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26291,7 +26282,6 @@ MonoBehaviour:
   durationFadeIn: 0.7
   durationFadeOut: 0.9
   alphaMinimum: 80.8
-  tweening: 0
 --- !u!114 &1552482456
 MonoBehaviour:
   m_ObjectHideFlags: 0

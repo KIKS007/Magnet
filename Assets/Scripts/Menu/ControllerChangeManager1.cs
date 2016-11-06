@@ -67,12 +67,33 @@ public class ControllerChangeManager1 : MonoBehaviour
 		ReInput.ControllerPreDisconnectEvent += UpdatePlayersControllers;
 
 
-		GetPlayersAndControllers ();
+		SetupSlidersPosition ();
 
 		GetPlayers ();
 
 		GamepadDisplay ();
 	}
+
+	void OnEnable ()
+	{
+		getInput = true;
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			GamepadsManager.Instance.FindGamepadsPluggedAtStart ();
+
+			SetupSlidersPosition ();
+
+			GetPlayers ();
+
+			GamepadDisplay ();
+
+			UpdateGlobalVariables ();
+
+			UpdatePlayersControllers ();
+		}
+	}
+
 		
 	void Update ()
 	{
@@ -151,34 +172,13 @@ public class ControllerChangeManager1 : MonoBehaviour
 		}
 	}
 		
-
-	void OnEnable ()
-	{
-		getInput = true;
-
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			GamepadsManager.Instance.FindGamepadsPluggedAtStart ();
-
-			GetPlayersAndControllers ();
-
-			GetPlayers ();
-
-			GamepadDisplay ();
-
-			UpdateGlobalVariables ();
-
-			UpdatePlayersControllers ();
-		}
-	}
-
-	public void GetPlayersAndControllers ()
+	public void SetupSlidersPosition ()
 	{
 		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
 			if(GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
 			{
 				sliderRect [GlobalVariables.Instance.PlayersControllerNumber[i]].DOLocalMoveX (imagesAlignedPos [i + 1], durationImageMovement);
-				imagesNumber [GlobalVariables.Instance.PlayersControllerNumber[i]] = 1;
+				imagesNumber [GlobalVariables.Instance.PlayersControllerNumber[i]] = i + 1;
 			}
 	}
 
@@ -237,55 +237,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 			}
 		}
 	}
-
-	public void GamepadConnectedDisplay (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			Debug.Log ("Which : " + whichGamepad.ToString ());
-
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].GetComponent<Button> ().interactable = true;
-				break;
-			case 2:
-				sliderRect [2].GetComponent<Button> ().interactable = true;
-				break;
-			case 3:
-				sliderRect [3].GetComponent<Button> ().interactable = true;
-				break;
-			case 4:
-				sliderRect [4].GetComponent<Button> ().interactable = true;
-				break;
-			}
-		}
-	}
-
-	public void GamepadDisconnectedDisplay (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			Debug.Log ("Which : " + whichGamepad.ToString ());
-
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].GetComponent<Button> ().interactable = false;
-				break;
-			case 2:
-				sliderRect [2].GetComponent<Button> ().interactable = false;
-				break;
-			case 3:
-				sliderRect [3].GetComponent<Button> ().interactable = false;
-				break;
-			case 4:
-				sliderRect [4].GetComponent<Button> ().interactable = false;
-				break;
-			}
-		}
-	}
-
+		
 	public void GamepadDisplay ()
 	{
 		for(int i = 1; i < 5; i++)
@@ -368,40 +320,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 			GlobalVariables.Instance.ListPlayers ();
 		}
 	}
-
-
-	public void ResetGamepadOnDisconnect (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [1] = 0;
-				EraseControllerNumbers (1);
-				break;
-			case 2:
-				sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [2] = 0;
-				EraseControllerNumbers (2);
-				break;
-			case 3:
-				sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [3] = 0;
-				EraseControllerNumbers (3);
-				break;
-			case 4:
-				sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [4] = 0;
-				EraseControllerNumbers (4);
-				break;
-			}			
-		}
-	}
-
-
-
+		
 	void EraseControllerNumbers (int whichController)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
@@ -443,6 +362,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 			}
 		}
 	}
+
 
 
 	public void GoOnTheRight (int controllerNumber)
@@ -547,5 +467,85 @@ public class ControllerChangeManager1 : MonoBehaviour
 	public void IgnoreInput ()
 	{
 		getInput = false;
+	}
+
+
+
+	public void GamepadConnectedDisplay (int whichGamepad)
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			Debug.Log ("Which : " + whichGamepad.ToString ());
+
+			switch (whichGamepad)
+			{
+			case 1:
+				sliderRect [1].GetComponent<Button> ().interactable = true;
+				break;
+			case 2:
+				sliderRect [2].GetComponent<Button> ().interactable = true;
+				break;
+			case 3:
+				sliderRect [3].GetComponent<Button> ().interactable = true;
+				break;
+			case 4:
+				sliderRect [4].GetComponent<Button> ().interactable = true;
+				break;
+			}
+		}
+	}
+
+	public void GamepadDisconnectedDisplay (int whichGamepad)
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			Debug.Log ("Which : " + whichGamepad.ToString ());
+
+			switch (whichGamepad)
+			{
+			case 1:
+				sliderRect [1].GetComponent<Button> ().interactable = false;
+				break;
+			case 2:
+				sliderRect [2].GetComponent<Button> ().interactable = false;
+				break;
+			case 3:
+				sliderRect [3].GetComponent<Button> ().interactable = false;
+				break;
+			case 4:
+				sliderRect [4].GetComponent<Button> ().interactable = false;
+				break;
+			}
+		}
+	}
+
+	public void ResetGamepadOnDisconnect (int whichGamepad)
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			switch (whichGamepad)
+			{
+			case 1:
+				sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [1] = 0;
+				EraseControllerNumbers (1);
+				break;
+			case 2:
+				sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [2] = 0;
+				EraseControllerNumbers (2);
+				break;
+			case 3:
+				sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [3] = 0;
+				EraseControllerNumbers (3);
+				break;
+			case 4:
+				sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
+				imagesNumber [4] = 0;
+				EraseControllerNumbers (4);
+				break;
+			}			
+		}
 	}
 }
