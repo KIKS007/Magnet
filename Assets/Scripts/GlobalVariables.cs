@@ -30,7 +30,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public string CurrentModeLoaded = "";
 
 	[Header ("Controller Numbers")]
-	public int[] PlayersControllerNumber = new int[4];
+	public int[] PlayersControllerNumber = new int[4] {-1, -1, -1, -1};
 
 	[Header ("Players")]
 	public GameObject[] Players = new GameObject[4];

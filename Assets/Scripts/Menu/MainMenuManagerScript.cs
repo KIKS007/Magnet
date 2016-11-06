@@ -41,11 +41,6 @@ public class MainMenuManagerScript : MonoBehaviour
 	public float topYpositionButton = 404;
 	public float[] yPositions = new float[9];
 
-	[Header ("Kick & Steam Logos")]
-	public RectTransform kickSteamLogos;
-	public float offX;
-	public float onX;
-
 	[Header ("IronEqual Logo")]
 	public RectTransform ironEqualLogo;
 	public float offXIE;
@@ -507,7 +502,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		//SetButtonsNavigation ();
 
-		KickStarterSteamLogo ();
+		IronEqualLogo ();
 
 		TextResume ();
 
@@ -601,20 +596,8 @@ public class MainMenuManagerScript : MonoBehaviour
 		}
 	}
 
-	void KickStarterSteamLogo ()
-	{
-		if(mainMenuCanvas.activeSelf == true && !oneGamepadDisconnected && kickSteamLogos.anchoredPosition.x != onX)
-		{
-			if(!DOTween.IsTweening("Logos") && !DOTween.IsTweening("PauseMovement"))
-				LogosKickSteamOn ();
-		}
-		
-		if(mainMenuCanvas.activeSelf == false || oneGamepadDisconnected || DOTween.IsTweening("PauseMovement"))
-		{
-			if(!DOTween.IsTweening("Logos") && kickSteamLogos.anchoredPosition.x != offX)
-				LogosKickSteamOff ();
-		}
-		
+	void IronEqualLogo ()
+	{		
 		if(creditsMenuCanvas.activeSelf == true && !oneGamepadDisconnected && ironEqualLogo.anchoredPosition.x != onXIE)
 		{
 			if(!DOTween.IsTweening("IronEqualLogo"))
@@ -986,18 +969,7 @@ public class MainMenuManagerScript : MonoBehaviour
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 	}
-
-
-	void LogosKickSteamOn ()
-	{
-		kickSteamLogos.DOAnchorPos (new Vector2 (onX, kickSteamLogos.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId ("Logos");
-	}
-
-	void LogosKickSteamOff ()
-	{
-		kickSteamLogos.DOAnchorPos (new Vector2 (offX, kickSteamLogos.anchoredPosition.y), durationContent - 0.05f).SetEase (easeTypeMainMenu).SetId("Logos");
-	}
-
+		
 
 	public void LoadInstructionsVoid ()
 	{
