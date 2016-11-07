@@ -30,7 +30,7 @@ GameObject:
   - 4: {fileID: 416708}
   - 135: {fileID: 13509796}
   - 114: {fileID: 11402648}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SlowMotion
   m_TagString: SlowMotion
   m_Icon: {fileID: 0}
@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a05e831aa61db4dbde0285aec7a363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cubeColor: 0
   higherVelocity: 0
   currentVelocity: 0
   limitVelocity: 80
@@ -166,6 +167,7 @@ MonoBehaviour:
   playerHit: {fileID: 0}
   cubeMeshFilter: {fileID: 0}
   cubeMaterial: {fileID: 0}
+  initialScale: {x: 0, y: 0, z: 0}
 --- !u!135 &13509796
 SphereCollider:
   m_ObjectHideFlags: 1

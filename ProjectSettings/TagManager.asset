@@ -43,8 +43,8 @@ TagManager:
   - FloorMask
   - Roof
   - Player
-  - ThrownMovable
-  - HoldMovables
+  - 
+  - 
   - GoalsTrigger
   - Walls
   - Goals
