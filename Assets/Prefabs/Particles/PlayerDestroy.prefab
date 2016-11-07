@@ -12,7 +12,7 @@ GameObject:
   - 199: {fileID: 19932594}
   - 114: {fileID: 11415032}
   - 114: {fileID: 114000011383111610}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: PlayerDestroy
   m_TagString: Particles_FX
   m_Icon: {fileID: 0}

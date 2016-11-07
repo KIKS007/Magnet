@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000013295743928}
   - 198: {fileID: 198000010525631478}
   - 199: {fileID: 199000012936375382}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FX_Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - 4: {fileID: 4000013663173750}
   - 198: {fileID: 198000013744789016}
   - 199: {fileID: 199000012527124320}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FX_ShockPink
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - 199: {fileID: 19957078}
   - 114: {fileID: 11466004}
   - 114: {fileID: 114000013525870664}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: HitParticles
   m_TagString: Particles_FX
   m_Icon: {fileID: 0}

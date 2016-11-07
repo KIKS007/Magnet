@@ -12,7 +12,7 @@ GameObject:
   - 199: {fileID: 19973014}
   - 114: {fileID: 11496124}
   - 114: {fileID: 114000013372313120}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: PlayerSpawn
   m_TagString: Particles_FX
   m_Icon: {fileID: 0}

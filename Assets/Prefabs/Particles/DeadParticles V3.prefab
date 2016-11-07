@@ -12,7 +12,7 @@ GameObject:
   - 199: {fileID: 19943298}
   - 114: {fileID: 11461792}
   - 114: {fileID: 114000010861575034}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DeadParticles V3
   m_TagString: Particles_FX
   m_Icon: {fileID: 0}

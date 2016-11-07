@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000010480811280}
   - 198: {fileID: 198000011305537294}
   - 199: {fileID: 199000014229001094}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FX_OMGCKOI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
