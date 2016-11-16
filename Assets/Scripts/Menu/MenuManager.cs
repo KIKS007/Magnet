@@ -11,10 +11,12 @@ using GameAnalyticsSDK;
 using Rewired.UI.ControlMapper;
 using System;
 
+public enum MenuComponentType {MenuContent, MenuList};
+
 public class MenuManager : Singleton <MenuManager> 
 {
-
-	public bool test = false;
+	public GameObject menu;
+	public List<MenuComponent> menuHierarchy = new List<MenuComponent> ();
 
 	[Header ("Ease")]
 	public Ease easeMenu;
@@ -39,15 +41,18 @@ public class MenuManager : Singleton <MenuManager>
 	// Use this for initialization
 	void Start () 
 	{
+		GetMenuHierarchy (menu.transform);
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(test)
-		{
-			test = false;
-		}
+		
+	}
+
+	void GetMenuHierarchy (Transform menuParent)
+	{
+		
 	}
 
 	Tween ButtonsSubmit (RectTransform[] buttonsList, int submitButton, Action OnCompleteAction = null)
@@ -89,3 +94,13 @@ public class MenuManager : Singleton <MenuManager>
 		return buttonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, topYpositionButton), durationCancel).SetDelay (delayCancel [whichDelay]).SetEase (easeMenu);
 	}*/
 }
+
+/*[Serializable]
+public class MenuParent
+{
+	public RectTransform button = null;
+
+	public RectTransform content = null;
+
+	public List<MenuParent> underMenuList;
+}*/
