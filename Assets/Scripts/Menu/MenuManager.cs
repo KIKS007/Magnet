@@ -11,37 +11,54 @@ using GameAnalyticsSDK;
 using Rewired.UI.ControlMapper;
 using System;
 
-public enum MenuComponentType {MenuContent, MenuList};
+public enum MenuComponentType {ContentMenu, ButtonsListMenu, MainMenu};
 
 public class MenuManager : Singleton <MenuManager> 
 {
-	public GameObject menu;
-	public List<MenuComponent> menuHierarchy = new List<MenuComponent> ();
+	public bool tweening;
+
+	public GameObject mainMenu;
+	public MenuComponent currentMenu;
+
+	private MenuComponent mainMenuScript;
 
 	[Header ("Ease")]
-	public Ease easeMenu;
+	public Ease easeMenu = Ease.OutQuad;
 
 	[Header ("Animations Duration")]
-	public float durationSubmit;
-	public float durationCancel;
-	public float durationContent;
+	public float durationSubmit = 0.15f;
+	public float durationCancel = 0.15f;
+	public float durationContent = 0.15f;
 
-	[Header ("Animations Delay")]
-	public float[] delaySubmit;
-	public float[] delayCancel;
+	[Header ("Buttons Delay")]
+	public float[] buttonsDelay = {0, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f};
 
 	[Header ("Positions")]
 	public float offScreenX = -1600;
 	public float onScreenX = -650;
-	public float screenCenterY = -200;
+
+	[Header ("Buttons Positions")]
+	public float headerButtonsYPosition = 540;
+	public float gapAfterHeaderButton;
 	public float gapBetweenButtons = 131;
-	public float topYpositionButton = 540;
-	public float[] yPositions = new float[9];
+	public float[] buttonsYPositions = new float[9];
 
 	// Use this for initialization
 	void Start () 
 	{
-		GetMenuHierarchy (menu.transform);
+		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
+
+		SetupButtonsPositions ();
+
+		MainMenu (mainMenuScript.underButtonsList);
+	}
+
+	void SetupButtonsPositions ()
+	{
+		buttonsYPositions [0] = headerButtonsYPosition - gapAfterHeaderButton;
+
+		for (int i = 1; i < buttonsYPositions.Length; i++)
+			buttonsYPositions [i] = buttonsYPositions [0] - (gapBetweenButtons * i);
 	}
 	
 	// Update is called once per frame
@@ -50,29 +67,70 @@ public class MenuManager : Singleton <MenuManager>
 		
 	}
 
-	void GetMenuHierarchy (Transform menuParent)
+	public void MainMenu (List<RectTransform> underButtonsList)
 	{
-		
+		StartCoroutine (MainMenuCoroutine (underButtonsList));
 	}
 
-	Tween ButtonsSubmit (RectTransform[] buttonsList, int submitButton, Action OnCompleteAction = null)
+	IEnumerator MainMenuCoroutine (List<RectTransform> underButtonsList)
 	{
-		int whichDelay = 0;
+		for (int i = 0; i < underButtonsList.Count; i++)
+			underButtonsList [i].anchoredPosition = new Vector2 (offScreenX, buttonsYPositions [i]);
 
-		for(int i = buttonsList.Length - 1; i >= 0; i--)
+		int underDelay = 0;
+
+		for(int i = underButtonsList.Count - 1; i >= 0; i--)
 		{
-
-			if(i != submitButton)
-			{
-				buttonsList [i].DOAnchorPosX (offScreenX, durationSubmit).SetDelay (delaySubmit [whichDelay]).SetEase (easeMenu);
-				whichDelay++;
-			}
+			underButtonsList [i].DOAnchorPosX (onScreenX, durationSubmit).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu);
+			underDelay++;
 		}
 
-		if(OnCompleteAction == null)
-			return buttonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay (delaySubmit [whichDelay]).SetEase (easeMenu);
-		else
-			return buttonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, topYpositionButton), durationSubmit).SetDelay (delaySubmit [whichDelay]).SetEase (easeMenu).OnComplete (()=> OnCompleteAction());
+		underButtonsList [0].GetComponent<Button> ().Select ();
+
+		yield return null;			
+	}
+
+	public void ButtonsListSubmit (List<RectTransform> underButtonsList, List<RectTransform> aboveButtonsList = null, int submitButton = -1)
+	{
+		StartCoroutine (ButtonsListSubmitCoroutine (underButtonsList, aboveButtonsList, submitButton));
+	}
+
+	IEnumerator ButtonsListSubmitCoroutine (List<RectTransform> underButtonsList, List<RectTransform> aboveButtonsList = null, int submitButton = -1)
+	{
+		Debug.Log (aboveButtonsList.Count);
+
+		if(aboveButtonsList != null)
+		{
+			int aboveDelay = 0;
+			
+			for(int i = aboveButtonsList.Count - 1; i >= 0; i--)
+			{
+				if(i != submitButton)
+				{
+					aboveButtonsList [i].DOAnchorPosX (offScreenX, durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
+					aboveDelay++;
+				}
+			}
+			
+			Tween tween = aboveButtonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, headerButtonsYPosition), durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
+			
+			yield return tween.WaitForCompletion();			
+		}
+
+		for (int i = 0; i < underButtonsList.Count; i++)
+			underButtonsList [i].anchoredPosition = new Vector2 (offScreenX, buttonsYPositions [i]);
+
+		int underDelay = 0;
+
+		for(int i = underButtonsList.Count - 1; i >= 0; i--)
+		{
+			underButtonsList [i].DOAnchorPosX (onScreenX, durationSubmit).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu);
+			underDelay++;
+		}
+
+		underButtonsList [0].GetComponent<Button> ().Select ();
+
+		yield return null;			
 	}
 
 	/*Tween ButtonsCancel (RectTransform[] buttonsList, int cancelButton, Action OnCompleteAction = null)
@@ -93,14 +151,14 @@ public class MenuManager : Singleton <MenuManager>
 
 		return buttonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, topYpositionButton), durationCancel).SetDelay (delayCancel [whichDelay]).SetEase (easeMenu);
 	}*/
+
+	void Tweening ()
+	{
+		tweening = true;
+	}
+
+	void NotTweening ()
+	{
+		tweening = false;
+	}
 }
-
-/*[Serializable]
-public class MenuParent
-{
-	public RectTransform button = null;
-
-	public RectTransform content = null;
-
-	public List<MenuParent> underMenuList;
-}*/
