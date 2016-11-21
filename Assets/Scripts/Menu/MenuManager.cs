@@ -64,14 +64,21 @@ public class MenuManager : Singleton <MenuManager>
 	// Update is called once per frame
 	void Update () 
 	{
-		
+		List<Player> playersListTemp = new List<Player> (ReInput.players.GetPlayers ());
+
+		for(int i = 0; i < playersListTemp.Count; i++)
+		{
+			if (playersListTemp [i].GetButtonDown ("UI Cancel") && !tweening)
+				currentMenu.Cancel ();
+		}
 	}
 
+	//Main Menu
 	public void MainMenu (List<RectTransform> underButtonsList)
 	{
 		StartCoroutine (MainMenuCoroutine (underButtonsList));
 	}
-
+		
 	IEnumerator MainMenuCoroutine (List<RectTransform> underButtonsList)
 	{
 		for (int i = 0; i < underButtonsList.Count; i++)
@@ -87,36 +94,24 @@ public class MenuManager : Singleton <MenuManager>
 
 		underButtonsList [0].GetComponent<Button> ().Select ();
 
+		currentMenu = mainMenu.GetComponent<MenuComponent> ();
+
 		yield return null;			
 	}
 
-	public void ButtonsListSubmit (List<RectTransform> underButtonsList, List<RectTransform> aboveButtonsList = null, int submitButton = -1)
+
+
+	//Sumbit Methods
+	public void ShowUnderButtons (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu)
 	{
-		StartCoroutine (ButtonsListSubmitCoroutine (underButtonsList, aboveButtonsList, submitButton));
+		StartCoroutine (ShowUnderButtonsCoroutine (otherButtonsList, submitButton, underButtonsList, whichMenu));
 	}
 
-	IEnumerator ButtonsListSubmitCoroutine (List<RectTransform> underButtonsList, List<RectTransform> aboveButtonsList = null, int submitButton = -1)
+	IEnumerator ShowUnderButtonsCoroutine (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu)
 	{
-		Debug.Log (aboveButtonsList.Count);
+		yield return HideOtherButtons (otherButtonsList, submitButton).WaitForCompletion();			
 
-		if(aboveButtonsList != null)
-		{
-			int aboveDelay = 0;
-			
-			for(int i = aboveButtonsList.Count - 1; i >= 0; i--)
-			{
-				if(i != submitButton)
-				{
-					aboveButtonsList [i].DOAnchorPosX (offScreenX, durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
-					aboveDelay++;
-				}
-			}
-			
-			Tween tween = aboveButtonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, headerButtonsYPosition), durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
-			
-			yield return tween.WaitForCompletion();			
-		}
-
+		//Show Under Menu Buttons
 		for (int i = 0; i < underButtonsList.Count; i++)
 			underButtonsList [i].anchoredPosition = new Vector2 (offScreenX, buttonsYPositions [i]);
 
@@ -128,29 +123,114 @@ public class MenuManager : Singleton <MenuManager>
 			underDelay++;
 		}
 
-		underButtonsList [0].GetComponent<Button> ().Select ();
+		//Select First Under Menu Button
+		underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
 
-		yield return null;			
+		currentMenu = whichMenu;
 	}
 
-	/*Tween ButtonsCancel (RectTransform[] buttonsList, int cancelButton, Action OnCompleteAction = null)
+	public void ShowContent (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, Selectable selectable = null)
 	{
-		int whichDelay = 0;
+		StartCoroutine (ShowContentCoroutine (otherButtonsList, submitButton, content, whichMenu, selectable));
+	}
 
-		buttonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, yPositions[cancelButton]), durationCancel).SetDelay (delayCancel [whichDelay]).SetEase (easeMenu);
+	IEnumerator ShowContentCoroutine (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, Selectable selectable = null)
+	{
+		yield return HideOtherButtons (otherButtonsList, submitButton).WaitForCompletion();			
 
-		for(int i = buttonsList.Length - 1; i >= 0; i--)
+		content.anchoredPosition = new Vector2 (offScreenX, 0);
+
+		content.DOAnchorPosX (onScreenX, durationContent).SetEase (easeMenu);
+
+		if(selectable != null)
+			selectable.Select ();
+
+		currentMenu = whichMenu;
+	}
+
+	Tween HideOtherButtons (List<RectTransform> otherButtonsList, int submitButton)
+	{
+		//Hide Other Buttons and Get Header Button At Top
+		int aboveDelay = 0;
+
+		for(int i = otherButtonsList.Count - 1; i >= 0; i--)
 		{
-
-			if(i != cancelButton)
+			if(i != submitButton)
 			{
-				buttonsList [i].DOAnchorPosX (offScreenX, durationCancel).SetDelay (delayCancel [whichDelay]).SetEase (easeMenu);
-				whichDelay++;
+				otherButtonsList [i].DOAnchorPosX (offScreenX, durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
+				aboveDelay++;
 			}
 		}
 
-		return buttonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, topYpositionButton), durationCancel).SetDelay (delayCancel [whichDelay]).SetEase (easeMenu);
-	}*/
+		return otherButtonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, headerButtonsYPosition), durationSubmit).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
+	}
+
+
+
+	//Cancel Methods
+	public void HideUnderButtons (List<RectTransform> otherButtonsList, MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		StartCoroutine (HiderUnderButtonsCoroutine (otherButtonsList, aboveMenu, menuButton));
+	}
+
+	IEnumerator HiderUnderButtonsCoroutine (List<RectTransform> otherButtonsList, MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		int delay = 0;
+		Tween tween = null;
+
+		for(int i = otherButtonsList.Count - 1; i >= 0; i--)
+		{
+			tween = otherButtonsList [i].DOAnchorPosX (offScreenX, durationSubmit).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+			delay++;
+		}
+
+		yield return tween.WaitForCompletion();
+
+		ShowAboveButtons (aboveMenu, menuButton);
+	}
+
+	public void HideContent (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		StartCoroutine (HideContentCoroutine (content, aboveMenu, menuButton));
+	}
+
+	IEnumerator HideContentCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu);
+
+		yield return tween.WaitForCompletion();
+	
+		ShowAboveButtons (aboveMenu, menuButton);
+	}
+		
+	void ShowAboveButtons (MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		int cancelButton = 0;
+
+		for (int i = 0; i < aboveMenu.underButtonsList.Count; i++)
+			if (aboveMenu.underButtonsList [i] == menuButton)
+				cancelButton = i;
+
+		int delay = 0;
+
+		aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, buttonsYPositions[cancelButton]), durationCancel).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+		delay++;
+
+		for(int i = aboveMenu.underButtonsList.Count - 1; i >= 0; i--)
+		{
+			if(i != cancelButton)
+			{
+				aboveMenu.underButtonsList [i].DOAnchorPosX (onScreenX, durationCancel).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+				delay++;
+			}
+		}
+
+		aboveMenu.button.DOAnchorPos (new Vector2(onScreenX, headerButtonsYPosition), durationCancel).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+
+		aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
+
+		currentMenu = aboveMenu;
+	}
 
 	void Tweening ()
 	{
