@@ -1,29 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MenuButtonComponent : EventTrigger 
 {
-	public int whichChildButton;
+	public int buttonIndex;
 	public MenuComponent menuComponentParent;
+
+	private Button button;
 
 	// Use this for initialization
 	void Awake () 
 	{
+		button = GetComponent<Button> ();
 		menuComponentParent = transform.parent.GetComponent<MenuComponent> ();
-
-		for (int i = 0; i < menuComponentParent.transform.childCount; i++)
-			if (menuComponentParent.transform.GetChild (i) == transform)
-				whichChildButton = i + 1;
 	}
 
 	public override void OnPointerClick( PointerEventData data )
 	{
-		menuComponentParent.Submit (whichChildButton);
+		if(button.interactable)
+			menuComponentParent.Submit (buttonIndex);
 	}
 
 	public override void OnSubmit( BaseEventData data )
 	{
-		menuComponentParent.Submit (whichChildButton);
+		if(button.interactable)
+			menuComponentParent.Submit (buttonIndex);
 	}
 }

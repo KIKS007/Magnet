@@ -1782,7 +1782,7 @@ public class MainMenuManagerScript : MonoBehaviour
 		eventSyst.SetSelectedGameObject (null);
 		eventSyst.SetSelectedGameObject (start.gameObject);
 		//start.GetComponent<Button>().Select();
-		start.GetComponent<ButtonOnSelected>().OnSelect();
+		start.GetComponent<MenuButtonAnimationsAndSounds>().OnSelect();
 	}
 
 	public void GameOverMenuVoid ()
@@ -1958,6 +1958,8 @@ public class MainMenuManagerScript : MonoBehaviour
 	{
 		tweening = false;
 	}
+
+
 
 	void PlayReturnSound ()
 	{
