@@ -784,12 +784,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &29238542
 GameObject:
   m_ObjectHideFlags: 0
@@ -5160,7 +5161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
-  whichChildButton: 0
+  buttonIndex: 0
   menuComponentParent: {fileID: 0}
 --- !u!1 &225838070
 GameObject:
@@ -5427,12 +5428,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &235044089
 GameObject:
   m_ObjectHideFlags: 0
@@ -7012,7 +7014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &322702003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7101,12 +7103,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 2
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &328051951
 GameObject:
   m_ObjectHideFlags: 0
@@ -9760,7 +9763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
-  whichChildButton: 0
+  buttonIndex: 0
   menuComponentParent: {fileID: 0}
 --- !u!1 &445716926
 GameObject:
@@ -12702,8 +12705,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1797140516}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.941, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -11.5, y: 0}
   m_SizeDelta: {x: 100, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -13755,7 +13758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
-  whichChildButton: 0
+  buttonIndex: 0
   menuComponentParent: {fileID: 0}
 --- !u!1 &612858211
 GameObject:
@@ -14063,12 +14066,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &637068915
 GameObject:
   m_ObjectHideFlags: 0
@@ -17130,12 +17134,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &728319023
 GameObject:
   m_ObjectHideFlags: 0
@@ -20052,7 +20057,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
-  whichChildButton: 0
+  buttonIndex: 0
   menuComponentParent: {fileID: 0}
 --- !u!1 &851419635
 GameObject:
@@ -20213,20 +20218,23 @@ MonoBehaviour:
   mainMenu: {fileID: 322702002}
   currentMenu: {fileID: 0}
   easeMenu: 6
-  durationSubmit: 0.15
-  durationCancel: 0.15
+  durationToShow: 0.15
+  durationToHide: 0.15
   durationContent: 0.15
-  buttonsDelay:
-  - 0
-  - 0.05
-  - 0.1
-  - 0.15
-  - 0.2
-  - 0.25
   offScreenX: -1600
   onScreenX: -650
-  headerButtonsYPosition: 540
-  gapAfterHeaderButton: 131
+  mainMenuFirstButtonY: 100
+  mainMenuButtonsYPositions:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  gapAfterHeaderButton: 262
   gapBetweenButtons: 131
   buttonsYPositions:
   - 0
@@ -20238,6 +20246,15 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  headerButtonsYPosition: 540
+  headerButtonsList: []
+  buttonsDelay:
+  - 0
+  - 0.05
+  - 0.1
+  - 0.15
+  - 0.2
+  - 0.25
 --- !u!4 &861001378
 Transform:
   m_ObjectHideFlags: 0
@@ -23143,12 +23160,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &974684323
 GameObject:
   m_ObjectHideFlags: 0
@@ -25273,6 +25291,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11482086, guid: f59a9a6e46f3dc24192f720e608f9ef3, type: 2}
+      propertyPath: _userData.keyboardMaps.Array.data[0].actionElementMaps.Array.data[8]._actionId
+      value: 11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f59a9a6e46f3dc24192f720e608f9ef3, type: 2}
   m_IsPrefabParent: 0
@@ -25645,8 +25667,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1187370613}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.941, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -11.5, y: 0}
   m_SizeDelta: {x: 100, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -29104,12 +29126,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &1221561687
 GameObject:
   m_ObjectHideFlags: 0
@@ -31408,12 +31431,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 2
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &1352120728
 GameObject:
   m_ObjectHideFlags: 0
@@ -32260,12 +32284,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &1374875319
 GameObject:
   m_ObjectHideFlags: 0
@@ -36142,12 +36167,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &1547918540
 GameObject:
   m_ObjectHideFlags: 0
@@ -39588,12 +39614,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 1
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &1718807346
 GameObject:
   m_ObjectHideFlags: 0
@@ -39781,7 +39808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
-  whichChildButton: 0
+  buttonIndex: 0
   menuComponentParent: {fileID: 0}
 --- !u!1 &1725533094
 GameObject:
@@ -48032,12 +48059,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuComponentType: 0
-  aboveMenuList: []
-  aboveButtonsList: []
-  button: {fileID: 0}
-  content: {fileID: 0}
+  aboveMenuScript: {fileID: 0}
+  otherMenuList: []
+  otherButtonsList: []
   underMenuList: []
   underButtonsList: []
+  button: {fileID: 0}
+  content: {fileID: 0}
 --- !u!1 &2125683394
 GameObject:
   m_ObjectHideFlags: 0
