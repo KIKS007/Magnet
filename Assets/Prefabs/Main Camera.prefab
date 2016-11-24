@@ -12,6 +12,7 @@ GameObject:
   - 114: {fileID: 11466250}
   - 114: {fileID: 11424106}
   - 114: {fileID: 11400114}
+  - 114: {fileID: 114000013328915252}
   - 92: {fileID: 9224262}
   - 124: {fileID: 12492916}
   - 81: {fileID: 8150878}
@@ -675,7 +676,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106368}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44002857159cfa64fab24b6ec32b80de, type: 3}
   m_Name: 
@@ -808,6 +809,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe422fcf3d1e8943aed8dfb3cfafe7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114000013328915252
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12f0ee16fd7b24c47b94c840714e21d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuLogo: {fileID: 0}
+  startScreenText: {fileID: 0}
+  logoNewPos: {x: 0, y: 365}
+  logoHiddenPos: {x: 0, y: 800}
+  logoNewScale: 0.4
+  startScreenDuration: 0.5
+  textOffScreenY: -700
+  startPosition: {x: -150, y: 104, z: 18}
+  pausePosition: {x: -48, y: 104, z: 18}
+  playPosition: {x: 0, y: 60, z: 0}
+  modeEndPosition: {x: 48, y: 104, z: 18}
+  cameraMovementDuration: 0.8
+  cameraEaseMovement: 6
 --- !u!114 &114000013884997636
 MonoBehaviour:
   m_ObjectHideFlags: 1

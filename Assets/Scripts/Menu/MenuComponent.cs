@@ -178,4 +178,20 @@ public class MenuComponent : MonoBehaviour
 		else if (menuComponentType == MenuComponentType.ContentMenu)
 			MenuManager.Instance.HideContent (content, aboveMenuScript, button);
 	}
+
+	public void Resume ()
+	{
+		switch (menuComponentType)
+		{
+		case MenuComponentType.MainMenu:
+			MenuManager.Instance.HideMainMenu ();
+			break;
+		case MenuComponentType.ContentMenu:
+			MenuManager.Instance.HideContent (content, aboveMenuScript, button, true);
+			break;
+		case MenuComponentType.ButtonsListMenu:
+			MenuManager.Instance.HideUnderButtons (underButtonsList, aboveMenuScript, button, true);
+			break;
+		}
+	}
 }
