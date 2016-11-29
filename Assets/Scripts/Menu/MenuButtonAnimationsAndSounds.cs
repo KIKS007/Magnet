@@ -109,7 +109,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		if(scaleChangement)
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration);
 		
-			GameSoundsManager.Instance.MenuNavigation ();
+		GameSoundsManager.Instance.MenuNavigation ();
 	}
 
 	public override void OnPointerExit( PointerEventData data )
@@ -131,7 +131,9 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		if(buttonRect.GetComponent<Button>().interactable == true)
 		{
 			OnDeselect ();
-			
+
+			GameSoundsManager.Instance.MenuSubmit ();
+
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 		}
 	}
@@ -141,7 +143,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		if(buttonRect.GetComponent<Button>().interactable == true)
 		{
 			pointerDown = true;
-			
+
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 		}
 

@@ -50,7 +50,7 @@ public class MenuCameraMovement : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime (startScreenDuration);
 
-		transform.DOMove (startPosition, cameraMovementDuration).SetEase (cameraEaseMovement);
+		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement);
 	}
 
 	public void PausePosition ()

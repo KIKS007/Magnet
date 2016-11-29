@@ -16,6 +16,7 @@ public enum MenuComponentType {ContentMenu, ButtonsListMenu, MainMenu};
 public class MenuManager : Singleton <MenuManager> 
 {
 	#region Variables Declaration
+
 	[Header ("Infos")]
 	public bool tweening;
 
@@ -52,6 +53,15 @@ public class MenuManager : Singleton <MenuManager>
 	[Header ("Buttons Delay")]
 	public float[] buttonsDelay = {0, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f};
 
+	[Header ("Back Buttons")]
+	public RectTransform backButtons;
+	public Vector2 backButtonsXPos;
+
+	[Header ("Disconnected Gamepads")]
+	public bool oneGamepadDisconnected = false;
+	public RectTransform[] disconnectedGamepads = new RectTransform[4];
+	public Vector2 disconnectedGamepadsYPos;
+
 	private EventSystem eventSyst;
 	private GameObject mainCamera;
 	private ControlMapper controlMapper;
@@ -73,6 +83,9 @@ public class MenuManager : Singleton <MenuManager>
 		DOTween.Init();
 		DOTween.defaultTimeScaleIndependent = true;
 
+		OnMenuChange += BackButtons;
+		GlobalVariables.Instance.OnGameOver += ResetGamepadsDisconnected;
+
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
 			
@@ -82,6 +95,8 @@ public class MenuManager : Singleton <MenuManager>
 		controlMapper = GameObject.FindGameObjectWithTag ("ControlMapper").GetComponent<ControlMapper> ();
 		loadModeScript = GameObject.FindObjectOfType<LoadModeManager> ();
 		//controllerManager = GameObject.FindGameObjectWithTag ("ControllerChangeManager").GetComponent<ControllerChangeManager1> ();
+
+		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
 
 		SetupButtonsPositions ();
 	}
@@ -105,24 +120,17 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
+	#region Update
 	void Update () 
 	{
 		GetMenuPlayers ();
 
-		for(int i = 0; i < playerList.Length; i++)
-		{
-			if (playerList[i] != null && playerList [i].GetButtonDown ("UI Cancel"))
-				currentMenu.Cancel ();
+		CheckNothingSelected ();
 
-			if(startScreen)
-			{
-				if(playerList[i] != null  && playerList[i].GetButtonDown("UI Submit") || playerList[i] != null && playerList[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
-				{
-					StartScreen ();
-					startScreen = false;
-				}
-			}
-		}
+		GamepadsDisconnected ();
+
+		if(!DOTween.IsTweening ("Menu"))
+			CheckMenuInput ();
 
 		if(test)
 		{
@@ -164,6 +172,92 @@ public class MenuManager : Singleton <MenuManager>
 		}
 	}
 
+	void CheckMenuInput ()
+	{
+		for(int i = 0; i < playerList.Length; i++)
+		{
+			if(startScreen)
+			{
+				if(playerList[i] != null  && playerList[i].GetButtonDown("UI Submit") || playerList[i] != null && playerList[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
+				{
+					StartScreen ();
+					startScreen = false;
+				}
+			}
+
+			if (playerList[i] != null && playerList [i].GetButtonDown ("UI Cancel"))
+				currentMenu.Cancel ();
+
+			if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && playerList [i] != null && playerList [i].GetButtonDown ("UI Start"))
+				currentMenu.Resume ();
+		}
+	}
+		
+	public void ExitMenu ()
+	{
+		if(!DOTween.IsTweening ("Menu"))
+			currentMenu.Cancel ();
+	}
+
+	void CheckNothingSelected ()
+	{
+		if(eventSyst.currentSelectedGameObject == null && currentMenu != null)
+		{
+			if(currentMenu.selectable != null)
+			{
+				eventSyst.SetSelectedGameObject (null);
+				eventSyst.SetSelectedGameObject (currentMenu.selectable);
+			}
+		}
+	}
+
+	void GamepadsDisconnected ()
+	{
+		if (disconnectedGamepads [0].parent.gameObject.activeSelf == false)
+			disconnectedGamepads [0].parent.gameObject.SetActive (true);
+
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
+					oneGamepadDisconnected = true;
+			}
+
+			if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
+				oneGamepadDisconnected = false;
+		}		
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.y && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
+					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.y, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());
+				
+
+				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
+					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
+			}
+		}
+	}
+
+	void ResetGamepadsDisconnected ()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			if(disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
+			{
+				disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
+
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] == i + 1)
+					GlobalVariables.Instance.PlayersControllerNumber[i] = -1;
+			}
+
+		}
+	}
+	#endregion
+
 	#region Main Menu		
 	void MainMenu ()
 	{
@@ -179,7 +273,7 @@ public class MenuManager : Singleton <MenuManager>
 			Enable (underButtonsList [i]);
 			SetInteractable (underButtonsList [i], durationToShow + buttonsDelay [underDelay]);
 
-			underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu);
+			underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu).SetId ("Menu");
 			underDelay++;
 		}
 
@@ -204,7 +298,7 @@ public class MenuManager : Singleton <MenuManager>
 		int delay = 0;
 
 		SetInteractable (underButtonsList [cancelButton], durationToShow);
-		underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, mainMenuButtonsYPositions[cancelButton]), durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+		underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, mainMenuButtonsYPositions[cancelButton]), durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
 
 		delay++;
@@ -216,7 +310,7 @@ public class MenuManager : Singleton <MenuManager>
 				Enable (underButtonsList [i]);
 				SetInteractable (underButtonsList [i], durationToShow + buttonsDelay [delay]);
 
-				underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+				underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 				delay++;
 			}
 		}
@@ -240,7 +334,7 @@ public class MenuManager : Singleton <MenuManager>
 			Disable (underButtonsList [i], durationToHide + buttonsDelay [underDelay]);
 			SetNonInteractable (underButtonsList [i]);
 
-			underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu);
+			underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu).SetId ("Menu");
 			underDelay++;
 		}
 
@@ -251,12 +345,12 @@ public class MenuManager : Singleton <MenuManager>
 	#endregion		
 
 	#region Submit Methods
-	public void ShowUnderButtons (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu)
+	public void ShowUnderButtons (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu, List<SecondaryContent> secondaryContentList = null)
 	{
-		StartCoroutine (ShowUnderButtonsCoroutine (otherButtonsList, submitButton, underButtonsList, whichMenu));
+		StartCoroutine (ShowUnderButtonsCoroutine (otherButtonsList, submitButton, underButtonsList, whichMenu, secondaryContentList));
 	}
 
-	IEnumerator ShowUnderButtonsCoroutine (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu)
+	IEnumerator ShowUnderButtonsCoroutine (List<RectTransform> otherButtonsList, int submitButton, List<RectTransform> underButtonsList, MenuComponent whichMenu, List<SecondaryContent> secondaryContentList = null)
 	{
 		PlaySubmitSound ();
 
@@ -273,8 +367,20 @@ public class MenuManager : Singleton <MenuManager>
 			Enable (underButtonsList [i]);
 			SetInteractable (underButtonsList [i], durationToShow + buttonsDelay [underDelay]);
 
-			underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu);
+			underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [underDelay]).SetEase (easeMenu).SetId ("Menu");
 			underDelay++;
+		}
+
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
+				
+				Enable (secondaryContentList [i].content);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
 		}
 
 		//Select First Under Menu Button
@@ -283,12 +389,12 @@ public class MenuManager : Singleton <MenuManager>
 		currentMenu = whichMenu;
 	}
 
-	public void ShowContent (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, Selectable selectable = null)
+	public void ShowContent (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, List<SecondaryContent> secondaryContentList = null)
 	{
-		StartCoroutine (ShowContentCoroutine (otherButtonsList, submitButton, content, whichMenu, selectable));
+		StartCoroutine (ShowContentCoroutine (otherButtonsList, submitButton, content, whichMenu, secondaryContentList));
 	}
 
-	IEnumerator ShowContentCoroutine (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, Selectable selectable = null)
+	IEnumerator ShowContentCoroutine (List<RectTransform> otherButtonsList, int submitButton, RectTransform content, MenuComponent whichMenu, List<SecondaryContent> secondaryContentList = null)
 	{
 		PlaySubmitSound ();
 
@@ -297,10 +403,22 @@ public class MenuManager : Singleton <MenuManager>
 		content.anchoredPosition = new Vector2 (offScreenX, 0);
 		Enable (content);
 
-		content.DOAnchorPosX (0, durationContent).SetEase (easeMenu);
+		content.DOAnchorPosX (0, durationContent).SetEase (easeMenu).SetId ("Menu");
 
-		if(selectable != null)
-			selectable.Select ();
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
+				
+				Enable (secondaryContentList [i].content);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
+		}
+
+		if (whichMenu.selectable != null)
+			eventSyst.SetSelectedGameObject (whichMenu.selectable);
 
 		currentMenu = whichMenu;
 	}
@@ -317,7 +435,7 @@ public class MenuManager : Singleton <MenuManager>
 				Disable (otherButtonsList [i], durationToHide + buttonsDelay [aboveDelay]);
 				SetNonInteractable (otherButtonsList [i]);
 
-				otherButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu);
+				otherButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu).SetId ("Menu");
 				aboveDelay++;
 			}
 		}
@@ -328,27 +446,38 @@ public class MenuManager : Singleton <MenuManager>
 	#endregion
 
 	#region Cancel Methods
-	public void HideUnderButtons (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton, bool resume = false)
+	public void HideUnderButtons (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton, bool resume = false, List<SecondaryContent> secondaryContentList = null)
 	{
 		if(!resume)
-			StartCoroutine (HideUnderButtonsCoroutine (underButtonsList, aboveMenu, menuButton));
+			StartCoroutine (HideUnderButtonsCoroutine (underButtonsList, aboveMenu, menuButton, secondaryContentList));
 		else
-			StartCoroutine (HideUnderButtonsResumeCoroutine (underButtonsList, aboveMenu, menuButton));
+			StartCoroutine (HideUnderButtonsResumeCoroutine (underButtonsList, aboveMenu, menuButton, secondaryContentList));
 	}
 
-	IEnumerator HideUnderButtonsCoroutine (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator HideUnderButtonsCoroutine (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
 		int delay = 0;
 		Tween tween = null;
 
 		PlayReturnSound ();
 
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				Disable (secondaryContentList [i].content, durationToHide + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationToHide).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
+		}
+
+		//Under Buttons
 		for(int i = underButtonsList.Count - 1; i >= 0; i--)
 		{
 			Disable (underButtonsList [i], durationToHide + buttonsDelay [delay]);
 			SetNonInteractable (underButtonsList [i]);
 
-			tween = underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+			tween = underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 			delay++;
 		}
 
@@ -361,19 +490,29 @@ public class MenuManager : Singleton <MenuManager>
 
 	}
 
-	IEnumerator HideUnderButtonsResumeCoroutine (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator HideUnderButtonsResumeCoroutine (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
 		int delay = 0;
 		Tween tween = null;
 
 		PlayReturnSound ();
 
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				Disable (secondaryContentList [i].content, durationToHide + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationToHide).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}
+		}
+		
 		for(int i = underButtonsList.Count - 1; i >= 0; i--)
 		{
 			Disable (underButtonsList [i], durationToHide + buttonsDelay [delay]);
 			SetNonInteractable (underButtonsList [i]);
 
-			tween = underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+			tween = underButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 			delay++;
 		}
 
@@ -385,19 +524,29 @@ public class MenuManager : Singleton <MenuManager>
 
 	}
 
-	public void HideContent (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, bool resume = false)
+	public void HideContent (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, bool resume = false, List<SecondaryContent> secondaryContentList = null)
 	{
 		if(!resume)
-			StartCoroutine (HideContentCoroutine (content, aboveMenu, menuButton));
+			StartCoroutine (HideContentCoroutine (content, aboveMenu, menuButton, secondaryContentList));
 		else
-			StartCoroutine (HideContentResumeCoroutine (content, aboveMenu, menuButton));
+			StartCoroutine (HideContentResumeCoroutine (content, aboveMenu, menuButton, secondaryContentList));
 	}
 
-	IEnumerator HideContentCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator HideContentCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
 		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).OnComplete (()=> Disable(content));
 
 		PlayReturnSound ();
+
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				Disable (secondaryContentList [i].content, durationContent + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationContent).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}
+		}
 
 		yield return tween.WaitForCompletion();
 	
@@ -408,11 +557,21 @@ public class MenuManager : Singleton <MenuManager>
 
 	}
 
-	IEnumerator HideContentResumeCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator HideContentResumeCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
 		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).OnComplete (()=> Disable(content));
 
 		PlayReturnSound ();
+
+		//Secondary Content
+		if(secondaryContentList != null)
+		{
+			for(int i = 0; i < secondaryContentList.Count; i++)
+			{
+				Disable (secondaryContentList [i].content, durationContent + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationContent).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
+		}
 
 		yield return tween.WaitForCompletion();
 
@@ -433,7 +592,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		SetInteractable (aboveMenu.underButtonsList [cancelButton], durationToShow + buttonsDelay [delay]);
 		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
-		aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, buttonsYPositions[cancelButton] + GapAfterHeaderButton ()), durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+		aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, buttonsYPositions[cancelButton] + GapAfterHeaderButton ()), durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 		delay++;
 
 		for(int i = aboveMenu.underButtonsList.Count - 1; i >= 0; i--)
@@ -443,7 +602,7 @@ public class MenuManager : Singleton <MenuManager>
 				Enable (aboveMenu.underButtonsList [i]);
 				SetInteractable (aboveMenu.underButtonsList [i], durationToShow + buttonsDelay [delay]);
 
-				aboveMenu.underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+				aboveMenu.underButtonsList [i].DOAnchorPosX (onScreenX, durationToShow).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 				delay++;
 			}
 		}
@@ -456,14 +615,13 @@ public class MenuManager : Singleton <MenuManager>
 	void HideHeaderButtons ()
 	{
 		int delay = 0;
-		Tween tween = null;
 
 		for(int i = headerButtonsList.Count - 1; i >= 0; i--)
 		{
 			Disable (headerButtonsList [i], durationToHide + buttonsDelay [delay]);
 			SetNonInteractable (headerButtonsList [i]);
 
-			tween = headerButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu);
+			headerButtonsList [i].DOAnchorPosX (offScreenX, durationToHide).SetDelay (buttonsDelay [delay]).SetEase (easeMenu).SetId ("Menu");
 			delay++;
 		}
 	}
@@ -550,6 +708,29 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		MasterAudio.PlaySound (GameSoundsManager.Instance.menuCancel);
 	}
+
+
+	void BackButtons ()
+	{
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && currentMenu && currentMenu.menuComponentType != MenuComponentType.MainMenu)
+		{
+			if (backButtons.gameObject.activeSelf == false)
+				backButtons.gameObject.SetActive (true);
+
+			if (backButtons.anchoredPosition.x != backButtonsXPos.y)
+				backButtons.DOAnchorPosX (backButtonsXPos.y, durationContent).SetEase (easeMenu).SetId ("Menu");
+		}
+		else
+		{
+			if (backButtons.anchoredPosition.x != backButtonsXPos.x)
+				backButtons.DOAnchorPosX (backButtonsXPos.x, durationContent).SetEase (easeMenu).SetId ("Menu").OnComplete (()=> backButtons.gameObject.SetActive (false));
+		}
+	}
+
+	public void QuitGame ()
+	{
+		Application.Quit ();
+	}
 	#endregion
 
 	#region Play Resume
@@ -590,6 +771,20 @@ public class MenuManager : Singleton <MenuManager>
 
 			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 		}
+	}
+	#endregion
+
+	#region Events
+	public event EventHandler OnMenuChange;
+
+	IEnumerator OnMenuChangeEvent (MenuComponent whichMenu)
+	{
+		yield return new WaitUntil (() => currentMenu != whichMenu);
+
+		if (OnMenuChange != null)
+			OnMenuChange ();
+
+		StartCoroutine (OnMenuChangeEvent (currentMenu));
 	}
 	#endregion
 }

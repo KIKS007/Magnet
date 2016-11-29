@@ -10,21 +10,28 @@ public class ControllerChangeManager1 : MonoBehaviour
 {
 	public event EventHandler OnControllerChange;
 
+	[Header ("Connect Gamepad Text")]
 	public GameObject[] gamepadsConnectText = new GameObject[4];
 
+	[Header ("Player Logos")]
 	public RectTransform[] logoRect = new RectTransform[5];
 
+	[Header ("Sliders")]
 	public RectTransform[] sliderRect = new RectTransform[5];
 
+	[Header ("Images")]
 	public float[] imagesAlignedPos = new float[] {107.1f, 242.4f, 395.9f, 544.8f, 692.6f};
 
 	public int[] imagesNumber = new int[] {0, 0, 0, 0, 0};
 
+	[Header ("Settings")]
 	public float durationImageMovement = 0.1f;
-
 	public float gapBetweenInputs = 0.2f;
-
 	public float durationColor = 0.5f;
+
+	[Header ("Play Button")]
+	public RectTransform playButton;
+	public Vector2 playButtonYPos;
 
 	private bool keyboardMoving = false;
 	private bool gamepad1Moving = false;
@@ -44,7 +51,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 	public Player gamepad3;
 	public Player gamepad4;
 
-	public bool getInput = true;
+	private bool getInput = true;
 
 	void Awake ()
 	{
@@ -101,6 +108,59 @@ public class ControllerChangeManager1 : MonoBehaviour
 			GetInput ();
 
 		DisplayConnectGamepadsText ();
+
+		CheckCanPlay ();
+	}
+
+	void CheckCanPlay ()
+	{
+		if(CorrectPlayerChoice () && playButton.GetComponent<Button>().interactable == false)
+		{
+			playButton.GetComponent<Button> ().interactable = true;
+			playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonYPos.y), MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);
+		}
+
+		else if(!CorrectPlayerChoice () && playButton.GetComponent<Button>().interactable == true)
+		{
+			playButton.GetComponent<Button> ().interactable = false;
+			playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonYPos.x), MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);
+		}
+	}
+
+	bool CorrectPlayerChoice ()
+	{
+		int player1Choice = 0;
+		int player2Choice = 0;
+		int player3Choice = 0;
+		int player4Choice = 0;
+
+		for(int i = 0; i < imagesNumber.Length; i++)
+		{
+			switch(imagesNumber[i])
+			{
+			case 1:
+				player1Choice++;
+				break;
+			case 2:
+				player2Choice++;
+				break;
+			case 3:
+				player3Choice++;
+				break;
+			case 4:
+				player4Choice++;
+				break;
+			}
+		}
+
+		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1)
+			return false;
+
+		else if (GlobalVariables.Instance.NumberOfPlayers < 2)
+			return false;
+
+		else
+			return true;
 	}
 
 	void DisplayConnectGamepadsText ()
