@@ -8,10 +8,7 @@ using UnityEngine.SceneManagement;
 using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
-using Rewired.UI.ControlMapper;
 using System;
-
-public enum MenuComponentType {ContentMenu, ButtonsListMenu, MainMenu, EndModeMenu};
 
 public class MenuManager : Singleton <MenuManager> 
 {
@@ -62,20 +59,22 @@ public class MenuManager : Singleton <MenuManager>
 	public RectTransform[] disconnectedGamepads = new RectTransform[4];
 	public Vector2 disconnectedGamepadsYPos;
 
-	[Header ("Game Over Menu")]
+	[Header ("End Mode Menu")]
+	public MenuComponent endModeMenu;
 	public Vector2 initialPanelSize;
 	public Vector2 modifiedPanelSize;
 	public RectTransform[] playerScore = new RectTransform[4];
 	public RectTransform panelBackground;
 	public float delayBetweenStats = 0.01f ;
 
+	private RectTransform endModecontent;
+	private List<SecondaryContent> endModesecondaryContentList;
+
 	private EventSystem eventSyst;
 	private GameObject mainCamera;
-	private ControlMapper controlMapper;
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
 	private Player[] playerList = new Player[5];
-	private ControllerChangeManager1 controllerManager;
 
 	private bool startScreen = true;
 
@@ -97,11 +96,9 @@ public class MenuManager : Singleton <MenuManager>
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
-		controlMapper = GameObject.FindGameObjectWithTag ("ControlMapper").GetComponent<ControlMapper> ();
 		loadModeScript = GameObject.FindObjectOfType<LoadModeManager> ();
-		//controllerManager = GameObject.FindGameObjectWithTag ("ControllerChangeManager").GetComponent<ControllerChangeManager1> ();
 
-		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
+		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
 		SetupButtonsPositions ();
 	}
@@ -122,6 +119,8 @@ public class MenuManager : Singleton <MenuManager>
 		cameraMovement.StartScreen ();
 
 		MainMenu ();
+
+		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
 	}
 	#endregion
 
@@ -195,13 +194,13 @@ public class MenuManager : Singleton <MenuManager>
 				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Cancel"))
 					currentMenu.Cancel ();
 				
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && playerList [i] != null && playerList [i].GetButtonDown ("UI Start"))
+				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && playerList [i] != null && playerList [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
 				{
 					currentMenu.HideMenu ();
 					PauseResumeGame ();
 				}
 				
-				if (GlobalVariables.Instance.GameState != GameStateEnum.Over && playerList[i] != null && playerList [i].GetButtonDown ("UI Start"))
+				if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Start"))
 					PauseResumeGame ();				
 			}			
 		}
@@ -456,7 +455,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		SetNonInteractable (otherButtonsList [submitButton]);
-		return otherButtonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu).OnComplete (()=> headerButtonsList.Add (otherButtonsList [submitButton]));
+		return otherButtonsList [submitButton].DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (buttonsDelay [aboveDelay]).SetEase (easeMenu).OnComplete (()=> headerButtonsList.Add (otherButtonsList [submitButton])).SetId ("Menu");
 	}
 	#endregion
 
@@ -549,7 +548,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator HideContentCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
-		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).OnComplete (()=> Disable(content));
+		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).SetId ("Menu").OnComplete (()=> Disable(content));
 
 		PlayReturnSound ();
 
@@ -574,7 +573,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator HideContentResumeCoroutine (RectTransform content, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
 	{
-		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).OnComplete (()=> Disable(content));
+		Tween tween = content.DOAnchorPosX (offScreenX, durationContent).SetEase (easeMenu).SetId ("Menu").OnComplete (()=> Disable(content));
 
 		PlayReturnSound ();
 
@@ -729,7 +728,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	void BackButtons ()
 	{
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && currentMenu && currentMenu.menuComponentType != MenuComponentType.MainMenu)
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && currentMenu && currentMenu.menuComponentType != MenuComponentType.MainMenu && currentMenu.menuComponentType != MenuComponentType.EndModeMenu)
 		{
 			if (backButtons.gameObject.activeSelf == false)
 				backButtons.gameObject.SetActive (true);
@@ -827,6 +826,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator ShowEndModeCoroutine (RectTransform content, List<SecondaryContent> secondaryContentList, MenuComponent whichMenu)
 	{
+		endModecontent = content;
+		endModesecondaryContentList = secondaryContentList;
+
 		cameraMovement.EndModePosition ();
 
 		yield return new WaitForSecondsRealtime (cameraMovement.cameraMovementDuration);
@@ -850,7 +852,10 @@ public class MenuManager : Singleton <MenuManager>
 			content.transform.GetChild (i).GetComponent<RectTransform> ().localScale = Vector3.zero;
 
 		for (int i = 0; i < playerScore.Length; i++)
+		{
+			Enable (playerScore[i]);
 			playerScore[i].localScale = Vector3.zero;
+		}
 
 		yield return new WaitForSecondsRealtime (durationToShow);
 
@@ -868,14 +873,20 @@ public class MenuManager : Singleton <MenuManager>
 		currentMenu = whichMenu;
 	}
 
-	public void ReturnToMainMenu (RectTransform content, List<SecondaryContent> secondaryContentList)
+	public void ReturnToMainMenu ()
 	{
-		StartCoroutine (ReturnToMainMenuCoroutine (content, secondaryContentList));
+		StartCoroutine (ReturnToMainMenuCoroutine ());
 	}
 
-	IEnumerator ReturnToMainMenuCoroutine (RectTransform content, List<SecondaryContent> secondaryContentList)
+	IEnumerator ReturnToMainMenuCoroutine ()
 	{
-		yield return StartCoroutine (HideEndMode (content, secondaryContentList));
+		yield return StartCoroutine (HideEndMode (endModecontent, endModesecondaryContentList));
+
+		endModecontent = null;
+		endModesecondaryContentList = null;
+
+		cameraMovement.MainMenuPosition ();
+		yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
 
 		MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
 
@@ -884,14 +895,17 @@ public class MenuManager : Singleton <MenuManager>
 		MainMenu ();
 	}
 
-	public void RestartMode (RectTransform content, List<SecondaryContent> secondaryContentList)
+	public void RestartMode ()
 	{
-		StartCoroutine (RestartModeCoroutine (content, secondaryContentList));
+		StartCoroutine (RestartModeCoroutine ());
 	}
 
-	IEnumerator RestartModeCoroutine (RectTransform content, List<SecondaryContent> secondaryContentList)
+	IEnumerator RestartModeCoroutine ()
 	{
-		yield return StartCoroutine (HideEndMode (content, secondaryContentList));
+		yield return StartCoroutine (HideEndMode (endModecontent, endModesecondaryContentList));
+
+		endModecontent = null;
+		endModesecondaryContentList = null;
 
 		MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
 
@@ -904,7 +918,10 @@ public class MenuManager : Singleton <MenuManager>
 			content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(0, durationToHide).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 
 		for (int i = 0; i < playerScore.Length; i++)
+		{
+			Disable (playerScore [i]);
 			playerScore[i].DOScale(0, durationToShow).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
+		}
 
 		yield return new WaitForSecondsRealtime(0.01f);
 
@@ -920,9 +937,7 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		cameraMovement.PausePosition ();
-
-		yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
+		Disable (content);
 	}
 	#endregion
 
@@ -931,13 +946,14 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator OnMenuChangeEvent (MenuComponent whichMenu)
 	{
+		if(whichMenu && whichMenu.menuComponentType == MenuComponentType.MainMenu)
+			GlobalVariables.Instance.OnMainMenuVoid ();
+		
 		yield return new WaitUntil (() => currentMenu != whichMenu);
 
 		if (OnMenuChange != null)
 			OnMenuChange ();
 
-		if(whichMenu.menuComponentType == MenuComponentType.MainMenu)
-			GlobalVariables.Instance.OnMainMenuVoid ();
 
 		StartCoroutine (OnMenuChangeEvent (currentMenu));
 	}

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameStateEnum {Playing, Paused, Over};
 
-public enum WhichMode {Default, Repulse, Bomb, Hit, Crush, Football, Wrap, PushOut, Training};
+public enum WhichMode {Bomb, Crush, Training, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -161,26 +161,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		default:
 			WhichModeLoaded = WhichMode.Default;
 			break;
-		case "Repulse":
-			WhichModeLoaded = WhichMode.Repulse;
-			break;
 		case "Bomb":
 			WhichModeLoaded = WhichMode.Bomb;
 			break;
-		case "Hit":
-			WhichModeLoaded = WhichMode.Hit;
-			break;
 		case "Crush":
 			WhichModeLoaded = WhichMode.Crush;
-			break;
-		case "Football":
-			WhichModeLoaded = WhichMode.Football;
-			break;
-		case "Wrap":
-			WhichModeLoaded = WhichMode.Wrap;
-			break;
-		case "PushOut":
-			WhichModeLoaded = WhichMode.PushOut;
 			break;
 		case "Training":
 			WhichModeLoaded = WhichMode.Training;

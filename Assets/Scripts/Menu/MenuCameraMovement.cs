@@ -58,6 +58,13 @@ public class MenuCameraMovement : MonoBehaviour
 		yield return null;
 	}
 
+	public void MainMenuPosition ()
+	{
+		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		ShowLogo ();
+	}
+
 	public void PausePosition ()
 	{
 		positionOnPause = transform.position;

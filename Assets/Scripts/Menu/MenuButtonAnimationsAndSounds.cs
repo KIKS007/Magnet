@@ -115,7 +115,9 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	public override void OnPointerExit( PointerEventData data )
 	{
 		pointerDown = false;
-		
+
+		eventSys.SetSelectedGameObject (null);
+
 		OnDeselect ();
 	}
 

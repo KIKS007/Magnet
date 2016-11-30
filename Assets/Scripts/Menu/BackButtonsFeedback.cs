@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class BackButtonsFeedback : MonoBehaviour 
 {
-	public enum WhichButton {Esc, B, BackText};
+	public enum WhichButton {Esc, B, BackText, RightClick};
 
 	public WhichButton whichButton;
 
@@ -36,14 +36,19 @@ public class BackButtonsFeedback : MonoBehaviour
 		if(GetComponent<Image>() != null)
 			initialSprite = GetComponent<Image> ().sprite;
 
-		GetPlayers ();
-
 		rect = GetComponent<RectTransform> ();
 		initialScale = rect.localScale.x;
 		initialPos = rect.anchoredPosition;
 
 		if (GetComponent<Image> () != null)
 			initialColor = GetComponent<Image> ().color;
+
+		GetPlayers ();
+	}
+
+	void OnEnable ()
+	{
+		GetPlayers ();
 	}
 
 	void GetPlayers ()
@@ -73,64 +78,46 @@ public class BackButtonsFeedback : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
+		WhichFeedback ();
+	}
+
+	void WhichFeedback ()
+	{
 		if(mouseKeyboard.GetButtonDown("UI Cancel"))
 		{
-			switch(whichButton)
-			{
-			case WhichButton.Esc:
-				Esc ();
-				break;
-			case WhichButton.BackText:
+			if (whichButton == WhichButton.Esc || whichButton == WhichButton.RightClick)
+				ButtonPressed ();
+
+			if (whichButton == WhichButton.BackText)
 				BackText ();
-				break;
-			}
 		}
 
 		if(gamepad1.GetButtonDown("UI Cancel") || gamepad2.GetButtonDown("UI Cancel") || gamepad3.GetButtonDown("UI Cancel") || gamepad4.GetButtonDown("UI Cancel"))
 		{
-			switch(whichButton)
-			{
-			case WhichButton.B:
-				B ();
-				break;
-			case WhichButton.BackText:
+			if(whichButton == WhichButton.B)
+				ButtonPressed ();
+
+			if (whichButton == WhichButton.BackText)
 				BackText ();
-				break;
-			}
 		}
 	}
 
 	public void Click ()
 	{
-		switch(whichButton)
-		{
-		case WhichButton.B:
-			B ();
-			break;
-		case WhichButton.Esc:
-			Esc ();
-			break;
-		}
+		if (whichButton == WhichButton.Esc || whichButton == WhichButton.RightClick || whichButton == WhichButton.B)
+			ButtonPressed ();
 
-		backText.BackText ();
+		if (whichButton == WhichButton.BackText)
+			BackText ();
 	}
 
-	void Esc ()
+	void ButtonPressed ()
 	{
 		GetComponent<Image> ().sprite = modifiedSprite;
 
 		rect.DOScale (modifiedScale, tweenDuration).SetEase (theEase).OnComplete ( ()=> rect.DOScale (initialScale, 0.2f));
 
 		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => ResetFeedback());
-	}
-
-	void B ()
-	{
-		GetComponent<Image> ().sprite = modifiedSprite;
-
-		rect.DOScale (modifiedScale, tweenDuration).SetEase (theEase).OnComplete ( ()=> rect.DOScale (initialScale, 0.2f));
-
-		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => ResetFeedback ());
 	}
 
 	public void BackText ()

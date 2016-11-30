@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class TrainingManager : MonoBehaviour 
 {
+	public WhichMode whichMode;
+
 	public List<GameObject> playersList = new List<GameObject>();
 
 	public float timeBeforeEndGame = 2;
@@ -63,6 +65,7 @@ public class TrainingManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}	
 }

@@ -55,8 +55,6 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void Awake ()
 	{
-		OnControllerChange += UpdateGlobalVariables;
-		OnControllerChange += UpdatePlayersControllers;
 		OnControllerChange += GlobalVariables.Instance.SetPlayerMouseCursor;
 	}
 
@@ -68,17 +66,10 @@ public class ControllerChangeManager1 : MonoBehaviour
 		imagesAlignedPos [3] = logoRect [3].anchoredPosition.x;
 		imagesAlignedPos [4] = logoRect [4].anchoredPosition.x;
 
-		ReInput.ControllerConnectedEvent += GetPlayers;
+		ReInput.ControllerPreDisconnectEvent += (ControllerStatusChangedEventArgs arg) => UpdateAllSettings ();
+		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs arg) => UpdateAllSettings ();
 
-		ReInput.ControllerPreDisconnectEvent += UpdateGlobalVariables;
-		ReInput.ControllerPreDisconnectEvent += UpdatePlayersControllers;
-
-
-		SetupSlidersPosition ();
-
-		GetPlayers ();
-
-		GamepadDisplay ();
+		UpdateAllSettings ();
 	}
 
 	void OnEnable ()
@@ -89,90 +80,39 @@ public class ControllerChangeManager1 : MonoBehaviour
 		{
 			GamepadsManager.Instance.FindGamepadsPluggedAtStart ();
 
-			SetupSlidersPosition ();
-
-			GetPlayers ();
-
-			GamepadDisplay ();
-
-			UpdateGlobalVariables ();
-
-			UpdatePlayersControllers ();
+			UpdateAllSettings ();
 		}
 	}
 
+	void UpdateAllSettings ()
+	{
+		SetSlidersPosition ();
+
+		GetPlayers ();
+
+		GamepadDisplay ();
+
+		UpdateGlobalVariables ();
+
+		UpdatePlayersControllers ();
+
+		CheckCanPlay ();
+	}
+
+	void UpdateControllerChange ()
+	{
+		UpdateGlobalVariables ();
+		UpdatePlayersControllers ();
+		CheckCanPlay ();
+	}
 		
+	#region Update
 	void Update ()
 	{
 		if(getInput)
 			GetInput ();
 
 		DisplayConnectGamepadsText ();
-
-		CheckCanPlay ();
-	}
-
-	void CheckCanPlay ()
-	{
-		if(CorrectPlayerChoice () && playButton.GetComponent<Button>().interactable == false)
-		{
-			playButton.GetComponent<Button> ().interactable = true;
-			playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonYPos.y), MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);
-		}
-
-		else if(!CorrectPlayerChoice () && playButton.GetComponent<Button>().interactable == true)
-		{
-			playButton.GetComponent<Button> ().interactable = false;
-			playButton.DOAnchorPos (new Vector2(playButton.anchoredPosition.x, playButtonYPos.x), MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);
-		}
-	}
-
-	bool CorrectPlayerChoice ()
-	{
-		int player1Choice = 0;
-		int player2Choice = 0;
-		int player3Choice = 0;
-		int player4Choice = 0;
-
-		for(int i = 0; i < imagesNumber.Length; i++)
-		{
-			switch(imagesNumber[i])
-			{
-			case 1:
-				player1Choice++;
-				break;
-			case 2:
-				player2Choice++;
-				break;
-			case 3:
-				player3Choice++;
-				break;
-			case 4:
-				player4Choice++;
-				break;
-			}
-		}
-
-		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1)
-			return false;
-
-		else if (GlobalVariables.Instance.NumberOfPlayers < 2)
-			return false;
-
-		else
-			return true;
-	}
-
-	void DisplayConnectGamepadsText ()
-	{
-		for(int i = 0; i < gamepadsConnectText.Length; i++)
-		{
-			if(sliderRect[i+1].GetComponent<Button>().interactable == true && gamepadsConnectText [i].activeSelf == true)
-				gamepadsConnectText [i].SetActive (false);
-
-			if(sliderRect[i+1].GetComponent<Button>().interactable == false && gamepadsConnectText [i].activeSelf == false)
-				gamepadsConnectText [i].SetActive (true);
-		}
 	}
 
 	void GetInput ()
@@ -231,8 +171,75 @@ public class ControllerChangeManager1 : MonoBehaviour
 			GoOnTheRight (4);
 		}
 	}
-		
-	public void SetupSlidersPosition ()
+
+	void DisplayConnectGamepadsText ()
+	{
+		for(int i = 0; i < gamepadsConnectText.Length; i++)
+		{
+			if(sliderRect[i+1].GetComponent<Button>().interactable == true && gamepadsConnectText [i].activeSelf == true)
+				gamepadsConnectText [i].SetActive (false);
+
+			if(sliderRect[i+1].GetComponent<Button>().interactable == false && gamepadsConnectText [i].activeSelf == false)
+				gamepadsConnectText [i].SetActive (true);
+		}
+	}
+	#endregion
+
+	#region Correct Players Selection
+	void CheckCanPlay ()
+	{
+		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y && !DOTween.IsTweening ("PlayButton"))
+		{
+			playButton.GetComponent<Button> ().interactable = true;
+			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton");
+		}
+
+		else if(!CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.x && !DOTween.IsTweening ("PlayButton"))
+		{
+			playButton.GetComponent<Button> ().interactable = false;
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);
+		}
+	}
+
+	bool CorrectPlayerChoice ()
+	{
+		int player1Choice = 0;
+		int player2Choice = 0;
+		int player3Choice = 0;
+		int player4Choice = 0;
+
+		for(int i = 0; i < imagesNumber.Length; i++)
+		{
+			switch(imagesNumber[i])
+			{
+			case 1:
+				player1Choice++;
+				break;
+			case 2:
+				player2Choice++;
+				break;
+			case 3:
+				player3Choice++;
+				break;
+			case 4:
+				player4Choice++;
+				break;
+			}
+		}
+
+		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1)
+			return false;
+
+		else if (GlobalVariables.Instance.NumberOfPlayers < 2)
+			return false;
+
+		else
+			return true;
+	}
+	#endregion
+
+	#region Update All Settings
+	public void SetSlidersPosition ()
 	{
 		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
 			if(GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
@@ -241,35 +248,7 @@ public class ControllerChangeManager1 : MonoBehaviour
 				imagesNumber [GlobalVariables.Instance.PlayersControllerNumber[i]] = i + 1;
 			}
 	}
-
-	void GetPlayers (ControllerStatusChangedEventArgs arg)
-	{
-		mouseKeyboard = ReInput.players.GetPlayer (0);
-		gamepad1 = ReInput.players.GetPlayer (1);
-		gamepad2 = ReInput.players.GetPlayer (2);
-		gamepad3 = ReInput.players.GetPlayer (3);
-		gamepad4 = ReInput.players.GetPlayer (4);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			switch(GamepadsManager.Instance.gamepadsList[i].GamepadId)
-			{
-			case 1:
-				gamepad1.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-				break;
-			case 2:
-				gamepad2.controllers.AddController (GamepadsManager.Instance.gamepadsList [i].GamepadController, true);
-				break;
-			case 3:
-				gamepad3.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-				break;
-			case 4:
-				gamepad4.controllers.AddController (GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-				break;
-			}
-		}
-	}
-
+		
 	void GetPlayers ()
 	{
 		mouseKeyboard = ReInput.players.GetPlayer (0);
@@ -322,11 +301,13 @@ public class ControllerChangeManager1 : MonoBehaviour
 		EraseControllerNumbers (3);
 		EraseControllerNumbers (4);
 
+		//Set Controller Number
 		for(int i = 0; i < imagesNumber.Length; i++)
 			if(imagesNumber [i] > 0)
 				GlobalVariables.Instance.PlayersControllerNumber [imagesNumber [i] - 1] = i;
 
 
+		//Allow to play Alone and choose any character
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
 		{
 			if(GlobalVariables.Instance.PlayersControllerNumber[0] == 0)
@@ -336,51 +317,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 				GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
 		}
 
-		GlobalVariables.Instance.NumberOfPlayers = 0;
-		GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
-
-		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
-			if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
-				GlobalVariables.Instance.NumberOfPlayers++;
-
 		GlobalVariables.Instance.ListPlayers ();
 	}
 
-	public void UpdateGlobalVariables (ControllerStatusChangedEventArgs arg)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			EraseControllerNumbers (0);
-			EraseControllerNumbers (1);
-			EraseControllerNumbers (2);
-			EraseControllerNumbers (3);
-			EraseControllerNumbers (4);
-
-			for(int i = 0; i < imagesNumber.Length; i++)
-				if(imagesNumber [i] > 0)
-					GlobalVariables.Instance.PlayersControllerNumber [imagesNumber [i] - 1] = i;
-
-
-			if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
-			{
-				if(GlobalVariables.Instance.PlayersControllerNumber[0] == 0)
-					GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
-
-				else
-					GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
-			}
-
-			GlobalVariables.Instance.NumberOfPlayers = 0;
-			GlobalVariables.Instance.NumberOfDisabledPlayers = 0;
-
-			for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
-				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
-					GlobalVariables.Instance.NumberOfPlayers++;
-
-			GlobalVariables.Instance.ListPlayers ();
-		}
-	}
-		
 	void EraseControllerNumbers (int whichController)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
@@ -406,25 +345,9 @@ public class ControllerChangeManager1 : MonoBehaviour
 			}
 		}
 	}
+	#endregion
 
-	public void UpdatePlayersControllers (ControllerStatusChangedEventArgs arg)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++)
-			{
-				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
-					GlobalVariables.Instance.Players[i].SetActive (true);
-
-				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().GetControllerNumber ();
-
-				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().Controller ();
-			}
-		}
-	}
-
-
-
+	#region Sliders Movements
 	public void GoOnTheRight (int controllerNumber)
 	{
 		StartCoroutine (GapBetweenInputs (controllerNumber));
@@ -456,6 +379,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 		if (OnControllerChange != null)
 			OnControllerChange ();
+
+		UpdateControllerChange ();
 	}
 
 	public void GoOnTheLeft (int controllerNumber)
@@ -490,6 +415,8 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 		if (OnControllerChange != null)
 			OnControllerChange ();
+
+		UpdateControllerChange ();
 	}
 
 	IEnumerator GapBetweenInputs (int controllerNumber)
@@ -528,84 +455,5 @@ public class ControllerChangeManager1 : MonoBehaviour
 	{
 		getInput = false;
 	}
-
-
-
-	public void GamepadConnectedDisplay (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			Debug.Log ("Which : " + whichGamepad.ToString ());
-
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].GetComponent<Button> ().interactable = true;
-				break;
-			case 2:
-				sliderRect [2].GetComponent<Button> ().interactable = true;
-				break;
-			case 3:
-				sliderRect [3].GetComponent<Button> ().interactable = true;
-				break;
-			case 4:
-				sliderRect [4].GetComponent<Button> ().interactable = true;
-				break;
-			}
-		}
-	}
-
-	public void GamepadDisconnectedDisplay (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			Debug.Log ("Which : " + whichGamepad.ToString ());
-
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].GetComponent<Button> ().interactable = false;
-				break;
-			case 2:
-				sliderRect [2].GetComponent<Button> ().interactable = false;
-				break;
-			case 3:
-				sliderRect [3].GetComponent<Button> ().interactable = false;
-				break;
-			case 4:
-				sliderRect [4].GetComponent<Button> ().interactable = false;
-				break;
-			}
-		}
-	}
-
-	public void ResetGamepadOnDisconnect (int whichGamepad)
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
-		{
-			switch (whichGamepad)
-			{
-			case 1:
-				sliderRect [1].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [1] = 0;
-				EraseControllerNumbers (1);
-				break;
-			case 2:
-				sliderRect [2].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [2] = 0;
-				EraseControllerNumbers (2);
-				break;
-			case 3:
-				sliderRect [3].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [3] = 0;
-				EraseControllerNumbers (3);
-				break;
-			case 4:
-				sliderRect [4].DOLocalMoveX (imagesAlignedPos [0], durationImageMovement);
-				imagesNumber [4] = 0;
-				EraseControllerNumbers (4);
-				break;
-			}			
-		}
-	}
+	#endregion
 }

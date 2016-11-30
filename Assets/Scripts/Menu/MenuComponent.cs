@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+public enum MenuComponentType {ContentMenu, ButtonsListMenu, MainMenu, EndModeMenu};
+
 public class MenuComponent : MonoBehaviour 
 {
 	public MenuComponentType menuComponentType;
@@ -25,11 +27,12 @@ public class MenuComponent : MonoBehaviour
 	[Header ("Content")]
 	public RectTransform content = null;
 
-	[Header ("Selectable")]
 	public GameObject selectable;
 
-	[Header ("Secondary Content")]
 	public List<SecondaryContent> secondaryContentList;
+
+	[Header ("End Mode Content List")]
+	public RectTransform[] endModeContentList = new RectTransform[0];
 
 	void Awake ()
 	{
@@ -205,6 +208,12 @@ public class MenuComponent : MonoBehaviour
 			MenuManager.Instance.HideUnderButtons (underButtonsList, aboveMenuScript, button, true, secondaryContentList);
 			break;
 		}
+	}
+
+	public void EndMode (WhichMode whichMode)
+	{
+		Debug.Log (whichMode);
+		MenuManager.Instance.ShowEndMode (endModeContentList [(int)whichMode], secondaryContentList, this);
 	}
 }
 

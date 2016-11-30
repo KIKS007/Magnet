@@ -5,8 +5,13 @@ using UnityEngine.UI;
 
 public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
+	[Header ("Start Mode")]
 	public bool startModeButton = false;
 	public string whichMode = "";
+
+	[Header ("End Mode")]
+	public bool endModeButton = false;
+	public int whichModeContent = 0;
 
 	[HideInInspector]
 	public int buttonIndex;

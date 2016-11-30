@@ -229,20 +229,14 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 			}
 		}
-
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
-				PauseGame ();
-		}
-
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
-			GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamepadDisconnetedResults ();
-	}
+		{
+			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+				MenuManager.Instance.PauseResumeGame ();
 
-	void PauseGame ()
-	{
-		GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ().GamePauseResumeVoid ();
+			if (GlobalVariables.Instance.GameState == GameStateEnum.Over && MenuManager.Instance.currentMenu.menuComponentType == MenuComponentType.EndModeMenu)
+				MenuManager.Instance.ReturnToMainMenu ();
+		}
 	}
 
 	void ResetUnpluggedArray ()

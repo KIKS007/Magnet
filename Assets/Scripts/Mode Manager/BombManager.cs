@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class BombManager : MonoBehaviour 
 {
+	public WhichMode whichMode;
+
 	[Header ("Bomb Settings")]
 	public GameObject[] playersList;
 	public GameObject bomb;
@@ -16,12 +18,13 @@ public class BombManager : MonoBehaviour
 	public float timeBeforeFirstSpawn = 1;
 	public float timeBetweenSpawn = 2;
 
-	[Header ("Timer")]
+	[Header ("Timer Sounds")]
 	[SoundGroupAttribute]
 	public string lastSecondsSound;
 	[SoundGroupAttribute]
 	public string cubeTrackingSound;
 
+	[Header ("Timer")]
 	public Text timerText;
 	public float timer;
 	public string timerClock;
@@ -216,6 +219,7 @@ public class BombManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 }

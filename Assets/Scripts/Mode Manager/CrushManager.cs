@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CrushManager : MonoBehaviour 
 {
+	public WhichMode whichMode;
+
 	public GameObject[] playersList;
 
 	public float timeBeforeEndGame = 2;
@@ -64,7 +66,8 @@ public class CrushManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 
 	IEnumerator GameEndDraw ()
@@ -78,7 +81,8 @@ public class CrushManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
+		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 	
 }
