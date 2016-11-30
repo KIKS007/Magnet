@@ -191,7 +191,7 @@ public class MenuComponent : MonoBehaviour
 			MenuManager.Instance.HideContent (content, aboveMenuScript, button, false, secondaryContentList);
 	}
 
-	public void Resume ()
+	public void HideMenu ()
 	{
 		switch (menuComponentType)
 		{

@@ -30,6 +30,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			menuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
 	}
 
+	//Game First Scene Loaded
 	IEnumerator FirstLoadedScene (string sceneToLoad)
 	{
 		for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -85,6 +86,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	}
 
+	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (string sceneToLoad)
 	{
 		float orginalPosition = mainCamera.transform.position.x;
