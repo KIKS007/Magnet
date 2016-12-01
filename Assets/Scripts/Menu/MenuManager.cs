@@ -851,6 +851,8 @@ public class MenuManager : Singleton <MenuManager>
 		for (int i = 0; i < content.transform.childCount; i++)
 			content.transform.GetChild (i).GetComponent<RectTransform> ().localScale = Vector3.zero;
 
+		playerScore [0].transform.parent.gameObject.SetActive (true);
+
 		for (int i = 0; i < playerScore.Length; i++)
 		{
 			Enable (playerScore[i]);
