@@ -173,17 +173,16 @@ public class StatsFeedback : MonoBehaviour
 		string color = "";
 		string secondText;
 
-
 		switch (whichStatType)
 		{
 		case WhichStatType.Player:
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			secondText = beforeNumberText + " " + color + "0" + "</color> " + afterNumberText;
 			textComponent.text = "Player 1";
 			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
 			break;
 		case WhichStatType.Most:
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			secondText = beforeNumberText + " " + color + "0" + "</color> " + afterNumberText;
 			textComponent.text = "Player 1";
 			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
@@ -192,15 +191,15 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.text = beforeNumberText + " " + "0" + " " + afterNumberText;
 			break;
 		case WhichStatType.Winner:
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
 		case WhichStatType.MostWins:
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = beforeNumberText + " " + color + "Player 1" + "</color> " + afterNumberText;
 			break;
 		case WhichStatType.WinsInARow:
-			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
+			color = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = "Player 1";
 			secondText = beforeNumberText + " " + color + "2" + "</color> " + afterNumberText;
 			textComponent.text = playerNameAtFirst ? color + textComponent.text + "</color> " + secondText : secondText + " " + color + textComponent.text + "</color> ";
@@ -210,10 +209,10 @@ public class StatsFeedback : MonoBehaviour
 			string color2 = "";
 			string color3 = "";
 			string color4 = "";
-			color1 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer1) + ">";
-			color2 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer2) + ">";
-			color3 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer3) + ">";
-			color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (GlobalVariables.Instance.cubeColorplayer4) + ">";
+			color1 = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			color2 = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			color3 = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
+			color4 = "<color=#" + ColorUtility.ToHtmlStringRGBA (Color.red) + ">";
 			textComponent.text = beforeNumberText + " " + color1 + "0" + "</color>, " + color2 + "0" + "</color>, " + color3 + "0" + "</color>, " + color4 + "0" + "</color>, " + afterNumberText;
 			break;
 		case WhichStatType.GameDuration:

@@ -38,6 +38,9 @@ public class MenuComponent : MonoBehaviour
 	{
 		if (menuComponentType == MenuComponentType.MainMenu)
 			MainMenuSetup ();
+
+		if (menuComponentType == MenuComponentType.EndModeMenu)
+			EnableSecondaryContentParent ();
 	}
 
 	public void MainMenuSetup ()
@@ -64,6 +67,8 @@ public class MenuComponent : MonoBehaviour
 		EnableUnderMenus ();
 
 		SetupButtonsNavigation ();
+
+		EnableSecondaryContentParent ();
 	}
 
 	public void OtherMenuSetup ()
@@ -109,12 +114,22 @@ public class MenuComponent : MonoBehaviour
 		HideAll ();
 
 		DisableAll ();
+
+		EnableSecondaryContentParent ();
 	}
 
 	void EnableUnderMenus ()
 	{
 		for (int i = 0; i < underMenuList.Count; i++)
 			underMenuList [i].gameObject.SetActive (true);
+	}
+
+	void EnableSecondaryContentParent ()
+	{
+		if(secondaryContentList.Count > 0)
+			for (int i = 0; i < secondaryContentList.Count; i++)
+				if(secondaryContentList [i].content.transform.parent != null)
+					secondaryContentList [i].content.transform.parent.gameObject.SetActive (true);
 	}
 
 	void HideAll ()
@@ -212,7 +227,6 @@ public class MenuComponent : MonoBehaviour
 
 	public void EndMode (WhichMode whichMode)
 	{
-		Debug.Log (whichMode);
 		MenuManager.Instance.ShowEndMode (endModeContentList [(int)whichMode], secondaryContentList, this);
 	}
 }
