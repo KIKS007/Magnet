@@ -229,6 +229,81 @@ public class MenuComponent : MonoBehaviour
 	{
 		MenuManager.Instance.ShowEndMode (endModeContentList [(int)whichMode], secondaryContentList, this);
 	}
+
+	#region Editor Methods
+	[ContextMenu ("Show Menu")]
+	public void SetInEditorMenuPosition ()
+	{
+		MenuManager.Instance.SetupButtonsPositions ();
+
+		underMenuList.Clear ();
+		underButtonsList.Clear ();
+
+		switch (menuComponentType)
+		{
+		case MenuComponentType.MainMenu:
+
+			for(int i = 0; i < transform.childCount; i++)
+				underMenuList.Add (transform.GetChild (i).GetComponent<RectTransform> ());
+
+			for (int i = 0; i < underMenuList.Count; i++)
+				underButtonsList.Add (underMenuList [i].transform.GetChild (0).GetComponent<RectTransform> ());
+
+
+			for (int i = 0; i < underButtonsList.Count; i++)
+				underButtonsList [i].anchoredPosition = new Vector2 (MenuManager.Instance.onScreenX, MenuManager.Instance.mainMenuButtonsYPositions [i]);
+			break;
+
+		case MenuComponentType.ButtonsListMenu:
+			button = transform.GetChild (0).GetComponent<RectTransform> ();
+			aboveMenuScript = transform.parent.GetComponent<MenuComponent> ();
+
+			for(int i = 1; i < transform.childCount; i++)
+				underMenuList.Add (transform.GetChild (i).GetComponent<RectTransform> ());
+
+			for (int i = 0; i < underMenuList.Count; i++)
+				underButtonsList.Add (underMenuList [i].transform.GetChild (0).GetComponent<RectTransform> ());
+
+			for (int i = 0; i < underButtonsList.Count; i++)
+				underButtonsList [i].anchoredPosition = new Vector2 (MenuManager.Instance.onScreenX, MenuManager.Instance.buttonsYPositions [i]);
+			break;
+
+		case MenuComponentType.ContentMenu:
+			button = transform.GetChild (0).GetComponent<RectTransform> ();
+			aboveMenuScript = transform.parent.GetComponent<MenuComponent> ();
+
+			content = transform.GetChild (1).GetComponent<RectTransform> ();
+
+			content.anchoredPosition = new Vector2 (MenuManager.Instance.onScreenX, 0);
+			break;
+		}
+			
+
+		for (int i = 0; i < secondaryContentList.Count; i++)
+			secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].onScreenPos;
+
+		inEditorHeaderButtons.Clear ();
+
+		SetInEditorHeaderButtons (this);
+
+		for (int i = 0; i < inEditorHeaderButtons.Count; i++)
+			inEditorHeaderButtons [i].anchoredPosition = new Vector2 (MenuManager.Instance.onScreenX, MenuManager.Instance.headerButtonsYPosition - MenuManager.Instance.gapBetweenButtons * i);
+
+		/*if(underMenuList.Count > 0)
+			for (int i = 0; i < underMenuList.Count; i++)
+				underMenuList [i].GetComponent<MenuComponent> ().SetInEditorMenuPosition ();*/
+	}
+
+	public List<RectTransform> inEditorHeaderButtons = new List<RectTransform> ();
+
+	void SetInEditorHeaderButtons (MenuComponent menu)
+	{
+		inEditorHeaderButtons.Insert (0, menu.button);
+
+		if (menu.aboveMenuScript && menu.aboveMenuScript.menuComponentType == MenuComponentType.ButtonsListMenu)
+			SetInEditorHeaderButtons (menu.aboveMenuScript);
+	}
+	#endregion
 }
 
 [Serializable]

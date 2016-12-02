@@ -188,13 +188,20 @@ public class ControllerChangeManager1 : MonoBehaviour
 	#region Correct Players Selection
 	void CheckCanPlay ()
 	{
-		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y && !DOTween.IsTweening ("PlayButton"))
+		StartCoroutine (WaitEndMenuAnimation ());
+	}
+
+	IEnumerator WaitEndMenuAnimation ()
+	{
+		yield return new WaitWhile (() => DOTween.IsTweening ("Menu"));
+
+		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y)
 		{
 			playButton.GetComponent<Button> ().interactable = true;
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton");
 		}
 
-		else if(!CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.x && !DOTween.IsTweening ("PlayButton"))
+		if(!CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.x)
 		{
 			playButton.GetComponent<Button> ().interactable = false;
 			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu);

@@ -24,10 +24,13 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	private bool pointerDown = false;
 
+	private Button buttonComponent;
+
 	void Awake	 ()
 	{
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		buttonRect = GetComponent<RectTransform> ();
+		buttonComponent = GetComponent<Button> ();
 		text = transform.GetChild (0).GetComponent<Text> ();
 
 		if (tag == "MainButton")
@@ -41,13 +44,13 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 			text.color = GlobalVariables.Instance.secondaryButtonIdleColorText;
 		}
 
-		if(buttonRect.GetComponent<Button>().interactable == false)
+		if(buttonComponent.interactable == false)
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 	}
 
 	void Update ()
 	{
-		if(buttonRect.GetComponent<Button>().interactable == true && !pointerDown)
+		if(buttonComponent.interactable == true && !pointerDown)
 		{
 			if(eventSys.currentSelectedGameObject == gameObject)
 				text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonHighlightedColorText;
@@ -56,10 +59,10 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 				text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 		}
 
-		if(buttonRect.GetComponent<Button>().interactable == false)
+		if(buttonComponent.interactable == false)
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 
-		if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one)
+		if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && buttonComponent.interactable == true)
 			buttonRect.DOScale(1, scaleOnDuration);
 	}
 
@@ -80,10 +83,12 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	}
 
+
+
 	//OnSelect Methods
 	public override void OnPointerClick( PointerEventData data )
 	{
-		if(buttonRect.GetComponent<Button>().interactable == true)
+		if(buttonComponent.interactable == true)
 		{
 			OnSelect ();
 
@@ -101,10 +106,13 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	public override void OnPointerEnter(PointerEventData data )
 	{
-		eventSys.SetSelectedGameObject (null);
-		eventSys.SetSelectedGameObject (gameObject);
-
-		selected = true;
+		if(buttonComponent.interactable == true)
+		{
+			eventSys.SetSelectedGameObject (null);
+			eventSys.SetSelectedGameObject (gameObject);
+			
+			selected = true;			
+		}
 
 		if(scaleChangement)
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration);
@@ -116,7 +124,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	{
 		pointerDown = false;
 
-		eventSys.SetSelectedGameObject (null);
+		//eventSys.SetSelectedGameObject (null);
 
 		OnDeselect ();
 	}
@@ -130,7 +138,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	public override void OnSubmit( BaseEventData data )
 	{
-		if(buttonRect.GetComponent<Button>().interactable == true)
+		if(buttonComponent.interactable == true)
 		{
 			OnDeselect ();
 
@@ -142,7 +150,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	public override void OnPointerDown (PointerEventData eventData)
 	{
-		if(buttonRect.GetComponent<Button>().interactable == true)
+		if(buttonComponent.interactable == true)
 		{
 			pointerDown = true;
 
@@ -153,7 +161,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	public override void OnPointerUp (PointerEventData eventData)
 	{
-		if(buttonRect.GetComponent<Button>().interactable == true)
-		pointerDown = false;
+		if(buttonComponent.interactable == true)
+			pointerDown = false;
 	}
 }

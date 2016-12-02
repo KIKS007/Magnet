@@ -72,7 +72,7 @@ public class MenuComponentEditor : Editor
 				EditorGUILayout.PropertyField (otherButtonsList, true);		
 			}
 			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsListMenu)
+			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsListMenu || menuComponentType.enumValueIndex == (int)MenuComponentType.MainMenu)
 			{
 				EditorGUILayout.PropertyField (underMenuList, true);
 				EditorGUILayout.PropertyField (underButtonsList, true);

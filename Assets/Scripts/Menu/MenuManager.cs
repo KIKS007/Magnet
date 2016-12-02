@@ -13,7 +13,6 @@ using System;
 public class MenuManager : Singleton <MenuManager> 
 {
 	#region Variables Declaration
-
 	[Header ("Infos")]
 	public bool tweening;
 
@@ -103,7 +102,7 @@ public class MenuManager : Singleton <MenuManager>
 		SetupButtonsPositions ();
 	}
 
-	void SetupButtonsPositions ()
+	public void SetupButtonsPositions ()
 	{
 		for (int i = 0; i < mainMenuButtonsYPositions.Length; i++)
 			mainMenuButtonsYPositions [i] = mainMenuFirstButtonY - (gapBetweenButtons * i);
@@ -652,7 +651,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	float GapAfterHeaderButton ()
 	{
-		return -gapBetweenButtons * headerButtonsList.Count;
+		return (-gapBetweenButtons * headerButtonsList.Count) + gapBetweenButtons;
 	}
 
 	void Enable (RectTransform target)
@@ -746,6 +745,19 @@ public class MenuManager : Singleton <MenuManager>
 	public void QuitGame ()
 	{
 		Application.Quit ();
+	}
+	#endregion
+
+	#region Editor Methods
+	[ContextMenu ("Setup Menus Positions")]
+	void SetInEditorMenuPosition ()
+	{
+		SetupButtonsPositions ();
+
+		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
+
+		mainMenuScript.SetInEditorMenuPosition ();
+		endModeMenu.SetInEditorMenuPosition ();
 	}
 	#endregion
 
