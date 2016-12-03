@@ -384,10 +384,11 @@ public class ControllerChangeManager1 : MonoBehaviour
 			break;
 		}
 
+		UpdateControllerChange ();
+
 		if (OnControllerChange != null)
 			OnControllerChange ();
 
-		UpdateControllerChange ();
 	}
 
 	public void GoOnTheLeft (int controllerNumber)
@@ -420,10 +421,11 @@ public class ControllerChangeManager1 : MonoBehaviour
 			break;
 		}
 
+		UpdateControllerChange ();
+
 		if (OnControllerChange != null)
 			OnControllerChange ();
 
-		UpdateControllerChange ();
 	}
 
 	IEnumerator GapBetweenInputs (int controllerNumber)

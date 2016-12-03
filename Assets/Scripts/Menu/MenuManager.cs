@@ -915,12 +915,15 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator HideEndMode (RectTransform content, List<SecondaryContent> secondaryContentList)
 	{
+		eventSyst.SetSelectedGameObject (null);
+		currentMenu = null;
+
 		for (int i = 0; i < content.transform.childCount; i++)
 			content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(0, durationToHide).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 
 		for (int i = 0; i < playerScore.Length; i++)
 		{
-			Disable (playerScore [i]);
+			Disable (playerScore [i], durationToShow);
 			playerScore[i].DOScale(0, durationToShow).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 		}
 
