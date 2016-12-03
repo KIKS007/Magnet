@@ -748,19 +748,6 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
-	#region Editor Methods
-	[ContextMenu ("Setup Menus Positions")]
-	void SetInEditorMenuPosition ()
-	{
-		SetupButtonsPositions ();
-
-		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
-
-		mainMenuScript.SetInEditorMenuPosition ();
-		endModeMenu.SetInEditorMenuPosition ();
-	}
-	#endregion
-
 	#region Play Resume
 	public void PauseResumeGame ()
 	{

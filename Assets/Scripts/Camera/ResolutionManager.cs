@@ -28,6 +28,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
     {
 		InitResolutions();
 
+		StartCoroutine (CheckFullScreenChange (Screen.fullScreen));
+
 		//Setup();
 
 		if(!PlayerPrefs.HasKey ("ScreenResIndex"))
@@ -59,22 +61,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
 		//printResolution ();
     }
-
-	void Update ()
-	{
-		if(Screen.fullScreen == true && PlayerPrefs.GetInt ("Fullscreen") == 0 && windowedToggle.isOn == true)
-		{
-			SetResolution (screenResIndex, true);
-			windowedToggle.isOn = false;
-		}
-
-		if(Screen.fullScreen == false && PlayerPrefs.GetInt ("Fullscreen") == 1 && windowedToggle.isOn == false)
-		{
-			SetResolution (screenResIndex, false);
-			windowedToggle.isOn = true;
-		}
-	}
-
+		
 	void InitResolutions()
 	{
 		float screenAspect = TargetAspectRatio;
@@ -255,13 +242,34 @@ public class ResolutionManager : Singleton<ResolutionManager>
     {
 		if(Screen.fullScreen)
 		{
-			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
+			Debug.Log ("Windowed");
 			PlayerPrefs.SetInt ("Fullscreen", 0);
+			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
 		}
 		else
 		{
-			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
+			Debug.Log ("Full");
 			PlayerPrefs.SetInt ("Fullscreen", 1);
+			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
 		}
     }
+
+	IEnumerator CheckFullScreenChange (bool fullscreen)
+	{
+		yield return new WaitUntil (()=> Screen.fullScreen != fullscreen);
+
+		if(Screen.fullScreen == true && PlayerPrefs.GetInt ("Fullscreen") == 0)
+		{
+			SetResolution (screenResIndex, true);
+			windowedToggle.isOn = false;
+		}
+
+		if(Screen.fullScreen == false && PlayerPrefs.GetInt ("Fullscreen") == 1)
+		{
+			SetResolution (screenResIndex, false);
+			windowedToggle.isOn = true;
+		}
+
+		StartCoroutine (CheckFullScreenChange (Screen.fullScreen));
+	}
 }
