@@ -20,6 +20,9 @@ public class LastManManager : MonoBehaviour
 	{
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 
+		if(allMovables.Length == 0)
+			allMovables = GameObject.FindGameObjectsWithTag ("Suggestible");
+
 		for (int i = 0; i < allMovables.Length; i++)
 			allMovables [i].SetActive (false);
 

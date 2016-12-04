@@ -42,22 +42,24 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && player != null)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && player != null && characterScript.holdState == HoldState.CanHold)
 		{
-			if(other.tag == "Movable" && characterScript.playerState != PlayerState.Holding && characterScript.playerState != PlayerState.Stunned && characterScript.playerState != PlayerState.Dead)
+			if(other.tag == "Movable" || other.tag == "Suggestible")
 			{
 				RaycastHit hit;
 
-				if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out hit, rayLength) && hit.collider.gameObject.tag == "Movable")
+				if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out hit, rayLength))
 				{
-					Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
+					if(hit.collider.gameObject.tag == "Movable" || hit.collider.gameObject.tag == "Suggestible")
+					{
+						Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
 
-					if (player.GetButton ("Attract") && !player.GetButton ("Repulse"))
-						Attract (other);
-					
-					if (player.GetButton ("Repulse") && !player.GetButton ("Attract"))
-						Repulse (other);
+						if (player.GetButton ("Attract") && !player.GetButton ("Repulse"))
+							Attract (other);
 
+						if (player.GetButton ("Repulse") && !player.GetButton ("Attract"))
+							Repulse (other);						
+					}
 				}
 			}
 		}

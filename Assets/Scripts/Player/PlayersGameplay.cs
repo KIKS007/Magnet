@@ -23,6 +23,8 @@ public enum DashState
 	Cooldown
 }
 
+public enum HoldState {CanHold, Holding, CannotHold};
+
 public enum PlayerName
 {
 	Player1,
@@ -40,6 +42,7 @@ public class PlayersGameplay : MonoBehaviour
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;
+	public HoldState holdState = HoldState.CanHold;
 
     [Header("Controller Number")]
     public int controllerNumber = -1;
@@ -156,6 +159,7 @@ public class PlayersGameplay : MonoBehaviour
 
         playerState = PlayerState.None;
         dashState = DashState.CanDash;
+		holdState = HoldState.CanHold;
     }
 
 	protected IEnumerator WaitTillPlayerEnabled()
@@ -206,12 +210,7 @@ public class PlayersGameplay : MonoBehaviour
 
 
         if (playerState == PlayerState.Holding && player.GetButtonUp("Attract"))
-        {
             Shoot();
-
-            playerState = PlayerState.None;
-        }
-
 
         if (playerState == PlayerState.None)
         {
@@ -223,9 +222,8 @@ public class PlayersGameplay : MonoBehaviour
         }
 
         if (player.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
-        {
             StartCoroutine(Dash());
-        }
+        
     }
 
     protected virtual void FixedUpdate()
@@ -299,6 +297,9 @@ public class PlayersGameplay : MonoBehaviour
 	#region Cubes Methods
     public virtual void Shoot()
     {
+		holdState = HoldState.CanHold;
+		playerState = PlayerState.None;
+
         holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
 
         holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
@@ -350,6 +351,7 @@ public class PlayersGameplay : MonoBehaviour
     {
 		gettingMovable = true;
         
+		holdState = HoldState.Holding;
 		playerState = PlayerState.Holding;
 
 		SetMagnetPointPosition (movable);
@@ -491,12 +493,13 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 			
-			playerState = PlayerState.Stunned;
-
 			Shoot();
 		}
 
-        if (OnStun != null)
+		playerState = PlayerState.Stunned;
+		holdState = HoldState.CannotHold;
+
+		if (OnStun != null)
             OnStun();
 
         if (cubeHit && OnCubeHit != null)
@@ -505,12 +508,13 @@ public class PlayersGameplay : MonoBehaviour
         if (!cubeHit && OnDashHit != null)
             OnDashHit();
 
-        playerState = PlayerState.Stunned;
 
         yield return new WaitForSeconds(stunnedDuration);
 
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
+
+		holdState = HoldState.CanHold;
     }
 	#endregion
 
@@ -570,8 +574,6 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 
-			playerState = PlayerState.Stunned;
-
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
 			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
@@ -579,6 +581,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		playerState = PlayerState.Dead;
+		holdState = HoldState.CannotHold;
 
 		for (int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
 		{

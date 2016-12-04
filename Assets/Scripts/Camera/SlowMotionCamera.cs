@@ -268,7 +268,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StartEndGameSlowMotion ()
 	{
-		StopCoroutine (SlowMotionDuration (slowMoNumber));
+		StopAllCoroutines ();
 		DOTween.Kill ("StopSlowMotion");
 
 		slowMoNumber++;

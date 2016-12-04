@@ -32,7 +32,7 @@ public class MagnetTriggerScript : MonoBehaviour
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && player != null && other.tag == "Movable")
 		{
-			if(characterScript.playerState != PlayerState.Holding && characterScript.playerState != PlayerState.Stunned	&& characterScript.playerState != PlayerState.Dead)
+			if(characterScript.holdState == HoldState.CanHold)
 			{
 				if (player.GetButton ("Attract") && !player.GetButton ("Repulse"))
 					GetMovable (other);

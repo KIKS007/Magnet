@@ -4,11 +4,11 @@ using DG.Tweening;
 using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 
+public enum CubeColor {Neutral, Blue, Pink, Green, Yellow};
+
 public class MovableScript : MonoBehaviour 
 {
 	#region Variables
-	public enum CubeColor {Neutral, Blue, Pink, Green, Yellow} ;
-
 	[Header ("Informations")]
 	public CubeColor cubeColor;
 	public float higherVelocity;
@@ -45,6 +45,8 @@ public class MovableScript : MonoBehaviour
 
 	protected Renderer movableRenderer;
 
+	protected SlowMotionTriggerScript slowMoTrigger;
+
 	[HideInInspector]
 	public Transform player;
 	[HideInInspector]
@@ -78,7 +80,8 @@ public class MovableScript : MonoBehaviour
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+			
 		cubeMaterial.SetFloat ("_Lerp", 0);
 		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
 
@@ -105,6 +108,7 @@ public class MovableScript : MonoBehaviour
 			
 			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
+				slowMoTrigger.triggerEnabled = false;
 				gameObject.tag = "Movable";
 				playerThatThrew = null;
 			}
@@ -130,9 +134,15 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Color
-	void ToColor ()
+	protected virtual void ToColor (GameObject otherPlayer = null)
 	{
-		int whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+		int whichPlayer = 0;
+
+		if(otherPlayer != null)
+			whichPlayer = (int)otherPlayer.GetComponent<PlayersGameplay> ().playerName;
+		else
+			whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+		
 		CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
 		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
 
@@ -185,51 +195,31 @@ public class MovableScript : MonoBehaviour
 	protected virtual void OnCollisionEnter (Collision other)
 	{
 		if(other.collider.tag != "HoldMovable")
-		{
-			HitPlayer (other);	
-		}			
-		
+			HitPlayer (other);			
 		
 		if(other.gameObject.tag == "Movable")
-		{
-			HitOtherMovable (other);
-		}
+			HitOtherMovable (other);	
 		
-		//Touched Wall
 		if(other.gameObject.layer == 16)
-		{
 			HitWall (other);
-		}			
 	}
 
 	protected virtual void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
-			&& gameObject.tag == "ThrownMovable" 
-			&& playerThatThrew == null)
+		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && gameObject.tag == "ThrownMovable")
 		{
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
+			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
+			{
+				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
+				
+				playerHit = other.gameObject;
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+				
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
-			playerHit = other.gameObject;
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
-
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-		}
-
-		else if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
-			&& gameObject.tag == "ThrownMovable" 
-			&& other.gameObject.name != playerThatThrew.name)
-		{
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
-
-			playerHit = other.gameObject;
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
-
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-
-			StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+				if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
+					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+			}
 		}
 	}
 
