@@ -87,7 +87,7 @@ public class MenuManager : Singleton <MenuManager>
 		DOTween.defaultTimeScaleIndependent = true;
 
 		OnMenuChange += BackButtons;
-		GlobalVariables.Instance.OnGameOver += ResetGamepadsDisconnected;
+		GlobalVariables.Instance.OnMenu += ResetGamepadsDisconnected;
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
@@ -229,7 +229,7 @@ public class MenuManager : Singleton <MenuManager>
 		if (disconnectedGamepads [0].parent.gameObject.activeSelf == false)
 			disconnectedGamepads [0].parent.gameObject.SetActive (true);
 
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Over)
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
 		{
 			for(int i = 0; i < 4; i++)
 			{
@@ -820,14 +820,16 @@ public class MenuManager : Singleton <MenuManager>
 	#region EndMode
 	public void ShowEndMode (RectTransform content, List<SecondaryContent> secondaryContentList, MenuComponent whichMenu)
 	{
-		StartCoroutine (ShowEndModeCoroutine (content, secondaryContentList, whichMenu));
+		Debug.Log (GlobalVariables.Instance.GameState);
+		endModecontent = content;
+		endModesecondaryContentList = secondaryContentList;
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			StartCoroutine (ShowEndModeCoroutine (content, secondaryContentList, whichMenu));
 	}
 
 	IEnumerator ShowEndModeCoroutine (RectTransform content, List<SecondaryContent> secondaryContentList, MenuComponent whichMenu)
 	{
-		endModecontent = content;
-		endModesecondaryContentList = secondaryContentList;
-
 		cameraMovement.EndModePosition ();
 
 		yield return new WaitForSecondsRealtime (cameraMovement.cameraMovementDuration);
@@ -896,6 +898,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		loadModeScript.ReloadSceneVoid ();
 
+		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 		MainMenu ();
 	}
 
@@ -921,8 +924,9 @@ public class MenuManager : Singleton <MenuManager>
 		eventSyst.SetSelectedGameObject (null);
 		currentMenu = null;
 
-		for (int i = 0; i < content.transform.childCount; i++)
-			content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(0, durationToHide).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
+		if(content != null)
+			for (int i = 0; i < content.transform.childCount; i++)
+				content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(0, durationToHide).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 		
 
 		for (int i = 0; i < playerScore.Length; i++)
@@ -948,7 +952,8 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		Disable (content);
+		if(content != null)
+			Disable (content);
 	}
 	#endregion
 
@@ -957,9 +962,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator OnMenuChangeEvent (MenuComponent whichMenu)
 	{
-		if(whichMenu && whichMenu.menuComponentType == MenuComponentType.MainMenu)
-			GlobalVariables.Instance.OnMainMenuVoid ();
-		
 		yield return new WaitUntil (() => currentMenu != whichMenu);
 
 		if (OnMenuChange != null)

@@ -74,9 +74,9 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
 
-		GlobalVariables.Instance.OnModeStarted += SetGamePlaylist;
-		GlobalVariables.Instance.OnMainMenu += SetMenuPlaylist;
-		GlobalVariables.Instance.OnGameOver += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
+		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
+		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
+		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();

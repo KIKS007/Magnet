@@ -76,7 +76,7 @@ public class ControllerChangeManager : MonoBehaviour
 	{
 		getInput = true;
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu)
 		{
 			GamepadsManager.Instance.FindGamepadsPluggedAtStart ();
 
@@ -86,7 +86,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 	void UpdateAllSettings ()
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true)
 		{
 			SetSlidersPosition ();
 			
@@ -332,7 +332,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 	void EraseControllerNumbers (int whichController)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu)
 		{
 			for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
 				if (GlobalVariables.Instance.PlayersControllerNumber[i] == whichController)
@@ -342,7 +342,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 	public void UpdatePlayersControllers ()
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Over && GlobalVariables.Instance.Players[0] != null)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && GlobalVariables.Instance.Players[0] != null)
 		{
 			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++)
 			{

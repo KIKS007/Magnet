@@ -35,8 +35,10 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetUnpluggedArray;
 
-		GlobalVariables.Instance.OnModeStarted += ResetUnpluggedArray;
-		GlobalVariables.Instance.OnModeStarted += FindGamepadsPluggedAtStart;
+		GlobalVariables.Instance.OnStartMode += ResetUnpluggedArray;
+		GlobalVariables.Instance.OnRestartMode += ResetUnpluggedArray;
+		GlobalVariables.Instance.OnStartMode += FindGamepadsPluggedAtStart;
+		GlobalVariables.Instance.OnRestartMode += FindGamepadsPluggedAtStart;
 
 		controllerChangeManager = GlobalVariables.Instance.controllerManager;
 
@@ -234,8 +236,11 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				MenuManager.Instance.PauseResumeGame ();
 
-			if (GlobalVariables.Instance.GameState == GameStateEnum.Over && MenuManager.Instance.currentMenu && MenuManager.Instance.currentMenu.menuComponentType == MenuComponentType.EndModeMenu)
+			if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			{
+				GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 				MenuManager.Instance.ReturnToMainMenu ();
+			}
 		}
 	}
 

@@ -40,7 +40,8 @@ public class VibrationManager : Singleton<VibrationManager>
 		gamepad3 = ReInput.players.GetPlayer (3);
 		gamepad4 = ReInput.players.GetPlayer (4);
 
-		GlobalVariables.Instance.OnGameOver += SlowlyStopVibration;
+		GlobalVariables.Instance.OnEndMode += SlowlyStopVibration;
+		GlobalVariables.Instance.OnMenu += SlowlyStopVibration;
 		GlobalVariables.Instance.OnPause += SlowlyStopVibration;
 	}
 	

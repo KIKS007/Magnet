@@ -75,7 +75,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		{
 			StatsManager.Instance.ResetStats (true);
 
-			GlobalVariables.Instance.GameState = GameStateEnum.Over;
+			GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 
@@ -105,7 +105,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();

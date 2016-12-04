@@ -58,7 +58,7 @@ public class TrainingManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);

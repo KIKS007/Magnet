@@ -59,7 +59,7 @@ public class CrushManager : MonoBehaviour
 	{
 		StatsManager.Instance.Winner(playersList [0].GetComponent<PlayersGameplay> ().playerName);
 
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
@@ -73,7 +73,7 @@ public class CrushManager : MonoBehaviour
 	{
 		StatsManager.Instance.Winner(WhichPlayer.Draw);
 
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);

@@ -114,7 +114,8 @@ public class PlayersGameplay : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
-        GlobalVariables.Instance.OnModeStarted += StartModeTime;
+		GlobalVariables.Instance.OnStartMode += StartModeTime;
+		GlobalVariables.Instance.OnRestartMode += StartModeTime;
 
         GetControllerNumber();
 

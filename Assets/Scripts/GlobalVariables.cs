@@ -5,22 +5,14 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
 
-public enum GameStateEnum {Playing, Paused, Over};
+public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
 public enum WhichMode {Bomb, Crush, Training, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
-	public event EventHandler OnGameOver;
-	public event EventHandler OnModeStarted;
-	public event EventHandler OnModeEnded;
-	public event EventHandler OnPlaying;
-	public event EventHandler OnPause;
-	public event EventHandler OnResume;
-	public event EventHandler OnMainMenu;
-
 	[Header ("Game State")]
-	public GameStateEnum GameState = GameStateEnum.Over;
+	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
 
 	[Header ("Scenes")]
@@ -80,12 +72,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 
-		StartCoroutine (OnGameOverEvent ());
+		StartCoroutine (OnEndModeEvent ());
+		StartCoroutine (OnStartModeEvent ());
+		StartCoroutine (OnRestartModeEvent ());
 		StartCoroutine (OnPlayingEvent ());
-		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnPauseEvent ());
-		StartCoroutine (OnModeStartedEvent ());
-		StartCoroutine (OnModeEndedEvent ());
+		StartCoroutine (OnResumeEvent ());
+		StartCoroutine (OnMenuEvent ());
 
 		OnPlaying += HideMouseCursor;
 	}
@@ -171,32 +164,54 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 
-	IEnumerator OnGameOverEvent ()
-	{
-		yield return new WaitUntil (() => GameState != GameStateEnum.Over);
+	public event EventHandler OnEndMode;
+	public event EventHandler OnStartMode;
+	public event EventHandler OnRestartMode;
+	public event EventHandler OnPlaying;
+	public event EventHandler OnPause;
+	public event EventHandler OnResume;
+	public event EventHandler OnMenu;
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
-
-		if (OnGameOver != null)
-			OnGameOver ();
-
-		yield return null;
-
-		StartCoroutine (OnGameOverEvent ());
-	}
-
-	IEnumerator OnModeEndedEvent ()
+	IEnumerator OnEndModeEvent ()
 	{
 		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
 
-		if (OnModeEnded != null)
-			OnModeEnded ();
+		if (OnEndMode != null)
+			OnEndMode ();
 
 		yield return null;
 
-		StartCoroutine (OnModeEndedEvent ());
+		StartCoroutine (OnEndModeEvent ());
+	}
+
+	IEnumerator OnStartModeEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnStartMode != null)
+			OnStartMode ();
+
+		yield return null;
+
+		StartCoroutine (OnStartModeEvent ());
+	}
+
+	IEnumerator OnRestartModeEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnRestartMode != null)
+			OnRestartMode ();
+
+		yield return null;
+
+		StartCoroutine (OnRestartModeEvent ());
 	}
 
 	IEnumerator OnPlayingEvent ()
@@ -241,23 +256,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnResumeEvent ());
 	}
 
-	IEnumerator OnModeStartedEvent ()
+	IEnumerator OnMenuEvent ()
 	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+		yield return new WaitUntil (() => GameState != GameStateEnum.Menu);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
 
-		if (OnModeStarted != null)
-			OnModeStarted ();
+		if (OnMenu != null)
+			OnMenu ();
 
 		yield return null;
 
-		StartCoroutine (OnModeStartedEvent ());
-	}
-
-	public void OnMainMenuVoid ()
-	{
-		if (OnMainMenu != null)
-			OnMainMenu ();
+		StartCoroutine (OnMenuEvent ());
 	}
 }

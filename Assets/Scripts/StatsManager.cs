@@ -36,7 +36,7 @@ public class StatsManager : Singleton<StatsManager>
 
 	void Awake ()
 	{
-		GlobalVariables.Instance.OnModeEnded += UpdateTotalStats;
+		GlobalVariables.Instance.OnEndMode += UpdateTotalStats;
 
 		SetupLists ();
 

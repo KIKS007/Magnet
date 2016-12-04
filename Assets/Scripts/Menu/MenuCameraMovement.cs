@@ -37,7 +37,8 @@ public class MenuCameraMovement : MonoBehaviour
 		menuLogo.gameObject.SetActive (true);
 		startScreenText.gameObject.SetActive (true);
 
-		GlobalVariables.Instance.OnGameOver += () => positionOnPause = Vector3.zero;
+		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
+		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
 	}
 
 	public void StartScreen ()
