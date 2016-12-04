@@ -252,14 +252,25 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void SetupPlayersAndControllers ()
 	{
-		//Mouse on the left
-		//GlobalVariables.Instance.ControllerNumberPlayer1 = 0;
-
-		for(int i = 0; i < 4; i++)
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
 		{
-			if (gamepadsPluggedAtStart[i])
-				GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
-			
+			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
+
+			for(int i = 0; i < 3; i++)
+			{
+				if (gamepadsPluggedAtStart[i])
+					GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
+
+			}
+		}
+		else
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if (gamepadsPluggedAtStart[i])
+					GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
+				
+			}			
 		}
 
 		//Enable Possiblity to play alone with one gamepad

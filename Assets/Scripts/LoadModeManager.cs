@@ -20,9 +20,17 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	// Use this for initialization
 	void Awake () 
 	{
-		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
-
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
+
+		if (SceneManager.GetActiveScene ().name != "Scene Testing")
+			StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
+	}
+
+	void Start ()
+	{
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
+			FindGameObjects ();
+		
 	}
 
 	//Game First Scene Loaded
@@ -227,7 +235,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 				GlobalVariables.Instance.Players [3] = players [i];
 		}
 
-		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.Find("Environment").transform.GetComponentInChildren<MirrorReflection>();
+		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
 
 		UpdateGlobalVariables ();
 	}

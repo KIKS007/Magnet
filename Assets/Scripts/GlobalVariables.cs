@@ -68,7 +68,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	void Start ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
-			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
+		{
+			GameState = GameStateEnum.Playing;
+			CurrentModeLoaded = "Scene Testing";
+			SetWhichModeEnum ();
+		}
 		
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 
