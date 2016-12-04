@@ -25,7 +25,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void Update ()
 	{
-		player = character.GetComponent<PlayersGameplay> ().player;
+		player = characterScript.player;
 
 		if (player.GetButtonUp ("Attract"))
 			characterScript.cubesAttracted.Clear();

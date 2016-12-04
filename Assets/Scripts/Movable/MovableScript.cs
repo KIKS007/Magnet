@@ -6,6 +6,7 @@ using DarkTonic.MasterAudio;
 
 public class MovableScript : MonoBehaviour 
 {
+	#region Variables
 	public enum CubeColor {Neutral, Blue, Pink, Green, Yellow} ;
 
 	[Header ("Informations")]
@@ -56,30 +57,17 @@ public class MovableScript : MonoBehaviour
 	public Material cubeMaterial;
 	[HideInInspector]
 	public Vector3 initialScale;
+	#endregion
 
+	#region Setup
 	protected virtual void Awake () 
 	{
 		initialScale = transform.localScale;
 	}
 
-	// Use this for initialization
 	protected virtual void Start () 
 	{
-		hold = false;
-
-		rigidbodyMovable = GetComponent<Rigidbody>();
-		movableRenderer = GetComponent<Renderer> ();
-		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
-		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-
-		GetRigidbodySettings ();
-
-		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-
-		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
-		attracedBy.Clear ();
-		repulsedBy.Clear ();
+		
 	}
 
 	protected virtual void OnEnable ()
@@ -91,17 +79,16 @@ public class MovableScript : MonoBehaviour
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 
-		GetRigidbodySettings ();
-
 		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
-	
-	// Update is called once per frame
+	#endregion
+
+	#region Update / FixedUpdate
 	protected virtual void Update () 
 	{
 		if(hold == false && rigidbodyMovable != null)
@@ -111,121 +98,48 @@ public class MovableScript : MonoBehaviour
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
-			{
 				higherVelocity = currentVelocity;
-			}
 
 			if(currentVelocity >= limitVelocity)
-			{
 				gameObject.tag = "ThrownMovable";
-			}
+			
 			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
 				gameObject.tag = "Movable";
 				playerThatThrew = null;
 			}
 		}
-
 	}
 
-	protected virtual void SetCubeColor ()
+	protected virtual void FixedUpdate () 
 	{
-		if(hold && !DOTween.IsTweening ("CubeColorTween"))
+		if(rigidbodyMovable != null)
 		{
-			Color cubeCorrectColor = new Color ();
-			CubeColor cubeColorTest = CubeColor.Neutral;
-
-			switch(player.GetComponent <PlayersGameplay>().playerName)
-			{
-			case PlayerName.Player1:
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
-				cubeColorTest = CubeColor.Blue;
-				break;
-			case PlayerName.Player2:
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
-				cubeColorTest = CubeColor.Pink;
-				break;
-			case PlayerName.Player3:
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
-				cubeColorTest = CubeColor.Green;
-				break;
-			case PlayerName.Player4:
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
-				cubeColorTest = CubeColor.Yellow;
-				break;
-			}
-
-			if(cubeMaterial.GetColor("_Color") != cubeCorrectColor && !DOTween.IsTweening ("CubeColorTween"))
-			{
-				if (DOTween.IsTweening ("CubeNeutralTween"))
-				{
-					Debug.Log ("CubeNeutralTween is Playing");
-					DOTween.Kill ("CubeNeutralTween");
-				}
-
-				Debug.Log ("New Color : " + cubeCorrectColor);
-
-				Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-				float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-				
-				DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween");
-				DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween");
-				
-				StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
-			}
+			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
 		}
 
-		if(!hold && tag != "ThrownMovable" && !DOTween.IsTweening ("CubeNeutralTween") && cubeMaterial.GetColor("_Color") != GlobalVariables.Instance.cubeNeutralColor)
+		if(rigidbodyMovable != null && currentVelocity > 5)
 		{
-			if (DOTween.IsTweening ("CubeColorTween"))
-			{
-				Debug.Log ("CubeColorTween is Playing");
-				DOTween.Kill ("CubeColorTween");
-			}
+			if(!decelerationShotOnly)
+				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
 
-			Debug.Log ("Neutral Color");
-
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween");
-
-			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, toNeutralDuration));
+			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
+				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
 		}
 	}
+	#endregion
 
+	#region Color
 	void ToColor ()
 	{
-		Color cubeCorrectColor = new Color ();
-		CubeColor cubeColorTest = CubeColor.Neutral;
-
-		switch(player.GetComponent<PlayersGameplay> ().playerName)
-		{
-		case PlayerName.Player1:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
-			cubeColorTest = CubeColor.Blue;
-			break;
-		case PlayerName.Player2:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
-			cubeColorTest = CubeColor.Pink;
-			break;
-		case PlayerName.Player3:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
-			cubeColorTest = CubeColor.Green;
-			break;
-		case PlayerName.Player4:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
-			cubeColorTest = CubeColor.Yellow;
-			break;
-		}
+		int whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+		CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
+		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
 
 		if(cubeMaterial.GetColor("_Color") != cubeCorrectColor)
 		{
 			if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-			{
 				DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-			}
 
 			//Debug.Log ("New Color : " + cubeCorrectColor);
 
@@ -250,7 +164,7 @@ public class MovableScript : MonoBehaviour
 
 			//Debug.Log ("Neutral Color");
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 
 			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, toNeutralDuration));
@@ -259,36 +173,15 @@ public class MovableScript : MonoBehaviour
 
 	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{
-		yield return new WaitForSeconds (waitTime * 0.5f);
+		yield return new WaitForSeconds (waitTime * 0.5f);		
 
-		if(!hold && whichColor == CubeColor.Neutral)
-		{
+		if(hold)
 			cubeColor = whichColor;
-		}
-
-		if(hold && whichColor != CubeColor.Neutral)
-		{
-			cubeColor = whichColor;
-		}
+		
 	}
+	#endregion
 
-	protected virtual void FixedUpdate () 
-	{
-		if(rigidbodyMovable != null)
-		{
-			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
-		}
-
-		if(rigidbodyMovable != null && currentVelocity > 5)
-		{
-			if(!decelerationShotOnly)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
-
-			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
-		}
-	}
-
+	#region Collisions
 	protected virtual void OnCollisionEnter (Collision other)
 	{
 		if(other.collider.tag != "HoldMovable")
@@ -391,7 +284,9 @@ public class MovableScript : MonoBehaviour
 
 		canPlaySound = true;
 	}
+	#endregion
 
+	#region Particles / FX
 	public virtual GameObject InstantiateImpactFX (ContactPoint contact)
 	{
 		GameObject prefab = GlobalVariables.Instance.wallImpactFX [(int)cubeColor];
@@ -428,12 +323,16 @@ public class MovableScript : MonoBehaviour
 
 		return instantiatedParticles;
 	}
+	#endregion
 
-	public virtual void GetRigidbodySettings ()
+	#region Hold / Release
+	public virtual void DestroyRigibody ()
 	{
 		massRb = rigidbodyMovable.mass;
 		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
 		drag = rigidbodyMovable.drag;
+
+		Destroy (rigidbodyMovable);
 	}
 
 	public virtual void AddRigidbody ()
@@ -444,24 +343,21 @@ public class MovableScript : MonoBehaviour
 		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
 		rigidbodyMovable.drag = drag;
 		player.GetComponent<PlayersGameplay>().holdMovableRB = rigidbodyMovable;
-
-		currentVelocity = player.GetComponent<PlayersGameplay>().shootForce;
-		gameObject.tag = "ThrownMovable";
 	}
 
 	public virtual void OnHold ()
 	{
+		hold = true;
+
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 
-		//SetCubeColor ();
 		ToColor();
 	}
 
 	public virtual void OnRelease ()
 	{
-		//SetCubeColor ();
 		StartCoroutine (ToNeutralColor());
 	}
-
+	#endregion
 }

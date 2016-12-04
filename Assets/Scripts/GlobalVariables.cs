@@ -45,11 +45,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
 	[Header ("Cubes Color")]
-	public Color cubeColorplayer1;
-	public Color cubeColorplayer2;
-	public Color cubeColorplayer3;
-	public Color cubeColorplayer4;
-	public Color cubeNeutralColor;
+	public Color[] cubePlayersColor = new Color[5];
 
 	[Header ("Cubes Stripes")]
 	public Mesh[] cubesStripes = new Mesh[4];

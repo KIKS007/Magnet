@@ -35,22 +35,7 @@ public delegate void EventHandler();
 
 public class PlayersGameplay : MonoBehaviour
 {
-    public event EventHandler OnAttracting;
-    public event EventHandler OnAttracted;
-    public event EventHandler OnRepulsing;
-    public event EventHandler OnRepulsed;
-    public event EventHandler OnHolding;
-    public event EventHandler OnHold;
-    public event EventHandler OnShoot;
-    public event EventHandler OnStun;
-    public event EventHandler OnCubeHit;
-    public event EventHandler OnDashHit;
-    public event EventHandler OnDash;
-    public event EventHandler OnDashAvailable;
-    public event EventHandler OnDeath;
-
-    public event EventHandler OnPlayerstateChange;
-
+	#region Variables
     [Header("States")]
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
@@ -111,6 +96,8 @@ public class PlayersGameplay : MonoBehaviour
     public Rigidbody holdMovableRB;
     [HideInInspector]
     public Transform holdMovableTransform;
+	[HideInInspector]
+	public bool gettingMovable = false;
 
     protected MainMenuManagerScript mainMenuScript;
 
@@ -118,7 +105,9 @@ public class PlayersGameplay : MonoBehaviour
     protected bool hasRepulsed;
 
     protected float startModeTime;
+	#endregion
 
+	#region Setup
 	protected virtual void Awake()
 	{
 		SetPlayerName ();		
@@ -185,7 +174,9 @@ public class PlayersGameplay : MonoBehaviour
 		StartCoroutine(OnPlayerStateChange());
 		StartCoroutine(OnDashAvailableEvent());
 	}
+	#endregion
 
+	#region Update / FixedUpdate
     // Update is called once per frame
     protected virtual void Update()
     {
@@ -206,9 +197,6 @@ public class PlayersGameplay : MonoBehaviour
 
             if (playerState == PlayerState.Repulsing && !player.GetButton("Repulse"))
                 playerState = PlayerState.None;
-
-            if (dashState != DashState.Dashing && playersHit.Count > 0)
-                playersHit.Clear();
 
             OnAttractedOnRepulsed();
         }
@@ -283,7 +271,9 @@ public class PlayersGameplay : MonoBehaviour
             }
         }
     }
+	#endregion
 
+	#region Rewired Controller
     public void GetControllerNumber()
     {
 		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
@@ -310,20 +300,9 @@ public class PlayersGameplay : MonoBehaviour
 			}
         }
     }
+	#endregion
 
-    public virtual void Attraction(GameObject movable)
-    {
-        playerState = PlayerState.Attracting;
-
-        Vector3 movableAttraction = transform.position - movable.transform.position;
-
-		movableAttraction.Normalize ();
-        movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
-
-        if (OnAttracting != null)
-            OnAttracting();
-    }
-
+	#region Cubes Methods
     public virtual void Shoot()
     {
         holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
@@ -338,7 +317,7 @@ public class PlayersGameplay : MonoBehaviour
 		holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease();
 
 
-        holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 200;
+        holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 250;
         holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
 		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.Force);
@@ -347,6 +326,19 @@ public class PlayersGameplay : MonoBehaviour
             OnShoot();
 
     }
+
+	public virtual void Attraction(GameObject movable)
+	{
+		playerState = PlayerState.Attracting;
+
+		Vector3 movableAttraction = transform.position - movable.transform.position;
+
+		movableAttraction.Normalize ();
+		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
+
+		if (OnAttracting != null)
+			OnAttracting();
+	}
 
     public virtual void Repulsion(GameObject movable)
     {
@@ -362,9 +354,20 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void OnHoldMovable(GameObject movable)
     {
-        playerState = PlayerState.Holding;
+		gettingMovable = true;
+        
+		playerState = PlayerState.Holding;
+
+		SetMagnetPointPosition (movable);
+
+		movable.tag = "HoldMovable";
+		movable.GetComponent<MovableScript>().player = transform;
+		movable.GetComponent<MovableScript>().DestroyRigibody();
+		movable.GetComponent<MovableScript>().OnHold();
+
         holdMovableTransform = movable.GetComponent<Transform>();
-        movable.GetComponent<MovableScript>().OnHold();
+		holdMovableTransform.SetParent (transform);
+
 
         for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
         {
@@ -375,38 +378,28 @@ public class PlayersGameplay : MonoBehaviour
                 GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesRepulsed.Remove(movable);
         }
 
-        cubesAttracted.Clear();
+		cubesAttracted.Clear();
+		cubesRepulsed.Clear();
 
         if (OnHold != null)
             OnHold();
+
+		gettingMovable = false;
     }
 
-    protected virtual void OnAttractedOnRepulsed()
-    {
-        if (playerState != PlayerState.Attracting)
-            hasAttracted = false;
+	protected void SetMagnetPointPosition (GameObject movable)
+	{
+		Vector3 scaleTemp = movable.GetComponent<MovableScript> ().initialScale;
 
-        if (playerState != PlayerState.Repulsing)
-            hasRepulsed = false;
+		Vector3 v3 = magnetPoint.localPosition;
+		v3.x = 0f;
+		v3.y = (scaleTemp.y /2 + 0.1f) - 1;
+		v3.z = 0.5f * scaleTemp.z + 0.8f;
+		magnetPoint.localPosition = v3;
+	}
+	#endregion
 
-
-        if (playerState == PlayerState.Attracting && !hasAttracted)
-        {
-            hasAttracted = true;
-
-            if (OnAttracted != null)
-                OnAttracted();
-        }
-
-        if (playerState == PlayerState.Repulsing && !hasRepulsed)
-        {
-            hasRepulsed = true;
-
-            if (OnRepulsed != null)
-                OnRepulsed();
-        }
-    }
-
+	#region Collisions
     private List<GameObject> playersHit = new List<GameObject>();
 
     protected virtual void OnCollisionStay(Collision other)
@@ -451,7 +444,9 @@ public class PlayersGameplay : MonoBehaviour
             }
         }
     }
+	#endregion
 
+	#region Turning
     protected virtual void TurningMouse()
     {
         // Create a ray from the mouse cursor on screen in the direction of the camera.
@@ -488,7 +483,9 @@ public class PlayersGameplay : MonoBehaviour
             playerRigidbody.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
         }
     }
+	#endregion
 
+	#region Stun
     public virtual void StunVoid(bool cubeHit)
     {
         StartCoroutine(Stun(cubeHit));
@@ -496,15 +493,14 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual IEnumerator Stun(bool cubeHit)
     {
-        MagnetTriggerScript magnetTrigger = transform.GetChild(2).GetComponent<MagnetTriggerScript>();
+		if(gettingMovable || playerState == PlayerState.Holding)
+		{
+			yield return new WaitWhile(() => gettingMovable == true);
+			
+			playerState = PlayerState.Stunned;
 
-        yield return new WaitWhile(() => magnetTrigger.gettingMovable == true);
-
-        if (playerState == PlayerState.Holding)
-        {
-            playerState = PlayerState.Stunned;
-            Shoot();
-        }
+			Shoot();
+		}
 
         if (OnStun != null)
             OnStun();
@@ -526,7 +522,9 @@ public class PlayersGameplay : MonoBehaviour
 
         speed = originalSpeed;
     }
+	#endregion
 
+	#region Dash
     protected IEnumerator Dash()
     {
         dashState = DashState.Dashing;
@@ -556,29 +554,51 @@ public class PlayersGameplay : MonoBehaviour
     {
         yield return new WaitForSeconds(dashDuration);
 
+		playersHit.Clear();
+
         dashState = DashState.Cooldown;
 
         yield return new WaitForSeconds(dashCooldown);
 
         dashState = DashState.CanDash;
     }
+	#endregion
 
-    protected IEnumerator OnPlayerStateChange()
-    {
-        PlayerState playerStateTemp = playerState;
+	#region Death
+	public virtual void Death()
+	{
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			StartCoroutine (DeathCoroutine ());        
+	}
 
-        yield return null;
+	protected virtual IEnumerator DeathCoroutine ()
+	{
+		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
-        if (playerState != playerStateTemp)
-        {
-            if (OnPlayerstateChange != null)
-                OnPlayerstateChange();
-        }
+		if(gettingMovable || playerState == PlayerState.Holding)
+		{
+			yield return new WaitWhile(() => gettingMovable == true);
 
-        StartCoroutine(OnPlayerStateChange());
-    }
+			playerState = PlayerState.Stunned;
 
-    public virtual void DeathExplosionFX()
+			holdMovableTransform.SetParent(null);
+			holdMovableTransform.SetParent(movableParent);
+			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
+			holdMovableTransform.GetComponent<MovableScript>().OnRelease();					
+		}
+
+		playerState = PlayerState.Dead;
+
+		for (int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
+		{
+			Destroy(GetComponent<PlayersFXAnimations>().attractionRepulsionFX[i]);
+		}
+
+		gameObject.SetActive(false);
+	}
+
+	public virtual void DeathExplosionFX()
     {
 		int playerNumber = (int)playerName;
 
@@ -597,40 +617,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		return instantiatedParticles;
 	}
-
-    public virtual void Death()
-    {
-        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-        {
-            GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
-
-			if (playerState == PlayerState.Holding)
-            {
-				for(int i = 0; i < transform.childCount; i++)
-					if(transform.GetChild(i).tag == "Movable" || transform.GetChild(i).tag == "ThrownMovable" || transform.GetChild(i).tag == "HoldMovable")
-					{
-						Transform holdMovableTemp = transform.GetChild (i).transform;
-						holdMovableTemp.gameObject.GetComponent<MovableScript>().hold = false;
-						
-						holdMovableTemp.transform.SetParent(null);
-						holdMovableTemp.transform.SetParent(movableParent);
-						holdMovableTemp.GetComponent<MovableScript>().AddRigidbody();
-						holdMovableTemp.GetComponent<MovableScript>().OnRelease();
-					}
-            }
-
-            playerState = PlayerState.Dead;
-
-            for (int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
-            {
-                Destroy(GetComponent<PlayersFXAnimations>().attractionRepulsionFX[i]);
-            }
-
-            gameObject.SetActive(false);
-        }
-    }
-
+		
     protected virtual void OnDestroy()
     {
         if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
@@ -648,6 +635,39 @@ public class PlayersGameplay : MonoBehaviour
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());
     }
+	#endregion
+
+	#region Events
+	public event EventHandler OnAttracting;
+	public event EventHandler OnAttracted;
+	public event EventHandler OnRepulsing;
+	public event EventHandler OnRepulsed;
+	public event EventHandler OnHolding;
+	public event EventHandler OnHold;
+	public event EventHandler OnShoot;
+	public event EventHandler OnStun;
+	public event EventHandler OnCubeHit;
+	public event EventHandler OnDashHit;
+	public event EventHandler OnDash;
+	public event EventHandler OnDashAvailable;
+	public event EventHandler OnDeath;
+
+	public event EventHandler OnPlayerstateChange;
+
+	protected IEnumerator OnPlayerStateChange()
+	{
+		PlayerState playerStateTemp = playerState;
+
+		yield return null;
+
+		if (playerState != playerStateTemp)
+		{
+			if (OnPlayerstateChange != null)
+				OnPlayerstateChange();
+		}
+
+		StartCoroutine(OnPlayerStateChange());
+	}
 
     protected IEnumerator OnDashAvailableEvent()
     {
@@ -661,6 +681,32 @@ public class PlayersGameplay : MonoBehaviour
         StartCoroutine(OnDashAvailableEvent());
     }
 
+	protected virtual void OnAttractedOnRepulsed()
+	{
+		if (playerState != PlayerState.Attracting)
+			hasAttracted = false;
+
+		if (playerState != PlayerState.Repulsing)
+			hasRepulsed = false;
+
+
+		if (playerState == PlayerState.Attracting && !hasAttracted)
+		{
+			hasAttracted = true;
+
+			if (OnAttracted != null)
+				OnAttracted();
+		}
+
+		if (playerState == PlayerState.Repulsing && !hasRepulsed)
+		{
+			hasRepulsed = true;
+
+			if (OnRepulsed != null)
+				OnRepulsed();
+		}
+	}
+
     protected void OnDeathVoid()
     {
         if (OnDeath != null)
@@ -672,4 +718,5 @@ public class PlayersGameplay : MonoBehaviour
         if (OnStun != null)
             OnStun();
     }
+	#endregion
 }

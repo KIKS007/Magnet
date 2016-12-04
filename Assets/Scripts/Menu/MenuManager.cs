@@ -840,6 +840,9 @@ public class MenuManager : Singleton <MenuManager>
 
 				Enable (secondaryContentList [i].content);
 				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+
+				if (secondaryContentList [i].content.GetComponent<Button> ())
+					SetInteractable (secondaryContentList [i].content);
 			}			
 		}
 
@@ -920,6 +923,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		for (int i = 0; i < content.transform.childCount; i++)
 			content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(0, durationToHide).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
+		
 
 		for (int i = 0; i < playerScore.Length; i++)
 		{
@@ -938,6 +942,9 @@ public class MenuManager : Singleton <MenuManager>
 			{
 				Disable (secondaryContentList [i].content, durationContent + secondaryContentList [i].delay);
 				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationContent).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+
+				if (secondaryContentList [i].content.GetComponent<Button> ())
+					SetNonInteractable (secondaryContentList [i].content);
 			}
 		}
 
