@@ -3,15 +3,14 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+public enum MenuButtonType {Basic, StartMode};
+
 public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
-	[Header ("Start Mode")]
-	public bool startModeButton = false;
-	public string whichMode = "";
+	public MenuButtonType menuButtonType = MenuButtonType.Basic;
 
-	[Header ("End Mode")]
-	public bool endModeButton = false;
-	public int whichModeContent = 0;
+	[Header ("Start Mode")]
+	public string whichMode = "";
 
 	[HideInInspector]
 	public int buttonIndex;
@@ -33,7 +32,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		{
 			menuComponentParent.Submit (buttonIndex);
 
-			if(startModeButton)
+			if(menuButtonType == MenuButtonType.StartMode)
 				MenuManager.Instance.MenuLoadMode (whichMode);
 		}
 	}
@@ -44,7 +43,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		{
 			menuComponentParent.Submit (buttonIndex);
 
-			if(startModeButton)
+			if(menuButtonType == MenuButtonType.StartMode)
 				MenuManager.Instance.MenuLoadMode (whichMode);
 		}
 	}

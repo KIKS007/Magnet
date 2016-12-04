@@ -65,12 +65,9 @@ public class PlayersManikin : PlayersGameplay
 
 		OnStunVoid ();
 
-		speed = stunnedSpeed;
-
 		yield return new WaitForSeconds(stunnedDuration);
 
 		playerState = PlayerState.None;
-		speed = originalSpeed;
 	}
 
 	public override void Death ()

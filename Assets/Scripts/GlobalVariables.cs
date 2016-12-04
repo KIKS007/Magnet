@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
-public enum WhichMode {Bomb, Crush, Training, Default};
+public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {

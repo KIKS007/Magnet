@@ -44,7 +44,6 @@ public class PlayersTraining : PlayersGameplay
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, timeBetweenSpawn);
 
 			playerState = PlayerState.None;
-			speed = originalSpeed;
 		}
 	}
 }

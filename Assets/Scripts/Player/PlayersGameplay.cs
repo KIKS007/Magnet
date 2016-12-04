@@ -49,7 +49,7 @@ public class PlayersGameplay : MonoBehaviour
     [Header("Movement")]
     public float speed = 18;
     public float stunnedSpeed = 8;
-    public float maxVelocity;
+    public float maxVelocity = 0;
     public float gravity = 100;
 
     protected float rightJoystickDeadzone = 0.5f;
@@ -65,13 +65,13 @@ public class PlayersGameplay : MonoBehaviour
 
     [Header("Stun")]
     public float stunnedRotation = 400;
-    public float stunnedDuration = 1;
+    public float stunnedDuration = 0.6f;
 
     [Header("Dash")]
-    public float dashSpeed = 100;
-    public float dashDuration = 0.12f;
+    public float dashSpeed = 80;
+    public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
-    public AnimationCurve dashEase;
+	public AnimationCurve dashEase;
 
     public List<GameObject> cubesAttracted = new List<GameObject>();
     public List<GameObject> cubesRepulsed = new List<GameObject>();
@@ -88,9 +88,6 @@ public class PlayersGameplay : MonoBehaviour
 
     protected int triggerMask;
     protected float camRayLength = 200f;
-
-    protected float originalSpeed;
-
 
     [HideInInspector]
     public Rigidbody holdMovableRB;
@@ -123,7 +120,6 @@ public class PlayersGameplay : MonoBehaviour
 
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
-        originalSpeed = speed;
 
         movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
         magnetPoint = transform.GetChild(0).transform;
@@ -237,7 +233,10 @@ public class PlayersGameplay : MonoBehaviour
         if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
         {
             if (dashState != DashState.Dashing)
-                playerRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
+			{
+				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
+				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
+			}
 
 
             if (playerState == PlayerState.Holding)
@@ -508,14 +507,10 @@ public class PlayersGameplay : MonoBehaviour
 
         playerState = PlayerState.Stunned;
 
-        speed = stunnedSpeed;
-
         yield return new WaitForSeconds(stunnedDuration);
 
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
-
-        speed = originalSpeed;
     }
 	#endregion
 
@@ -713,5 +708,11 @@ public class PlayersGameplay : MonoBehaviour
         if (OnStun != null)
             OnStun();
     }
+
+	protected void OnHoldingVoid ()
+	{
+		if (OnHolding != null)
+			OnHolding();
+	}
 	#endregion
 }
