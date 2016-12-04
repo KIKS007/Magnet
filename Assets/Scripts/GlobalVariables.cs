@@ -41,7 +41,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int NumberOfDisabledPlayers;
 
 	[Header ("Cubes Stripes")]
-	public ControllerChangeManager1 controllerManager;
+	public ControllerChangeManager controllerManager;
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
 	[Header ("Cubes Color")]

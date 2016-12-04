@@ -29,8 +29,8 @@ public class DeathRayMotion : MonoBehaviour
 
 		StartCoroutine (WaitTillGameBegins ());
 
-		GlobalVariables.Instance.OnPause += () => DOTween.Kill("DeathRay");
-		GlobalVariables.Instance.OnPlaying += () => DOTween.Play("DeathRay");
+		GlobalVariables.Instance.OnPause += () => DOTween.Pause("DeathRay");
+		GlobalVariables.Instance.OnResume += () => DOTween.Play("DeathRay");
 	}
 
 	IEnumerator WaitTillGameBegins ()

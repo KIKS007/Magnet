@@ -23,12 +23,12 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	[Header ("Gamepads List")]
 	public List<Gamepad> gamepadsList = new List<Gamepad> ();
 
-	private ControllerChangeManager1 controllerChangeManager;
+	private ControllerChangeManager controllerChangeManager;
 
 	// Use this for initialization
 	void Start () 
 	{
-		ReInput.ControllerDisconnectedEvent += GamepadUnplugged;
+		//ReInput.ControllerDisconnectedEvent += GamepadUnplugged;
 		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
 
 		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
@@ -234,7 +234,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				MenuManager.Instance.PauseResumeGame ();
 
-			if (GlobalVariables.Instance.GameState == GameStateEnum.Over && MenuManager.Instance.currentMenu.menuComponentType == MenuComponentType.EndModeMenu)
+			if (GlobalVariables.Instance.GameState == GameStateEnum.Over && MenuManager.Instance.currentMenu && MenuManager.Instance.currentMenu.menuComponentType == MenuComponentType.EndModeMenu)
 				MenuManager.Instance.ReturnToMainMenu ();
 		}
 	}

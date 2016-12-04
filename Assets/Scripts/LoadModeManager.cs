@@ -15,8 +15,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public float movementDuration = 0.25f;
 	public Ease movementEase = Ease.InOutCubic;
 
-	public MainMenuManagerScript menuScript;
-
 	private Transform mainCamera;
 
 	// Use this for initialization
@@ -25,9 +23,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
 
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
-
-		if(GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
-			menuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
 	}
 
 	//Game First Scene Loaded
@@ -146,10 +141,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		FindGameObjects ();
 	
 		yield return myTween.WaitForCompletion ();
-
-		/*myTween = mainCamera.DOMove (menuScript.playPosition, menuScript.cameraMovementDuration).SetEase(movementEase);
-
-		yield return myTween.WaitForCompletion ();*/
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 

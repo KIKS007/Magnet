@@ -99,8 +99,6 @@ public class PlayersGameplay : MonoBehaviour
 	[HideInInspector]
 	public bool gettingMovable = false;
 
-    protected MainMenuManagerScript mainMenuScript;
-
     protected bool hasAttracted;
     protected bool hasRepulsed;
 
@@ -121,10 +119,6 @@ public class PlayersGameplay : MonoBehaviour
         GetControllerNumber();
 
         Controller();
-
-
-        if (GameObject.FindGameObjectWithTag("MainMenuManager") != null)
-            mainMenuScript = GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>();
 
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();

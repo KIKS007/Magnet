@@ -6,7 +6,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using Rewired;
 
-public class ControllerChangeManager1 : MonoBehaviour 
+public class ControllerChangeManager : MonoBehaviour 
 {
 	public event EventHandler OnControllerChange;
 
@@ -86,17 +86,20 @@ public class ControllerChangeManager1 : MonoBehaviour
 
 	void UpdateAllSettings ()
 	{
-		SetSlidersPosition ();
-
-		GetPlayers ();
-
-		GamepadDisplay ();
-
-		UpdateGlobalVariables ();
-
-		UpdatePlayersControllers ();
-
-		CheckCanPlay ();
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Over)
+		{
+			SetSlidersPosition ();
+			
+			GetPlayers ();
+			
+			GamepadDisplay ();
+			
+			UpdateGlobalVariables ();
+			
+			UpdatePlayersControllers ();
+			
+			CheckCanPlay ();			
+		}
 	}
 
 	void UpdateControllerChange ()

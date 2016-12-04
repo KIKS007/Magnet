@@ -219,7 +219,6 @@ public class BombManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
 		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 }

@@ -66,7 +66,6 @@ public class CrushManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
 		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 
@@ -81,7 +80,6 @@ public class CrushManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
 		MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 	
