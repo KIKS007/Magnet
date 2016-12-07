@@ -4,31 +4,69 @@ using UnityEngine.UI;
 using Rewired;
 using System.Collections.Generic;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class MenuScrollView : MonoBehaviour
 {
-	public float position;
-	public float speed = 0.01f;
-	public float duration = 0.01f;
-	public Ease ease;
+	public enum ViewportType {Buttons, Content};
+	public ViewportType viewportType;
 
-	private ScrollRect scrollRect;
+	[Header ("Buttons")]
+	public float buttonsMovementDuration = 0.01f;
+	public Ease buttonsEase = Ease.OutQuad;
+
+	private float buttonsCenterYPos = 0;
+
+	[HideInInspector]
+	public List<RectTransform> underMenuList;
+	[HideInInspector]
+	public List<RectTransform> underButtonsList;
+
+	[Header ("Content")]
+	public float contentSpeed = 50;
+	public float contentDuration = 0.5f;
+	public Ease contentEase = Ease.OutQuad;
+	public Vector2 contentLimits = new Vector2(-200, 200);
+
+	private RectTransform content;
+
 	private Player[] playerList = new Player[5];
 
 	// Use this for initialization
 	void Start () 
 	{
-		scrollRect = GetComponent<ScrollRect> ();
+		buttonsCenterYPos = MenuManager.Instance.firstButtonY;
+
+		if(viewportType == ViewportType.Buttons)
+		{
+			for(int i = 0; i < transform.childCount; i++)
+				underMenuList.Add (transform.GetChild (i).GetComponent<RectTransform> ());
+			
+			for (int i = 0; i < underMenuList.Count; i++)
+				underButtonsList.Add (underMenuList [i].transform.GetChild (0).GetComponent<RectTransform> ());			
+		}
+	}
+
+	void OnEnable ()
+	{
+		if(viewportType == ViewportType.Content)
+		{
+			content = transform.GetChild (0).GetComponent<RectTransform> ();
+
+			content.anchoredPosition = Vector2.zero;
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		GetMenuPlayers ();
-
-		CheckMenuInput ();
-
-		position = scrollRect.verticalNormalizedPosition;
+		if(viewportType == ViewportType.Content)
+		{
+			GetMenuPlayers ();
+			
+			CheckMenuInput ();			
+		}
+			
 	}
 
 	void GetMenuPlayers ()
@@ -67,18 +105,26 @@ public class MenuScrollView : MonoBehaviour
 	{
 		for(int i = 0; i < playerList.Length; i++)
 		{
-			if (playerList [i] != null && playerList [i].GetAxis ("Move Vertical") > 0 && scrollRect.verticalNormalizedPosition + speed <= 1)
+			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") > 0 && (content.anchoredPosition.y - contentSpeed) > contentLimits.x )
 			{
-				//scrollRect.verticalNormalizedPosition += speed;
-				DOTween.To (()=> scrollRect.verticalNormalizedPosition, x=> scrollRect.verticalNormalizedPosition =x, scrollRect.verticalNormalizedPosition + speed, duration).SetEase (ease).SetId ("Scroll");
+				content.DOAnchorPosY (content.anchoredPosition.y - contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
 			}
 
-			if (playerList [i] != null && playerList [i].GetAxis ("Move Vertical") < 0 && scrollRect.verticalNormalizedPosition - speed >= 0)
+			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") < 0 && (content.anchoredPosition.y + contentSpeed) < contentLimits.y)
 			{
-				//scrollRect.verticalNormalizedPosition -= speed;
-				DOTween.To (()=> scrollRect.verticalNormalizedPosition, x=> scrollRect.verticalNormalizedPosition =x, scrollRect.verticalNormalizedPosition - speed, duration).SetEase (ease).SetId ("Scroll");
-
+				content.DOAnchorPosY (content.anchoredPosition.y + contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
 			}
 		}		
+	}
+
+	public void ButtonsMovement (RectTransform whichButton)
+	{
+		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons)
+		{
+			float yMovement = buttonsCenterYPos - whichButton.anchoredPosition.y;
+
+			for (int i = 0; i < underButtonsList.Count; i++)
+				underButtonsList [i].DOAnchorPosY (underButtonsList [i].anchoredPosition.y + yMovement, buttonsMovementDuration).SetEase (buttonsEase).SetId ("Viewport");			
+		}
 	}
 }

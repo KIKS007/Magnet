@@ -38,12 +38,12 @@ public class FadeInAndOutScript : MonoBehaviour
 	{
 		if(GetComponent<Text>() != null)
 		{
-			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
+			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn).SetId ("Fade" + gameObject.GetInstanceID ());
 		}
 		
 		if(GetComponent<Image>() != null)
 		{
-			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn);
+			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, alphaMinimum / 255), durationFadeOut).OnComplete (FadeIn).SetId ("Fade" + gameObject.GetInstanceID ());
 		}			
 	}
 
@@ -51,12 +51,12 @@ public class FadeInAndOutScript : MonoBehaviour
 	{
 		if(GetComponent<Text>() != null)
 		{
-			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
+			textComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut).SetId ("Fade" + gameObject.GetInstanceID ());
 		}
 		
 		if(GetComponent<Image>() != null)
 		{
-			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut);
+			imageComponent.DOColor (new Color (originalColor.r, originalColor.g, originalColor.b, 255 / 255), durationFadeIn).OnComplete (FadeOut).SetId ("Fade" + gameObject.GetInstanceID ());
 		}			
-	}	
+	}
 }
