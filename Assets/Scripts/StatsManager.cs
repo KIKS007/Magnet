@@ -264,6 +264,9 @@ public class StatsManager : Singleton<StatsManager>
 		case WhichPlayer.Draw:
 			winner = "Draw";
 			break;
+		case WhichPlayer.None:
+			winner = "None";
+			break;
 		}
 	}
 

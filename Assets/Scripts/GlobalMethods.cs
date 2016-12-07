@@ -57,6 +57,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
+			allMovables [i].SetActive (false);
 			allScales [i] = allMovables [i].transform.lossyScale;
 			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
 		}

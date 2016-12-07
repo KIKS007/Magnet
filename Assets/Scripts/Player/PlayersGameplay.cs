@@ -160,6 +160,9 @@ public class PlayersGameplay : MonoBehaviour
         playerState = PlayerState.None;
         dashState = DashState.CanDash;
 		holdState = HoldState.CanHold;
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
     }
 
 	protected IEnumerator WaitTillPlayerEnabled()
@@ -624,6 +627,9 @@ public class PlayersGameplay : MonoBehaviour
 
         if (playerState == PlayerState.Dead && OnDeath != null)
             OnDeath();
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
 
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());

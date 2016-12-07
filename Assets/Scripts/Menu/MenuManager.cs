@@ -956,7 +956,6 @@ public class MenuManager : Singleton <MenuManager>
 	#region EndMode
 	public void ShowEndMode (RectTransform content, List<SecondaryContent> secondaryContentList, MenuComponent whichMenu)
 	{
-		Debug.Log (GlobalVariables.Instance.GameState);
 		endModecontent = content;
 		endModesecondaryContentList = secondaryContentList;
 

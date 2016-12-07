@@ -12,33 +12,23 @@ public class TagManager : MonoBehaviour
 	[Header ("Tag Settings")]
 	public List<CubesColorCount> cubesColorCountList;
 	public WhichPlayer winner = WhichPlayer.None;
-
-	[Header ("Timer Sounds")]
-	[SoundGroupAttribute]
-	public string lastSecondsSound;
-
+	public float[] timersValue = new float[4];
+	
 	[Header ("Timer")]
 	public Text timerText;
-	public float timer;
+	public float timer = 0;
 	public string timerClock;
 	public float timeBeforeEndGame = 1;
 
 	// Use this for initialization
 	void Start () 
 	{
-		for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
-		{
-			cubesColorCountList.Add (new CubesColorCount ());
-			cubesColorCountList [i].playerName = GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ().playerName;
-		}
-
 		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
 
-		for (int i = 0; i < allMovables.Length; i++)
-			allMovables [i].SetActive (false);
+		ResetCubesColors ();
 
 		GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables);
-		
+
 		StartCoroutine (Setup ());
 	}
 
@@ -46,17 +36,46 @@ public class TagManager : MonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
+		SetupCubesColorsList ();
+
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 		timerClock = seconds;
 		timerText.text = timerClock;
 
+		timer = timersValue [4 - GlobalVariables.Instance.NumberOfAlivePlayers];
+
 		StartCoroutine (Timer ());
 	}
 		
+	void SetupCubesColorsList ()
+	{
+		cubesColorCountList.Clear ();
+
+		GameObject[] playersList = GameObject.FindGameObjectsWithTag ("Player");
+
+		for (int i = 0; i < playersList.Length; i++)
+		{
+			cubesColorCountList.Add (new CubesColorCount ());
+			cubesColorCountList [i].playerName = playersList [i].GetComponent<PlayersGameplay> ().playerName;
+		}
+
+	}
+
+	void ResetCubesColors ()
+	{
+		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+
+		for (int i = 0; i < allMovables.Length; i++)
+		{
+			allMovables [i].GetComponent<MovableScript> ().ToNeutralColor ();
+			allMovables [i].GetComponent<MovableTag> ().previousOwner = null;
+		}
+	}
+
 	// Update is called once per frame
 	void Update () 
 	{
-	
+
 	}
 
 	public void UpdateScores (PlayerName previousOwner, PlayerName currentOwner)
@@ -94,34 +113,78 @@ public class TagManager : MonoBehaviour
 		}
 		else
 		{
-			StartCoroutine (GameEnd ());
+			timerText.text = "00";
+
+			FindLooser ();
+
+			if(GlobalVariables.Instance.NumberOfAlivePlayers > 1)
+			{
+				timer = timersValue [4 - GlobalVariables.Instance.NumberOfAlivePlayers];
+				SetupCubesColorsList ();
+				StartCoroutine (Timer ());
+				ResetCubesColors ();
+			}
+			else
+			{
+				StartCoroutine (GameEnd ());				
+			}
+
 		}
 	}
 
-	IEnumerator GameEnd ()
+	public void FindLooser ()
 	{
-		WhichPlayer whichPlayerTemp = WhichPlayer.None;
 		CubesColorCount cubesColorTemp = new CubesColorCount ();
-		cubesColorTemp.cubesCount = 1000;
+		cubesColorTemp.cubesCount = 0;
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
-			if (cubesColorCountList [i].cubesCount < cubesColorTemp.cubesCount)
+			if (cubesColorCountList [i].cubesCount > cubesColorTemp.cubesCount)
 				cubesColorTemp = cubesColorCountList [i];
 
+
+		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
+		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().Death ();
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
 		{
 			if (cubesColorCountList [i] != cubesColorTemp && cubesColorCountList [i].cubesCount == cubesColorTemp.cubesCount)
 			{
-				StatsManager.Instance.Winner (WhichPlayer.Draw);
-				winner = WhichPlayer.Draw;
+				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
+				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().Death ();
 			}			
 		}
+	}
 
-		if(winner != WhichPlayer.Draw)
+	IEnumerator GameEnd ()
+	{
+		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1)
 		{
-			StatsManager.Instance.Winner ((WhichPlayer)cubesColorTemp.playerName);
-			winner = (WhichPlayer)cubesColorTemp.playerName;
+			CubesColorCount cubesColorTemp = new CubesColorCount ();
+			cubesColorTemp.cubesCount = 1000;
+
+			for (int i = 0; i < cubesColorCountList.Count; i++)
+				if (cubesColorCountList [i].cubesCount < cubesColorTemp.cubesCount)
+					cubesColorTemp = cubesColorCountList [i];
+
+
+			for (int i = 0; i < cubesColorCountList.Count; i++)
+			{
+				if (cubesColorCountList [i] != cubesColorTemp && cubesColorCountList [i].cubesCount == cubesColorTemp.cubesCount)
+				{
+					StatsManager.Instance.Winner (WhichPlayer.Draw);
+					winner = WhichPlayer.Draw;
+				}			
+			}
+
+			if(winner != WhichPlayer.Draw)
+			{
+				StatsManager.Instance.Winner ((WhichPlayer)cubesColorTemp.playerName);
+				winner = (WhichPlayer)cubesColorTemp.playerName;
+			}
+		}
+		else
+		{
+			StatsManager.Instance.Winner (WhichPlayer.None);
 		}
 		
 

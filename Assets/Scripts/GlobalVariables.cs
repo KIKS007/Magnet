@@ -31,6 +31,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Players States")]
 	public int NumberOfPlayers;
 	public int NumberOfDisabledPlayers;
+	public int NumberOfAlivePlayers;
+	public int NumberOfDeadPlayers;
 
 	[Header ("Cubes Stripes")]
 	public ControllerChangeManager controllerManager;
@@ -118,12 +120,26 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 
 		PlayersNumber ();
+
+		AlivePlayersNumber ();
 	}
 
 	void PlayersNumber ()
 	{
 		NumberOfPlayers = EnabledPlayersList.Count;
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
+	}
+
+	void AlivePlayersNumber ()
+	{
+		int alivePlayers = 0;
+
+		for (int i = 0; i < Players.Length; i++)
+			if (Players [i] != null && Players [i].activeSelf == true)
+				alivePlayers++;
+
+		NumberOfAlivePlayers = alivePlayers;
+		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
 	}
 
 	public void SetPlayerMouseCursor ()

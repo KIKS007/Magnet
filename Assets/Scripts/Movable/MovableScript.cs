@@ -163,10 +163,8 @@ public class MovableScript : MonoBehaviour
 		}
 	}
 
-	IEnumerator ToNeutralColor ()
+	public void ToNeutralColor ()
 	{
-		yield return new WaitWhile (() => tag != "ThrownMovable");
-
 		if(!hold)
 		{
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
@@ -347,7 +345,7 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void OnRelease ()
 	{
-		StartCoroutine (ToNeutralColor());
+		ToNeutralColor();
 	}
 	#endregion
 }

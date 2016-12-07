@@ -445,6 +445,9 @@ public class StatsFeedback : MonoBehaviour
 		case "Draw":
 			textComponent.text = "It's a draw !";
 			break;
+		case "None":
+			textComponent.text = "No one won !";
+			break;
 		}
 
 		if(stats.winner != "Draw")
