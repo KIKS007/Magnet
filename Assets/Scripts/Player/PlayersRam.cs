@@ -14,8 +14,10 @@ public class PlayersRam : PlayersGameplay
 			if (dashState != DashState.Dashing)
 			{
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
-				//playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-				playerRigidbody.AddForce(movement * speedTemp);		
+
+				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
+
+				//playerRigidbody.AddForce(movement * speedTemp);		
 
 				if(playerState != PlayerState.Stunned)
 				{

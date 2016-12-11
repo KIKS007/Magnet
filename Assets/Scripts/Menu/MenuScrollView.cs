@@ -66,7 +66,12 @@ public class MenuScrollView : MonoBehaviour
 			
 			CheckMenuInput ();			
 		}
-			
+
+		if (DOTween.IsTweening ("Menu") || DOTween.IsTweening ("MenuCamera"))
+		{
+			if(DOTween.IsTweening ("Viewport"))
+			DOTween.Kill ("Viewport");
+		}
 	}
 
 	void GetMenuPlayers ()

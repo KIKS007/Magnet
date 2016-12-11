@@ -50,20 +50,23 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	void Update ()
 	{
-		if(buttonComponent.interactable == true && !pointerDown)
+		if(buttonComponent.interactable == true)
 		{
-			if(eventSys.currentSelectedGameObject == gameObject)
-				text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonHighlightedColorText;
+			if(!pointerDown)
+			{
+				if(eventSys.currentSelectedGameObject == gameObject)
+					text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonHighlightedColorText;
 
-			else
-				text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
+				else
+					text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
+			}
+
+			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one)
+				buttonRect.DOScale(1, scaleOnDuration);
 		}
 
-		if(buttonComponent.interactable == false)
+		else
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
-
-		if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && buttonComponent.interactable == true)
-			buttonRect.DOScale(1, scaleOnDuration);
 	}
 
 	public void OnSelect () 

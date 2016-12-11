@@ -345,7 +345,7 @@ public class MenuComponent : MonoBehaviour
 			secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].onScreenPos;
 
 
-		if(menuComponentType != MenuComponentType.MainMenu)
+		if(menuComponentType != MenuComponentType.MainMenu || menuComponentType != MenuComponentType.EndModeMenu)
 		{
 			inEditorHeaderButtons.Clear ();
 			

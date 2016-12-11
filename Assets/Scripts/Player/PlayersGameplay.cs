@@ -52,7 +52,6 @@ public class PlayersGameplay : MonoBehaviour
     [Header("Movement")]
     public float speed = 18;
     public float stunnedSpeed = 8;
-    public float maxVelocity = 0;
     public float gravity = 100;
 
     protected float rightJoystickDeadzone = 0.5f;
@@ -183,9 +182,6 @@ public class PlayersGameplay : MonoBehaviour
     {
         if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
         {
-            if (playerRigidbody.velocity.magnitude > maxVelocity)
-                maxVelocity = playerRigidbody.velocity.magnitude;
-
             ActivateFunctions();
 
             if (playerState == PlayerState.Stunned)
@@ -634,7 +630,7 @@ public class PlayersGameplay : MonoBehaviour
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
 
-		if (controllerNumber == 0)
+		if (controllerNumber == 0 && GlobalVariables.Instance != null)
 			GlobalVariables.Instance.HideMouseCursor (true);
 
         StopCoroutine(OnPlayerStateChange());

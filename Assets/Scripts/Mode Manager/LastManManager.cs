@@ -35,7 +35,6 @@ public class LastManManager : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			FindPlayers ();
-
 	}
 
 	void FindPlayers ()
