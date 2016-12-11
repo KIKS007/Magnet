@@ -93,7 +93,7 @@ public class MagnetZoneScript : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(other.tag == "Movable" || other.tag =="ThrownMovable")
+			if(other.tag == "Movable" || other.tag =="ThrownMovable" || other.tag == "Suggestible")
 			{
 				if(other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
 					other.GetComponent<MovableScript> ().attracedBy.Remove (character.gameObject);

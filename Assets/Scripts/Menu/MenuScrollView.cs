@@ -105,14 +105,21 @@ public class MenuScrollView : MonoBehaviour
 	{
 		for(int i = 0; i < playerList.Length; i++)
 		{
-			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") > 0 && (content.anchoredPosition.y - contentSpeed) > contentLimits.x )
+			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") > 0)
 			{
-				content.DOAnchorPosY (content.anchoredPosition.y - contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
+				if((content.anchoredPosition.y - contentSpeed) > contentLimits.x)
+					content.DOAnchorPosY (content.anchoredPosition.y - contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
+				else
+					content.DOAnchorPosY (contentLimits.x, contentDuration).SetEase (contentEase).SetId ("Viewport");
 			}
 
-			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") < 0 && (content.anchoredPosition.y + contentSpeed) < contentLimits.y)
+			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") < 0)
 			{
-				content.DOAnchorPosY (content.anchoredPosition.y + contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
+				if((content.anchoredPosition.y + contentSpeed) < contentLimits.y)
+					content.DOAnchorPosY (content.anchoredPosition.y + contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
+				else
+					content.DOAnchorPosY (contentLimits.y, contentDuration).SetEase (contentEase).SetId ("Viewport");
+
 			}
 		}		
 	}

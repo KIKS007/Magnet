@@ -14,6 +14,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
+	public ControllerChangeManager controllerManager;
 
 	[Header ("Scenes")]
 	public string firstSceneToLoad = "Crush";
@@ -27,15 +28,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Players")]
 	public GameObject[] Players = new GameObject[4];
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
+	public List<GameObject> AlivePlayersList = new List<GameObject>();
 
-	[Header ("Players States")]
+	[Header ("Players Count")]
 	public int NumberOfPlayers;
 	public int NumberOfDisabledPlayers;
 	public int NumberOfAlivePlayers;
 	public int NumberOfDeadPlayers;
 
-	[Header ("Cubes Stripes")]
-	public ControllerChangeManager controllerManager;
+	[Header ("Mouse Cursor")]
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
 	[Header ("Cubes Color")]
@@ -77,6 +78,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 		
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
+		controllerManager = GameObject.FindGameObjectWithTag ("ControllerChangeManager").GetComponent<ControllerChangeManager> ();
 
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
@@ -132,13 +134,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void AlivePlayersNumber ()
 	{
-		int alivePlayers = 0;
+		AlivePlayersList.Clear ();
 
 		for (int i = 0; i < Players.Length; i++)
+		{
 			if (Players [i] != null && Players [i].activeSelf == true)
-				alivePlayers++;
+				AlivePlayersList.Add (Players [i]);
+		}
 
-		NumberOfAlivePlayers = alivePlayers;
+		NumberOfAlivePlayers = AlivePlayersList.Count;
 		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
 	}
 
