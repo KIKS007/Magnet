@@ -33,7 +33,7 @@ public class MovableFlow : MovableScript
 		{
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			//GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
 			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 			MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);

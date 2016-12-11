@@ -406,6 +406,7 @@ public class PlayersGameplay : MonoBehaviour
         {
             Death();
 
+			DeathExplosionFX ();
 			DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
         }
 
