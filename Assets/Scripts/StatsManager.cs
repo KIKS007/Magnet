@@ -262,9 +262,11 @@ public class StatsManager : Singleton<StatsManager>
 			winner = "Player 4";
 			break;
 		case WhichPlayer.Draw:
+			WinsInARow (whichPlayerWon);
 			winner = "Draw";
 			break;
 		case WhichPlayer.None:
+			WinsInARow (whichPlayerWon);
 			winner = "None";
 			break;
 		}
@@ -300,42 +302,57 @@ public class StatsManager : Singleton<StatsManager>
 
 	void WinsInARow (WhichPlayer whichPlayerWon)
 	{
-		if (previousWinner == WhichPlayer.None)
+		if(whichPlayerWon == WhichPlayer.Draw || whichPlayerWon == WhichPlayer.None)
 		{
-			previousWinner = whichPlayerWon;
+			previousWinner = WhichPlayer.None;
 
-			playerStatsList [(int)whichPlayerWon].winsInARow = 1;
-		}
-
-		else if(previousWinner == whichPlayerWon)
-		{
 			for(int i = 0; i < playerStatsList.Count; i++)
 			{
-				if (playerStatsList [i].whichPlayer != whichPlayerWon)
-					playerStatsList [i].winsInARow = 0;
+				playerStatsList [i].winsInARow = 0;
 			}
 
-			if (playerStatsList [(int)whichPlayerWon].winsInARow == 0)
-				playerStatsList [(int)whichPlayerWon].winsInARow = 2;
-			else
+			mostWinsInARow = whichPlayerWon;
+			winsInARowNumber = 0;
+		}
+		else
+		{
+			if (previousWinner == WhichPlayer.None)
+			{
+				previousWinner = whichPlayerWon;
+				
+				playerStatsList [(int)whichPlayerWon].winsInARow = 1;
+			}
+			
+			else if(previousWinner == whichPlayerWon)
+			{
+				for(int i = 0; i < playerStatsList.Count; i++)
+				{
+					if (playerStatsList [i].whichPlayer != whichPlayerWon)
+						playerStatsList [i].winsInARow = 0;
+				}
+				
+				if (playerStatsList [(int)whichPlayerWon].winsInARow == 0)
+					playerStatsList [(int)whichPlayerWon].winsInARow = 2;
+				else
+					playerStatsList [(int)whichPlayerWon].winsInARow++;
+			}
+			
+			else if(previousWinner != whichPlayerWon)
+			{
+				previousWinner = whichPlayerWon;
+				
+				for(int i = 0; i < playerStatsList.Count; i++)
+				{
+					if (playerStatsList [i].whichPlayer != whichPlayerWon)
+						playerStatsList [i].winsInARow = 0;
+				}
+				
 				playerStatsList [(int)whichPlayerWon].winsInARow++;
-		}
-
-		else if(previousWinner != whichPlayerWon)
-		{
-			previousWinner = whichPlayerWon;
-
-			for(int i = 0; i < playerStatsList.Count; i++)
-			{
-				if (playerStatsList [i].whichPlayer != whichPlayerWon)
-					playerStatsList [i].winsInARow = 0;
 			}
-
-			playerStatsList [(int)whichPlayerWon].winsInARow++;
+			
+			mostWinsInARow = whichPlayerWon;
+			winsInARowNumber = playerStatsList [(int)whichPlayerWon].winsInARow;			
 		}
-
-		mostWinsInARow = whichPlayerWon;
-		winsInARowNumber = playerStatsList [(int)whichPlayerWon].winsInARow;
 	}
 
 	public void AimPrecision ()

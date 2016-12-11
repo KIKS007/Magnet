@@ -344,12 +344,16 @@ public class MenuComponent : MonoBehaviour
 		for (int i = 0; i < secondaryContentList.Count; i++)
 			secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].onScreenPos;
 
-		inEditorHeaderButtons.Clear ();
 
-		SetInEditorHeaderButtons (this);
-
-		for (int i = 0; i < inEditorHeaderButtons.Count; i++)
-			inEditorHeaderButtons [i].anchoredPosition = new Vector2 (menuManager.onScreenX, menuManager.headerButtonsYPosition - menuManager.gapBetweenButtons * i);
+		if(menuComponentType != MenuComponentType.MainMenu)
+		{
+			inEditorHeaderButtons.Clear ();
+			
+			SetInEditorHeaderButtons (this);
+			
+			for (int i = 0; i < inEditorHeaderButtons.Count; i++)
+				inEditorHeaderButtons [i].anchoredPosition = new Vector2 (menuManager.onScreenX, menuManager.headerButtonsYPosition - menuManager.gapBetweenButtons * i);
+		}
 	}
 
 	public List<RectTransform> inEditorHeaderButtons = new List<RectTransform> ();

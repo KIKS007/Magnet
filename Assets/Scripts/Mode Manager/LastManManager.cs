@@ -5,8 +5,6 @@ public class LastManManager : MonoBehaviour
 {
 	public WhichMode whichMode;
 
-	public GameObject[] playersList;
-
 	public float timeBeforeEndGame = 2;
 
 	private bool gameEndLoopRunning = false;
@@ -42,16 +40,14 @@ public class LastManManager : MonoBehaviour
 
 	void FindPlayers ()
 	{
-		playersList = GameObject.FindGameObjectsWithTag("Player");
-
-		if(playersList.Length == 1 && gameEndLoopRunning == false)
+		if(GlobalVariables.Instance.AlivePlayersList.Count == 1 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
 
 			StartCoroutine (GameEnd ());
 		}
 
-		if(playersList.Length == 0 && gameEndLoopRunning == false)
+		if(GlobalVariables.Instance.AlivePlayersList.Count == 0 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
 
@@ -61,7 +57,7 @@ public class LastManManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		StatsManager.Instance.Winner(playersList [0].GetComponent<PlayersGameplay> ().playerName);
+		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 

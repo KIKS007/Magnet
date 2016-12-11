@@ -30,7 +30,6 @@ public class DynamicCamera : MonoBehaviour
 
 	private Vector3 centerPos = new Vector3(0, 0, 0);
 
-	private GameObject[] playersList = new GameObject[0];	 
 	public List<GameObject> targetsList = new List<GameObject>();	
 
 	// Use this for initialization
@@ -50,10 +49,8 @@ public class DynamicCamera : MonoBehaviour
 	{
 		targetsList.Clear ();
 
-		playersList = GameObject.FindGameObjectsWithTag("Player");
-
-		for (int i = 0; i < playersList.Length; i++)
-			targetsList.Add (playersList [i]);
+		for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
+			targetsList.Add (GlobalVariables.Instance.AlivePlayersList [i]);
 
 		for (int i = 0; i < otherTargetsList.Count(); i++)
 			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)
@@ -77,37 +74,6 @@ public class DynamicCamera : MonoBehaviour
 
 	void FindLargestDistance ()
 	{
-		/*if(playersList.Count() > 1)
-		{
-			float distanceTemp = 0;
-
-			if (Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position) > distanceTemp)
-				distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [1].transform.position);
-
-			if(playersList.Count() > 2)
-			{
-				if (Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [2].transform.position);
-
-				if (Vector3.Distance (playersList [1].transform.position, playersList [2].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (playersList [1].transform.position, playersList [2].transform.position);
-			}
-
-			if(playersList.Count() > 3)
-			{
-				if (Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (playersList [0].transform.position, playersList [3].transform.position);
-
-				if (Vector3.Distance (playersList [1].transform.position, playersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (playersList [1].transform.position, playersList [3].transform.position);
-
-				if (Vector3.Distance (playersList [2].transform.position, playersList [3].transform.position) > distanceTemp)
-					distanceTemp = Vector3.Distance (playersList [2].transform.position, playersList [3].transform.position);
-			}
-
-			largestDistance = distanceTemp;
-		}*/
-
 		if(targetsList.Count > 1)
 		{
 			float distanceTemp = 0;

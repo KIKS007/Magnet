@@ -13,7 +13,12 @@ public class TagManager : MonoBehaviour
 	public List<CubesColorCount> cubesColorCountList;
 	public WhichPlayer winner = WhichPlayer.None;
 	public float[] timersValue = new float[4];
-	
+
+	[Header ("Explosion")]
+	public float explosionForce = 50;
+	public float explosionRadius = 50;
+	public LayerMask explosionMask;
+
 	[Header ("Timer")]
 	public Text timerText;
 	public float timer = 0;
@@ -51,12 +56,11 @@ public class TagManager : MonoBehaviour
 	{
 		cubesColorCountList.Clear ();
 
-		GameObject[] playersList = GameObject.FindGameObjectsWithTag ("Player");
-
-		for (int i = 0; i < playersList.Length; i++)
+		for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
 		{
 			cubesColorCountList.Add (new CubesColorCount ());
-			cubesColorCountList [i].playerName = playersList [i].GetComponent<PlayersGameplay> ().playerName;
+			cubesColorCountList [i].playerName = GlobalVariables.Instance.AlivePlayersList [i].GetComponent<PlayersGameplay> ().playerName;
+			cubesColorCountList [i].cubesCount = 0;
 		}
 
 	}
@@ -120,6 +124,7 @@ public class TagManager : MonoBehaviour
 			if(GlobalVariables.Instance.NumberOfAlivePlayers > 1)
 			{
 				timer = timersValue [4 - GlobalVariables.Instance.NumberOfAlivePlayers];
+
 				SetupCubesColorsList ();
 				StartCoroutine (Timer ());
 				ResetCubesColors ();
@@ -142,15 +147,23 @@ public class TagManager : MonoBehaviour
 				cubesColorTemp = cubesColorCountList [i];
 
 
+		//Debug.Log ("NAME : " + cubesColorTemp.playerName + " FIRST LOOSER : " + GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName]);
+
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().Death ();
+
+		GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
+
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
 		{
 			if (cubesColorCountList [i] != cubesColorTemp && cubesColorCountList [i].cubesCount == cubesColorTemp.cubesCount)
 			{
+				//Debug.Log ("NAME : " + cubesColorCountList [i].playerName + " OTHER LOOSER : " + GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName]);
 				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
 				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().Death ();
+
+				GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
 			}			
 		}
 	}

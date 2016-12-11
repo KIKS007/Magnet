@@ -9,7 +9,6 @@ public class BombManager : MonoBehaviour
 	public WhichMode whichMode;
 
 	[Header ("Bomb Settings")]
-	public GameObject[] playersList;
 	public GameObject bomb;
 	public int playersNumber;
 	public int firstBombTimer = 300;
@@ -92,8 +91,6 @@ public class BombManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		playersList = GameObject.FindGameObjectsWithTag("Player");
-
 		if(bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
 			lastSeconds = true;
@@ -199,7 +196,7 @@ public class BombManager : MonoBehaviour
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
 		{
 			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
-				playersList [Random.Range (0, playersList.Length)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
+				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
 			
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
 				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
@@ -208,9 +205,7 @@ public class BombManager : MonoBehaviour
 		
 	IEnumerator GameEnd ()
 	{
-		playersList = GameObject.FindGameObjectsWithTag("Player");
-
-		StatsManager.Instance.Winner(playersList [0].GetComponent<PlayersGameplay> ().playerName);
+		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 			
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 

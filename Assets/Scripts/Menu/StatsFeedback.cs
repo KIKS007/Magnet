@@ -450,7 +450,7 @@ public class StatsFeedback : MonoBehaviour
 			break;
 		}
 
-		if(stats.winner != "Draw")
+		if(stats.winner != "Draw" && stats.winner != "None")
 			textComponent.text = beforeNumberText + " " + color + textComponent.text + "</color> " + afterNumberText;
 
 		if(stats.winner != "")

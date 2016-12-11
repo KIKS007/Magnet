@@ -78,7 +78,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 		
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
-		controllerManager = GameObject.FindGameObjectWithTag ("ControllerChangeManager").GetComponent<ControllerChangeManager> ();
 
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
@@ -88,14 +87,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnMenuEvent ());
 
-		OnPlaying += HideMouseCursor;
+		OnPlaying += ()=> HideMouseCursor();
+		OnRestartMode += ()=> SetPlayerMouseCursor();
 	}
 		
 	void Update ()
 	{
 		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-		if (GameState != GameStateEnum.Playing && mouseMovement.magnitude > 1 && Cursor.visible == false)
+		if (GameState != GameStateEnum.Playing && Cursor.visible == false && mouseMovement.magnitude > 1)
 		{
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
@@ -148,7 +148,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void SetPlayerMouseCursor ()
 	{
-
 		for(int i = 0; i < PlayersControllerNumber.Length; i++)
 			if(PlayersControllerNumber[i] == 0)
 			{
@@ -158,12 +157,20 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			}
 	}
 
-	void HideMouseCursor ()
+	public void HideMouseCursor (bool forcedHide = false)
 	{
-		if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+		if(forcedHide)
 		{
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
+		}
+		else
+		{
+			if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+			{
+				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
+			}			
 		}
 	}
 

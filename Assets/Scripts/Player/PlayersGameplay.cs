@@ -163,6 +163,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
+
+		if (controllerNumber == 0)
+			GlobalVariables.Instance.SetPlayerMouseCursor ();
     }
 
 	protected IEnumerator WaitTillPlayerEnabled()
@@ -630,6 +633,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
+
+		if (controllerNumber == 0)
+			GlobalVariables.Instance.HideMouseCursor (true);
 
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());

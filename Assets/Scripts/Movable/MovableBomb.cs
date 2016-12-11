@@ -207,6 +207,9 @@ public class MovableBomb : MovableScript
 			yield return StartCoroutine (GetToPlayerPosition ());
 		}
 
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
+
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
 		MasterAudio.StopAllOfSound(lastSecondsSound);

@@ -81,7 +81,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	private bool startScreen = true;
 
-	public bool test = false;
 	#endregion
 
 	#region Setup
@@ -119,21 +118,18 @@ public class MenuManager : Singleton <MenuManager>
 	#region Update
 	void Update () 
 	{
-		GetMenuPlayers ();
-
-		CheckNothingSelected ();
-
-		GamepadsDisconnected ();
-
-		if(!DOTween.IsTweening ("Menu"))
-			CheckMenuInput ();
-
-		if(test)
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
-			test = false;
+			GetMenuPlayers ();
 
-			currentMenu.HideMenu ();			
+			CheckNothingSelected ();
+
+			GamepadsDisconnected ();
+
+			CheckMenuInput ();
 		}
+
+		CheckPauseInput ();
 	}
 
 	void GetMenuPlayers ()
@@ -185,18 +181,26 @@ public class MenuManager : Singleton <MenuManager>
 				
 				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Cancel"))
 					currentMenu.Cancel ();
-				
+			}			
+		}
+	}
+
+	void CheckPauseInput ()
+	{
+		if(!DOTween.IsTweening ("Menu") && !DOTween.IsTweening ("MenuCamera"))
+		{
+			for(int i = 0; i < playerList.Length; i++)
+			{
 				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && playerList [i] != null && playerList [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
 				{
 					currentMenu.HideMenu ();
 					PauseResumeGame ();
 				}
-				
+
 				if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Start"))
 					PauseResumeGame ();				
 			}			
 		}
-
 	}
 		
 	public void ExitMenu ()
