@@ -178,7 +178,7 @@ public class MovableBomb : MovableScript
 
 	public override void OnRelease ()
 	{
-		
+		OnReleaseEventVoid ();
 	}
 
 	public void ResetColor ()

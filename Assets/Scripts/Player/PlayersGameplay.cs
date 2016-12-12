@@ -75,8 +75,13 @@ public class PlayersGameplay : MonoBehaviour
     public float dashCooldown = 1f;
 	public AnimationCurve dashEase;
 
-    public List<GameObject> cubesAttracted = new List<GameObject>();
-    public List<GameObject> cubesRepulsed = new List<GameObject>();
+	[Header ("Dead Cube")]
+	public bool playerDeadCube = true;
+
+	[HideInInspector]
+	public List<GameObject> cubesAttracted = new List<GameObject>();
+	[HideInInspector]
+	public List<GameObject> cubesRepulsed = new List<GameObject>();
 
     protected Transform movableParent;
     [HideInInspector]
@@ -317,7 +322,7 @@ public class PlayersGameplay : MonoBehaviour
         holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 250;
         holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
-		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.Force);
+		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
 
         if (OnShoot != null)
             OnShoot();
@@ -343,7 +348,7 @@ public class PlayersGameplay : MonoBehaviour
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movableRepulsion.Normalize ();
-		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Acceleration);
+		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
 		
 		if (OnRepulsing != null)
 			OnRepulsing();		
@@ -592,6 +597,9 @@ public class PlayersGameplay : MonoBehaviour
 		}
 
 		gameObject.SetActive(false);
+
+		if(playerDeadCube)
+			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber);
 	}
 
 	public virtual void DeathExplosionFX()

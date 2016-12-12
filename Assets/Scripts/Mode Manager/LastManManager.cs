@@ -3,6 +3,7 @@ using System.Collections;
 
 public class LastManManager : MonoBehaviour 
 {
+	[Header ("Settings")]
 	public WhichMode whichMode;
 
 	public float timeBeforeEndGame = 2;

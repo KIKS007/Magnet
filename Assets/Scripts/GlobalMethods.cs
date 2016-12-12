@@ -5,6 +5,12 @@ using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	void Start ()
+	{
+		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
+		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
+	}
+
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
 	{
 		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn));
@@ -42,6 +48,54 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
+	}
+
+	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber)
+	{
+		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber));
+	}
+
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 newPos = new Vector3();
+		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			yield return new WaitForSeconds (1f);
+			
+			do
+			{
+				newPos = new Vector3 (Random.Range (-20f, 20f), 3, Random.Range (-10f, 10f));
+				yield return null;	
+			}
+			while(Physics.CheckSphere(newPos, 5, layer));			
+			
+			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
+			
+			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
+			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
+			
+			Vector3 scale = deadCube.transform.lossyScale;
+			deadCube.transform.localScale = Vector3.zero;
+			
+			string tagTemp = deadCube.tag;
+			deadCube.tag = "Untagged";
+			
+			deadCube.transform.DOScale (scale, 0.8f).SetEase (Ease.OutElastic);
+			StartCoroutine (ChangeMovableTag (deadCube, tagTemp, 0.8f));
+
+
+			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
+
+			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.Players [(int)playerName].gameObject.GetComponent<Renderer> ().material.color;
+
+			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
+
+			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, deadCube.transform);			
+		}
 	}
 
 	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)

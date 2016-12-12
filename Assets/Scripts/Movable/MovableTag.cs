@@ -44,10 +44,12 @@ public class MovableTag : MovableScript
 
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
+
+		OnHoldEventVoid ();
 	}
 
 	public override void OnRelease ()
 	{
-		
+		OnReleaseEventVoid ();
 	}
 }

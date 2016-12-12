@@ -8,6 +8,9 @@ public enum CubeColor {Neutral, Blue, Pink, Green, Yellow};
 
 public class MovableScript : MonoBehaviour 
 {
+	public event EventHandler OnHoldEvent;
+	public event EventHandler OnReleaseEvent;
+
 	#region Variables
 	[Header ("Informations")]
 	public CubeColor cubeColor;
@@ -134,7 +137,7 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Color
-	protected virtual void ToColor (GameObject otherPlayer = null)
+	public virtual void ToColor (GameObject otherPlayer = null)
 	{
 		int whichPlayer = 0;
 
@@ -341,11 +344,27 @@ public class MovableScript : MonoBehaviour
 		repulsedBy.Clear ();
 
 		ToColor();
+
+		OnHoldEventVoid ();
 	}
 
 	public virtual void OnRelease ()
 	{
 		ToNeutralColor();
+
+		OnReleaseEventVoid ();
+	}
+
+	public virtual void OnHoldEventVoid ()
+	{
+		if (OnHoldEvent != null)
+			OnHoldEvent ();
+	}
+
+	public virtual void OnReleaseEventVoid ()
+	{
+		if (OnReleaseEvent != null)
+			OnReleaseEvent ();
 	}
 	#endregion
 }
