@@ -195,14 +195,17 @@ public class MovableScript : MonoBehaviour
 	#region Collisions
 	protected virtual void OnCollisionEnter (Collision other)
 	{
-		if(other.collider.tag != "HoldMovable")
-			HitPlayer (other);			
-		
-		if(other.gameObject.tag == "Movable")
-			HitOtherMovable (other);	
-		
-		if(other.gameObject.layer == 16)
-			HitWall (other);
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			if(other.collider.tag != "HoldMovable")
+				HitPlayer (other);			
+			
+			if(other.gameObject.tag == "Movable")
+				HitOtherMovable (other);	
+			
+			if(other.gameObject.layer == 16)
+				HitWall (other);			
+		}
 	}
 
 	protected virtual void HitPlayer (Collision other)

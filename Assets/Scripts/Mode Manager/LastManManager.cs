@@ -44,15 +44,16 @@ public class LastManManager : MonoBehaviour
 
 	void FindPlayers ()
 	{
-		if(GlobalVariables.Instance.AlivePlayersList.Count == 1 && gameEndLoopRunning == false)
+		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
 
 			StartCoroutine (GameEnd ());
 		}
 
-		if(GlobalVariables.Instance.AlivePlayersList.Count == 0 && gameEndLoopRunning == false)
+		if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
 		{
+			Debug.Log ("End Game : " + GlobalVariables.Instance.NumberOfAlivePlayers + " - Time : " + Time.time.ToString ());
 			gameEndLoopRunning = true;
 
 			StartCoroutine (GameEndDraw ());
@@ -70,7 +71,8 @@ public class LastManManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 
 	IEnumerator GameEndDraw ()

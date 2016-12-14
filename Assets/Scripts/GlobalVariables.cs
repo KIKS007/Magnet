@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
-public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Default};
+public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Burden, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -113,6 +113,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void ListPlayers ()
 	{
+		AlivePlayersNumber ();
+		PlayersNumber ();
+
 		EnabledPlayersList.Clear ();
 
 		for(int i = 0; i < Players.Length; i++)
@@ -123,10 +126,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
-
-		PlayersNumber ();
-
-		AlivePlayersNumber ();
 	}
 
 	void PlayersNumber ()

@@ -5,10 +5,16 @@ using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	private float xLimit;
+	private float zLimit;
+
 	void Start ()
 	{
 		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
 		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
+
+		xLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
+		zLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
@@ -122,12 +128,14 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
-			allMovables [i].tag = "Untagged";
+			if(allMovables[i] != null)
+				allMovables [i].tag = "Untagged";
+			
 			Vector3 newPos = new Vector3 ();
 
 			do
 			{
-				newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+				newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 			}
 			while(Physics.CheckSphere(newPos, 5, layer));
 
@@ -147,8 +155,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 				MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
 			}
-
-
+				
 			yield return null;
 		}
 	}
@@ -202,7 +209,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
 		while(Physics.CheckSphere(newPos, 5, layer));
 
@@ -235,7 +242,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
 		while(Physics.CheckSphere(newPos, 5, layer));
 

@@ -26,7 +26,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	private ControllerChangeManager controllerChangeManager;
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		//ReInput.ControllerDisconnectedEvent += GamepadUnplugged;
 		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
@@ -269,7 +269,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			{
 				if (gamepadsPluggedAtStart[i])
 					GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
-				
 			}			
 		}
 

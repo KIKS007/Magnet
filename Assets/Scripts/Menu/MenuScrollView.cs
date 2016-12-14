@@ -5,6 +5,7 @@ using Rewired;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using System;
 
 public class MenuScrollView : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class MenuScrollView : MonoBehaviour
 
 	private Player[] playerList = new Player[5];
 
-	public bool mouseControl = true;
+	public bool mouseControl = false;
 
 	public bool scrollViewEnabled = false;
 
@@ -104,7 +105,7 @@ public class MenuScrollView : MonoBehaviour
 			
 			if(!mouseControl)
 			{
-				if (Input.GetAxis ("Mouse X") > 0 || Input.GetAxis ("Mouse Y") > 0)
+				if (Mathf.Abs (Input.GetAxis ("Mouse X")) > 0 || Mathf.Abs (Input.GetAxis ("Mouse Y")) > 0)
 					mouseControl = true;
 			}
 			else

@@ -5,7 +5,12 @@ using DarkTonic.MasterAudio;
 
 public class MovableBomb : MovableScript 
 {
+	[Header ("BOMB")]
 	public GameObject playerHolding;
+	public float trackSpeed = 1.2f;
+	public float trackSpeedAdded = 0.001f;
+
+	public bool trackingPlayer = false;
 
 	[Header ("Explosion")]
 	[SoundGroupAttribute]
@@ -18,11 +23,6 @@ public class MovableBomb : MovableScript
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
-
-	public float getToPlayerForce = 1.2f;
-	//public float distanceFactor = 2;
-
-	private bool trackingPlayer = false;
 
 	protected override void OnEnable ()
 	{
@@ -208,7 +208,6 @@ public class MovableBomb : MovableScript
 		}
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
@@ -243,16 +242,16 @@ public class MovableBomb : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
+		float getToPlayerForceTemp = trackSpeed;
+
 		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
 		{
-			float getToPlayerForceTemp = getToPlayerForce;
-
 			if (!hold)
 			{
 				Vector3 direction = (playerHolding.transform.position - transform.position);
 				direction.Normalize ();
 
-				getToPlayerForceTemp += 0.001f;
+				getToPlayerForceTemp += trackSpeedAdded;
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
