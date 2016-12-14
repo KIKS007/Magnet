@@ -4,6 +4,7 @@ using System;
 using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class TagManager : MonoBehaviour 
 {
@@ -56,8 +57,13 @@ public class TagManager : MonoBehaviour
 	{
 		cubesColorCountList.Clear ();
 
+		//Debug.Log ("----------------------------");
+		//Debug.Log (GlobalVariables.Instance.AlivePlayersList.Count);
+
 		for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
 		{
+			//Debug.Log (GlobalVariables.Instance.AlivePlayersList [i].gameObject);
+
 			cubesColorCountList.Add (new CubesColorCount ());
 			cubesColorCountList [i].playerName = GlobalVariables.Instance.AlivePlayersList [i].GetComponent<PlayersGameplay> ().playerName;
 			cubesColorCountList [i].cubesCount = 0;
@@ -71,8 +77,11 @@ public class TagManager : MonoBehaviour
 
 		for (int i = 0; i < allMovables.Length; i++)
 		{
-			allMovables [i].GetComponent<MovableScript> ().ToNeutralColor ();
-			allMovables [i].GetComponent<MovableTag> ().previousOwner = null;
+			if(allMovables [i].GetComponent<MovableTag> ())
+			{
+				allMovables [i].GetComponent<MovableTag> ().ToNeutralColor ();
+				allMovables [i].GetComponent<MovableTag> ().previousOwner = null;				
+			}
 		}
 	}
 
@@ -140,12 +149,16 @@ public class TagManager : MonoBehaviour
 	public void FindLooser ()
 	{
 		CubesColorCount cubesColorTemp = new CubesColorCount ();
+		cubesColorTemp.playerName = cubesColorCountList [0].playerName;
 		cubesColorTemp.cubesCount = 0;
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
+		{
 			if (cubesColorCountList [i].cubesCount > cubesColorTemp.cubesCount)
 				cubesColorTemp = cubesColorCountList [i];
-
+		
+			//Debug.Log (cubesColorCountList [i].playerName);
+		}
 
 		//Debug.Log ("NAME : " + cubesColorTemp.playerName + " FIRST LOOSER : " + GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName]);
 
@@ -153,7 +166,6 @@ public class TagManager : MonoBehaviour
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().Death ();
 
 		GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
-
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
 		{
@@ -166,6 +178,8 @@ public class TagManager : MonoBehaviour
 				GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
 			}			
 		}
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
 	}
 
 	IEnumerator GameEnd ()
@@ -180,20 +194,9 @@ public class TagManager : MonoBehaviour
 					cubesColorTemp = cubesColorCountList [i];
 
 
-			for (int i = 0; i < cubesColorCountList.Count; i++)
-			{
-				if (cubesColorCountList [i] != cubesColorTemp && cubesColorCountList [i].cubesCount == cubesColorTemp.cubesCount)
-				{
-					StatsManager.Instance.Winner (WhichPlayer.Draw);
-					winner = WhichPlayer.Draw;
-				}			
-			}
+			StatsManager.Instance.Winner ((WhichPlayer)cubesColorTemp.playerName);
+			winner = (WhichPlayer)cubesColorTemp.playerName;
 
-			if(winner != WhichPlayer.Draw)
-			{
-				StatsManager.Instance.Winner ((WhichPlayer)cubesColorTemp.playerName);
-				winner = (WhichPlayer)cubesColorTemp.playerName;
-			}
 		}
 		else
 		{
@@ -208,7 +211,8 @@ public class TagManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 }
 

@@ -50,12 +50,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber)
+	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, string tag)
 	{
-		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber));
+		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, tag));
 	}
 
-	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber)
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag)
 	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 newPos = new Vector3();
@@ -80,11 +80,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;
 			
-			string tagTemp = deadCube.tag;
 			deadCube.tag = "Untagged";
-			
+
+			if (tag != "Movable")
+				deadCube.GetComponent<MovableDeadCube> ().basicMovable = false;
+
 			deadCube.transform.DOScale (scale, 0.8f).SetEase (Ease.OutElastic);
-			StartCoroutine (ChangeMovableTag (deadCube, tagTemp, 0.8f));
+			StartCoroutine (ChangeMovableTag (deadCube, tag, 0.8f));
 
 
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
@@ -94,7 +96,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
 
-			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, deadCube.transform);			
+			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, deadCube.transform);
 		}
 	}
 

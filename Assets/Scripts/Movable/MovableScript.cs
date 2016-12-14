@@ -166,7 +166,7 @@ public class MovableScript : MonoBehaviour
 		}
 	}
 
-	public void ToNeutralColor ()
+	public virtual void ToNeutralColor ()
 	{
 		if(!hold)
 		{

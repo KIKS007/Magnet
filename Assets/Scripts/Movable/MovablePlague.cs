@@ -30,7 +30,7 @@ public class MovablePlague : MovableScript
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			if(tag != "DeadZone")
+			if(tag != "DeadCube")
 			{
 				if(currentVelocity >= limitVelocity)
 					gameObject.tag = "ThrownMovable";
@@ -67,7 +67,7 @@ public class MovablePlague : MovableScript
 
 				}				
 			}
-			else if(tag == "DeadZone")
+			else if(tag == "DeadCube")
 			{
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
@@ -78,7 +78,7 @@ public class MovablePlague : MovableScript
 
 	IEnumerator DeadlyTransition ()
 	{
-		SetNewColor ();
+		SetDeadColor ();
 
 		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
 		{
@@ -90,10 +90,10 @@ public class MovablePlague : MovableScript
 		yield return new WaitForSeconds (deadlyCubeTransitionDuration);
 
 		rigidbodyMovable.mass = deadlyCubeMass;
-		tag = "DeadZone";
+		tag = "DeadCube";
 	}
 
-	void SetNewColor ()
+	void SetDeadColor ()
 	{
 		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
 			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());

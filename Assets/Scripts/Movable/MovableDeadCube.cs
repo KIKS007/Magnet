@@ -1,9 +1,81 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using DarkTonic.MasterAudio;
 
 public class MovableDeadCube : MovableScript 
 {
+	[Header ("Suggestible")]
+	[SoundGroupAttribute]
+	public string explosionSound;
+	public float explosionForce = 20;
+	public float explosionRadius = 50;
+	public LayerMask explosionMask;
+
+	[HideInInspector]
+	public bool basicMovable = true;
+
+	protected override void Update ()
+	{
+		if(hold == false && rigidbodyMovable != null)
+			currentVelocity = rigidbodyMovable.velocity.magnitude;
+
+		if(hold == false && currentVelocity > 0)
+		{
+			if(currentVelocity > higherVelocity)
+				higherVelocity = currentVelocity;
+		}	
+
+		if(basicMovable)
+		{
+			if(hold == false && currentVelocity > 0)
+			{
+				if(currentVelocity >= limitVelocity)
+					gameObject.tag = "ThrownMovable";
+				
+				else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+				{
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
+					playerThatThrew = null;
+				}
+			}			
+		}
+	}
+
+	protected override void HitPlayer (Collision other)
+	{
+		if(tag != "Suggestible")
+			base.HitPlayer (other);
+
+		else
+		{
+			if(other.collider.tag == "Player" 
+				&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+			{
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
+
+				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
+				ExplosionFX (other);
+
+				other.gameObject.GetComponent<PlayersGameplay> ().DeathParticles (other.contacts [0], GlobalVariables.Instance.DeadParticles, other.gameObject.GetComponent<Renderer>().material.color);
+
+				other.gameObject.GetComponent<PlayersGameplay> ().Death ();
+			}
+		}
+	}
+
+	void ExplosionFX (Collision other)
+	{
+		int playerNumber = (int)other.gameObject.GetComponent<PlayersGameplay> ().playerName;
+
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+	}
+
 	public override void OnHold ()
 	{
 		hold = true;

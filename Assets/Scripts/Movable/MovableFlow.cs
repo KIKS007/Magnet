@@ -7,7 +7,7 @@ public class MovableFlow : MovableScript
 	[Header ("FLOW")]
 	[SoundGroupAttribute]
 	public string explosionSound;
-	public float explosionForce = 50;
+	public float explosionForce = 20;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
 

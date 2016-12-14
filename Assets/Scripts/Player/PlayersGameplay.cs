@@ -407,13 +407,16 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
-        if (other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-        {
-            Death();
-
-			DeathExplosionFX ();
-			DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
-        }
+		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube")
+		{
+			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			{
+				Death();
+				
+				DeathExplosionFX ();
+				DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+			}			
+		}
 
         if (other.collider.tag != "HoldMovable")
         {
@@ -429,13 +432,16 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-        {
-            Death();
+		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube")
+		{
+			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			{
+				Death();
 
-			DeathExplosionFX ();
-			DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
-        }
+				DeathExplosionFX ();
+				DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+			}			
+		}
 
         if (other.collider.tag != "HoldMovable")
         {
@@ -599,7 +605,7 @@ public class PlayersGameplay : MonoBehaviour
 		gameObject.SetActive(false);
 
 		if(playerDeadCube)
-			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber);
+			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, movableParent.GetChild (0).tag);
 	}
 
 	public virtual void DeathExplosionFX()

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class TrainingManager : MonoBehaviour 
 {
@@ -65,6 +66,7 @@ public class TrainingManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}	
 }

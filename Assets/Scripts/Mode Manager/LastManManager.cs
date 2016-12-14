@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LastManManager : MonoBehaviour 
 {
@@ -21,6 +22,9 @@ public class LastManManager : MonoBehaviour
 
 		if(allMovables.Length == 0)
 			allMovables = GameObject.FindGameObjectsWithTag ("Suggestible");
+
+		if(allMovables.Length == 0)
+			allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
 
 		for (int i = 0; i < allMovables.Length; i++)
 			allMovables [i].SetActive (false);
@@ -80,7 +84,8 @@ public class LastManManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 	
 }

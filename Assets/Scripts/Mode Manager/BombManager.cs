@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class BombManager : MonoBehaviour 
 {
@@ -214,6 +215,7 @@ public class BombManager : MonoBehaviour
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 }
