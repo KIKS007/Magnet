@@ -61,8 +61,8 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 					text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 			}
 
-			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one)
-				buttonRect.DOScale(1, scaleOnDuration);
+			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && !DOTween.IsTweening ("ResetScale" + GetInstanceID ()))
+				buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
 		}
 
 		else
@@ -73,16 +73,16 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	{
 		selected = true;
 			
-		if(scaleChangement)
-			buttonRect.DOScale(scaleOnSelected, scaleOnDuration);
+		if(scaleChangement && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 	}
 
 	public void OnDeselect () 
 	{
 		selected = false;
 		
-		if(scaleChangement)
-			buttonRect.DOScale(1, scaleOnDuration);
+		if(scaleChangement && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
+			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
 
 	}
 
@@ -117,8 +117,8 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 			selected = true;			
 		}
 
-		if(scaleChangement)
-			buttonRect.DOScale(scaleOnSelected, scaleOnDuration);
+		if(scaleChangement && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 		
 		GameSoundsManager.Instance.MenuNavigation ();
 	}

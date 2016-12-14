@@ -187,6 +187,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		
 	public void SpawnExistingMovableRandom (GameObject movable)
 	{
+		StartCoroutine (SpawnExistingMovableRandomCoroutine (movable));
+	}
+
+	IEnumerator SpawnExistingMovableRandomCoroutine (GameObject movable)
+	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
@@ -210,6 +215,42 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
 		movable.transform.position = newPos;
+
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
+
+		yield return null;
+	}
+
+	public void SpawnNewMovableRandomVoid (GameObject movable, float delay = 0)
+	{
+		StartCoroutine (SpawnNewMovableRandom (movable, delay));
+	}
+
+	IEnumerator SpawnNewMovableRandom (GameObject movable, float delay = 0)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+
+		do
+		{
+			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+		}
+		while(Physics.CheckSphere(newPos, 5, layer));
+
+		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
+		clone.tag = "Untagged";
+		clone.transform.localScale = Vector3.zero;
+		clone.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		clone.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+		yield return new WaitForSeconds (delay);
+
+		clone.gameObject.SetActive(true);
+
+		clone.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
+		StartCoroutine (ChangeMovableTag (clone, tagTemp, 0.8f));
 
 		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
 	}

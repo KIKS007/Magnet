@@ -86,9 +86,9 @@ public class MenuComponent : MonoBehaviour
 		//Get Above Menu
 		if(transform.parent.GetComponent<MenuComponent> () != null)
 			aboveMenuScript = transform.parent.GetComponent<MenuComponent> ();
-		
-		else if(transform.parent.parent.GetComponent<MenuComponent> () != null && transform.parent.parent.GetComponent<MenuComponent> ().viewportContent == true)
-			aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();
+
+		else if(transform.parent.parent.GetComponent<MenuComponent> () != null && transform.parent.parent.GetComponent<MenuComponent> ().viewportContent)
+			aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();		
 
 		otherMenuList = aboveMenuScript.underMenuList;
 		otherButtonsList = aboveMenuScript.underButtonsList;

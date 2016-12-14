@@ -80,6 +80,8 @@ public class MovablePlague : MovableScript
 	{
 		SetDeadColor ();
 
+		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
+
 		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
 		{
 			rigidbodyMovable.velocity = rigidbodyMovable.velocity.normalized * deadlyCubeDeceleration;

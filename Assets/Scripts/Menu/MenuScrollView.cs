@@ -27,10 +27,10 @@ public class MenuScrollView : MonoBehaviour
 	public Ease contentEase = Ease.OutQuad;
 	public Vector2 contentLimits = new Vector2(-200, 200);
 
-	[HideInInspector]
 	public List<RectTransform> underMenuList;
-	[HideInInspector]
 	public List<RectTransform> underButtonsList;
+
+	private MenuComponent aboveMenu;
 
 	private RectTransform content;
 
@@ -38,10 +38,19 @@ public class MenuScrollView : MonoBehaviour
 
 	public bool mouseControl = true;
 
+	public bool scrollViewEnabled = false;
+
 	// Use this for initialization
 	void Start () 
 	{
+		underMenuList.Clear ();
+		underButtonsList.Clear ();
+
+		aboveMenu = transform.parent.GetComponent<MenuComponent> ();
+			
 		buttonsCenterYPos = MenuManager.Instance.firstButtonY;
+
+		MenuManager.Instance.OnMenuChange += CheckScrollEnabled;
 
 		if(viewportType == ViewportType.Buttons)
 		{
@@ -53,6 +62,14 @@ public class MenuScrollView : MonoBehaviour
 		}
 	}
 
+	void CheckScrollEnabled ()
+	{
+		if (MenuManager.Instance.currentMenu == aboveMenu)
+			scrollViewEnabled = true;
+		else
+			scrollViewEnabled = false;
+	}
+
 	void OnEnable ()
 	{
 		if(viewportType == ViewportType.Content)
@@ -60,39 +77,43 @@ public class MenuScrollView : MonoBehaviour
 			content = transform.GetChild (0).GetComponent<RectTransform> ();
 
 			content.anchoredPosition = Vector2.zero;
+
+			CheckScrollEnabled ();
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		GetMenuPlayers ();
-
-		if (viewportType == ViewportType.Content)
-			CheckContentInput ();
-
-		if (viewportType == ViewportType.Buttons && mouseControl)
-			CheckButtonsWheelInput ();
-
-
-		if (DOTween.IsTweening ("Menu") || DOTween.IsTweening ("MenuCamera"))
+		if(scrollViewEnabled)
 		{
-			if(DOTween.IsTweening ("Viewport"))
-			DOTween.Kill ("Viewport");
+			GetMenuPlayers ();
+			
+			if (viewportType == ViewportType.Content)
+				CheckContentInput ();
+			
+			if (viewportType == ViewportType.Buttons && mouseControl)
+				CheckButtonsWheelInput ();
+			
+			
+			if (DOTween.IsTweening ("Menu") || DOTween.IsTweening ("MenuCamera"))
+			{
+				if(DOTween.IsTweening ("Viewport"))
+					DOTween.Kill ("Viewport");
+			}
+			
+			if(!mouseControl)
+			{
+				if (Input.GetAxis ("Mouse X") > 0 || Input.GetAxis ("Mouse Y") > 0)
+					mouseControl = true;
+			}
+			else
+			{
+				for(int i = 0; i < playerList.Length; i++)
+					if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") != 0)
+						mouseControl = false;
+			}			
 		}
-
-		if(!mouseControl)
-		{
-			if (Input.GetAxis ("Mouse X") > 0 || Input.GetAxis ("Mouse Y") > 0)
-				mouseControl = true;
-		}
-		else
-		{
-			for(int i = 0; i < playerList.Length; i++)
-				if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") != 0)
-					mouseControl = false;
-		}
-
 	}
 
 	void GetMenuPlayers ()
@@ -204,8 +225,10 @@ public class MenuScrollView : MonoBehaviour
 
 	public void ButtonsMovement (RectTransform whichButton)
 	{
-		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons && !mouseControl)
+		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons && !mouseControl && scrollViewEnabled)
 		{
+			DOTween.Kill ("Viewport");
+
 			float yMovement = buttonsCenterYPos - whichButton.anchoredPosition.y;
 
 			for (int i = 0; i < underButtonsList.Count; i++)

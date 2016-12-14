@@ -128,7 +128,11 @@ public class TagManager : MonoBehaviour
 		{
 			timerText.text = "00";
 
+			int playerCount = GlobalVariables.Instance.NumberOfAlivePlayers;
+
 			FindLooser ();
+
+			yield return new WaitUntil (()=> GlobalVariables.Instance.NumberOfAlivePlayers != playerCount);
 
 			if(GlobalVariables.Instance.NumberOfAlivePlayers > 1)
 			{
@@ -142,7 +146,6 @@ public class TagManager : MonoBehaviour
 			{
 				StartCoroutine (GameEnd ());				
 			}
-
 		}
 	}
 
@@ -184,6 +187,15 @@ public class TagManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
+
+		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+
+		Debug.Log ("Players Count : " + GlobalVariables.Instance.NumberOfAlivePlayers);
+
 		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1)
 		{
 			CubesColorCount cubesColorTemp = new CubesColorCount ();
@@ -193,7 +205,6 @@ public class TagManager : MonoBehaviour
 				if (cubesColorCountList [i].cubesCount < cubesColorTemp.cubesCount)
 					cubesColorTemp = cubesColorCountList [i];
 
-
 			StatsManager.Instance.Winner ((WhichPlayer)cubesColorTemp.playerName);
 			winner = (WhichPlayer)cubesColorTemp.playerName;
 
@@ -202,14 +213,6 @@ public class TagManager : MonoBehaviour
 		{
 			StatsManager.Instance.Winner (WhichPlayer.None);
 		}
-		
-
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
-
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
 			MenuManager.Instance.endModeMenu.EndMode (whichMode);

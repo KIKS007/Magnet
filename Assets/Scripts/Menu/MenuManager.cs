@@ -33,6 +33,9 @@ public class MenuManager : Singleton <MenuManager>
 	public float offScreenX = -1600;
 	public float onScreenX = -650;
 
+	[Header ("Menu Element To Enable")]
+	public List<GameObject> elementsToEnable;
+
 	[Header ("MainMenu Buttons Positions")]
 	public float mainMenuFirstButtonY = 100;
 	
@@ -101,6 +104,9 @@ public class MenuManager : Singleton <MenuManager>
 		loadModeScript = GameObject.FindObjectOfType<LoadModeManager> ();
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
+
+		for (int i = 0; i < elementsToEnable.Count; i++)
+			elementsToEnable [i].SetActive (true);
 	}
 		
 	void StartScreen ()
