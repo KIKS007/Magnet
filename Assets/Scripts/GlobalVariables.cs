@@ -118,28 +118,32 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		for(int i = 0; i < 5; i++)
 			rewiredPlayers [i] = ReInput.players.GetPlayer (i);
 
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+		if(GamepadsManager.Instance.gamepadIdControl)
 		{
-			switch(GamepadsManager.Instance.gamepadsList [i].GamepadId)
+			for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
 			{
-			case 1:
-				rewiredPlayers [1].controllers.ClearAllControllers ();
-				rewiredPlayers [1].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-				break;
-			case 2:
-				rewiredPlayers [2].controllers.ClearAllControllers ();
-				rewiredPlayers [2].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-				break;
-			case 3:
-				rewiredPlayers [3].controllers.ClearAllControllers ();
-				rewiredPlayers [3].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-				break;
-			case 4:
-				rewiredPlayers [4].controllers.ClearAllControllers ();
-				rewiredPlayers [4].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-				break;
-			}
+				switch(GamepadsManager.Instance.gamepadsList [i].GamepadId)
+				{
+				case 1:
+					rewiredPlayers [1].controllers.ClearAllControllers ();
+					rewiredPlayers [1].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 2:
+					rewiredPlayers [2].controllers.ClearAllControllers ();
+					rewiredPlayers [2].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 3:
+					rewiredPlayers [3].controllers.ClearAllControllers ();
+					rewiredPlayers [3].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 4:
+					rewiredPlayers [4].controllers.ClearAllControllers ();
+					rewiredPlayers [4].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				}
+			}			
 		}
+
 	}
 
 	public void ListPlayers ()

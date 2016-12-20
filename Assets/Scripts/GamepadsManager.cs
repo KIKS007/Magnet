@@ -14,6 +14,8 @@ public class GamepadsManager : Singleton<GamepadsManager>
 {
 	public event EventHandler GamepadsChange;
 
+	public bool gamepadIdControl = false;
+
 	[Header ("Number of Gamepads")]
 	public int numberOfGamepads;
 
@@ -55,7 +57,16 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		for (int i = 0; i < gamepadsPluggedAtStart.Length; i++)
 			gamepadsPluggedAtStart [i] = false;
 
-		CheckWhichGamepad ();
+
+		if(gamepadIdControl)
+			CheckWhichGamepad ();
+
+		else
+		{
+			for(int i = 0; i < ReInput.controllers.joystickCount; i++)
+				if(i < 4)
+					gamepadsPluggedAtStart [i] = true;
+		}
 
 		GlobalVariables.Instance.SetupRewiredPlayers ();
 	}
@@ -185,21 +196,31 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void CheckIfGamepadReconnected (ControllerStatusChangedEventArgs arg)
 	{
-		CheckWhichGamepad ();
+		if(gamepadIdControl)
+			CheckWhichGamepad ();
+		
 		GlobalVariables.Instance.SetupRewiredPlayers ();
 
-		for(int i = 0; i < gamepadsList.Count; i++)
+		if(gamepadIdControl)
 		{
-			int id = gamepadsList [i].GamepadId;
-
-			if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+			for(int i = 0; i < gamepadsList.Count; i++)
 			{
-				gamepadsList [i].GamepadIsDiconnected = false;
-
-				if(id != -1)
-					gamepadsUnplugged[gamepadsList [i].GamepadId - 1] = false;
-			}
+				int id = gamepadsList [i].GamepadId;
+				
+				if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+				{
+					gamepadsList [i].GamepadIsDiconnected = false;
+					
+					if(id != -1)
+						gamepadsUnplugged[gamepadsList [i].GamepadId - 1] = false;
+				}
+			}			
 		}
+		else if(arg.controllerId < 4)
+		{
+			gamepadsUnplugged[arg.controllerId] = false;
+		}
+
 
 		if (GamepadsChange != null)
 			GamepadsChange ();
@@ -207,17 +228,27 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
 	{
-		for(int i = 0; i < gamepadsList.Count; i++)
+		if(gamepadIdControl)
 		{
-			int id = gamepadsList [i].GamepadId;
-
-			if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+			for(int i = 0; i < gamepadsList.Count; i++)
 			{
-				gamepadsList [i].GamepadIsDiconnected = true;
-
-				gamepadsUnplugged[id - 1] = true;
-			}
+				int id = gamepadsList [i].GamepadId;
+				
+				if(arg.controllerId == gamepadsList[i].GamepadRewiredId)
+				{
+					gamepadsList [i].GamepadIsDiconnected = true;
+					
+					gamepadsUnplugged[id - 1] = true;
+				}
+			}			
 		}
+		else if(arg.controllerId < 4)
+		{
+			gamepadsUnplugged[arg.controllerId] = true;
+		}
+
+		Debug.Log (arg.controllerId);
+
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 		{
 			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
