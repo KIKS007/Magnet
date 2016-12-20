@@ -9,32 +9,32 @@ public class MagnetTriggerScript : MonoBehaviour
 	[HideInInspector]
 	public Transform magnetPoint;
 
-	private Transform character;
-	private PlayersGameplay characterScript;
+	private PlayersGameplay playerScript;
 
-	private Player player;
+	private Player rewiredPlayer;
 
 	// Use this for initialization
 	void Start () 
 	{
-		character = gameObject.transform.parent;
-		characterScript = character.GetComponent<PlayersGameplay> ();
+		playerScript = gameObject.transform.parent.GetComponent<PlayersGameplay> ();
+
+		StartCoroutine (SetupRewiredPlayer ());
 	}
-	
-	// Update is called once per frame
-	void Update () 
+
+	IEnumerator SetupRewiredPlayer ()
 	{
+		yield return new WaitUntil (() => playerScript.rewiredPlayer != null);
+
+		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 	}
 
 	void OnTriggerStay (Collider other)
 	{
-		player = characterScript.player;
-
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && player != null && other.tag == "Movable")
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && other.tag == "Movable")
 		{
-			if(characterScript.holdState == HoldState.CanHold)
+			if(playerScript.holdState == HoldState.CanHold)
 			{
-				if (player.GetButton ("Attract") && !player.GetButton ("Repulse"))
+				if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
 					GetMovable (other);
 			}
 		}
@@ -42,7 +42,7 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	public void GetMovable (Collider other)
 	{
-		characterScript.OnHoldMovable (other.gameObject);
+		playerScript.OnHoldMovable (other.gameObject);
 	}
 
 }

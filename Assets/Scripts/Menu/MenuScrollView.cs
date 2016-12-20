@@ -35,8 +35,6 @@ public class MenuScrollView : MonoBehaviour
 
 	private RectTransform content;
 
-	private Player[] playerList = new Player[5];
-
 	public bool mouseControl = false;
 
 	public bool scrollViewEnabled = false;
@@ -88,8 +86,6 @@ public class MenuScrollView : MonoBehaviour
 	{
 		if(scrollViewEnabled)
 		{
-			GetMenuPlayers ();
-			
 			if (viewportType == ViewportType.Content)
 				CheckContentInput ();
 			
@@ -110,50 +106,18 @@ public class MenuScrollView : MonoBehaviour
 			}
 			else
 			{
-				for(int i = 0; i < playerList.Length; i++)
-					if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") != 0)
+				for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+					if (GlobalVariables.Instance.rewiredPlayers [i] != null && GlobalVariables.Instance.rewiredPlayers [i].GetAxis ("UI Vertical") != 0)
 						mouseControl = false;
 			}			
 		}
 	}
 
-	void GetMenuPlayers ()
-	{
-		playerList [0] = ReInput.players.GetPlayer (0);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
-			{
-				playerList [1] = ReInput.players.GetPlayer (1);
-				playerList [1].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 2)
-			{
-				playerList [2] = ReInput.players.GetPlayer (2);
-				playerList [2].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 3)
-			{
-				playerList [3] = ReInput.players.GetPlayer (3);
-				playerList [3].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 4)
-			{
-				playerList [4] = ReInput.players.GetPlayer (4);
-				playerList [4].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-		}
-	}
-
 	void CheckContentInput ()
 	{
-		for(int i = 0; i < playerList.Length; i++)
+		for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		{
-			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") > 0)
+			if (GlobalVariables.Instance.rewiredPlayers [i] != null && GlobalVariables.Instance.rewiredPlayers [i].GetAxis ("UI Vertical") > 0)
 			{
 				if((content.anchoredPosition.y - contentSpeed) > contentLimits.x)
 					content.DOAnchorPosY (content.anchoredPosition.y - contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");
@@ -161,7 +125,7 @@ public class MenuScrollView : MonoBehaviour
 					content.DOAnchorPosY (contentLimits.x, contentDuration).SetEase (contentEase).SetId ("Viewport");
 			}
 
-			if (playerList [i] != null && playerList [i].GetAxis ("UI Vertical") < 0)
+			if (GlobalVariables.Instance.rewiredPlayers [i] != null && GlobalVariables.Instance.rewiredPlayers [i].GetAxis ("UI Vertical") < 0)
 			{
 				if((content.anchoredPosition.y + contentSpeed) < contentLimits.y)
 					content.DOAnchorPosY (content.anchoredPosition.y + contentSpeed, contentDuration).SetEase (contentEase).SetId ("Viewport");

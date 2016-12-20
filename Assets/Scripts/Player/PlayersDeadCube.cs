@@ -11,7 +11,7 @@ public class PlayersDeadCube : MonoBehaviour
 	[Header("Controller Number")]
 	public int controllerNumber = -1;
 	[HideInInspector]
-	public Player player; // The Rewired Player
+	public Player rewiredPlayer; // The Rewired Player
 
 	[Header("Movement")]
 	public float currentVelocity;
@@ -45,12 +45,6 @@ public class PlayersDeadCube : MonoBehaviour
 
 		halfScale = transform.lossyScale.x * 0.5f;
 
-
-		//TEST
-		/*controllerNumber = 1;
-		playerName = PlayerName.Player2;*/
-
-
 		Controller ();
 		movableScript.ToColor (playerName);
 	}
@@ -64,24 +58,14 @@ public class PlayersDeadCube : MonoBehaviour
 		}
 
 		if (controllerNumber != -1)
-		{
-			player = ReInput.players.GetPlayer(controllerNumber);
-
-			if(controllerNumber > 0)
-			{
-				for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-				{
-					if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
-						player.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-				}
-			}
-		}
+			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
+		
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		movement = new Vector3(player.GetAxisRaw("Move Vertical"), 0f, -player.GetAxisRaw("Move Horizontal"));
+		movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Vertical"), 0f, -rewiredPlayer.GetAxisRaw("Move Horizontal"));
 		movement.Normalize();
 
 		hold = movableScript.hold;
@@ -121,17 +105,17 @@ public class PlayersDeadCube : MonoBehaviour
 	{
 		if(currentVelocity < maxVelocity)
 		{
-			if(player.GetAxisRaw("Move Horizontal") > 0)
-				rigidBody.AddForceAtPosition (Vector3.right * movementSpeed * player.GetAxisRaw("Move Horizontal"), rightMovePos, ForceMode.VelocityChange);
+			if(rewiredPlayer.GetAxisRaw("Move Horizontal") > 0)
+				rigidBody.AddForceAtPosition (Vector3.right * movementSpeed * rewiredPlayer.GetAxisRaw("Move Horizontal"), rightMovePos, ForceMode.VelocityChange);
 			
-			if(player.GetAxisRaw("Move Horizontal") < 0)
-				rigidBody.AddForceAtPosition (Vector3.right * movementSpeed * player.GetAxisRaw("Move Horizontal"), leftMovePos, ForceMode.VelocityChange);
+			if(rewiredPlayer.GetAxisRaw("Move Horizontal") < 0)
+				rigidBody.AddForceAtPosition (Vector3.right * movementSpeed * rewiredPlayer.GetAxisRaw("Move Horizontal"), leftMovePos, ForceMode.VelocityChange);
 			
-			if(player.GetAxisRaw("Move Vertical") > 0)
-				rigidBody.AddForceAtPosition (Vector3.forward * movementSpeed * player.GetAxisRaw("Move Vertical"), forwardMovePos, ForceMode.VelocityChange);
+			if(rewiredPlayer.GetAxisRaw("Move Vertical") > 0)
+				rigidBody.AddForceAtPosition (Vector3.forward * movementSpeed * rewiredPlayer.GetAxisRaw("Move Vertical"), forwardMovePos, ForceMode.VelocityChange);
 			
-			if(player.GetAxisRaw("Move Vertical") < 0)
-				rigidBody.AddForceAtPosition (Vector3.forward * movementSpeed * player.GetAxisRaw("Move Vertical"), backwardMovePos, ForceMode.VelocityChange);
+			if(rewiredPlayer.GetAxisRaw("Move Vertical") < 0)
+				rigidBody.AddForceAtPosition (Vector3.forward * movementSpeed * rewiredPlayer.GetAxisRaw("Move Vertical"), backwardMovePos, ForceMode.VelocityChange);
 		}
 	}
 }

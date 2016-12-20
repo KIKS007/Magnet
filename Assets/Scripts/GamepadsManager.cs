@@ -9,8 +9,11 @@ using System.Configuration;
 
 public enum WhichGamepadType {Xbox1, Xbox2, Xbox3, Xbox4, Custom};
 
+
 public class GamepadsManager : Singleton<GamepadsManager>
 {
+	public event EventHandler GamepadsChange;
+
 	[Header ("Number of Gamepads")]
 	public int numberOfGamepads;
 
@@ -23,12 +26,9 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	[Header ("Gamepads List")]
 	public List<Gamepad> gamepadsList = new List<Gamepad> ();
 
-	private ControllerChangeManager controllerChangeManager;
-
 	// Use this for initialization
 	void Awake () 
 	{
-		//ReInput.ControllerDisconnectedEvent += GamepadUnplugged;
 		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
 
 		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
@@ -40,8 +40,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 		GlobalVariables.Instance.OnStartMode += FindGamepadsPluggedAtStart;
 		GlobalVariables.Instance.OnRestartMode += FindGamepadsPluggedAtStart;
-
-		controllerChangeManager = GlobalVariables.Instance.controllerManager;
 
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
@@ -58,6 +56,8 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			gamepadsPluggedAtStart [i] = false;
 
 		CheckWhichGamepad ();
+
+		GlobalVariables.Instance.SetupRewiredPlayers ();
 	}
 
 	void CheckWhichGamepad ()
@@ -186,6 +186,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	void CheckIfGamepadReconnected (ControllerStatusChangedEventArgs arg)
 	{
 		CheckWhichGamepad ();
+		GlobalVariables.Instance.SetupRewiredPlayers ();
 
 		for(int i = 0; i < gamepadsList.Count; i++)
 		{
@@ -195,16 +196,13 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			{
 				gamepadsList [i].GamepadIsDiconnected = false;
 
-
 				if(id != -1)
-				{
 					gamepadsUnplugged[gamepadsList [i].GamepadId - 1] = false;
-					//controllerChangeManager.GamepadConnectedDisplay (id);
-					controllerChangeManager.GamepadDisplay ();
-				}
-
 			}
 		}
+
+		if (GamepadsChange != null)
+			GamepadsChange ();
 	}
 
 	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
@@ -217,18 +215,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			{
 				gamepadsList [i].GamepadIsDiconnected = true;
 
-				if(id != -1)
-				{
-					//controllerChangeManager.GamepadConnectedDisplay (id);
-					//controllerChangeManager.ResetGamepadOnDisconnect (id);
-					controllerChangeManager.GamepadDisplay ();
-				}
-
 				gamepadsUnplugged[id - 1] = true;
-
-				/*if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && id != -1)
-					gamepadsUnplugged[id - 1] = true;*/
-
 			}
 		}
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
@@ -242,6 +229,9 @@ public class GamepadsManager : Singleton<GamepadsManager>
 				MenuManager.Instance.ReturnToMainMenu ();
 			}
 		}
+
+		if (GamepadsChange != null)
+			GamepadsChange ();
 	}
 
 	void ResetUnpluggedArray ()
@@ -260,7 +250,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			{
 				if (gamepadsPluggedAtStart[i])
 					GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
-
 			}
 		}
 		else

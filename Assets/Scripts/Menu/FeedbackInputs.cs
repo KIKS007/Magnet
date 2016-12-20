@@ -215,26 +215,14 @@ public class FeedbackInputs : MonoBehaviour
 
 	void GetPlayersEvent (ControllerStatusChangedEventArgs arg)
 	{
-		mouseKeyboard = ReInput.players.GetPlayer (0);
-		gamepad1 = ReInput.players.GetPlayer (1);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
-				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-		}
+		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
+		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
 	}
 
 	void GetPlayers ()
 	{
-		mouseKeyboard = ReInput.players.GetPlayer (0);
-		gamepad1 = ReInput.players.GetPlayer (1);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
-				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-		}
+		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
+		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
 	}
 
 	void Feedback ()

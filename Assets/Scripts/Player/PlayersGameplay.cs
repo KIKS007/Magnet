@@ -47,7 +47,7 @@ public class PlayersGameplay : MonoBehaviour
     [Header("Controller Number")]
     public int controllerNumber = -1;
     [HideInInspector]
-    public Player player; // The Rewired Player
+    public Player rewiredPlayer; // The Rewired Player
 
     [Header("Movement")]
     public float speed = 18;
@@ -194,10 +194,10 @@ public class PlayersGameplay : MonoBehaviour
                 transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
             }
 
-            if (playerState == PlayerState.Attracting && !player.GetButton("Attract"))
+            if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
                 playerState = PlayerState.None;
 
-            if (playerState == PlayerState.Repulsing && !player.GetButton("Repulse"))
+            if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
                 playerState = PlayerState.None;
 
             OnAttractedOnRepulsed();
@@ -206,7 +206,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void ActivateFunctions()
     {
-        movement = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+        movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movement.Normalize();
 
         if (controllerNumber == 0 && playerState != PlayerState.Stunned)
@@ -216,19 +216,19 @@ public class PlayersGameplay : MonoBehaviour
             TurningGamepad();
 
 
-        if (playerState == PlayerState.Holding && player.GetButtonUp("Attract"))
+        if (playerState == PlayerState.Holding && rewiredPlayer.GetButtonUp("Attract"))
             Shoot();
 
         if (playerState == PlayerState.None)
         {
-            if (player.GetButton("Attract"))
+            if (rewiredPlayer.GetButton("Attract"))
                 playerState = PlayerState.Attracting;
 
-            if (player.GetButton("Repulse"))
+            if (rewiredPlayer.GetButton("Repulse"))
                 playerState = PlayerState.Repulsing;
         }
 
-        if (player.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
+        if (rewiredPlayer.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
             StartCoroutine(Dash());
         
     }
@@ -286,18 +286,8 @@ public class PlayersGameplay : MonoBehaviour
         }
 
         if (controllerNumber != -1)
-        {
-            player = ReInput.players.GetPlayer(controllerNumber);
-
-			if(controllerNumber > 0)
-			{
-				for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-				{
-					if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
-						player.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-				}
-			}
-        }
+			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
+        
     }
 	#endregion
 
@@ -484,13 +474,13 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void TurningGamepad()
     {
-        Vector3 aim = new Vector3(player.GetAxis("Aim Horizontal"), 0, player.GetAxis("Aim Vertical"));
+        Vector3 aim = new Vector3(rewiredPlayer.GetAxis("Aim Horizontal"), 0, rewiredPlayer.GetAxis("Aim Vertical"));
 
         if (aim.magnitude > rightJoystickDeadzone)
         {
-            //transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
-            //playerRigidbody.MoveRotation(Quaternion.Euler (new Vector3 (transform.eulerAngles.x, Mathf.Atan2 (player.GetAxisRaw ("Aim Horizontal"), player.GetAxisRaw ("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
-            playerRigidbody.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, Mathf.Atan2(player.GetAxisRaw("Aim Horizontal"), player.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
+            //transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(rewiredPlayer.GetAxisRaw("Aim Horizontal"), rewiredPlayer.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
+            //playerRigidbody.MoveRotation(Quaternion.Euler (new Vector3 (transform.eulerAngles.x, Mathf.Atan2 (rewiredPlayer.GetAxisRaw ("Aim Horizontal"), rewiredPlayer.GetAxisRaw ("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
+            playerRigidbody.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, Mathf.Atan2(rewiredPlayer.GetAxisRaw("Aim Horizontal"), rewiredPlayer.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
         }
     }
 	#endregion
@@ -540,7 +530,7 @@ public class PlayersGameplay : MonoBehaviour
         if (OnDash != null)
             OnDash();
 
-        Vector3 movementTemp = new Vector3(player.GetAxisRaw("Move Horizontal"), 0f, player.GetAxisRaw("Move Vertical"));
+        Vector3 movementTemp = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movementTemp = movementTemp.normalized;
 
         float dashSpeedTemp = dashSpeed;

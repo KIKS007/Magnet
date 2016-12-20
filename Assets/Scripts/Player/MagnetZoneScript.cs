@@ -7,57 +7,67 @@ public class MagnetZoneScript : MonoBehaviour
 {
 	public float rayLength;
 
-	private Transform character;
-	private PlayersGameplay characterScript;
+	private Transform player;
+	private PlayersGameplay playerScript;
 	private PlayersFXAnimations fxAnimationsScript;
 
 	private RaycastHit objectHit;
 
-	public Player player;
+	public Player rewiredPlayer;
 
 	// Use this for initialization
 	void Start () 
 	{
-		character = gameObject.transform.parent;
-		characterScript = character.GetComponent<PlayersGameplay> ();
-		fxAnimationsScript = character.GetComponent<PlayersFXAnimations> ();
+		player = gameObject.transform.parent;
+		playerScript = player.GetComponent<PlayersGameplay> ();
+		fxAnimationsScript = player.GetComponent<PlayersFXAnimations> ();
+
+		StartCoroutine (SetupRewiredPlayer ());
+	}
+
+	IEnumerator SetupRewiredPlayer ()
+	{
+		yield return new WaitUntil (() => playerScript.rewiredPlayer != null);
+
+		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 	}
 
 	void Update ()
 	{
-		player = characterScript.player;
-
-		if (player.GetButtonUp ("Attract"))
-			characterScript.cubesAttracted.Clear();
-
-		if (player.GetButtonUp ("Repulse"))
-			characterScript.cubesRepulsed.Clear ();
-
-		if (player.GetButton ("Repulse") && player.GetButton ("Attract"))
+		if(rewiredPlayer != null)
 		{
-			characterScript.cubesAttracted.Clear ();
-			characterScript.cubesRepulsed.Clear ();
+			if (rewiredPlayer.GetButtonUp ("Attract"))
+				playerScript.cubesAttracted.Clear();
+			
+			if (rewiredPlayer.GetButtonUp ("Repulse"))
+				playerScript.cubesRepulsed.Clear ();
+			
+			if (rewiredPlayer.GetButton ("Repulse") && rewiredPlayer.GetButton ("Attract"))
+			{
+				playerScript.cubesAttracted.Clear ();
+				playerScript.cubesRepulsed.Clear ();
+			}			
 		}
 	}
 
 	void OnTriggerStay (Collider other)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && player != null && characterScript.holdState == HoldState.CanHold)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)
 		{
 			if(other.tag == "Movable" || other.tag == "Suggestible")
 			{
 				RaycastHit hit;
 
-				if(Physics.Raycast(character.transform.position, other.transform.position - character.transform.position, out hit, rayLength))
+				if(Physics.Raycast(player.transform.position, other.transform.position - player.transform.position, out hit, rayLength))
 				{
 					if(hit.collider.gameObject.tag == "Movable" || hit.collider.gameObject.tag == "Suggestible")
 					{
-						Debug.DrawRay(character.transform.position, other.transform.position - character.transform.position, Color.red);
+						Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
 
-						if (player.GetButton ("Attract") && !player.GetButton ("Repulse"))
+						if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
 							Attract (other);
 
-						if (player.GetButton ("Repulse") && !player.GetButton ("Attract"))
+						if (rewiredPlayer.GetButton ("Repulse") && !rewiredPlayer.GetButton ("Attract"))
 							Repulse (other);						
 					}
 				}
@@ -67,24 +77,24 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void Attract (Collider other)
 	{
-		if (!other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
-			other.GetComponent<MovableScript> ().attracedBy.Add (character.gameObject);
+		if (!other.GetComponent<MovableScript> ().attracedBy.Contains (player.gameObject))
+			other.GetComponent<MovableScript> ().attracedBy.Add (player.gameObject);
 
-		if (!characterScript.cubesAttracted.Contains (other.gameObject))
+		if (!playerScript.cubesAttracted.Contains (other.gameObject))
 		{
-			characterScript.cubesAttracted.Add (other.gameObject);
+			playerScript.cubesAttracted.Add (other.gameObject);
 			fxAnimationsScript.StartCoroutine ("AttractionFX", other.gameObject);
 		}
 	}
 
 	void Repulse (Collider other)
 	{
-		if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
-			other.GetComponent<MovableScript> ().repulsedBy.Add (character.gameObject);
+		if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (player.gameObject))
+			other.GetComponent<MovableScript> ().repulsedBy.Add (player.gameObject);
 
-		if (!characterScript.cubesRepulsed.Contains (other.gameObject))
+		if (!playerScript.cubesRepulsed.Contains (other.gameObject))
 		{
-			characterScript.cubesRepulsed.Add (other.gameObject);
+			playerScript.cubesRepulsed.Add (other.gameObject);
 			fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
 		}
 	}
@@ -95,18 +105,18 @@ public class MagnetZoneScript : MonoBehaviour
 		{
 			if(other.tag == "Movable" || other.tag =="ThrownMovable" || other.tag == "Suggestible")
 			{
-				if(other.GetComponent<MovableScript> ().attracedBy.Contains (character.gameObject))
-					other.GetComponent<MovableScript> ().attracedBy.Remove (character.gameObject);
+				if(other.GetComponent<MovableScript> ().attracedBy.Contains (player.gameObject))
+					other.GetComponent<MovableScript> ().attracedBy.Remove (player.gameObject);
 				
-				if (other.GetComponent<MovableScript> ().repulsedBy.Contains (character.gameObject))
-					other.GetComponent<MovableScript> ().repulsedBy.Remove (character.gameObject);
+				if (other.GetComponent<MovableScript> ().repulsedBy.Contains (player.gameObject))
+					other.GetComponent<MovableScript> ().repulsedBy.Remove (player.gameObject);
 
 
-				if(characterScript.cubesAttracted.Contains(other.gameObject))
-					characterScript.cubesAttracted.Remove (other.gameObject);
+				if(playerScript.cubesAttracted.Contains(other.gameObject))
+					playerScript.cubesAttracted.Remove (other.gameObject);
 
-				if(characterScript.cubesRepulsed.Contains(other.gameObject))
-					characterScript.cubesRepulsed.Remove (other.gameObject);
+				if(playerScript.cubesRepulsed.Contains(other.gameObject))
+					playerScript.cubesRepulsed.Remove (other.gameObject);
 			}
 		}
 	}

@@ -80,7 +80,6 @@ public class MenuManager : Singleton <MenuManager>
 	private GameObject mainCamera;
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
-	private Player[] playerList = new Player[5];
 
 	private bool startScreen = true;
 
@@ -126,8 +125,6 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
-			GetMenuPlayers ();
-
 			CheckNothingSelected ();
 
 			GamepadsDisconnected ();
@@ -138,54 +135,22 @@ public class MenuManager : Singleton <MenuManager>
 		CheckPauseInput ();
 	}
 
-	void GetMenuPlayers ()
-	{
-		playerList [0] = ReInput.players.GetPlayer (0);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
-			{
-				playerList [1] = ReInput.players.GetPlayer (1);
-				playerList [1].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 2)
-			{
-				playerList [2] = ReInput.players.GetPlayer (2);
-				playerList [2].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 3)
-			{
-				playerList [3] = ReInput.players.GetPlayer (3);
-				playerList [3].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 4)
-			{
-				playerList [4] = ReInput.players.GetPlayer (4);
-				playerList [4].controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-			}
-		}
-	}
-
 	void CheckMenuInput ()
 	{
 		if(!DOTween.IsTweening ("Menu") && !DOTween.IsTweening ("MenuCamera"))
 		{
-			for(int i = 0; i < playerList.Length; i++)
+			for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 			{
 				if(startScreen)
 				{
-					if(playerList[i] != null  && playerList[i].GetButtonDown("UI Submit") || playerList[i] != null && playerList[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
+					if(GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Submit") || GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
 					{
 						StartScreen ();
 						startScreen = false;
 					}
 				}
 				
-				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Cancel"))
+				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
 					currentMenu.Cancel ();
 			}			
 		}
@@ -195,15 +160,15 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(!DOTween.IsTweening ("Menu") && !DOTween.IsTweening ("MenuCamera"))
 		{
-			for(int i = 0; i < playerList.Length; i++)
+			for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 			{
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && playerList [i] != null && playerList [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
+				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
 				{
 					currentMenu.HideMenu ();
 					PauseResumeGame ();
 				}
 
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerList[i] != null && playerList [i].GetButtonDown ("UI Start"))
+				if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start"))
 					PauseResumeGame ();				
 			}			
 		}
