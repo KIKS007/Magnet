@@ -256,7 +256,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			{
 				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
 				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
-				particlesList [i].lifetime = lifeTime;
+				particlesList [i].startLifetime = lifeTime;
 			}
 
 			ps.SetParticles (particlesList, particlesList.Length);
@@ -284,7 +284,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		for (int i = 0; i < ps.particleCount; i++)
 		{
-			particlesList [i].lifetime = -1f;
+			particlesList [i].startLifetime = -1f;
 			yield return null;
 		}
 
@@ -318,7 +318,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			{
 				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
 				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
-				particlesList [i].lifetime = lifeTime;
+				particlesList [i].startLifetime = lifeTime;
 			}
 
 			ps.SetParticles (particlesList, particlesList.Length);

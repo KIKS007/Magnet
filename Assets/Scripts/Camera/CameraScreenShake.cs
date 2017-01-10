@@ -29,6 +29,7 @@ public class CameraScreenShake : MonoBehaviour
 		//initialRotation = transform.rotation.eulerAngles;
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
+		ResetCameraRotation ();
 	}
 
 	// Update is called once per frame

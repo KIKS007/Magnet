@@ -1,4 +1,5 @@
 #pragma warning disable 0618
+#pragma warning disable 0649
 
 //unity before version 5 is old
 #define USE_OLD_UNITY 

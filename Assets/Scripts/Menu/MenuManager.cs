@@ -261,7 +261,7 @@ public class MenuManager : Singleton <MenuManager>
 		if(!startScreen)
 			cameraMovement.ShowLogo ();
 
-		underButtonsList [0].GetComponent<Button> ().Select ();
+		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -299,7 +299,7 @@ public class MenuManager : Singleton <MenuManager>
 		if(!startScreen)
 			cameraMovement.ShowLogo ();
 
-		underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
+		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (delay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -365,7 +365,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//Select First Under Menu Button
-		underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
+		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = whichMenu;
 	}
@@ -464,7 +464,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//Select First Under Menu Button
-		underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
+		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = whichMenu;
 	}
@@ -711,7 +711,7 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ();
+		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (delay), ()=> aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ()); 
 
 		currentMenu = aboveMenu;
 	}
@@ -806,6 +806,10 @@ public class MenuManager : Singleton <MenuManager>
 	void SetNonInteractable (RectTransform target)
 	{
 		target.GetComponent<Button> ().interactable = false;
+
+		//Weird Bug Patch
+		target.GetComponent<Button> ().enabled = false;
+		target.GetComponent<Button> ().enabled = true;
 
 		Navigation navTemp = target.GetComponent<Button> ().navigation;
 		navTemp.mode = Navigation.Mode.None;
