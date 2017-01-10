@@ -8,6 +8,8 @@ public class MenuComponentEditor : Editor
 {
 	SerializedProperty menuComponentType;
 
+	SerializedProperty viewportContent;
+
 	SerializedProperty aboveMenuScript;
 
 	SerializedProperty otherMenuList;
@@ -32,6 +34,8 @@ public class MenuComponentEditor : Editor
 	void OnEnable ()
 	{
 		menuComponentType = serializedObject.FindProperty ("menuComponentType");
+
+		viewportContent = serializedObject.FindProperty ("viewportContent");
 
 		aboveMenuScript = serializedObject.FindProperty ("aboveMenuScript");
 
@@ -60,6 +64,8 @@ public class MenuComponentEditor : Editor
 
 		EditorGUILayout.PropertyField (menuComponentType, true);
 
+		EditorGUILayout.PropertyField (viewportContent, true);
+
 		if(menuComponentType.enumValueIndex != (int)MenuComponentType.EndModeMenu)
 		{
 			if(menuComponentType.enumValueIndex != (int)MenuComponentType.MainMenu)
@@ -72,13 +78,13 @@ public class MenuComponentEditor : Editor
 				EditorGUILayout.PropertyField (otherButtonsList, true);		
 			}
 			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsListMenu)
+			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsListMenu || menuComponentType.enumValueIndex == (int)MenuComponentType.MainMenu)
 			{
 				EditorGUILayout.PropertyField (underMenuList, true);
 				EditorGUILayout.PropertyField (underButtonsList, true);
 			}
 			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ContentMenu)
+			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ContentMenu || viewportContent.boolValue == true)
 			{
 				EditorGUILayout.PropertyField (content, true);			
 			}

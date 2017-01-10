@@ -5,7 +5,12 @@ using DarkTonic.MasterAudio;
 
 public class MovableBomb : MovableScript 
 {
+	[Header ("BOMB")]
 	public GameObject playerHolding;
+	public float trackSpeed = 1.2f;
+	public float trackSpeedAdded = 0.001f;
+
+	public bool trackingPlayer = false;
 
 	[Header ("Explosion")]
 	[SoundGroupAttribute]
@@ -15,35 +20,9 @@ public class MovableBomb : MovableScript
 	[SoundGroupAttribute]
 	public string cubeTrackingSound;
 
-	public float explosionForce = 10;
-	public float explosionRadius = 3;
+	public float explosionForce = 50;
+	public float explosionRadius = 50;
 	public LayerMask explosionMask;
-
-	public float getToPlayerForce = 2;
-	//public float distanceFactor = 2;
-
-	private bool trackingPlayer = false;
-
-	protected override void Start ()
-	{
-		hold = false;
-
-		rigidbodyMovable = GetComponent<Rigidbody>();
-		movableRenderer = GetComponent<Renderer> ();
-		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
-		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-
-		GetRigidbodySettings ();
-
-		if(playerHolding == null)
-		{
-			cubeMaterial.SetFloat ("_Lerp", 0);
-			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
-		}
-
-		attracedBy.Clear ();
-		repulsedBy.Clear ();
-	}
 
 	protected override void OnEnable ()
 	{
@@ -54,12 +33,10 @@ public class MovableBomb : MovableScript
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 
-		GetRigidbodySettings ();
-
 		if(playerHolding == null)
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
-			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
 		}
 
 		attracedBy.Clear ();
@@ -91,12 +68,12 @@ public class MovableBomb : MovableScript
 		}
 	}
 
-	protected override void SetCubeColor ()
+	protected void SetCubeColor ()
 	{
+		int whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
 
-		Color cubeCorrectColor = new Color ();
-		
-		switch(player.GetComponent <PlayersGameplay>().playerName)
+		/*	switch(player.GetComponent <PlayersGameplay>().playerName)
 		{
 		case PlayerName.Player1:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
@@ -110,7 +87,7 @@ public class MovableBomb : MovableScript
 		case PlayerName.Player4:
 			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
 			break;
-		}
+		}*/
 
 		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
 		{
@@ -201,7 +178,7 @@ public class MovableBomb : MovableScript
 
 	public override void OnRelease ()
 	{
-		
+		OnReleaseEventVoid ();
 	}
 
 	public void ResetColor ()
@@ -214,7 +191,7 @@ public class MovableBomb : MovableScript
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 			
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
 		}
 
@@ -229,6 +206,8 @@ public class MovableBomb : MovableScript
 
 			yield return StartCoroutine (GetToPlayerPosition ());
 		}
+
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
@@ -263,6 +242,8 @@ public class MovableBomb : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
+		float getToPlayerForceTemp = trackSpeed;
+
 		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
 		{
 			if (!hold)
@@ -270,11 +251,11 @@ public class MovableBomb : MovableScript
 				Vector3 direction = (playerHolding.transform.position - transform.position);
 				direction.Normalize ();
 
-				getToPlayerForce += 0.001f;
+				getToPlayerForceTemp += trackSpeedAdded;
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
-				rigidbodyMovable.AddForce(direction * getToPlayerForce, ForceMode.Impulse);
+				rigidbodyMovable.AddForce(direction * getToPlayerForceTemp, ForceMode.Impulse);
 
 				yield return new WaitForFixedUpdate();
 			}

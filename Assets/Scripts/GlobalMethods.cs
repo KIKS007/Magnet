@@ -5,6 +5,18 @@ using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	private float xLimit;
+	private float zLimit;
+
+	void Start ()
+	{
+		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
+		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
+
+		xLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
+		zLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
+	}
+
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
 	{
 		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn));
@@ -44,6 +56,56 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
+	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, string tag)
+	{
+		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, tag));
+	}
+
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 newPos = new Vector3();
+		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			yield return new WaitForSeconds (1f);
+			
+			do
+			{
+				newPos = new Vector3 (Random.Range (-20f, 20f), 3, Random.Range (-10f, 10f));
+				yield return null;	
+			}
+			while(Physics.CheckSphere(newPos, 5, layer));			
+			
+			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
+			
+			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
+			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
+			
+			Vector3 scale = deadCube.transform.lossyScale;
+			deadCube.transform.localScale = Vector3.zero;
+			
+			deadCube.tag = "Untagged";
+
+			if (tag != "Movable")
+				deadCube.GetComponent<MovableDeadCube> ().basicMovable = false;
+
+			deadCube.transform.DOScale (scale, 0.8f).SetEase (Ease.OutElastic);
+			StartCoroutine (ChangeMovableTag (deadCube, tag, 0.8f));
+
+
+			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
+
+			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.Players [(int)playerName].gameObject.GetComponent<Renderer> ().material.color;
+
+			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
+
+			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, deadCube.transform);
+		}
+	}
+
 	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
 	{
 		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn));
@@ -57,6 +119,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
+			allMovables [i].SetActive (false);
 			allScales [i] = allMovables [i].transform.lossyScale;
 			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
 		}
@@ -65,12 +128,14 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
-			allMovables [i].tag = "Untagged";
+			if(allMovables[i] != null)
+				allMovables [i].tag = "Untagged";
+			
 			Vector3 newPos = new Vector3 ();
 
 			do
 			{
-				newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+				newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 			}
 			while(Physics.CheckSphere(newPos, 5, layer));
 
@@ -90,8 +155,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 				MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
 			}
-
-
+				
 			yield return null;
 		}
 	}
@@ -130,6 +194,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		
 	public void SpawnExistingMovableRandom (GameObject movable)
 	{
+		StartCoroutine (SpawnExistingMovableRandomCoroutine (movable));
+	}
+
+	IEnumerator SpawnExistingMovableRandomCoroutine (GameObject movable)
+	{
 		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
@@ -140,7 +209,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-20f, 20f), 3, Random.Range(-10f, 10f));
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
 		while(Physics.CheckSphere(newPos, 5, layer));
 
@@ -153,6 +222,42 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
 		movable.transform.position = newPos;
+
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
+
+		yield return null;
+	}
+
+	public void SpawnNewMovableRandomVoid (GameObject movable, float delay = 0)
+	{
+		StartCoroutine (SpawnNewMovableRandom (movable, delay));
+	}
+
+	IEnumerator SpawnNewMovableRandom (GameObject movable, float delay = 0)
+	{
+		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+
+		do
+		{
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
+		}
+		while(Physics.CheckSphere(newPos, 5, layer));
+
+		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
+		clone.tag = "Untagged";
+		clone.transform.localScale = Vector3.zero;
+		clone.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		clone.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+		yield return new WaitForSeconds (delay);
+
+		clone.gameObject.SetActive(true);
+
+		clone.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
+		StartCoroutine (ChangeMovableTag (clone, tagTemp, 0.8f));
 
 		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
 	}

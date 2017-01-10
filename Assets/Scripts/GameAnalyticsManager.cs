@@ -8,8 +8,9 @@ public class GameAnalyticsManager : Singleton<GameAnalyticsManager>
 
 	void Start ()
 	{
-		GlobalVariables.Instance.OnModeStarted += StartModeTimer;
-		GlobalVariables.Instance.OnGameOver += StopModeTimer;
+		GlobalVariables.Instance.OnStartMode += StartModeTimer;
+		GlobalVariables.Instance.OnRestartMode += StartModeTimer;
+		GlobalVariables.Instance.OnEndMode += StopModeTimer;
 	}
 
 	public void GamesCount ()

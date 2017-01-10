@@ -12,9 +12,6 @@ public class PlayersManikin : PlayersGameplay
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(playerRigidbody.velocity.magnitude > maxVelocity)
-				maxVelocity = playerRigidbody.velocity.magnitude;
-
 			if(playerState == PlayerState.Stunned)
 			{
 				transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
@@ -65,12 +62,9 @@ public class PlayersManikin : PlayersGameplay
 
 		OnStunVoid ();
 
-		speed = stunnedSpeed;
-
 		yield return new WaitForSeconds(stunnedDuration);
 
 		playerState = PlayerState.None;
-		speed = originalSpeed;
 	}
 
 	public override void Death ()

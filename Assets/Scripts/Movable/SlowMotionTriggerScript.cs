@@ -3,24 +3,25 @@ using System.Collections;
 
 public class SlowMotionTriggerScript : MonoBehaviour 
 {
+	public LayerMask playerLayerMask;
 	public bool triggerEnabled = false;
 
 	[HideInInspector]
 	public GameObject playerThatThrew;
 
-	void OnTriggerStay (Collider other)
+	void OnTriggerEnter (Collider other)
 	{
-		playerThatThrew = transform.parent.GetComponent<MovableScript>().playerThatThrew;
-
-		if(triggerEnabled && other.tag == "Player" && other.gameObject != playerThatThrew)
+		if(triggerEnabled && (1<<other.gameObject.layer & playerLayerMask) != 0)
 		{
-			triggerEnabled = false;
-
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion ();
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().ContrastVignette(transform.position);
+			playerThatThrew = transform.parent.GetComponent<MovableScript>().playerThatThrew;
+			
+			if(triggerEnabled && other.tag == "Player" && other.gameObject != playerThatThrew)
+			{
+				triggerEnabled = false;
+				
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion ();
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().ContrastVignette(transform.position);
+			}			
 		}
-
-		if (triggerEnabled && transform.parent.tag != "ThrownMovable")
-			triggerEnabled = false;
 	}
 }

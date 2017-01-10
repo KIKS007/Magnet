@@ -9,67 +9,40 @@ public class MagnetTriggerScript : MonoBehaviour
 	[HideInInspector]
 	public Transform magnetPoint;
 
-	private Transform character;
+	private PlayersGameplay playerScript;
 
-	private Player player;
-
-	[HideInInspector]
-	public bool gettingMovable = false;
+	private Player rewiredPlayer;
 
 	// Use this for initialization
 	void Start () 
 	{
-		character = gameObject.transform.parent;
+		playerScript = gameObject.transform.parent.GetComponent<PlayersGameplay> ();
+
+		StartCoroutine (SetupRewiredPlayer ());
 	}
-	
-	// Update is called once per frame
-	void Update () 
+
+	IEnumerator SetupRewiredPlayer ()
 	{
-		player = character.GetComponent<PlayersGameplay> ().player;
+		yield return new WaitUntil (() => playerScript.rewiredPlayer != null);
+
+		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 	}
 
 	void OnTriggerStay (Collider other)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && other.tag == "Movable")
 		{
-			if(other.tag == "Movable" && character.GetComponent<PlayersGameplay>().playerState != PlayerState.Holding 
-				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned 
-				&& character.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+			if(playerScript.holdState == HoldState.CanHold)
 			{
-
-				if(player != null && player.GetButton("Attract") && !player.GetButton ("Repulse"))
-				{
+				if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
 					GetMovable (other);
-				}
 			}
 		}
 	}
 
 	public void GetMovable (Collider other)
 	{
-		gettingMovable = true;
-
-		other.tag = "HoldMovable";
-
-		other.gameObject.GetComponent<MovableScript>().hold = true;
-		other.gameObject.GetComponent<MovableScript>().playerThatThrew = transform.parent.gameObject;
-		other.gameObject.GetComponent<MovableScript>().player = transform.parent;
-
-		other.gameObject.GetComponent<MovableScript>().GetRigidbodySettings();
-
-		Destroy (other.GetComponent<Rigidbody>());
-
-		character.GetComponent<PlayersGameplay> ().OnHoldMovable (other.gameObject);
-		other.transform.SetParent(transform.parent);
-
-		Vector3 scaleTemp = other.GetComponent<MovableScript> ().initialScale;
-
-		Vector3 v3 = magnetPoint.localPosition;
-		v3.x = 0f;
-		v3.y = (scaleTemp.y /2 + 0.1f) - 1;
-		v3.z = 0.5f * scaleTemp.z + 0.8f;
-		magnetPoint.localPosition = v3;
-
-		gettingMovable = false;
+		playerScript.OnHoldMovable (other.gameObject);
 	}
+
 }

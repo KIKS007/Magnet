@@ -89,7 +89,8 @@ public class SlowMotionCamera : MonoBehaviour
 
 		bloomInitialIntensity = gameObject.GetComponent<Bloom> ().bloomIntensity;
 
-		GlobalVariables.Instance.OnModeStarted += () => slowMoNumber = 0;
+		GlobalVariables.Instance.OnStartMode += () => slowMoNumber = 0;
+		GlobalVariables.Instance.OnRestartMode += () => slowMoNumber = 0;
 	}
 
 	// Called when this script starts
@@ -267,7 +268,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StartEndGameSlowMotion ()
 	{
-		StopCoroutine (SlowMotionDuration (slowMoNumber));
+		StopAllCoroutines ();
 		DOTween.Kill ("StopSlowMotion");
 
 		slowMoNumber++;

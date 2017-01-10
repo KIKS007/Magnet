@@ -53,26 +53,11 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	void GetPlayers ()
 	{
-		mouseKeyboard = ReInput.players.GetPlayer (0);
-		gamepad1 = ReInput.players.GetPlayer (1);
-		gamepad2 = ReInput.players.GetPlayer (2);
-		gamepad3 = ReInput.players.GetPlayer (3);
-		gamepad4 = ReInput.players.GetPlayer (4);
-
-		for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-		{
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 1)
-				gamepad1.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 2)
-				gamepad2.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 3)
-				gamepad3.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-
-			if(GamepadsManager.Instance.gamepadsList[i].GamepadId == 4)
-				gamepad4.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-		}
+		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
+		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
+		gamepad2 = GlobalVariables.Instance.rewiredPlayers [2]; 
+		gamepad3 = GlobalVariables.Instance.rewiredPlayers [3]; 
+		gamepad4 = GlobalVariables.Instance.rewiredPlayers [4];
 	}
 	
 	// Update is called once per frame

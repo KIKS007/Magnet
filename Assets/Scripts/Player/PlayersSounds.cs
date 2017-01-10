@@ -61,7 +61,8 @@ public class PlayersSounds : MonoBehaviour
 		playerScript.OnCubeHit += CubeHit;
 		playerScript.OnDashHit += DashHit;
 
-		GlobalVariables.Instance.OnGameOver += FadeSounds;
+		GlobalVariables.Instance.OnEndMode += FadeSounds;
+		GlobalVariables.Instance.OnMenu += FadeSounds;
 		GlobalVariables.Instance.OnPause += FadeSounds;
 	}
 

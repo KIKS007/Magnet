@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class TrainingManager : MonoBehaviour 
 {
@@ -58,14 +59,14 @@ public class TrainingManager : MonoBehaviour
 
 	IEnumerator GameEnd ()
 	{
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
 		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
 
-		//GameObject.FindGameObjectWithTag("MainMenuManager").GetComponent<MainMenuManagerScript>().GameOverMenuVoid ();
-		MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}	
 }

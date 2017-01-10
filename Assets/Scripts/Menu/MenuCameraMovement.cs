@@ -37,7 +37,8 @@ public class MenuCameraMovement : MonoBehaviour
 		menuLogo.gameObject.SetActive (true);
 		startScreenText.gameObject.SetActive (true);
 
-		GlobalVariables.Instance.OnGameOver += () => positionOnPause = Vector3.zero;
+		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
+		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
 	}
 
 	public void StartScreen ()
@@ -47,7 +48,7 @@ public class MenuCameraMovement : MonoBehaviour
 
 	IEnumerator StartScreenCoroutine ()
 	{
-		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
 		menuLogo.DOAnchorPos (logoNewPos, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		menuLogo.DOScale (logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 

@@ -15,19 +15,22 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public float movementDuration = 0.25f;
 	public Ease movementEase = Ease.InOutCubic;
 
-	public MainMenuManagerScript menuScript;
-
 	private Transform mainCamera;
 
 	// Use this for initialization
 	void Awake () 
 	{
-		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
-
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
 
-		if(GameObject.FindGameObjectWithTag ("MainMenuManager") != null)
-			menuScript = GameObject.FindGameObjectWithTag ("MainMenuManager").GetComponent<MainMenuManagerScript> ();
+		if (SceneManager.GetActiveScene ().name != "Scene Testing")
+			StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
+	}
+
+	void Start ()
+	{
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
+			FindGameObjects ();
+		
 	}
 
 	//Game First Scene Loaded
@@ -80,7 +83,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		{
 			StatsManager.Instance.ResetStats (true);
 
-			GlobalVariables.Instance.GameState = GameStateEnum.Over;
+			GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 			StartCoroutine (LoadScene (sceneToLoad));
 		}
 
@@ -110,7 +113,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
-		GlobalVariables.Instance.GameState = GameStateEnum.Over;
+		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
@@ -146,10 +149,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		FindGameObjects ();
 	
 		yield return myTween.WaitForCompletion ();
-
-		/*myTween = mainCamera.DOMove (menuScript.playPosition, menuScript.cameraMovementDuration).SetEase(movementEase);
-
-		yield return myTween.WaitForCompletion ();*/
 
 		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
@@ -236,7 +235,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 				GlobalVariables.Instance.Players [3] = players [i];
 		}
 
-		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.Find("Environment").transform.GetComponentInChildren<MirrorReflection>();
+		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
 
 		UpdateGlobalVariables ();
 	}

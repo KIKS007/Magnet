@@ -8,7 +8,7 @@ public class ColorTestScript : MonoBehaviour
 
 	public bool test = false;
 	public Color theCUBECOLOR;
-	public string player;
+	public PlayerName player;
 	public Material cubeMaterial;
 	public CubeColor cubeColor;
 
@@ -23,7 +23,7 @@ public class ColorTestScript : MonoBehaviour
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 
 		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubeNeutralColor);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
 	}
 	
 	// Update is called once per frame
@@ -45,28 +45,9 @@ public class ColorTestScript : MonoBehaviour
 		{
 			DOTween.Kill ("CubeNeutralTween");
 
-			Color cubeCorrectColor = new Color ();
-			CubeColor cubeColorTest = CubeColor.Neutral;
-
-			switch(player)
-			{
-			case "Player 1":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
-				cubeColorTest = CubeColor.Blue;
-				break;
-			case "Player 2":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
-				cubeColorTest = CubeColor.Pink;
-				break;
-			case "Player 3":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
-				cubeColorTest = CubeColor.Green;
-				break;
-			case "Player 4":
-				cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
-				cubeColorTest = CubeColor.Yellow;
-				break;
-			}
+			int whichPlayer = (int)player;
+			CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
+			Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
 
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -82,7 +63,7 @@ public class ColorTestScript : MonoBehaviour
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubeNeutralColor, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).OnComplete(()=> cubeColor = CubeColor.Neutral);
 		}
 

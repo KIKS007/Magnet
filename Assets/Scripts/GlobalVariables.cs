@@ -5,23 +5,16 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
 
-public enum GameStateEnum {Playing, Paused, Over};
+public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
-public enum WhichMode {Bomb, Crush, Training, Default};
+public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Burden, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
-	public event EventHandler OnGameOver;
-	public event EventHandler OnModeStarted;
-	public event EventHandler OnModeEnded;
-	public event EventHandler OnPlaying;
-	public event EventHandler OnPause;
-	public event EventHandler OnResume;
-	public event EventHandler OnMainMenu;
-
 	[Header ("Game State")]
-	public GameStateEnum GameState = GameStateEnum.Over;
+	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
+	public ControllerChangeManager controllerManager;
 
 	[Header ("Scenes")]
 	public string firstSceneToLoad = "Crush";
@@ -35,24 +28,25 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Players")]
 	public GameObject[] Players = new GameObject[4];
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
+	public List<GameObject> AlivePlayersList = new List<GameObject>();
 
-	[Header ("Players States")]
+	[Header ("Players Count")]
 	public int NumberOfPlayers;
 	public int NumberOfDisabledPlayers;
+	public int NumberOfAlivePlayers;
+	public int NumberOfDeadPlayers;
 
-	[Header ("Cubes Stripes")]
-	public ControllerChangeManager1 controllerManager;
+	[Header ("Mouse Cursor")]
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
 	[Header ("Cubes Color")]
-	public Color cubeColorplayer1;
-	public Color cubeColorplayer2;
-	public Color cubeColorplayer3;
-	public Color cubeColorplayer4;
-	public Color cubeNeutralColor;
+	public Color[] cubePlayersColor = new Color[5];
 
 	[Header ("Cubes Stripes")]
 	public Mesh[] cubesStripes = new Mesh[4];
+
+	[Header ("Players Dead Cubes")]
+	public GameObject[] deadCubesPrefabs = new GameObject[3];
 
 	[Header ("FX Prefabs")]
 	public GameObject[] shootFX = new GameObject[4];
@@ -77,28 +71,36 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Color secondaryButtonHighlightedColorText;
 	public Color secondaryClickedColorText;
 
+	public Player[] rewiredPlayers = new Player[5];
+
 	void Start ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
-			GlobalVariables.Instance.GameState = GameStateEnum.Playing;
+		{
+			GameState = GameStateEnum.Playing;
+			CurrentModeLoaded = "Scene Testing";
+			SetWhichModeEnum ();
+		}
 		
 		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
 
-		StartCoroutine (OnGameOverEvent ());
+		StartCoroutine (OnEndModeEvent ());
+		StartCoroutine (OnStartModeEvent ());
+		StartCoroutine (OnRestartModeEvent ());
 		StartCoroutine (OnPlayingEvent ());
-		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnPauseEvent ());
-		StartCoroutine (OnModeStartedEvent ());
-		StartCoroutine (OnModeEndedEvent ());
+		StartCoroutine (OnResumeEvent ());
+		StartCoroutine (OnMenuEvent ());
 
-		OnPlaying += HideMouseCursor;
+		OnPlaying += ()=> HideMouseCursor();
+		OnRestartMode += ()=> SetPlayerMouseCursor();
 	}
 		
 	void Update ()
 	{
 		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-		if (GameState != GameStateEnum.Playing && mouseMovement.magnitude > 1 && Cursor.visible == false)
+		if (GameState != GameStateEnum.Playing && Cursor.visible == false && mouseMovement.magnitude > 1)
 		{
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
@@ -111,8 +113,44 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			Players [i].GetComponent<PlayersGameplay> ().controllerNumber = PlayersControllerNumber [i];
 	}
 
+	public void SetupRewiredPlayers ()
+	{
+		for(int i = 0; i < 5; i++)
+			rewiredPlayers [i] = ReInput.players.GetPlayer (i);
+
+		if(GamepadsManager.Instance.gamepadIdControl)
+		{
+			for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+			{
+				switch(GamepadsManager.Instance.gamepadsList [i].GamepadId)
+				{
+				case 1:
+					rewiredPlayers [1].controllers.ClearAllControllers ();
+					rewiredPlayers [1].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 2:
+					rewiredPlayers [2].controllers.ClearAllControllers ();
+					rewiredPlayers [2].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 3:
+					rewiredPlayers [3].controllers.ClearAllControllers ();
+					rewiredPlayers [3].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				case 4:
+					rewiredPlayers [4].controllers.ClearAllControllers ();
+					rewiredPlayers [4].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
+					break;
+				}
+			}			
+		}
+
+	}
+
 	public void ListPlayers ()
 	{
+		AlivePlayersNumber ();
+		PlayersNumber ();
+
 		EnabledPlayersList.Clear ();
 
 		for(int i = 0; i < Players.Length; i++)
@@ -123,8 +161,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
-
-		PlayersNumber ();
 	}
 
 	void PlayersNumber ()
@@ -133,9 +169,22 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
 	}
 
+	void AlivePlayersNumber ()
+	{
+		AlivePlayersList.Clear ();
+
+		for (int i = 0; i < Players.Length; i++)
+		{
+			if (Players [i] != null && Players [i].activeSelf == true)
+				AlivePlayersList.Add (Players [i]);
+		}
+
+		NumberOfAlivePlayers = AlivePlayersList.Count;
+		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
+	}
+
 	public void SetPlayerMouseCursor ()
 	{
-
 		for(int i = 0; i < PlayersControllerNumber.Length; i++)
 			if(PlayersControllerNumber[i] == 0)
 			{
@@ -145,12 +194,20 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			}
 	}
 
-	void HideMouseCursor ()
+	public void HideMouseCursor (bool forcedHide = false)
 	{
-		if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+		if(forcedHide)
 		{
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
+		}
+		else
+		{
+			if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+			{
+				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
+			}			
 		}
 	}
 
@@ -175,32 +232,54 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 
-	IEnumerator OnGameOverEvent ()
-	{
-		yield return new WaitUntil (() => GameState != GameStateEnum.Over);
+	public event EventHandler OnEndMode;
+	public event EventHandler OnStartMode;
+	public event EventHandler OnRestartMode;
+	public event EventHandler OnPlaying;
+	public event EventHandler OnPause;
+	public event EventHandler OnResume;
+	public event EventHandler OnMenu;
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
-
-		if (OnGameOver != null)
-			OnGameOver ();
-
-		yield return null;
-
-		StartCoroutine (OnGameOverEvent ());
-	}
-
-	IEnumerator OnModeEndedEvent ()
+	IEnumerator OnEndModeEvent ()
 	{
 		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
 
-		if (OnModeEnded != null)
-			OnModeEnded ();
+		if (OnEndMode != null)
+			OnEndMode ();
 
 		yield return null;
 
-		StartCoroutine (OnModeEndedEvent ());
+		StartCoroutine (OnEndModeEvent ());
+	}
+
+	IEnumerator OnStartModeEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnStartMode != null)
+			OnStartMode ();
+
+		yield return null;
+
+		StartCoroutine (OnStartModeEvent ());
+	}
+
+	IEnumerator OnRestartModeEvent ()
+	{
+		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
+
+		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+
+		if (OnRestartMode != null)
+			OnRestartMode ();
+
+		yield return null;
+
+		StartCoroutine (OnRestartModeEvent ());
 	}
 
 	IEnumerator OnPlayingEvent ()
@@ -245,23 +324,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnResumeEvent ());
 	}
 
-	IEnumerator OnModeStartedEvent ()
+	IEnumerator OnMenuEvent ()
 	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Over);
+		yield return new WaitUntil (() => GameState != GameStateEnum.Menu);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
 
-		if (OnModeStarted != null)
-			OnModeStarted ();
+		if (OnMenu != null)
+			OnMenu ();
 
 		yield return null;
 
-		StartCoroutine (OnModeStartedEvent ());
-	}
-
-	public void OnMainMenuVoid ()
-	{
-		if (OnMainMenu != null)
-			OnMainMenu ();
+		StartCoroutine (OnMenuEvent ());
 	}
 }
