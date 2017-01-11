@@ -17,19 +17,12 @@ public class MagnetTriggerScript : MonoBehaviour
 	void Start () 
 	{
 		playerScript = gameObject.transform.parent.GetComponent<PlayersGameplay> ();
-
-		StartCoroutine (SetupRewiredPlayer ());
-	}
-
-	IEnumerator SetupRewiredPlayer ()
-	{
-		yield return new WaitUntil (() => playerScript.rewiredPlayer != null);
-
-		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 	}
 
 	void OnTriggerStay (Collider other)
 	{
+		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && other.tag == "Movable")
 		{
 			if(playerScript.holdState == HoldState.CanHold)

@@ -21,15 +21,6 @@ public class MagnetZoneScript : MonoBehaviour
 		player = gameObject.transform.parent;
 		playerScript = player.GetComponent<PlayersGameplay> ();
 		fxAnimationsScript = player.GetComponent<PlayersFXAnimations> ();
-
-		StartCoroutine (SetupRewiredPlayer ());
-	}
-
-	IEnumerator SetupRewiredPlayer ()
-	{
-		yield return new WaitUntil (() => playerScript.rewiredPlayer != null);
-
-		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 	}
 
 	void Update ()
@@ -52,6 +43,8 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
+		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)
 		{
 			if(other.tag == "Movable" || other.tag == "Suggestible")

@@ -303,12 +303,6 @@ public class PlayersGameplay : MonoBehaviour
 				}
 			}
 		}
-
-		Debug.Log ("----------------");
-		Debug.Log (name);
-
-		Debug.Log (rewiredPlayer.controllers.GetController (ControllerType.Keyboard, 0));
-		Debug.Log (rewiredPlayer.controllers.GetController (ControllerType.Joystick, 0));
     }
 	#endregion
 

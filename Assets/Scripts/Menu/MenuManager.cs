@@ -184,7 +184,7 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(eventSyst.currentSelectedGameObject == null && currentMenu != null)
 		{
-			if(currentMenu.selectable != null)
+			if(currentMenu.selectable != null && currentMenu.selectable.GetComponent<Button> ().interactable == true)
 			{
 				eventSyst.SetSelectedGameObject (null);
 				eventSyst.SetSelectedGameObject (currentMenu.selectable);
@@ -399,7 +399,12 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		if (whichMenu.selectable != null)
-			eventSyst.SetSelectedGameObject (whichMenu.selectable);
+		{
+			if(whichMenu.selectable.GetComponent<Button> () != null && whichMenu.selectable.GetComponent<Button> ().interactable)
+				eventSyst.SetSelectedGameObject (whichMenu.selectable);
+			else if(whichMenu.selectable.GetComponent<Button> () == null)
+				eventSyst.SetSelectedGameObject (whichMenu.selectable);
+		}
 
 		currentMenu = whichMenu;
 	}
@@ -988,7 +993,12 @@ public class MenuManager : Singleton <MenuManager>
 			playerScore[i].DOScale(1, durationToShow).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 
 		if (whichMenu.selectable != null)
-			eventSyst.SetSelectedGameObject (whichMenu.selectable);
+		{
+			if(whichMenu.selectable.GetComponent<Button> () != null && whichMenu.selectable.GetComponent<Button> ().interactable)
+				eventSyst.SetSelectedGameObject (whichMenu.selectable);
+			else if(whichMenu.selectable.GetComponent<Button> () == null)
+				eventSyst.SetSelectedGameObject (whichMenu.selectable);
+		}
 
 		currentMenu = whichMenu;
 	}
