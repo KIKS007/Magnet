@@ -80,7 +80,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	public void OnDeselect () 
 	{
 		selected = false;
-		
+
 		if(scaleChangement && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
 			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
 

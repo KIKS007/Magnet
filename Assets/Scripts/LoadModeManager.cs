@@ -41,20 +41,21 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
 			{
 				string name = SceneManager.GetSceneAt (i).name;
-				yield return SceneManager.UnloadScene (name);
+				yield return SceneManager.UnloadSceneAsync (name);
 			}
 		}
 
 		if(SceneManager.GetSceneByName(sceneToLoad).isLoaded)
 		{
-			yield return SceneManager.UnloadScene (sceneToLoad);
+			yield return SceneManager.UnloadSceneAsync (sceneToLoad);
 		}
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
 		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
-
 		FindGameObjects ();
+
+		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
@@ -100,7 +101,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
@@ -136,7 +137,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
@@ -176,7 +177,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadScene (GlobalVariables.Instance.CurrentModeLoaded);
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
 
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;

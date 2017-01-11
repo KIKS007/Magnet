@@ -18,12 +18,14 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	public MenuComponent menuComponentParent;
 
 	private Button button;
+	private EventSystem eventSyst;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		button = GetComponent<Button> ();
 		menuComponentParent = transform.parent.GetComponent<MenuComponent> ();
+		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 	}
 
 	public void OnPointerClick( PointerEventData data )
@@ -41,10 +43,13 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	{
 		if(button.interactable)
 		{
+			eventSyst.SetSelectedGameObject (null);
+
 			menuComponentParent.Submit (buttonIndex);
 
 			if(menuButtonType == MenuButtonType.StartMode)
 				MenuManager.Instance.MenuLoadMode (whichMode);
+
 		}
 	}
 }

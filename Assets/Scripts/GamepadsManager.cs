@@ -43,6 +43,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		GlobalVariables.Instance.OnStartMode += FindGamepadsPluggedAtStart;
 		GlobalVariables.Instance.OnRestartMode += FindGamepadsPluggedAtStart;
 
+		ResetUnpluggedArray ();
 		FindGamepadsPluggedAtStart ();
 		SetupPlayersAndControllers ();
 	}

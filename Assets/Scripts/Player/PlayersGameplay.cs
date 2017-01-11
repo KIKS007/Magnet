@@ -286,8 +286,23 @@ public class PlayersGameplay : MonoBehaviour
         }
 
         if (controllerNumber != -1)
+		{
 			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
-        
+
+			if (GamepadsManager.Instance.gamepadIdControl)
+			{
+				rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
+
+				if(controllerNumber > 0)
+				{
+					for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
+					{
+						if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
+							rewiredPlayer.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
+					}
+				}
+			}
+		}
     }
 	#endregion
 

@@ -201,6 +201,7 @@ public class ControllerChangeManager : MonoBehaviour
 		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
 			playButton.GetComponent<Button> ().interactable = true; 
+			playButton.GetComponent<Button> ().Select (); 
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 

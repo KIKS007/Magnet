@@ -1,3 +1,5 @@
+#pragma warning disable 0618
+
 #define PROTOTYPE
 using UnityEngine;
 using System.Collections;
