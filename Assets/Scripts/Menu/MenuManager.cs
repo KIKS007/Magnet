@@ -184,8 +184,11 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(eventSyst.currentSelectedGameObject == null && currentMenu != null)
 		{
-			if(currentMenu.selectable != null && currentMenu.selectable.GetComponent<Button> ().interactable == true)
+			if(currentMenu.selectable != null)
 			{
+				if (currentMenu.selectable.GetComponent<Button> () && currentMenu.selectable.GetComponent<Button> ().interactable == false)
+					return;
+
 				eventSyst.SetSelectedGameObject (null);
 				eventSyst.SetSelectedGameObject (currentMenu.selectable);
 			}

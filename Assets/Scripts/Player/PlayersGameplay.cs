@@ -107,11 +107,15 @@ public class PlayersGameplay : MonoBehaviour
     protected bool hasRepulsed;
 
     protected float startModeTime;
+
+	protected float spawnDuration = 0.2f;
+	protected Vector3 initialScale;
 	#endregion
 
 	#region Setup
 	protected virtual void Awake()
 	{
+		initialScale = transform.localScale;
 		SetPlayerName ();		
 	}
 
@@ -159,6 +163,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected void OnEnable()
     {
+		transform.localScale = Vector3.zero;
+		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack);
+
         StartCoroutine(WaitTillPlayerEnabled());
 
         playerState = PlayerState.None;
@@ -643,6 +650,8 @@ public class PlayersGameplay : MonoBehaviour
     {
 		/* if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
             VibrationManager.Instance.StopVibration(controllerNumber);*/
+
+		transform.DOScale (0, spawnDuration).SetEase (Ease.InBack);
 
         if (playerState == PlayerState.Dead && OnDeath != null)
             OnDeath();
