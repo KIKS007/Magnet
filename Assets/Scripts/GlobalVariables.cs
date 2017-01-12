@@ -82,8 +82,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			SetWhichModeEnum ();
 		}
 		
-		ParticulesClonesParent = GameObject.FindGameObjectWithTag ("ParticulesClonesParent").transform;
-
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
 		StartCoroutine (OnRestartModeEvent ());
