@@ -92,7 +92,7 @@ public class DeathRayMotion : MonoBehaviour
 		if(DOTween.IsTweening ("DeathRay"))
 		{
 			float height = Vector3.Distance (rightCapsules [0].transform.position, leftCapsules [0].transform.position) + 1;
-			float xCenter = (rightCapsules [0].transform.localPosition - leftCapsules [0].transform.localPosition).x ;
+			float xCenter = (rightCapsules [0].transform.localPosition + leftCapsules [0].transform.localPosition).x ;
 			
 			x = xCenter;
 			

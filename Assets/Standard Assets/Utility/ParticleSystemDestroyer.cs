@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+#pragma warning disable 0618
+
 namespace UnityStandardAssets.Utility
 {
     public class ParticleSystemDestroyer : MonoBehaviour

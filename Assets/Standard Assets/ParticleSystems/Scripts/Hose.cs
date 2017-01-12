@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+#pragma warning disable 0618
 
 namespace UnityStandardAssets.Effects
 {

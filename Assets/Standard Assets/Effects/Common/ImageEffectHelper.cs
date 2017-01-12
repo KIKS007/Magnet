@@ -3,9 +3,13 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+#pragma warning disable 0618
+
 namespace UnityStandardAssets.CinematicEffects
 {
-    public static class ImageEffectHelper
+	#pragma warning disable 0618
+
+	public static class ImageEffectHelper
     {
         public static bool IsSupported(Shader s, bool needDepth, bool needHdr, MonoBehaviour effect)
         {
