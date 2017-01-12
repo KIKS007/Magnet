@@ -10,7 +10,8 @@ public class MovableBurden : MovableScript
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
 	public float trackSpeedAdded = 0.001f;
-	public float speedAddedCooldown = 1f;
+
+	private float speedAddedCooldown = 0.5f;
 
 	[Header ("Explosion")]
 	[SoundGroupAttribute]

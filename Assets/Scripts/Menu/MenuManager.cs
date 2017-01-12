@@ -264,7 +264,8 @@ public class MenuManager : Singleton <MenuManager>
 		if(!startScreen)
 			cameraMovement.ShowLogo ();
 
-		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> {underButtonsList [0].GetComponent<Button> ().Select (); Debug.Log (underButtonsList [0].GetComponent<Button> ().interactable);}); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -302,7 +303,8 @@ public class MenuManager : Singleton <MenuManager>
 		if(!startScreen)
 			cameraMovement.ShowLogo ();
 
-		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (delay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		SetInteractable (underButtonsList [0], ButtonsDelay (delay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -368,7 +370,8 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//Select First Under Menu Button
-		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = whichMenu;
 	}
@@ -472,7 +475,8 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//Select First Under Menu Button
-		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = whichMenu;
 	}
@@ -719,7 +723,8 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		DOVirtual.DelayedCall (durationToShow + ButtonsDelay (delay), ()=> aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ()); 
+		SetInteractable (aboveMenu.underButtonsList [0], ButtonsDelay (delay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ()); 
 
 		currentMenu = aboveMenu;
 	}
