@@ -10,7 +10,7 @@ public class MovableTag : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && gameObject.tag == "ThrownMovable")
+		if(other.collider.tag == "Player" && gameObject.tag == "ThrownMovable")
 		{
 			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{

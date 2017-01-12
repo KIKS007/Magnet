@@ -265,7 +265,7 @@ public class MenuManager : Singleton <MenuManager>
 			cameraMovement.ShowLogo ();
 
 		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> {underButtonsList [0].GetComponent<Button> ().Select (); Debug.Log (underButtonsList [0].GetComponent<Button> ().interactable);}); 
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
 
 		currentMenu = mainMenuScript;
 	}

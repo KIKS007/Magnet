@@ -78,6 +78,7 @@ public class MovablePlague : MovableScript
 
 	IEnumerator DeadlyTransition ()
 	{
+		tag = "Untagged";
 		SetDeadColor ();
 
 		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
@@ -91,8 +92,9 @@ public class MovablePlague : MovableScript
 
 		yield return new WaitForSeconds (deadlyCubeTransitionDuration);
 
-		rigidbodyMovable.mass = deadlyCubeMass;
 		tag = "DeadCube";
+
+		rigidbodyMovable.mass = deadlyCubeMass;
 	}
 
 	void SetDeadColor ()
