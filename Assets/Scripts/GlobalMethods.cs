@@ -5,8 +5,11 @@ using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	public LayerMask gameplayLayer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+
 	private float xLimit;
 	private float zLimit;
+
 
 	void Start ()
 	{
@@ -24,7 +27,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0)
 	{
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 newPos = new Vector3();
 
 		player.SetActive (false);
@@ -36,7 +38,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			newPos = new Vector3 (Random.Range (-20f, 20f), player.transform.position.y, Random.Range (-10f, 10f));
 			yield return null;	
 		}
-		while(Physics.CheckSphere(newPos, 5, layer));
+		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
 
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
@@ -63,7 +65,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag)
 	{
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
 
@@ -76,7 +77,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				newPos = new Vector3 (Random.Range (-20f, 20f), 3, Random.Range (-10f, 10f));
 				yield return null;	
 			}
-			while(Physics.CheckSphere(newPos, 5, layer));			
+			while(Physics.CheckSphere(newPos, 5, gameplayLayer));			
 			
 			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
 			
@@ -114,7 +115,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		string tagTemp = allMovables [0].tag;
 
 		for(int i = 0; i < allMovables.Length; i++)
@@ -137,7 +137,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			{
 				newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 			}
-			while(Physics.CheckSphere(newPos, 5, layer));
+			while(Physics.CheckSphere(newPos, 5, gameplayLayer));
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
@@ -167,13 +167,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position)
 	{
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		movable.gameObject.SetActive(false);
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
 
-		yield return new WaitWhile (()=> Physics.CheckSphere (position, 5, layer));
+		yield return new WaitWhile (()=> Physics.CheckSphere (position, 5, gameplayLayer));
 
 		movable.transform.localScale = Vector3.zero;
 
@@ -199,7 +198,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	IEnumerator SpawnExistingMovableRandomCoroutine (GameObject movable)
 	{
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
@@ -211,7 +209,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		{
 			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
-		while(Physics.CheckSphere(newPos, 5, layer));
+		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
 
 		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
 		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
@@ -235,7 +233,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	IEnumerator SpawnNewMovableRandom (GameObject movable, float delay = 0)
 	{
-		LayerMask layer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
@@ -244,7 +241,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		{
 			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
-		while(Physics.CheckSphere(newPos, 5, layer));
+		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
 
 		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
 		clone.tag = "Untagged";

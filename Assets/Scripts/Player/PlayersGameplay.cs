@@ -108,14 +108,13 @@ public class PlayersGameplay : MonoBehaviour
 
     protected float startModeTime;
 
-	protected float spawnDuration = 0.2f;
-	protected Vector3 initialScale;
+	protected PlayersFXAnimations playerFX;
+
 	#endregion
 
 	#region Setup
 	protected virtual void Awake()
 	{
-		initialScale = transform.localScale;
 		SetPlayerName ();		
 	}
 
@@ -135,6 +134,7 @@ public class PlayersGameplay : MonoBehaviour
         movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
         magnetPoint = transform.GetChild(0).transform;
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
+		playerFX = GetComponent<PlayersFXAnimations> ();
     }
 
 	protected void SetPlayerName()
@@ -163,9 +163,6 @@ public class PlayersGameplay : MonoBehaviour
 
     protected void OnEnable()
     {
-		transform.localScale = Vector3.zero;
-		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack);
-
         StartCoroutine(WaitTillPlayerEnabled());
 
         playerState = PlayerState.None;
@@ -194,7 +191,7 @@ public class PlayersGameplay : MonoBehaviour
     {
         if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
         {
-            ActivateFunctions();
+            GameplayMethods();
 
             if (playerState == PlayerState.Stunned)
             {
@@ -211,7 +208,7 @@ public class PlayersGameplay : MonoBehaviour
         }
     }
 
-    protected virtual void ActivateFunctions()
+    protected virtual void GameplayMethods()
     {
         movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movement.Normalize();
@@ -424,9 +421,9 @@ public class PlayersGameplay : MonoBehaviour
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			{
 				Death();
-				
-				DeathExplosionFX ();
-				DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+
+				playerFX.DeathExplosionFX ();
+				playerFX.DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
 			}			
 		}
 
@@ -450,8 +447,8 @@ public class PlayersGameplay : MonoBehaviour
 			{
 				Death();
 
-				DeathExplosionFX ();
-				DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+				playerFX.DeathExplosionFX ();
+				playerFX.DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
 			}			
 		}
 
@@ -609,35 +606,10 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Dead;
 		holdState = HoldState.CannotHold;
 
-		for (int i = 0; i < GetComponent<PlayersFXAnimations>().attractionRepulsionFX.Count; i++)
-		{
-			Destroy(GetComponent<PlayersFXAnimations>().attractionRepulsionFX[i]);
-		}
-
 		gameObject.SetActive(false);
 
 		if(playerDeadCube)
 			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, movableParent.GetChild (0).tag);
-	}
-
-	public virtual void DeathExplosionFX()
-    {
-		int playerNumber = (int)playerName;
-
-        GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
-        instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
-    }
-
-	public virtual GameObject DeathParticles (ContactPoint contact, GameObject prefab, Color color)
-	{
-		Vector3 pos = contact.point;
-		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
-		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
-
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
-
-		return instantiatedParticles;
 	}
 		
     protected virtual void OnDestroy()
@@ -648,11 +620,6 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-		/* if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
-            VibrationManager.Instance.StopVibration(controllerNumber);*/
-
-		transform.DOScale (0, spawnDuration).SetEase (Ease.InBack);
-
         if (playerState == PlayerState.Dead && OnDeath != null)
             OnDeath();
 

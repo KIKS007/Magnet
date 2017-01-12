@@ -81,10 +81,22 @@ public class PlayersManikin : PlayersGameplay
 		}
 	}
 
-	public override void DeathExplosionFX ()
+	public void DeathExplosionFX ()
 	{
 		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [4], transform.position, GlobalVariables.Instance.explosionFX [4].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+	}
+
+	public GameObject DeathParticles (ContactPoint contact, GameObject prefab, Color color)
+	{
+		Vector3 pos = contact.point;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+
+		return instantiatedParticles;
 	}
 
 	protected override void OnDestroy ()

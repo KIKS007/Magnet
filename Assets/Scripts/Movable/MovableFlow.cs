@@ -37,7 +37,7 @@ public class MovableFlow : MovableScript
 			MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 			ExplosionFX (other);
 
-			other.gameObject.GetComponent<PlayersGameplay> ().DeathParticles (other.contacts [0], GlobalVariables.Instance.DeadParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			other.gameObject.GetComponent<PlayersFXAnimations> ().DeathParticles (other.contacts [0], GlobalVariables.Instance.DeadParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			other.gameObject.GetComponent<PlayersGameplay> ().Death ();
 		}
 	}

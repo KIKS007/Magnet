@@ -29,15 +29,22 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Dash Available FX")]
 	public ParticleSystem dashAvailableFX;
 
-	[Header ("Attraction FX")]
-
 
 	private PlayersGameplay playerScript;
 	private PlayersSounds playerSoundsScript;
+	private PlayerName playerName;
 
 	private TrailRenderer trail;
 
 	private int playerNumber = -1;
+
+	private float spawnDuration = 0.2f;
+	private Vector3 initialScale;
+
+	void Awake ()
+	{
+		initialScale = transform.localScale;
+	}
 
 	// Use this for initialization
 	void Start () 
@@ -51,12 +58,17 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnDash += StopDashAvailable;
 		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
 		playerScript.OnDash += EnableDashFX;
+		playerScript.OnDeath += RemoveAttractionRepulsionFX;
 
+		playerName = playerScript.playerName;
 		playerNumber = (int)playerScript.playerName;
 	}
 
 	void OnEnable ()
 	{
+		transform.localScale = Vector3.zero;
+		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack);
+
 		for (int i = 0; i < playerMaterials.Length; i++)
 			if(playerMaterials[i] != null)
 				playerMaterials [i].material.EnableKeyword ("_EMISSION");
@@ -327,5 +339,33 @@ public class PlayersFXAnimations : MonoBehaviour
 
 			yield return null;
 		}
+	}
+
+	void RemoveAttractionRepulsionFX ()
+	{
+		for (int i = 0; i < attractionRepulsionFX.Count; i++)
+		{
+			Destroy(attractionRepulsionFX[i]);
+		}
+	}
+
+	public virtual void DeathExplosionFX()
+	{
+		int playerNumber = (int)playerName;
+
+		GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+	}
+
+	public virtual GameObject DeathParticles (ContactPoint contact, GameObject prefab, Color color)
+	{
+		Vector3 pos = contact.point;
+		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+
+		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+
+		return instantiatedParticles;
 	}
 }

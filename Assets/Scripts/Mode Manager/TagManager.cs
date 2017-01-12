@@ -165,7 +165,7 @@ public class TagManager : MonoBehaviour
 
 		//Debug.Log ("NAME : " + cubesColorTemp.playerName + " FIRST LOOSER : " + GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName]);
 
-		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
+		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersFXAnimations> ().DeathExplosionFX ();
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().Death ();
 
 		GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
@@ -175,7 +175,7 @@ public class TagManager : MonoBehaviour
 			if (cubesColorCountList [i] != cubesColorTemp && cubesColorCountList [i].cubesCount == cubesColorTemp.cubesCount)
 			{
 				//Debug.Log ("NAME : " + cubesColorCountList [i].playerName + " OTHER LOOSER : " + GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName]);
-				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().DeathExplosionFX ();
+				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersFXAnimations> ().DeathExplosionFX ();
 				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().Death ();
 
 				GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
