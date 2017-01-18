@@ -16,9 +16,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
 		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
 
+		LoadModeManager.Instance.OnLevelLoaded += SetLimits;
+	}
+
+	void SetLimits ()
+	{
 		xLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
 		zLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
-
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
