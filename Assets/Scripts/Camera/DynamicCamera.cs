@@ -40,8 +40,6 @@ public class DynamicCamera : MonoBehaviour
 			modesSettingsList [i].cameraMovementLerp = cameraMovementLerp * Time.fixedDeltaTime / 0.02f;
 			modesSettingsList [i].cameraZoomLerp = cameraZoomLerp * Time.fixedDeltaTime / 0.02f;
 		}
-
-		//GlobalVariables.Instance.OnGameOver += () => targetList = new GameObject[0];
 	}
 	
 	// Update is called once per frame

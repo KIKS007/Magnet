@@ -13,7 +13,7 @@ public class PlayersTraining : PlayersGameplay
 			OnDeathVoid ();
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
-			if(playerState == PlayerState.Holding)
+			if(holdState == HoldState.Holding)
 			{
 				playerState = PlayerState.Dead;
 				Transform holdMovableTemp = null;

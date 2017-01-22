@@ -10,6 +10,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	private float xLimit;
 	private float zLimit;
 
+	private float checkSphereRadius = 5f;
+
+	private float cubeYPosition = 3f;
+
+	private const float defaultScaleDuration = 0.8f;
 
 	void Start ()
 	{
@@ -40,10 +45,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3 (Random.Range (-20f, 20f), player.transform.position.y, Random.Range (-10f, 10f));
+			newPos = new Vector3 (Random.Range(-xLimit, xLimit), player.transform.position.y, Random.Range(-zLimit, zLimit));
 			yield return null;	
 		}
-		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
@@ -68,7 +73,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, tag));
 	}
 
-	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag)
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
@@ -79,10 +84,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			do
 			{
-				newPos = new Vector3 (Random.Range (-20f, 20f), 3, Random.Range (-10f, 10f));
+				newPos = new Vector3 (Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
 				yield return null;	
 			}
-			while(Physics.CheckSphere(newPos, 5, gameplayLayer));			
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));			
 			
 			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
 			
@@ -97,8 +102,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			if (tag != "Movable")
 				deadCube.GetComponent<MovableDeadCube> ().basicMovable = false;
 
-			deadCube.transform.DOScale (scale, 0.8f).SetEase (Ease.OutElastic);
-			StartCoroutine (ChangeMovableTag (deadCube, tag, 0.8f));
+			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
+			StartCoroutine (ChangeMovableTag (deadCube, tag, scaleDuration));
 
 
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
@@ -112,12 +117,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 	}
 
-	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn));
+		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn, scaleDuration));
 	}
 
-	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f)
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string tagTemp = allMovables [0].tag;
@@ -140,104 +145,67 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			do
 			{
-				newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
+				newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
 			}
-			while(Physics.CheckSphere(newPos, 5, gameplayLayer));
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
 			if(allMovables[i] != null)
 			{
-				allMovables [i].gameObject.SetActive (true);
-
-				allMovables [i].transform.DOScale (allScales [i], 0.8f).SetEase (Ease.OutElastic);
-				StartCoroutine (ChangeMovableTag (allMovables [i], tagTemp, 0.8f));
-
-				allMovables [i].transform.position = newPos;
-				allMovables [i].transform.rotation = Quaternion.Euler (Vector3.zero);
-				allMovables [i].GetComponent<Rigidbody> ().velocity = Vector3.zero;
-				allMovables [i].GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-			
-				MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, allMovables [i].transform);
+				EnableGameObject (allMovables [i], newPos);
+				ScaleGameObect (allMovables [i], tagTemp, allScales [i], scaleDuration);
 			}
 				
 			yield return null;
 		}
 	}
 
-	public void SpawnExistingMovableVoid (GameObject movable, Vector3 position)
+	public void SpawnExistingMovableVoid (GameObject movable, Vector3 position, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (SpawnExistingMovable (movable, position));
+		StartCoroutine (SpawnExistingMovable (movable, position, scaleDuration));
 	}
 
-	IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position)
+	IEnumerator SpawnExistingMovable (GameObject movable, Vector3 position, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3 movableScale = movable.transform.lossyScale;
 		movable.gameObject.SetActive(false);
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
 
-		yield return new WaitWhile (()=> Physics.CheckSphere (position, 5, gameplayLayer));
+		yield return new WaitWhile (()=> Physics.CheckSphere (position, checkSphereRadius, gameplayLayer));
 
-		movable.transform.localScale = Vector3.zero;
-
-		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
-		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		movable.gameObject.SetActive(true);
-		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
-		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
-
-		movable.transform.position = position;
-
-		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
-
-		yield return null;
+		EnableGameObject (movable, position);
+		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 		
-	public void SpawnExistingMovableRandom (GameObject movable)
-	{
-		StartCoroutine (SpawnExistingMovableRandomCoroutine (movable));
-	}
-
-	IEnumerator SpawnExistingMovableRandomCoroutine (GameObject movable)
+	public void SpawnExistingMovableRandom (GameObject movable, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
 
-		movable.transform.localScale = Vector3.zero;
-
 		do
 		{
-			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
 		}
-		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
-		movable.transform.rotation = Quaternion.Euler(Vector3.zero);
-		movable.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		movable.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		movable.gameObject.SetActive(true);
-
-		movable.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
-		StartCoroutine (ChangeMovableTag (movable, tagTemp, 0.8f));
-		movable.transform.position = newPos;
-
-		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
-
-		yield return null;
+		EnableGameObject (movable, newPos);
+		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 
-	public void SpawnNewMovableRandomVoid (GameObject movable, float delay = 0)
+	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (SpawnNewMovableRandom (movable, delay));
+		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration));
 	}
 
-	IEnumerator SpawnNewMovableRandom (GameObject movable, float delay = 0)
+	IEnumerator SpawnNewMovableRandom (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
 	{
+		if (movable == null)
+			movable = GlobalVariables.Instance.cubesPrefabs [Random.Range (0, GlobalVariables.Instance.cubesPrefabs.Length)];
+
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
@@ -249,23 +217,33 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
+			newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
 		}
-		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
-
-		clone.transform.position = newPos;
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
 		clone.tag = "Untagged";
-		clone.transform.localScale = Vector3.zero;
-		clone.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		clone.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
-		clone.gameObject.SetActive(true);
+		EnableGameObject (clone, newPos);
+		ScaleGameObect (clone, tagTemp, movableScale, scaleDuration);
+	}
 
-		clone.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
-		StartCoroutine (ChangeMovableTag (clone, tagTemp, 0.8f));
+	void EnableGameObject (GameObject target, Vector3 position)
+	{
+		target.transform.position = position;
 
-		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, clone.transform);
+		target.transform.localScale = Vector3.zero;
+		target.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		target.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
+
+		target.gameObject.SetActive(true);
+	}
+
+	void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
+	{
+		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
+		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
+
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, target.transform);
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)

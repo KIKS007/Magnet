@@ -39,10 +39,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Mouse Cursor")]
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
-	[Header ("Cubes Color")]
+	[Header ("Cubes")]
+	public GameObject[] cubesPrefabs = new GameObject[3];
 	public Color[] cubePlayersColor = new Color[5];
-
-	[Header ("Cubes Stripes")]
 	public Mesh[] cubesStripes = new Mesh[4];
 
 	[Header ("Players Dead Cubes")]

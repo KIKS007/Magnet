@@ -11,7 +11,6 @@ public enum PlayerState
 	None,
 	Attracting,
 	Repulsing,
-	Holding,
 	Stunned,
 	Dead
 }
@@ -23,7 +22,12 @@ public enum DashState
 	Cooldown
 }
 
-public enum HoldState {CanHold, Holding, CannotHold};
+public enum HoldState 
+{
+	CanHold, 
+	Holding, 
+	CannotHold
+}
 
 public enum PlayerName
 {
@@ -228,7 +232,7 @@ public class PlayersGameplay : MonoBehaviour
             TurningGamepad();
 
 
-        if (playerState == PlayerState.Holding && rewiredPlayer.GetButtonUp("Attract"))
+		if (holdState == HoldState.Holding && rewiredPlayer.GetButtonUp("Attract"))
             Shoot();
 
         if (playerState == PlayerState.None)
@@ -256,7 +260,7 @@ public class PlayersGameplay : MonoBehaviour
 			}
 
 
-            if (playerState == PlayerState.Holding)
+			if (holdState == HoldState.Holding)
             {
                 holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
                 holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
@@ -376,7 +380,6 @@ public class PlayersGameplay : MonoBehaviour
 		gettingMovable = true;
         
 		holdState = HoldState.Holding;
-		playerState = PlayerState.Holding;
 
 		SetMagnetPointPosition (movable);
 
@@ -520,7 +523,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual IEnumerator Stun(bool cubeHit)
     {
-		if(gettingMovable || playerState == PlayerState.Holding)
+		if(gettingMovable || holdState == HoldState.Holding)
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 			
@@ -598,10 +601,12 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual IEnumerator DeathCoroutine ()
 	{
+		playerState = PlayerState.Dead;
+
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
 
-		if(gettingMovable || playerState == PlayerState.Holding)
+		if(gettingMovable || holdState == HoldState.Holding)
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 
@@ -611,7 +616,6 @@ public class PlayersGameplay : MonoBehaviour
 			holdMovableTransform.GetComponent<MovableScript>().OnRelease();					
 		}
 
-		playerState = PlayerState.Dead;
 		holdState = HoldState.CannotHold;
 
 		gameObject.SetActive(false);

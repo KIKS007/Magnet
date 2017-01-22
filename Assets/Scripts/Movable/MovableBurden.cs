@@ -31,6 +31,9 @@ public class MovableBurden : MovableScript
 	{
 		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
+
+		for (int i = 0; i < transform.childCount; i++)
+			transform.GetChild (i).gameObject.SetActive (false);
 	}
 
 	protected override void OnEnable ()
@@ -74,6 +77,7 @@ public class MovableBurden : MovableScript
 
 				otherMovables [i].ToColor (otherMovables [i].targetPlayer);
 				otherMovables [i].GetToPlayerVoid ();
+				otherMovables [i].DisplayCube ();
 				otherMovables [i].StartCoroutine ("AddSpeed");
 
 				playersList.RemoveAt (randomPlayer);
@@ -86,14 +90,20 @@ public class MovableBurden : MovableScript
 
 		ToColor (targetPlayer);
 		GetToPlayerVoid ();
+		DisplayCube ();
 		StartCoroutine (AddSpeed ());
+	}
+
+	void DisplayCube ()
+	{
+		for (int i = 0; i < transform.childCount; i++)
+			transform.GetChild (i).gameObject.SetActive (true);
 	}
 
 	void GetToPlayerVoid ()
 	{
 		StartCoroutine (GetToPlayerPosition ());
 	}
-
 
 	IEnumerator GetToPlayerPosition ()
 	{

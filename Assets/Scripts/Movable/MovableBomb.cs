@@ -24,6 +24,9 @@ public class MovableBomb : MovableScript
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
 
+	private float speedAddedCooldown = 0.5f;
+	private float trackSpeedTemp;
+
 	protected override void OnEnable ()
 	{
 		hold = false;
@@ -236,7 +239,9 @@ public class MovableBomb : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
-		float getToPlayerForceTemp = trackSpeed;
+		trackSpeedTemp = trackSpeed;
+
+		StartCoroutine (AddSpeed ());
 
 		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
 		{
@@ -245,11 +250,9 @@ public class MovableBomb : MovableScript
 				Vector3 direction = (playerHolding.transform.position - transform.position);
 				direction.Normalize ();
 
-				getToPlayerForceTemp += trackSpeedAdded;
-
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
-				rigidbodyMovable.AddForce(direction * getToPlayerForceTemp, ForceMode.Impulse);
+				rigidbodyMovable.AddForce(direction * trackSpeedTemp, ForceMode.Impulse);
 
 				yield return new WaitForFixedUpdate();
 			}
@@ -259,5 +262,16 @@ public class MovableBomb : MovableScript
 				break;
 			}
 		}
+
+		StopCoroutine (AddSpeed ());
+	}
+
+	IEnumerator AddSpeed ()
+	{
+		yield return new WaitForSeconds (speedAddedCooldown);
+
+		trackSpeedTemp += trackSpeedAdded;
+
+		StartCoroutine (AddSpeed ());
 	}
 }

@@ -29,7 +29,7 @@ public class PlayersRam : PlayersGameplay
 			}
 
 
-			if (playerState == PlayerState.Holding)
+			if (holdState == HoldState.Holding)
 			{
 				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
 				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
