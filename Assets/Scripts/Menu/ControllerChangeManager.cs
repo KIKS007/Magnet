@@ -66,7 +66,7 @@ public class ControllerChangeManager : MonoBehaviour
 		imagesAlignedPos [3] = logoRect [3].anchoredPosition.x; 
 		imagesAlignedPos [4] = logoRect [4].anchoredPosition.x; 
 
-		ReInput.ControllerPreDisconnectEvent += (ControllerStatusChangedEventArgs arg) => UpdateAllSettings (); 
+		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs arg) => UpdateAllSettings (); 
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs arg) => UpdateAllSettings (); 
 
 		UpdateAllSettings (); 

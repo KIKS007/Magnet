@@ -242,26 +242,30 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
 
+		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
+		clone.gameObject.SetActive(false);
+
+		yield return new WaitForSeconds (delay);
+
 		do
 		{
 			newPos = new Vector3(Random.Range(-xLimit, xLimit), 3, Random.Range(-zLimit, zLimit));
 		}
 		while(Physics.CheckSphere(newPos, 5, gameplayLayer));
 
-		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
+		clone.transform.position = newPos;
+
 		clone.tag = "Untagged";
 		clone.transform.localScale = Vector3.zero;
 		clone.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		clone.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
-
-		yield return new WaitForSeconds (delay);
 
 		clone.gameObject.SetActive(true);
 
 		clone.transform.DOScale (movableScale, 0.8f).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (clone, tagTemp, 0.8f));
 
-		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, movable.transform);
+		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, clone.transform);
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)

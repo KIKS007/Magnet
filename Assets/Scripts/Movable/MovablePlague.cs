@@ -78,10 +78,10 @@ public class MovablePlague : MovableScript
 
 	IEnumerator DeadlyTransition ()
 	{
+		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
+
 		tag = "Untagged";
 		SetDeadColor ();
-
-		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
 
 		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
 		{

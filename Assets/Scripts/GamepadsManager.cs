@@ -31,17 +31,39 @@ public class GamepadsManager : Singleton<GamepadsManager>
 	// Use this for initialization
 	void Awake () 
 	{
-		ReInput.ControllerPreDisconnectEvent += GamepadUnplugged;
-
 		ReInput.ControllerConnectedEvent += CheckIfGamepadReconnected;
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetUnpluggedArray;
 
-		GlobalVariables.Instance.OnStartMode += ResetUnpluggedArray;
-		GlobalVariables.Instance.OnRestartMode += ResetUnpluggedArray;
+		GlobalVariables.Instance.OnStartMode += () => {
+			ResetUnpluggedArray ();
+			FindGamepadsPluggedAtStart ();
+		};
 
-		GlobalVariables.Instance.OnStartMode += FindGamepadsPluggedAtStart;
-		GlobalVariables.Instance.OnRestartMode += FindGamepadsPluggedAtStart;
+		GlobalVariables.Instance.OnRestartMode += () => {
+			ResetUnpluggedArray ();
+			FindGamepadsPluggedAtStart ();
+		};
+
+		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => 
+		{
+			GamepadUnplugged (obj);
+
+			if(GlobalVariables.Instance.GameState == GameStateEnum.Menu)
+			{
+				ResetUnpluggedArray ();
+				FindGamepadsPluggedAtStart ();
+			}
+		};
+
+		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => 
+		{
+			if(GlobalVariables.Instance.GameState == GameStateEnum.Menu)
+			{
+				ResetUnpluggedArray ();
+				FindGamepadsPluggedAtStart ();
+			}
+		};
 
 		ResetUnpluggedArray ();
 		FindGamepadsPluggedAtStart ();
@@ -71,6 +93,12 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		}
 
 		GlobalVariables.Instance.SetupRewiredPlayers ();
+	}
+
+	void ResetUnpluggedArray ()
+	{
+		for (int i = 0; i < gamepadsUnplugged.Length; i++)
+			gamepadsUnplugged [i] = false;
 	}
 
 	void SetupGamepads ()
@@ -243,6 +271,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			GamepadsChange ();
 	}
 
+	//Check Which Gamepad Unplugged
 	void GamepadUnplugged (ControllerStatusChangedEventArgs arg)
 	{
 		if(gamepadIdControl)
@@ -282,12 +311,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			GamepadsChange ();
 	}
 
-	void ResetUnpluggedArray ()
-	{
-		for (int i = 0; i < gamepadsUnplugged.Length; i++)
-			gamepadsUnplugged [i] = false;
-	}
-
+	//Set Players Controllers 
 	void SetupPlayersAndControllers ()
 	{
 		if (SceneManager.GetActiveScene ().name == "Scene Testing")
