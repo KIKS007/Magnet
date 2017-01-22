@@ -66,15 +66,6 @@ public class MovableRam : MovableScript
 		{
 			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 			MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
-			ExplosionFX (other);			
 		}
-	}
-
-	void ExplosionFX (Collision other)
-	{
-		int playerNumber = (int)other.gameObject.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 }

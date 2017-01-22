@@ -245,14 +245,6 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitWall (Collision other)
 	{
-		/*float numberOfParticlesFloat = (0.2f * rigidbodyMovable.velocity.magnitude);
-		int numberOfParticles = (int) numberOfParticlesFloat;
-
-		GameObject instantiatedParticles = InstantiateParticles (other.contacts [0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer> ().material.color);
-
-		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
-		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);*/
-
 		if(other.gameObject.tag == "Wall" && canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(currentVelocity > (limitVelocity * 0.5f))
@@ -289,35 +281,33 @@ public class MovableScript : MonoBehaviour
 
 		Vector3 pos = contact.point;
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+		GameObject instance = Instantiate(prefab, pos, rot) as GameObject;
 
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instance.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 
-		return instantiatedParticles;
+		return instance;
 	}
 
 	public virtual GameObject InstantiateParticles (ContactPoint contact, GameObject prefab, Color color)
 	{
 		Vector3 pos = contact.point;
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
-		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+		GameObject instance = Instantiate(prefab, pos, rot) as GameObject;
 
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+		instance.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
+		instance.GetComponent<ParticleSystemRenderer>().material.color = color;
 
-		return instantiatedParticles;
+		return instance;
 	}
 
-	public virtual GameObject InstantiateExplosionParticles (GameObject prefab, Color color)
+	public virtual GameObject ExplosionFX (Vector3 position, GameObject player)
 	{
-		Vector3 pos = transform.position;
-		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
-		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+		int playerNumber = (int)player.GetComponent<PlayersGameplay> ().playerName;
 
-		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 
-		return instantiatedParticles;
+		return instance;
 	}
 	#endregion
 

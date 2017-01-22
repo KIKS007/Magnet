@@ -50,7 +50,7 @@ public class PlayersManikin : PlayersGameplay
 		{
 			Death ();
 
-			DeathExplosionFX ();
+			DeathExplosionFX (other.contacts[0]);
 
 			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent<Renderer> ().material.color);
 		}
@@ -81,9 +81,11 @@ public class PlayersManikin : PlayersGameplay
 		}
 	}
 
-	public void DeathExplosionFX ()
+	public void DeathExplosionFX (ContactPoint contact)
 	{
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [4], transform.position, GlobalVariables.Instance.explosionFX [4].transform.rotation) as GameObject;
+		Vector3 pos = contact.point;
+
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [4], pos, GlobalVariables.Instance.explosionFX [4].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 

@@ -41,6 +41,8 @@ public class PlayersFXAnimations : MonoBehaviour
 	private float spawnDuration = 0.2f;
 	private Vector3 initialScale;
 
+	private Color playerColor;
+
 	void Awake ()
 	{
 		initialScale = transform.localScale;
@@ -52,6 +54,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
 		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
+		playerColor = GetComponent <Renderer> ().material.color;
 
 		playerScript.OnShoot += ShootFX;
 		playerScript.OnDashAvailable += DashAvailableFX;
@@ -349,6 +352,14 @@ public class PlayersFXAnimations : MonoBehaviour
 		}
 	}
 
+	public virtual void DeathExplosionFX(Vector3 position)
+	{
+		int playerNumber = (int)playerName;
+
+		GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+	}
+
 	public virtual void DeathExplosionFX()
 	{
 		int playerNumber = (int)playerName;
@@ -357,14 +368,13 @@ public class PlayersFXAnimations : MonoBehaviour
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
-	public virtual GameObject DeathParticles (ContactPoint contact, GameObject prefab, Color color)
+	public virtual GameObject DeathParticles (Vector3 position)
 	{
-		Vector3 pos = contact.point;
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
-		GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
+		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, position, rot) as GameObject;
 
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = playerColor;
 
 		return instantiatedParticles;
 	}

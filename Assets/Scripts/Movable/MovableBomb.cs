@@ -215,23 +215,17 @@ public class MovableBomb : MovableScript
 		MasterAudio.StopAllOfSound(cubeTrackingSound);
 		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 
-		ExplosionFX ();
-		playerHolding.GetComponent<PlayersBomb> ().DeathParticles ();
+		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
 
+		playerHolding.GetComponent<PlayersFXAnimations> ().DeathParticles (explosionPos);
+		playerHolding.GetComponent<PlayersFXAnimations> ().DeathExplosionFX (explosionPos);
 		playerHolding.GetComponent<PlayersGameplay> ().Death ();
+
 		gameObject.SetActive (false);
 
 		playerHolding = null;
 		trackingPlayer = false;
 		hold = false;
-	}
-
-	void ExplosionFX ()
-	{
-		int playerNumber = (int)playerHolding.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
 	IEnumerator GetToPlayerPosition ()

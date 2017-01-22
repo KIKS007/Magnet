@@ -6,6 +6,7 @@ public class PlayersDeadCube : MonoBehaviour
 {
 	[Header("States")]
 	public PlayerName playerName;
+	public DashState dashState = DashState.CanDash;
 	public bool hold = false;
 
 	[Header("Controller Number")]
@@ -18,6 +19,10 @@ public class PlayersDeadCube : MonoBehaviour
 	public float maxVelocity;
 	public float movementSpeed = 18;
 	public float gravity = 100;
+
+	[Header("Dash")]
+	public float dashForce;
+	public float dashCooldown;
 
 	protected float rightJoystickDeadzone = 0.5f;
 
@@ -72,6 +77,10 @@ public class PlayersDeadCube : MonoBehaviour
 
 		SetMovePositions ();
 
+		if (!hold && rigidBody != null && dashState == DashState.CanDash && rewiredPlayer.GetButtonDown ("Dash"))
+			StartCoroutine (Dash ());
+			
+
 		if (!hold && rigidBody != null)
 			currentVelocity = rigidBody.velocity.magnitude;
 	}
@@ -95,10 +104,27 @@ public class PlayersDeadCube : MonoBehaviour
 			//rigidBody.MoveRotation (rigidBody.rotation * Quaternion.Euler (movement * torqueForce));
 			//rigidBody.AddForceAtPosition (Vector3.right * torqueForce * player.GetAxisRaw("Move Horizontal"), rightMovement.position);
 
-			Movement ();
+			if(dashState != DashState.Dashing)
+				Movement ();
 
 			rigidBody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 		}
+	}
+
+	IEnumerator Dash ()
+	{
+		dashState = DashState.Dashing;
+
+		Vector3 movement = new Vector3 (rewiredPlayer.GetAxisRaw("Move Horizontal"), 0, rewiredPlayer.GetAxisRaw("Move Vertical"));
+		movement.Normalize ();
+
+		rigidBody.AddForce (movement * dashForce, ForceMode.VelocityChange);
+
+		dashState = DashState.Cooldown;
+
+		yield return new WaitForSeconds (dashCooldown);
+
+		dashState = DashState.CanDash;
 	}
 
 	void Movement ()

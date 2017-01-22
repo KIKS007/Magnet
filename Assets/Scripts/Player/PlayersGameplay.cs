@@ -78,6 +78,8 @@ public class PlayersGameplay : MonoBehaviour
 	[Header ("Dead Cube")]
 	public bool playerDeadCube = true;
 
+	protected string playerDeadCubeTag;
+
 	[HideInInspector]
 	public List<GameObject> cubesAttracted = new List<GameObject>();
 	[HideInInspector]
@@ -131,10 +133,16 @@ public class PlayersGameplay : MonoBehaviour
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
 
-        movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
+		if(GameObject.FindGameObjectWithTag("MovableParent") != null)
+		{
+			movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
+			playerDeadCubeTag = movableParent.GetChild (0).tag;
+		}
+		
         magnetPoint = transform.GetChild(0).transform;
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
 		playerFX = GetComponent<PlayersFXAnimations> ();
+
     }
 
 	protected void SetPlayerName()
@@ -422,8 +430,8 @@ public class PlayersGameplay : MonoBehaviour
 			{
 				Death();
 
-				playerFX.DeathExplosionFX ();
-				playerFX.DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+				playerFX.DeathExplosionFX (other.contacts[0].point);
+				playerFX.DeathParticles(other.contacts[0].point);
 			}			
 		}
 
@@ -441,20 +449,20 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
-		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube")
+		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube" || other.gameObject.tag == "Suggestible")
 		{
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			{
 				Death();
 
-				playerFX.DeathExplosionFX ();
-				playerFX.DeathParticles(other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
+				playerFX.DeathExplosionFX (other.contacts[0].point);
+				playerFX.DeathParticles(other.contacts[0].point);
 			}			
 		}
 
-        if (other.collider.tag != "HoldMovable")
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
         {
-            if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+            if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
             {
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
@@ -609,7 +617,7 @@ public class PlayersGameplay : MonoBehaviour
 		gameObject.SetActive(false);
 
 		if(playerDeadCube)
-			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, movableParent.GetChild (0).tag);
+			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
 	}
 		
     protected virtual void OnDestroy()

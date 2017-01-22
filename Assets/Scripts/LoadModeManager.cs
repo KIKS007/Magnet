@@ -29,8 +29,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	void Start ()
 	{
 		if (SceneManager.GetActiveScene ().name == "Scene Testing")
-			FindGameObjects ();
-		
+			FindGameObjects ();		
 	}
 
 	//Game First Scene Loaded

@@ -71,7 +71,6 @@ public class MovablePlague : MovableScript
 			{
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
-				ExplosionFX (other);
 			}
 		}
 	}
@@ -107,13 +106,5 @@ public class MovablePlague : MovableScript
 
 		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, Color.black, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-	}
-
-	void ExplosionFX (Collision other)
-	{
-		int playerNumber = (int)other.gameObject.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 }
