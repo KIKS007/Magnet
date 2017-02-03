@@ -507,11 +507,10 @@ public class PlayersGameplay : MonoBehaviour
         Vector3 aim = new Vector3(rewiredPlayer.GetAxis("Aim Horizontal"), 0, rewiredPlayer.GetAxis("Aim Vertical"));
 
         if (aim.magnitude > rightJoystickDeadzone)
-        {
-            //transform.eulerAngles = new Vector3(transform.eulerAngles.x, Mathf.Atan2(rewiredPlayer.GetAxisRaw("Aim Horizontal"), rewiredPlayer.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z);
-            //playerRigidbody.MoveRotation(Quaternion.Euler (new Vector3 (transform.eulerAngles.x, Mathf.Atan2 (rewiredPlayer.GetAxisRaw ("Aim Horizontal"), rewiredPlayer.GetAxisRaw ("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
             playerRigidbody.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, Mathf.Atan2(rewiredPlayer.GetAxisRaw("Aim Horizontal"), rewiredPlayer.GetAxisRaw("Aim Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));
-        }
+
+		/*else if(rewiredPlayer.GetAxisRaw("Move Horizontal") != 0 || rewiredPlayer.GetAxisRaw("Move Vertical") != 0)
+			playerRigidbody.rotation = Quaternion.Euler(new Vector3(transform.eulerAngles.x, Mathf.Atan2(rewiredPlayer.GetAxisRaw("Move Horizontal"), rewiredPlayer.GetAxisRaw("Move Vertical")) * Mathf.Rad2Deg, transform.eulerAngles.z));*/
     }
 	#endregion
 
