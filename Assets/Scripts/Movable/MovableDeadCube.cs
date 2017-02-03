@@ -56,21 +56,13 @@ public class MovableDeadCube : MovableScript
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+				GlobalMethods.Instance.ExplosionFX (other.gameObject, transform.position);
 				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
-				ExplosionFX (other);
 
 				other.gameObject.GetComponent<PlayersFXAnimations> ().DeathParticles (other.contacts [0].point);
 				other.gameObject.GetComponent<PlayersGameplay> ().Death ();
 			}
 		}
-	}
-
-	void ExplosionFX (Collision other)
-	{
-		int playerNumber = (int)other.gameObject.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
 	public override void OnHold ()

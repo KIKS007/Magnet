@@ -154,18 +154,9 @@ public class MovableBurden : MovableScript
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
-		ExplosionFX ();
-
 		//gameObject.SetActive (false);	
-	}
-		
-	void ExplosionFX ()
-	{
-		int playerNumber = (int)targetPlayer.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], transform.position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
 	public void StopTrackingPlayer ()

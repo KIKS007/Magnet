@@ -299,16 +299,6 @@ public class MovableScript : MonoBehaviour
 
 		return instance;
 	}
-
-	public virtual GameObject ExplosionFX (Vector3 position, GameObject player)
-	{
-		int playerNumber = (int)player.GetComponent<PlayersGameplay> ().playerName;
-
-		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
-
-		return instance;
-	}
 	#endregion
 
 	#region Hold / Release

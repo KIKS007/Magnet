@@ -263,6 +263,16 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 	}
 
+	public GameObject ExplosionFX (GameObject player, Vector3 position)
+	{
+		int playerNumber = (int)player.GetComponent<PlayersGameplay> ().playerName;
+
+		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+		return instance;
+	}
+
 	IEnumerator ChangeMovableTag (GameObject movable, string tagTemp, float timeTween)
 	{
 		yield return new WaitForSeconds (0.3f * timeTween);
