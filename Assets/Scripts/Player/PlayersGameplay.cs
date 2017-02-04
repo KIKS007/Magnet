@@ -12,7 +12,8 @@ public enum PlayerState
 	Attracting,
 	Repulsing,
 	Stunned,
-	Dead
+	Dead,
+	Startup
 }
 
 public enum DashState
@@ -177,8 +178,10 @@ public class PlayersGameplay : MonoBehaviour
     {
         StartCoroutine(WaitTillPlayerEnabled());
 
-        playerState = PlayerState.None;
-        dashState = DashState.CanDash;
+		if(playerState != PlayerState.Startup)
+			playerState = PlayerState.None;
+        
+		dashState = DashState.CanDash;
 		holdState = HoldState.CanHold;
 
 		if(GlobalVariables.Instance != null)
@@ -188,9 +191,41 @@ public class PlayersGameplay : MonoBehaviour
 			GlobalVariables.Instance.SetPlayerMouseCursor ();
     }
 
+	protected IEnumerator Startup ()
+	{
+		playerState = PlayerState.Startup;
+
+		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+		switch (GlobalVariables.Instance.Startup)
+		{
+		case StartupType.Delayed:
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration);
+			break;
+		case StartupType.Wave:
+			yield return new WaitForSeconds (0.5f);
+
+			for(int i = 0; i < (int)playerName + 1; i++)
+			{
+				DOVirtual.DelayedCall (GlobalVariables.Instance.delayBetweenWavesFX * i, ()=> {
+					playerFX.WaveFX ();
+					GetComponent<PlayersVibration> ().Wave ();
+				});
+			}
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
+			break;
+		}
+
+		GlobalVariables.Instance.Startup = StartupType.Done;
+		playerState = PlayerState.None;
+	}
+
 	protected IEnumerator WaitTillPlayerEnabled()
 	{
 		yield return new WaitUntil(() => gameObject.activeSelf == true);
+
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && controllerNumber != -1)
+			StartCoroutine (Startup ());
 		
 		StartCoroutine(OnPlayerStateChange());
 		StartCoroutine(OnDashAvailableEvent());
@@ -201,65 +236,66 @@ public class PlayersGameplay : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
-            GameplayMethods();
+			//Movement Vector
+			movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
+			movement.Normalize();
 
+			//Turning Player
+			if (controllerNumber == 0 && playerState != PlayerState.Stunned)
+				TurningMouse();
+
+			else if (controllerNumber > 0 && playerState != PlayerState.Stunned)
+				TurningGamepad();
+
+			//Shoot
+			if (holdState == HoldState.Holding && rewiredPlayer.GetButtonUp("Attract"))
+				Shoot();
+
+
+			//Dash
+			if (rewiredPlayer.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
+				StartCoroutine(Dash());
+
+			//Stunned Rotation
             if (playerState == PlayerState.Stunned)
-            {
                 transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
-            }
 
-            if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
-                playerState = PlayerState.None;
+			//Reset Attraction - Repulsion State
+			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
+				playerState = PlayerState.None;
 
-            if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
-                playerState = PlayerState.None;
+			if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
+				playerState = PlayerState.None;
 
+			//Attraction - Repulsion State
+			if (playerState == PlayerState.None)
+			{
+				if (rewiredPlayer.GetButton("Attract"))
+					playerState = PlayerState.Attracting;
+
+				if (rewiredPlayer.GetButton("Repulse"))
+					playerState = PlayerState.Repulsing;
+			}
+
+			//On Attracted - On Repulsed Events
             OnAttractedOnRepulsed();
         }
     }
 
-    protected virtual void GameplayMethods()
-    {
-        movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
-        movement.Normalize();
-
-        if (controllerNumber == 0 && playerState != PlayerState.Stunned)
-            TurningMouse();
-
-        else if (controllerNumber > 0 && playerState != PlayerState.Stunned)
-            TurningGamepad();
-
-
-		if (holdState == HoldState.Holding && rewiredPlayer.GetButtonUp("Attract"))
-            Shoot();
-
-        if (playerState == PlayerState.None)
-        {
-            if (rewiredPlayer.GetButton("Attract"))
-                playerState = PlayerState.Attracting;
-
-            if (rewiredPlayer.GetButton("Repulse"))
-                playerState = PlayerState.Repulsing;
-        }
-
-        if (rewiredPlayer.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
-            StartCoroutine(Dash());
-        
-    }
-
     protected virtual void FixedUpdate()
     {
-        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
+			//Movement
             if (dashState != DashState.Dashing)
 			{
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
 			}
 
-
+			//Hold Movable
 			if (holdState == HoldState.Holding)
             {
                 holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
@@ -269,16 +305,20 @@ public class PlayersGameplay : MonoBehaviour
                     OnHolding();
             }
 
+			//Deceleration
             playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
+			//Gravity
             playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 
+			//Attraction
             if (cubesAttracted.Count > 0)
             {
                 for (int i = 0; i < cubesAttracted.Count; i++)
                     Attraction(cubesAttracted[i]);
             }
 
+			//Repulse
             if (cubesRepulsed.Count > 0)
             {
                 for (int i = 0; i < cubesRepulsed.Count; i++)
@@ -427,6 +467,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
+		if(playerState == PlayerState.Startup)
+			return;
+
 		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube")
 		{
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
@@ -452,6 +495,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
+		if(playerState == PlayerState.Startup)
+			return;
+
 		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube" || other.gameObject.tag == "Suggestible")
 		{
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
@@ -540,7 +586,6 @@ public class PlayersGameplay : MonoBehaviour
 
         if (!cubeHit && OnDashHit != null)
             OnDashHit();
-
 
         yield return new WaitForSeconds(stunnedDuration);
 

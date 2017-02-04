@@ -368,6 +368,15 @@ public class PlayersFXAnimations : MonoBehaviour
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 	}
 
+	public virtual void WaveFX()
+	{
+		int playerNumber = (int)playerName;
+		Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+
+		GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation) as GameObject;
+		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+	}
+
 	public virtual GameObject DeathParticles (Vector3 position)
 	{
 		Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);

@@ -38,6 +38,12 @@ public class PlayersVibration : MonoBehaviour
 	public float rightMotorDeath;
 	public float durationDeath;
 
+	[Header ("Wave")]
+	[Range (0,1)]
+	public float leftMotorWave;
+	[Range (0,1)]
+	public float rightMotorWave;
+	public float durationWave;
 
 	private PlayersGameplay playerScript;
 	private int controllerNumber;
@@ -83,5 +89,10 @@ public class PlayersVibration : MonoBehaviour
 	void Death ()
 	{
 		VibrationManager.Instance.Vibrate (controllerNumber, leftMotorDeath, rightMotorDeath, durationDeath);
+	}
+
+	public void Wave ()
+	{
+		VibrationManager.Instance.Vibrate (controllerNumber, leftMotorWave, rightMotorWave, durationWave);
 	}
 }

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
+public enum StartupType {Delayed, Wave, Done};
+
 public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Burden, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
@@ -14,13 +16,18 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
-	public ControllerChangeManager controllerManager;
 
 	[Header ("Scenes")]
 	public string firstSceneToLoad = "Crush";
 	public WhichMode WhichModeLoaded;
 	[HideInInspector]
 	public string CurrentModeLoaded = "";
+
+	[Header ("Startup")]
+	public StartupType Startup = StartupType.Wave;
+	public float delayedStartupDuration = 1f;
+	public float delayBetweenPlayerWaves = 0.2f;
+	public float delayBetweenWavesFX = 0.15f;
 
 	[Header ("Controller Numbers")]
 	public int[] PlayersControllerNumber = new int[4] {-1, -1, -1, -1};
@@ -53,6 +60,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject[] attractFX = new GameObject[4];
 	public GameObject[] repulseFX = new GameObject[4];
 	public GameObject[] wallImpactFX = new GameObject[5];
+	public GameObject[] waveFX = new GameObject[4];
 
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;
@@ -88,9 +96,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnPauseEvent ());
 		StartCoroutine (OnResumeEvent ());
 		StartCoroutine (OnMenuEvent ());
+		StartCoroutine (OnStartupDoneEvent ());
 
 		OnPlaying += ()=> HideMouseCursor();
 		OnRestartMode += ()=> SetPlayerMouseCursor();
+		OnMenu += () => Startup = StartupType.Wave;
+		OnEndMode += ()=> Startup = StartupType.Delayed;
 	}
 		
 	void Update ()
@@ -236,6 +247,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnPause;
 	public event EventHandler OnResume;
 	public event EventHandler OnMenu;
+	public event EventHandler OnStartupDone;
 
 	IEnumerator OnEndModeEvent ()
 	{
@@ -333,5 +345,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		yield return null;
 
 		StartCoroutine (OnMenuEvent ());
+	}
+
+	IEnumerator OnStartupDoneEvent ()
+	{
+		yield return new WaitWhile (() => Startup != StartupType.Done);
+
+		yield return new WaitUntil (() => Startup == StartupType.Done);
+
+		if (OnStartupDone != null)
+			OnStartupDone ();
+	
+		StartCoroutine (OnStartupDoneEvent ());
 	}
 }
