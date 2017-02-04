@@ -10,8 +10,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	[Header ("Load Mode Manager")]
 	public GameObject[] rootGameObjects;
 
-	public float loadingX = -140;
-	public float reloadingX = 140;
+	public float loadingX = -150;
+	public float reloadingX = 150;
 	public float movementDuration = 0.25f;
 	public Ease movementEase = Ease.InOutCubic;
 
