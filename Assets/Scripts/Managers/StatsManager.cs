@@ -627,7 +627,7 @@ public class StatsManager : Singleton<StatsManager>
 
 	IEnumerator Timer ()
 	{
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(1));
+		yield return new WaitForSecondsRealtime (1);
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 	

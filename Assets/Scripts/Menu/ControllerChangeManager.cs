@@ -418,27 +418,27 @@ public class ControllerChangeManager : MonoBehaviour
 		{ 
 		case 0: 
 			keyboardMoving = true; 
-			yield return StartCoroutine (CoroutineUtil.WaitForRealSeconds (gapBetweenInputs)); 
+			yield return new WaitForSecondsRealtime (gapBetweenInputs);
 			keyboardMoving = false; 
 			break; 
 		case 1: 
 			gamepad1Moving = true; 
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds (gapBetweenInputs)); 
+			yield return new WaitForSecondsRealtime (gapBetweenInputs);
 			gamepad1Moving = false; 
 			break; 
 		case 2 : 
 			gamepad2Moving = true; 
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds (gapBetweenInputs)); 
+			yield return new WaitForSecondsRealtime (gapBetweenInputs);
 			gamepad2Moving = false; 
 			break; 
 		case 3 : 
 			gamepad3Moving = true; 
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds (gapBetweenInputs)); 
+			yield return new WaitForSecondsRealtime (gapBetweenInputs);
 			gamepad3Moving = false; 
 			break; 
 		case 4 : 
 			gamepad4Moving = true; 
-			yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds (gapBetweenInputs)); 
+			yield return new WaitForSecondsRealtime (gapBetweenInputs);
 			gamepad4Moving = false; 
 			break; 
 		} 

@@ -69,7 +69,7 @@ public class LastManManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
 			MenuManager.Instance.endModeMenu.EndMode (whichMode);
@@ -84,7 +84,7 @@ public class LastManManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
 			MenuManager.Instance.endModeMenu.EndMode (whichMode);

@@ -373,7 +373,7 @@ public class SlowMotionCamera : MonoBehaviour
 			break;
 		}
 	
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(slowMotionDurationTemp + timeTween));
+		yield return new WaitForSecondsRealtime (slowMotionDurationTemp + timeTween);
 
 		if(slowMoNumberTest == slowMoNumber && GlobalVariables.Instance.GameState != GameStateEnum.Paused)
 		{

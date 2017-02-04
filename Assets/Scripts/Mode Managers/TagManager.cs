@@ -192,7 +192,7 @@ public class TagManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
 
-		yield return StartCoroutine(CoroutineUtil.WaitForRealSeconds(timeBeforeEndGame));
+		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
 		Debug.Log ("Players Count : " + GlobalVariables.Instance.NumberOfAlivePlayers);
 
