@@ -6,8 +6,6 @@ using DG.Tweening;
 public class MovableRam : MovableScript
 {
 	[Header ("PLAGUE")]
-	[SoundGroupAttribute]
-	public string explosionSound;
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -65,7 +63,6 @@ public class MovableRam : MovableScript
 		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 		{
 			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
-			MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 		}
 	}
 }

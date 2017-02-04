@@ -13,13 +13,6 @@ public class MovableBomb : MovableScript
 	public bool trackingPlayer = false;
 
 	[Header ("Explosion")]
-	[SoundGroupAttribute]
-	public string explosionSound;
-	[SoundGroupAttribute]
-	public string lastSecondsSound;
-	[SoundGroupAttribute]
-	public string cubeTrackingSound;
-
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -120,7 +113,7 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -135,7 +128,7 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -150,7 +143,7 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -163,7 +156,7 @@ public class MovableBomb : MovableScript
 
 			playerHit = other.gameObject;
 
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 		}
@@ -214,9 +207,8 @@ public class MovableBomb : MovableScript
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 
-		MasterAudio.StopAllOfSound(lastSecondsSound);
-		MasterAudio.StopAllOfSound(cubeTrackingSound);
-		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
+		MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
+		MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
 
 		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
 

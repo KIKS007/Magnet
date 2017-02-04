@@ -110,7 +110,7 @@ public class MenuManager : Singleton <MenuManager>
 		
 	void StartScreen ()
 	{
-		MasterAudio.PlaySound (GameSoundsManager.Instance.gameStartSound);
+		MasterAudio.PlaySound (SoundsManager.Instance.gameStartSound);
 
 		cameraMovement.StartScreen ();
 
@@ -844,12 +844,12 @@ public class MenuManager : Singleton <MenuManager>
 
 	void PlaySubmitSound ()
 	{
-		MasterAudio.PlaySound (GameSoundsManager.Instance.menuSubmit);
+		MasterAudio.PlaySound (SoundsManager.Instance.menuSubmit);
 	}
 
 	void PlayReturnSound ()
 	{
-		MasterAudio.PlaySound (GameSoundsManager.Instance.menuCancel);
+		MasterAudio.PlaySound (SoundsManager.Instance.menuCancel);
 	}
 
 
@@ -888,7 +888,7 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			GlobalVariables.Instance.GameState = GameStateEnum.Paused;
 
-			MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
+			MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 
 			mainCamera.GetComponent<SlowMotionCamera> ().StartPauseSlowMotion ();
 			cameraMovement.PausePosition ();
@@ -903,7 +903,7 @@ public class MenuManager : Singleton <MenuManager>
 
 			yield return new WaitForSecondsRealtime(durationToHide);
 
-			MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
+			MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
 			cameraMovement.PlayPosition ();
 
@@ -935,7 +935,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		yield return new WaitForSecondsRealtime(durationToHide);
 
-		MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
+		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
 		cameraMovement.PlayPosition ();
 
@@ -1026,7 +1026,7 @@ public class MenuManager : Singleton <MenuManager>
 		cameraMovement.MainMenuPosition ();
 		yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
 
-		MasterAudio.PlaySound (GameSoundsManager.Instance.openMenuSound);
+		MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 
 		loadModeScript.ReloadSceneVoid ();
 
@@ -1046,7 +1046,7 @@ public class MenuManager : Singleton <MenuManager>
 		endModecontent = null;
 		endModesecondaryContentList = null;
 
-		MasterAudio.PlaySound (GameSoundsManager.Instance.closeMenuSound);
+		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
 		loadModeScript.RestartSceneVoid ();
 	}

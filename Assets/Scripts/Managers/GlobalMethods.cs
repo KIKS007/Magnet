@@ -113,7 +113,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
 
-			MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, deadCube.transform);
+			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, deadCube.transform);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
 
-		MasterAudio.PlaySound3DAtTransformAndForget (GameSoundsManager.Instance.cubeSpawnSound, target.transform);
+		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, target.transform);
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)
@@ -269,6 +269,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		GameObject instance = Instantiate (GlobalVariables.Instance.explosionFX [playerNumber], position, GlobalVariables.Instance.explosionFX [playerNumber].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+		MasterAudio.PlaySound3DAtVector3AndForget (SoundsManager.Instance.explosionSound, position);
 
 		return instance;
 	}

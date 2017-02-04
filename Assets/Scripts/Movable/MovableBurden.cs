@@ -14,9 +14,6 @@ public class MovableBurden : MovableScript
 	private float speedAddedCooldown = 0.5f;
 
 	[Header ("Explosion")]
-	[SoundGroupAttribute]
-	public string explosionSound;
-
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -155,7 +152,7 @@ public class MovableBurden : MovableScript
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);
-		MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
+		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	
 	}
 

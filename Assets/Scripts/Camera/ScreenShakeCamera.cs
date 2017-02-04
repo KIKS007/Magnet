@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public enum SlowMotionType {Default, Death, Stun, DashStun, ModeEnd};
 
-public class CameraScreenShake : MonoBehaviour 
+public class ScreenShakeCamera : MonoBehaviour 
 {
 
 	public List<SlowMotionSettings> slowMotionList = new List<SlowMotionSettings> ();

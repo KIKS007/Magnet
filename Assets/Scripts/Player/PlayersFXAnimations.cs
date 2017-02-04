@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using DarkTonic.MasterAudio;
 
 public class PlayersFXAnimations : MonoBehaviour 
 {
@@ -358,6 +359,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 	}
 
 	public virtual void DeathExplosionFX()
@@ -366,6 +369,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
 		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 	}
 
 	public virtual void WaveFX()

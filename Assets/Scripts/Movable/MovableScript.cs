@@ -33,10 +33,6 @@ public class MovableScript : MonoBehaviour
 	[Header ("Gravity")]
 	public float gravity = 0;
 
-	[Header ("Sounds")]
-	[SoundGroupAttribute]
-	public string wallHitSound;
-
 	protected bool canPlaySound = true;
 
 	protected float toColorDuration = 0.5f;
@@ -219,7 +215,7 @@ public class MovableScript : MonoBehaviour
 				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 				
 				playerHit = other.gameObject;
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 				
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
@@ -260,12 +256,12 @@ public class MovableScript : MonoBehaviour
 		canPlaySound = false;
 
 		if(currentVelocity >= limitVelocity)
-			MasterAudio.PlaySound3DFollowTransformAndForget (wallHitSound, transform);
+			MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.wallHitSound, transform);
 
 		else
 		{
 			float soundVolume = (currentVelocity * 100) / limitVelocity / 100;
-			MasterAudio.PlaySound3DFollowTransformAndForget (wallHitSound, transform, soundVolume);	
+			MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.wallHitSound, transform, soundVolume);	
 		}
 
 		yield return new WaitForSeconds (0.05f);

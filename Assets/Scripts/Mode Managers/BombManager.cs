@@ -18,12 +18,6 @@ public class BombManager : MonoBehaviour
 	public float timeBeforeFirstSpawn = 1;
 	public float timeBetweenSpawn = 2;
 
-	[Header ("Timer Sounds")]
-	[SoundGroupAttribute]
-	public string lastSecondsSound;
-	[SoundGroupAttribute]
-	public string cubeTrackingSound;
-
 	[Header ("Timer")]
 	public Text timerText;
 	public float timer;
@@ -95,7 +89,7 @@ public class BombManager : MonoBehaviour
 		if(bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
 			lastSeconds = true;
-			MasterAudio.PlaySound3DAtTransformAndForget (lastSecondsSound, bomb.transform);
+			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
 		}
 	}
 
@@ -120,7 +114,7 @@ public class BombManager : MonoBehaviour
 		{
 			timerText.text = "00";
 			
-			MasterAudio.PlaySound3DAtTransformAndForget (cubeTrackingSound, bomb.transform);
+			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeTrackingSound, bomb.transform);
 			bombScript.StartCoroutine ("Explode");
 	
 
@@ -211,7 +205,7 @@ public class BombManager : MonoBehaviour
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.ModeEnd);
 
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 

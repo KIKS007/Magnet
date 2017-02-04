@@ -190,7 +190,7 @@ public class TagManager : MonoBehaviour
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.ModeEnd);
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.ModeEnd);
 
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 

@@ -67,7 +67,7 @@ public class LogoKickSteam : EventTrigger
 	public override void OnPointerEnter( PointerEventData data )
 	{
 		OnPointerEnter ();
-		GameSoundsManager.Instance.MenuNavigation ();
+		SoundsManager.Instance.MenuNavigation ();
 	}
 
 	public override void OnPointerExit( PointerEventData data )
@@ -83,7 +83,7 @@ public class LogoKickSteam : EventTrigger
 	public override void OnSelect( BaseEventData data )
 	{
 		OnSelect ();
-		GameSoundsManager.Instance.MenuNavigation ();
+		SoundsManager.Instance.MenuNavigation ();
 	}
 
 	public override void OnDeselect( BaseEventData data )

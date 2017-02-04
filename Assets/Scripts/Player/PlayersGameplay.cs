@@ -488,7 +488,7 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.DashStun);
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.DashStun);
             }
         }
     }
@@ -516,7 +516,7 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.DashStun);
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.DashStun);
             }
         }
     }
@@ -648,7 +648,7 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Dead;
 
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Death);
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Death);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{

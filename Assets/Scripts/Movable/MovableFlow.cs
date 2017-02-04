@@ -5,8 +5,6 @@ using DarkTonic.MasterAudio;
 public class MovableFlow : MovableScript 
 {
 	[Header ("FLOW")]
-	[SoundGroupAttribute]
-	public string explosionSound;
 	public float explosionForce = 20;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -34,7 +32,7 @@ public class MovableFlow : MovableScript
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
-			MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
+			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		}
 	}
 }

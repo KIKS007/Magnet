@@ -6,14 +6,9 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using GameAnalyticsSDK;
 
-public class GameSoundsManager : Singleton<GameSoundsManager> 
+public class SoundsManager : Singleton<SoundsManager> 
 {
-	[Header ("Slow Mo Effect")]
-	public bool slowMoEffectMusicEnabled = false;
-	public Toggle toggleEnableSloMoEffect;
-	public GameObject playListSource;
-	public float timeScaleRatio = 1;
-	public float slowMotweenDuration;
+	public PlaylistController playlistCont;
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -33,10 +28,39 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	[SoundGroupAttribute]
 	public string winSound;
 
-	[Header ("Sounds")]
-	public PlaylistController playlistCont;
+	[Header ("Player Sounds")]
+	[SoundGroupAttribute]
+	public string onHoldSound;
+	[SoundGroupAttribute]
+	public string shootSound;
+	[SoundGroupAttribute]
+	public string cubeHitSound;
+	[SoundGroupAttribute]
+	public string dashHitSound;
+	[SoundGroupAttribute]
+	public string stunONSound;
+	[SoundGroupAttribute]
+	public string stunOFFSound;
+	[SoundGroupAttribute]
+	public string stunENDSound;
+	[SoundGroupAttribute]
+	public string dashSound;
+	[SoundGroupAttribute]
+	public string deathSound;
+
+	[Header ("Cube Sounds")]
+	[SoundGroupAttribute]
+	public string wallHitSound;
 	[SoundGroupAttribute]
 	public string cubeSpawnSound;
+	[SoundGroupAttribute]
+	public string lastSecondsSound;
+	[SoundGroupAttribute]
+	public string cubeTrackingSound;
+
+	[Header ("Explosion Sound")]
+	[SoundGroupAttribute]
+	public string explosionSound;
 
 	[Header ("Sounds Options")]
 	public Scrollbar soundsBar;
@@ -47,6 +71,13 @@ public class GameSoundsManager : Singleton<GameSoundsManager>
 	public Toggle musicMuteToggle;
 	[SoundGroupAttribute]
 	public string soundsVolumeTest;
+
+	[Header ("Slow Mo Effect")]
+	public bool slowMoEffectMusicEnabled = false;
+	public Toggle toggleEnableSloMoEffect;
+	public GameObject playListSource;
+	public float timeScaleRatio = 1;
+	public float slowMotweenDuration;
 
 	private float initialSoundsVolume;
 	private float initialPlaylistVolume;

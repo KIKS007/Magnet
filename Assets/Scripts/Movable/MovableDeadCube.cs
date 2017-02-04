@@ -6,8 +6,6 @@ using DarkTonic.MasterAudio;
 public class MovableDeadCube : MovableScript 
 {
 	[Header ("Suggestible")]
-	[SoundGroupAttribute]
-	public string explosionSound;
 	public float explosionForce = 20;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -57,7 +55,6 @@ public class MovableDeadCube : MovableScript
 
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
 				GlobalMethods.Instance.ExplosionFX (other.gameObject, transform.position);
-				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 
 				other.gameObject.GetComponent<PlayersFXAnimations> ().DeathParticles (other.contacts [0].point);
 				other.gameObject.GetComponent<PlayersGameplay> ().Death ();

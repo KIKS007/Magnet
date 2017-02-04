@@ -10,40 +10,21 @@ public class PlayersSounds : MonoBehaviour
 	public string attractingSound;
 	[SoundGroupAttribute]
 	public string repulsingSound;
-	[SoundGroupAttribute]
-	public string onHoldSound;
-	[SoundGroupAttribute]
-	public string shootSound;
-	[SoundGroupAttribute]
-	public string cubeHitSound;
-	[SoundGroupAttribute]
-	public string dashHitSound;
-	[SoundGroupAttribute]
-	public string stunONSound;
-	[SoundGroupAttribute]
-	public string stunOFFSound;
-	[SoundGroupAttribute]
-	public string stunENDSound;
-	[SoundGroupAttribute]
-	public string dashSound;
-	[SoundGroupAttribute]
-	public string deathSound;
-
 
 	private PlayersGameplay playerScript;
 
-	static float attractingVolume = -1;
-	static float repulsingVolume = -1;
+	static float initialAttractingVolume = -1;
+	static float initialRepulsingVolume = -1;
 
 	// Use this for initialization
 	void Start () 
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 
-		if(attractingVolume == -1)
+		if(initialAttractingVolume == -1)
 		{
-			attractingVolume = MasterAudio.GetGroupVolume (attractingSound);
-			repulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
+			initialAttractingVolume = MasterAudio.GetGroupVolume (attractingSound);
+			initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
 		}
 			
 		MasterAudio.SetGroupVolume (attractingSound, 0);
@@ -71,14 +52,14 @@ public class PlayersSounds : MonoBehaviour
 
 	void Attracting ()
 	{
-		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != attractingVolume && !fadeInAttraction)
+		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != initialAttractingVolume && !fadeInAttraction)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (attractingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, attractingVolume, fadeDuration, ()=> fadeInAttraction = false);
+			MasterAudio.FadeSoundGroupToVolume (attractingSound, initialAttractingVolume, fadeDuration, ()=> fadeInAttraction = false);
 		}
 
 		if(playerScript.cubesAttracted.Count == 0 && MasterAudio.GetGroupVolume(attractingSound) != 0 && !fadeOutAttraction)
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> fadeOutAttraction = false);			
+			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> fadeOutAttraction = false);		
 	}
 
 	private bool fadeInRepulsion = false;
@@ -86,10 +67,10 @@ public class PlayersSounds : MonoBehaviour
 
 	void Repulsing ()
 	{
-		if(playerScript.cubesRepulsed.Count > 0 && MasterAudio.GetGroupVolume(repulsingSound) != repulsingVolume && !fadeInRepulsion)
+		if(playerScript.cubesRepulsed.Count > 0 && MasterAudio.GetGroupVolume(repulsingSound) != initialRepulsingVolume && !fadeInRepulsion)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (repulsingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (repulsingSound, repulsingVolume, fadeDuration, ()=> fadeInRepulsion = false);
+			MasterAudio.FadeSoundGroupToVolume (repulsingSound, initialRepulsingVolume, fadeDuration, ()=> fadeInRepulsion = false);
 		}
 
 		if(playerScript.cubesRepulsed.Count == 0 && MasterAudio.GetGroupVolume(repulsingSound) != 0 && !fadeOutRepulsion)
@@ -98,47 +79,47 @@ public class PlayersSounds : MonoBehaviour
 
 	void OnHold ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (onHoldSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.onHoldSound, transform);
 	}
 
 	void Shoot ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (shootSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.shootSound, transform);
 	}
 
 	void CubeHit ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (cubeHitSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.cubeHitSound, transform);
 	}
 
 	void DashHit ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (dashHitSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.dashHitSound, transform);
 	}
 
 	public void StunON ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (stunONSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.stunONSound, transform);
 	}
 
 	public void StunOFF ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (stunOFFSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.stunOFFSound, transform);
 	}
 
 	public void StunEND ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (stunENDSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.stunENDSound, transform);
 	}
 
 	void Dash ()
 	{
-		MasterAudio.PlaySound3DFollowTransformAndForget (dashSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.dashSound, transform);
 	}
 
 	void Death ()
 	{
-		MasterAudio.PlaySound3DAtVector3AndForget (deathSound, transform.position);
+		MasterAudio.PlaySound3DAtVector3AndForget (SoundsManager.Instance.deathSound, transform.position);
 	}
 
 	void OnDisable ()

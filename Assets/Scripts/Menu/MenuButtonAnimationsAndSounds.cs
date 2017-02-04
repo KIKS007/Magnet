@@ -103,7 +103,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	{
 		OnSelect ();
 
-		GameSoundsManager.Instance.MenuNavigation ();
+		SoundsManager.Instance.MenuNavigation ();
 	}
 
 
@@ -120,7 +120,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		if(scaleChangement && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 		
-		GameSoundsManager.Instance.MenuNavigation ();
+		SoundsManager.Instance.MenuNavigation ();
 	}
 
 	public override void OnPointerExit( PointerEventData data )
@@ -145,7 +145,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		{
 			OnDeselect ();
 
-			GameSoundsManager.Instance.MenuSubmit ();
+			SoundsManager.Instance.MenuSubmit ();
 
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 		}

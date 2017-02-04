@@ -13,8 +13,6 @@ public class MovablePlague : MovableScript
 	public float deadlyCubeDeceleration = 0.97f;
 
 	[Header ("Explosion")]
-	[SoundGroupAttribute]
-	public string explosionSound;
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 	public LayerMask explosionMask;
@@ -58,7 +56,7 @@ public class MovablePlague : MovableScript
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 					
 					playerHit = other.gameObject;
-					GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraScreenShake>().CameraShaking(SlowMotionType.Stun);
+					GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Stun);
 					
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 					
@@ -70,7 +68,6 @@ public class MovablePlague : MovableScript
 			else if(tag == "DeadCube")
 			{
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
-				MasterAudio.PlaySound3DAtTransformAndForget (explosionSound, transform);
 			}
 		}
 	}
