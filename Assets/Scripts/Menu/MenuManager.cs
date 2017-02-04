@@ -112,7 +112,7 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		MasterAudio.PlaySound (SoundsManager.Instance.gameStartSound);
 
-		cameraMovement.StartScreen ();
+		cameraMovement.StartCoroutine ("StartScreen");
 
 		MainMenu ();
 
@@ -262,7 +262,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		if(!startScreen)
-			cameraMovement.ShowLogo ();
+			cameraMovement.StartCoroutine ("ShowLogo");
 
 		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
 		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
@@ -301,7 +301,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		if(!startScreen)
-			cameraMovement.ShowLogo ();
+			cameraMovement.StartCoroutine ("ShowLogo");
 
 		SetInteractable (underButtonsList [0], ButtonsDelay (delay) * 0.5f);
 		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
@@ -324,7 +324,7 @@ public class MenuManager : Singleton <MenuManager>
 			underDelay++;
 		}
 
-		cameraMovement.HideLogo ();
+		cameraMovement.StartCoroutine ("HideLogo");
 
 		currentMenu = null;
 	}
@@ -891,7 +891,7 @@ public class MenuManager : Singleton <MenuManager>
 			MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 
 			mainCamera.GetComponent<SlowMotionCamera> ().StartPauseSlowMotion ();
-			cameraMovement.PausePosition ();
+			cameraMovement.StartCoroutine ("PausePosition");
 
 			yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration - 0.5f);
 
@@ -899,15 +899,11 @@ public class MenuManager : Singleton <MenuManager>
 		}
 		else
 		{
-			cameraMovement.HideLogo ();
-
-			yield return new WaitForSecondsRealtime(durationToHide);
+			yield return cameraMovement.StartCoroutine ("HideLogo");
 
 			MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
-			cameraMovement.PlayPosition ();
-
-			yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
+			yield return cameraMovement.StartCoroutine ("PlayPosition");
 
 			mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
@@ -937,9 +933,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
-		cameraMovement.PlayPosition ();
-
-		yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
+		yield return cameraMovement.StartCoroutine ("PlayPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 	}
@@ -957,9 +951,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator ShowEndModeCoroutine (RectTransform content, List<SecondaryContent> secondaryContentList, MenuComponent whichMenu)
 	{
-		cameraMovement.EndModePosition ();
-
-		yield return new WaitForSecondsRealtime (cameraMovement.cameraMovementDuration);
+		yield return cameraMovement.StartCoroutine ("EndModePosition");
 
 		if(secondaryContentList != null)
 		{
@@ -1023,8 +1015,7 @@ public class MenuManager : Singleton <MenuManager>
 		endModecontent = null;
 		endModesecondaryContentList = null;
 
-		cameraMovement.MainMenuPosition ();
-		yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration);
+		yield return cameraMovement.StartCoroutine ("MainMenuPosition");
 
 		MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 

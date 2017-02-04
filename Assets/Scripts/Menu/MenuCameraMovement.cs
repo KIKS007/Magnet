@@ -4,6 +4,8 @@ using DG.Tweening;
 
 public class MenuCameraMovement : MonoBehaviour 
 {
+	public Ease cameraEaseMovement = Ease.OutQuad;
+
 	[Header ("Start Screen")]
 	public RectTransform startScreenText;
 	public float startScreenDuration = 0.5f;
@@ -16,7 +18,11 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector3 playPosition = new Vector3 (0, 60, 0);
 	public Vector3 endModePosition = new Vector3 (48, 104, 18);
 	public float cameraMovementDuration = 0.8f;
-	public Ease cameraEaseMovement = Ease.OutQuad;
+
+	[Header ("Camera Loading Movements")]
+	public int loadingX = -150;
+	public int restartX = 150;
+	public float cameraLoadingMovementDuration = 0.25f;
 
 	[Header ("Logo Movements")]
 	public RectTransform menuLogo;
@@ -41,61 +47,75 @@ public class MenuCameraMovement : MonoBehaviour
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
 	}
 
-	public void StartScreen ()
-	{
-		StartCoroutine (StartScreenCoroutine ());
-	}
-
-	IEnumerator StartScreenCoroutine ()
+	public IEnumerator StartScreen ()
 	{
 		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
 		menuLogo.DOAnchorPos (logoNewPos, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		menuLogo.DOScale (logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		//yield return new WaitForSecondsRealtime (startScreenDuration);
-
 		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		yield return null;
+		yield return new WaitForSecondsRealtime (startScreenDuration);
 	}
 
-	public void MainMenuPosition ()
+	public IEnumerator MainMenuPosition ()
 	{
 		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		ShowLogo ();
+		StartCoroutine (ShowLogo ());
+
+		yield return new WaitForSecondsRealtime (cameraMovementDuration);
 	}
 
-	public void PausePosition ()
+	public IEnumerator PausePosition ()
 	{
 		positionOnPause = transform.position;
 		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		ShowLogo ();
+		StartCoroutine (ShowLogo ());
+
+		yield return new WaitForSecondsRealtime (cameraMovementDuration);
 	}
 
-	public void PlayPosition ()
+	public IEnumerator PlayPosition ()
 	{
 		if(positionOnPause != Vector3.zero)
 			transform.DOMove (positionOnPause, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		else
 			transform.DOMove (playPosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		HideLogo ();
+		StartCoroutine (HideLogo ());
+
+		yield return new WaitForSecondsRealtime (cameraMovementDuration);
 	}
 
-	public void EndModePosition ()
+	public IEnumerator EndModePosition ()
 	{
 		transform.DOMove (endModePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (cameraMovementDuration);
 	}
 
-	public void HideLogo ()
+	public IEnumerator HideLogo ()
 	{
 		menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
-	public void ShowLogo ()
+	public IEnumerator ShowLogo ()
 	{
 		menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (logoMovementDuration);
+	}
+
+	public IEnumerator LoadingPosition ()
+	{
+		transform.DOMoveX (loadingX, cameraLoadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (cameraLoadingMovementDuration);
+	}
+
+	public IEnumerator RestartPosition ()
+	{
+		transform.DOMoveX (restartX, cameraLoadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (cameraLoadingMovementDuration);
 	}
 }

@@ -9,6 +9,8 @@ public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
 public enum StartupType {Delayed, Wave, Done};
 
+public enum ModeSequenceType {Selection, Random, Cocktail};
+
 public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Burden, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
@@ -22,6 +24,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public WhichMode WhichModeLoaded;
 	[HideInInspector]
 	public string CurrentModeLoaded = "";
+
+	[Header ("Mode Sequence")]
+	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
+	public int GamesCount = 1;
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
