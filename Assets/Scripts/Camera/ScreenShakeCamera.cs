@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System;
 using DG.Tweening;
 
-public enum SlowMotionType {Default, Death, Stun, DashStun, ModeEnd};
+public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup};
 
 public class ScreenShakeCamera : MonoBehaviour 
 {
-
-	public List<SlowMotionSettings> slowMotionList = new List<SlowMotionSettings> ();
+	public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings> ();
 
 	[Header ("Common Settings")]
 	public int shakeVibrato = 100;
 	public float shakeRandomness = 45;
 
 	[Header ("Test")]
-	public SlowMotionType whichSlowMoTest = SlowMotionType.Default;
+	public FeedbackType whichScreenShakeTest = FeedbackType.Default;
 	public bool shake;
 	public bool resetShake;
 
@@ -38,7 +37,7 @@ public class ScreenShakeCamera : MonoBehaviour
 		if(shake)
 		{
 			shake = false;
-			CameraShaking(whichSlowMoTest);
+			CameraShaking(whichScreenShakeTest);
 		}
 
 		if(resetShake)
@@ -48,18 +47,18 @@ public class ScreenShakeCamera : MonoBehaviour
 		}
 	}
 
-	public void CameraShaking (SlowMotionType whichSlowMo = SlowMotionType.Default)
+	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
 	{
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
 		bool exactType = true;
 
-		for(int i = 0; i < slowMotionList.Count; i++)
+		for(int i = 0; i < screenShakeList.Count; i++)
 		{
-			if(slowMotionList[i].whichSlowMo == whichSlowMo)
+			if(screenShakeList[i].whichScreenShake == whichSlowMo)
 			{
-				shakeDuration = slowMotionList [i].shakeDuration;
-				shakeStrenth = slowMotionList [i].shakeStrenth;
+				shakeDuration = screenShakeList [i].shakeDuration;
+				shakeStrenth = screenShakeList [i].shakeStrenth;
 				exactType = true;
 				break;
 			}
@@ -67,8 +66,8 @@ public class ScreenShakeCamera : MonoBehaviour
 
 		if(!exactType)
 		{
-			shakeDuration = slowMotionList [0].shakeDuration;
-			shakeStrenth = slowMotionList [0].shakeStrenth;
+			shakeDuration = screenShakeList [0].shakeDuration;
+			shakeStrenth = screenShakeList [0].shakeStrenth;
 		}
 
 		shake = false;
@@ -94,7 +93,7 @@ public class ScreenShakeCamera : MonoBehaviour
 [Serializable]
 public class SlowMotionSettings
 {
-	public SlowMotionType whichSlowMo = SlowMotionType.Default;
+	public FeedbackType whichScreenShake = FeedbackType.Default;
 
 	public float shakeDuration = 0.5f;
 	public Vector3 shakeStrenth = new Vector3 (1, 0, 1);

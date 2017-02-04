@@ -203,7 +203,7 @@ public class PlayersGameplay : MonoBehaviour
 			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration);
 			break;
 		case StartupType.Wave:
-			yield return new WaitForSeconds (0.5f);
+			yield return new WaitForSeconds (0.25f);
 
 			for(int i = 0; i < (int)playerName + 1; i++)
 			{
@@ -488,7 +488,7 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.DashStun);
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
             }
         }
     }
@@ -516,7 +516,7 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.DashStun);
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
             }
         }
     }
@@ -648,16 +648,17 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Dead;
 
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(SlowMotionType.Death);
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 
+			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
 			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-			holdMovableTransform.GetComponent<MovableScript>().OnRelease();					
+			holdMovableTransform.GetComponent<MovableScript>().OnRelease();	
 		}
 
 		holdState = HoldState.CannotHold;

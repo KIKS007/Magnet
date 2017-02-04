@@ -293,7 +293,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 			gamepadsUnplugged[arg.controllerId] = true;
 		}
 
-		Debug.Log (arg.controllerId);
+		//Debug.Log (arg.controllerId);
 
 		if (gamepadsUnplugged [0] || gamepadsUnplugged [1] || gamepadsUnplugged [2] || gamepadsUnplugged [3])
 		{

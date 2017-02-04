@@ -349,8 +349,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	IEnumerator OnStartupDoneEvent ()
 	{
-		yield return new WaitWhile (() => Startup != StartupType.Done);
-
+		yield return new WaitUntil (() => Startup != StartupType.Done);
+	
 		yield return new WaitUntil (() => Startup == StartupType.Done);
 
 		if (OnStartupDone != null)
