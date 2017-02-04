@@ -150,7 +150,7 @@ public class MenuManager : Singleton <MenuManager>
 					}
 				}
 				
-				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
+				if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.GameState != GameStateEnum.EndMode && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
 					currentMenu.Cancel ();
 			}			
 		}

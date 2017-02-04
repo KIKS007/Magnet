@@ -1,7 +1,6 @@
 ﻿using UnityEngine; 
 using System.Collections; 
 using UnityEngine.UI; 
-using XboxCtrlrInput; 
 using DG.Tweening; 
 using System.Collections.Generic; 
 using Rewired; 

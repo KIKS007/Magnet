@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
-using XboxCtrlrInput;
 using Rewired;
 
 public class MagnetTriggerScript : MonoBehaviour 

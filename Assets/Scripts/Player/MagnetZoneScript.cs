@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using XboxCtrlrInput;
 using Rewired;
 
 public class MagnetZoneScript : MonoBehaviour 
