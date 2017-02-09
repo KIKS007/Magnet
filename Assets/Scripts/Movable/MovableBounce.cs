@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class MovableStandoff : MovableScript 
+public class MovableBounce : MovableScript 
 {
 	[Header ("Explosion")]
 	public float explosionForce = 50;
@@ -32,38 +32,18 @@ public class MovableStandoff : MovableScript
 		}
 	}
 
-	protected override void HitPlayer (Collision other)
+	protected override void HitWall (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(tag == "ThrownMovable")
-			{
-				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
-				{
-					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
+			if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);
 
-					playerHit = other.gameObject;
-					GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+			if(canPlaySound)
+				StartCoroutine(HitSound ());
 
-					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
-
-					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
-						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
-				}				
-			}
-			else if(tag == "DeadCube")
-			{
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
-			}
+			StartCoroutine (DeadlyTransition ());
 		}
-	}
-
-	public override void OnRelease ()
-	{
-		OnReleaseEventVoid ();
-
-		StartCoroutine (DeadlyTransition ());
 	}
 
 	IEnumerator DeadlyTransition ()

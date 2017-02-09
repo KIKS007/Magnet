@@ -241,17 +241,18 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitWall (Collision other)
 	{
-		if(other.gameObject.tag == "Wall" && canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(currentVelocity > (limitVelocity * 0.5f))
 				InstantiateImpactFX (other.contacts [0]);
 
-			StartCoroutine(HitSound ());
+			if(canPlaySound)
+				StartCoroutine(HitSound ());
 		}
 		
 	}
 
-	IEnumerator HitSound ()
+	protected IEnumerator HitSound ()
 	{
 		canPlaySound = false;
 

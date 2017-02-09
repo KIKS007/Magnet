@@ -5,7 +5,7 @@ using DarkTonic.MasterAudio;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
-	public LayerMask gameplayLayer = (1 << 9) | (1 << 12) | (1 << 13) | (1 << 14);
+	public LayerMask gameplayLayer = (1 << 9) | (1 << 12);
 
 	private float xLimit;
 	private float zLimit;

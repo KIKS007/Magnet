@@ -15,7 +15,7 @@ public class MovablePlague : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask;
+	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	protected override void Update ()
 	{

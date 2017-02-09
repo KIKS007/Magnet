@@ -7,7 +7,7 @@ public class MovableFlow : MovableScript
 	[Header ("FLOW")]
 	public float explosionForce = 20;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask;
+	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	protected override void Start ()
 	{

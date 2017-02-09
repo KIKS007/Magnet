@@ -15,7 +15,7 @@ public class MovableBomb : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask;
+	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
