@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class LastManManager : MonoBehaviour 
 {
 	[Header ("Settings")]
 	public WhichMode whichMode;
-
 	public float timeBeforeEndGame = 2;
+
+	[Header ("Cubes Spawn")]
+	public float durationBetweenSpawn = 0.1f;
 
 	private bool gameEndLoopRunning = false;
 
@@ -18,21 +21,28 @@ public class LastManManager : MonoBehaviour
 
 	IEnumerator WaitForBeginning ()
 	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+		List<GameObject> allMovables = new List<GameObject>();
 
-		if(allMovables.Length == 0)
-			allMovables = GameObject.FindGameObjectsWithTag ("Suggestible");
+		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
+				allMovables.Add (movable);
 
-		if(allMovables.Length == 0)
-			allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
+		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
+				allMovables.Add (movable);
 
-		for (int i = 0; i < allMovables.Length; i++)
+		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
+				allMovables.Add (movable);
+		
+
+		for (int i = 0; i < allMovables.Count; i++)
 			allMovables [i].SetActive (false);
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(allMovables.Length > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables);
+		if(allMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray (), durationBetweenSpawn);
 	}
 
 	// Update is called once per frame

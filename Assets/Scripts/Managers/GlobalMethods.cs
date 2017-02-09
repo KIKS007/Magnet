@@ -16,6 +16,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	private const float defaultScaleDuration = 0.8f;
 
+	private const float defaultDurationBetweenSpawn = 0.1f;
+
 	void Start ()
 	{
 		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
@@ -100,7 +102,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			deadCube.tag = "Untagged";
 
 			if (tag != "Movable")
-				deadCube.GetComponent<MovableDeadCube> ().basicMovable = false;
+				deadCube.GetComponent<MovablePlayer> ().basicMovable = false;
 
 			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
 			StartCoroutine (ChangeMovableTag (deadCube, tag, scaleDuration));
@@ -117,21 +119,22 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 	}
 
-	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f, float scaleDuration = defaultScaleDuration)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
 	{
 		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn, scaleDuration));
 	}
 
-	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = 0.1f, float scaleDuration = defaultScaleDuration)
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
-		string tagTemp = allMovables [0].tag;
+		string[] allTags = new string[allMovables.Length];
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
 			allMovables [i].SetActive (false);
 			allScales [i] = allMovables [i].transform.lossyScale;
 			allMovables [i].transform.localScale = new Vector3 (0, 0, 0);
+			allTags [i] = allMovables [i].tag;
 		}
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
@@ -154,7 +157,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			if(allMovables[i] != null)
 			{
 				EnableGameObject (allMovables [i], newPos);
-				ScaleGameObect (allMovables [i], tagTemp, allScales [i], scaleDuration);
+				ScaleGameObect (allMovables [i], allTags [i], allScales [i], scaleDuration);
 			}
 				
 			yield return null;

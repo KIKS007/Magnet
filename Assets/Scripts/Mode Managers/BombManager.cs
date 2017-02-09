@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class BombManager : MonoBehaviour 
 {
@@ -50,6 +51,34 @@ public class BombManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
 
 		StartCoroutine (Setup ());
+		StartCoroutine (WaitForBeginning ());
+	}
+
+	IEnumerator WaitForBeginning ()
+	{
+		List<GameObject> allMovables = new List<GameObject>();
+
+		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
+				allMovables.Add (movable);
+
+		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
+				allMovables.Add (movable);
+
+		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
+				allMovables.Add (movable);
+
+		allMovables.Remove (bomb);
+
+		for (int i = 0; i < allMovables.Count; i++)
+			allMovables [i].SetActive (false);
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		if(allMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray ());
 	}
 
 	IEnumerator Setup ()
