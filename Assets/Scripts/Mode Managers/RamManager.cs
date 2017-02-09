@@ -18,6 +18,8 @@ public class RamManager : MonoBehaviour
 
 	IEnumerator SpawnCube ()
 	{
+		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
 		yield return new WaitForSeconds (durationBetweenSpawn);
 
 		GlobalMethods.Instance.SpawnNewMovableRandomVoid (cubesPrefabs [Random.Range (0, cubesPrefabs.Length)]);

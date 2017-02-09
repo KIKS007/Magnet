@@ -11,7 +11,7 @@ public enum StartupType {Delayed, Wave, Done};
 
 public enum ModeSequenceType {Selection, Random, Cocktail};
 
-public enum WhichMode {Bomb, Crush, Training, Ram, Flow, Tag, Banner, Plague, Freeze, Countdown, Standoff, Burden, Default};
+public enum WhichMode {Bomb, Burden, Crush, Flow, Plague, Ram, Standoff, Training, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
