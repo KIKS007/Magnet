@@ -148,12 +148,14 @@ public class MovableBomb : MovableScript
 			}
 		}
 
-		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer)
+		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 		{
 			hold = true;
 			playerHolding = other.gameObject;
 
 			playerHit = other.gameObject;
+
+			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 
@@ -211,9 +213,7 @@ public class MovableBomb : MovableScript
 
 		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
 
-		playerHolding.GetComponent<PlayersFXAnimations> ().DeathParticles (explosionPos);
-		playerHolding.GetComponent<PlayersFXAnimations> ().DeathExplosionFX (explosionPos);
-		playerHolding.GetComponent<PlayersGameplay> ().Death ();
+		playerHolding.GetComponent<PlayersGameplay> ().Death (DeathFX.All, explosionPos);
 
 		gameObject.SetActive (false);
 

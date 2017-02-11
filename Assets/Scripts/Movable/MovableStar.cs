@@ -1,22 +1,15 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using DG.Tweening;
-using DarkTonic.MasterAudio;
 
-public class MovablePlague : MovableScript 
+public class MovableStar : MovableScript 
 {
-	[Header ("PLAGUE")]
-	public float deadlyCubeTransitionDuration = 0.5f;
-	public float deadlyCubeMass = 50;
-	public float deadlyCubeMaxVelocity = 2;
-	[Range (0, 1)]
-	public float deadlyCubeDeceleration = 0.97f;
-
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 
-	protected override void Update ()
+	protected override void Update () 
 	{
 		if(hold == false && rigidbodyMovable != null)
 			currentVelocity = rigidbodyMovable.velocity.magnitude;
@@ -27,17 +20,13 @@ public class MovablePlague : MovableScript
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			if(tag != "DeadCube")
+			else if(currentVelocity < limitVelocity && gameObject.tag == "Suggestible")
 			{
-				if(currentVelocity >= limitVelocity)
-					gameObject.tag = "ThrownMovable";
-				
-				else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
-				{
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-					playerThatThrew = null;
-				}				
+				slowMoTrigger.triggerEnabled = false;
+				gameObject.tag = "Movable";
+				playerThatThrew = null;
+
+				ToNeutralColor ();
 			}
 		}
 	}
@@ -50,15 +39,13 @@ public class MovablePlague : MovableScript
 			{
 				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 				{
-					StartCoroutine (DeadlyTransition ());
-
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
-					
+
 					playerHit = other.gameObject;
 					GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-					
+
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
-					
+
 					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 
@@ -66,38 +53,24 @@ public class MovablePlague : MovableScript
 			}
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
+		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			if(tag == "Suggestible")
+			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			}
 		}
+	}
+
+	public override void OnRelease ()
+	{
+		OnReleaseEventVoid ();
+
+		StartCoroutine (DeadlyTransition ());
 	}
 
 	IEnumerator DeadlyTransition ()
-	{
-		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
-
-		tag = "Untagged";
-		SetDeadColor ();
-
-		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
-		{
-			rigidbodyMovable.velocity = rigidbodyMovable.velocity.normalized * deadlyCubeDeceleration;
-
-			yield return new WaitForFixedUpdate ();
-		}
-
-		yield return new WaitForSeconds (deadlyCubeTransitionDuration);
-
-		tag = "DeadCube";
-
-		rigidbodyMovable.mass = deadlyCubeMass;
-	}
-
-	void SetDeadColor ()
 	{
 		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
 			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
@@ -107,5 +80,9 @@ public class MovablePlague : MovableScript
 
 		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, Color.black, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+
+		yield return new WaitForSeconds (0.01f);
+
+		tag = "Suggestible";
 	}
 }

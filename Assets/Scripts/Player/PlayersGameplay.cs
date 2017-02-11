@@ -38,6 +38,14 @@ public enum PlayerName
 	Player4
 }
 
+public enum DeathFX 
+{
+	None, 
+	Explosion, 
+	Particles, 
+	All
+};
+
 public delegate void EventHandler();
 
 public class PlayersGameplay : MonoBehaviour
@@ -470,19 +478,11 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Startup)
 			return;
 
-		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube")
-		{
+		if(other.gameObject.tag == "DeadZone")
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			{
-				Death();
-
-				playerFX.DeathExplosionFX (other.contacts[0].point);
-				playerFX.DeathParticles(other.contacts[0].point);
-			}			
-		}
+				Death(DeathFX.All, other.contacts[0].point);
 
         if (other.collider.tag != "HoldMovable")
-        {
             if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
             {
                 playersHit.Add(other.gameObject);
@@ -490,7 +490,6 @@ public class PlayersGameplay : MonoBehaviour
 
                 GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
             }
-        }
     }
 
     protected virtual void OnCollisionEnter(Collision other)
@@ -498,19 +497,11 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Startup)
 			return;
 
-		if(other.gameObject.tag == "DeadZone" || other.gameObject.tag == "DeadCube" || other.gameObject.tag == "Suggestible")
-		{
+		if(other.gameObject.tag == "DeadZone")
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			{
-				Death();
-
-				playerFX.DeathExplosionFX (other.contacts[0].point);
-				playerFX.DeathParticles(other.contacts[0].point);
-			}			
-		}
+				Death(DeathFX.All, other.contacts[0].point);
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-        {
             if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
             {
                 playersHit.Add(other.gameObject);
@@ -518,7 +509,6 @@ public class PlayersGameplay : MonoBehaviour
 
                 GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
             }
-        }
     }
 	#endregion
 
@@ -637,10 +627,18 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Death
-	public virtual void Death()
+	public virtual void Death(DeathFX deathFX, Vector3 deathPosition)
 	{
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			if(deathFX == DeathFX.Explosion || deathFX == DeathFX.All)
+				playerFX.DeathExplosionFX (deathPosition);
+
+			if(deathFX == DeathFX.Particles || deathFX == DeathFX.All)
+				playerFX.DeathParticles(deathPosition);
+
 			StartCoroutine (DeathCoroutine ());        
+		}
 	}
 
 	protected virtual IEnumerator DeathCoroutine ()

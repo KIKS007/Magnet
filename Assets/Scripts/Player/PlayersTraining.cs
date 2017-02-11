@@ -6,7 +6,7 @@ public class PlayersTraining : PlayersGameplay
 	[Header ("Training Settings")]
 	public float timeBetweenSpawn = 1f;
 
-	public override void Death ()
+	public override void Death (DeathFX deathFX, Vector3 deathPosition)
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{

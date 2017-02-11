@@ -42,7 +42,7 @@ public class MovablePlayer : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(tag != "Suggestible")
+		if(tag != "Suggestible" && tag != "DeadCube")
 			base.HitPlayer (other);
 
 		else
@@ -50,13 +50,11 @@ public class MovablePlayer : MovableScript
 			if(other.collider.tag == "Player" 
 				&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
-				GlobalMethods.Instance.ExplosionFX (other.gameObject, transform.position);
-
-				other.gameObject.GetComponent<PlayersFXAnimations> ().DeathParticles (other.contacts [0].point);
-				other.gameObject.GetComponent<PlayersGameplay> ().Death ();
 			}
 		}
 	}
