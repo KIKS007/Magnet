@@ -22,14 +22,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
 
-		if (SceneManager.GetActiveScene ().name != "Scene Testing")
-			StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
-	}
-
-	void Start ()
-	{
-		if (SceneManager.GetActiveScene ().name == "Scene Testing")
-			FindGameObjects ();		
+		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
 	}
 
 	//Game First Scene Loaded

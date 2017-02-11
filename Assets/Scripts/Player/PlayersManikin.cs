@@ -38,7 +38,7 @@ public class PlayersManikin : PlayersGameplay
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			Death ();
+			Death (DeathFX.All, transform.position);
 
 			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent <Renderer>().material.color);
 		}
@@ -48,7 +48,7 @@ public class PlayersManikin : PlayersGameplay
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			Death ();
+			Death (DeathFX.All, transform.position);
 
 			DeathExplosionFX (other.contacts[0]);
 
@@ -67,7 +67,7 @@ public class PlayersManikin : PlayersGameplay
 		playerState = PlayerState.None;
 	}
 
-	public override void Death ()
+	public override void Death (DeathFX deathFX, Vector3 deathPosition)
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{

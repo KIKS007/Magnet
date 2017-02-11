@@ -51,8 +51,13 @@ public class MovableStandoff : MovableScript
 
 				}				
 			}
-			else if(tag == "DeadCube")
+		}
+
+		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		{
+			if(tag == "DeadCube")
 			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 			}
 		}

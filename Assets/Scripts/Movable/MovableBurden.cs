@@ -128,20 +128,31 @@ public class MovableBurden : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.gameObject == targetPlayer)
+		if(other.collider.tag == "Player" 
+			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 		{
-			StopTrackingPlayer ();
-			Explode ();
-		}
+			if(other.gameObject == targetPlayer)
+			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				Explode ();
+				StopTrackingPlayer ();
+			}
 
-		else
-		{
-			for (int i = 0; i < otherMovables.Count; i++)
-				if (otherMovables [i].targetPlayer == other.gameObject)
-				{
-					Explode ();
-					otherMovables [i].StopTrackingPlayer ();
-				}
+			else
+			{
+				for (int i = 0; i < otherMovables.Count; i++)
+					if (otherMovables [i].targetPlayer == other.gameObject)
+					{
+						other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+						InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+						Explode ();
+						otherMovables [i].StopTrackingPlayer ();
+					}
+			}
+
+
+
 		}
 	}
 
