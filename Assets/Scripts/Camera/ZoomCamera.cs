@@ -25,6 +25,7 @@ public class ZoomCamera : MonoBehaviour
 		initialFOV = cam.fieldOfView;
 
 		GlobalVariables.Instance.OnStartupDone += () => Zoom (FeedbackType.Startup);
+		GlobalVariables.Instance.OnEndMode += () => Zoom (FeedbackType.ModeEnd);
 	}
 	
 	// Update is called once per frame
@@ -69,7 +70,7 @@ public class ZoomCamera : MonoBehaviour
 
 		yield return tween.WaitForCompletion ();
 
-		yield return new WaitForSeconds (delay);
+		yield return new WaitForSecondsRealtime (delay);
 
 		tween = cam.DOFieldOfView (initialFOV, resetDuration).SetEase (zoomEase).SetId ("ZoomCamera");
 	}
