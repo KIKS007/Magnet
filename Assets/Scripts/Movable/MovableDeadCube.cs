@@ -8,10 +8,11 @@ public class MovableDeadCube : MovableScript
 	[Header ("DEADCUBE")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	protected override void OnEnable ()
 	{
+		tag = "DeadCube";
+
 		hold = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
@@ -62,7 +63,7 @@ public class MovableDeadCube : MovableScript
 	{
 		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 		{
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 		}
 	}
 }

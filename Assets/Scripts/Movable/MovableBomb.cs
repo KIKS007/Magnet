@@ -15,7 +15,6 @@ public class MovableBomb : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
@@ -205,7 +204,7 @@ public class MovableBomb : MovableScript
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);

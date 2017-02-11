@@ -18,7 +18,6 @@ public class TagManager : MonoBehaviour
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	[Header ("Timer")]
 	public Text timerText;
@@ -168,7 +167,7 @@ public class TagManager : MonoBehaviour
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersFXAnimations> ().DeathExplosionFX ();
 		GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].GetComponent<PlayersGameplay> ().Death ();
 
-		GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
+		GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius);
 
 		for (int i = 0; i < cubesColorCountList.Count; i++)
 		{
@@ -178,7 +177,7 @@ public class TagManager : MonoBehaviour
 				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersFXAnimations> ().DeathExplosionFX ();
 				GlobalVariables.Instance.Players [(int)cubesColorCountList [i].playerName].GetComponent<PlayersGameplay> ().Death ();
 
-				GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius, explosionMask);
+				GlobalMethods.Instance.Explosion (GlobalVariables.Instance.Players [(int)cubesColorTemp.playerName].transform.position, explosionForce, explosionRadius);
 			}			
 		}
 

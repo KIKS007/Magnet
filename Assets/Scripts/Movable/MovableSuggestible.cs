@@ -8,7 +8,6 @@ public class MovableSuggestible : MovableScript
 	[Header ("SUGGESTIBLE")]
 	public float explosionForce = 20;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	protected override void Start ()
 	{
@@ -32,7 +31,7 @@ public class MovableSuggestible : MovableScript
 		{
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		}
 	}

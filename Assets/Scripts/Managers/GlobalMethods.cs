@@ -6,6 +6,7 @@ using DarkTonic.MasterAudio;
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
 	public LayerMask gameplayLayer = (1 << 9) | (1 << 12);
+	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	private float xLimit;
 	private float zLimit;
@@ -18,7 +19,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	private const float defaultDurationBetweenSpawn = 0.1f;
 
-	void Start ()
+	void Awake ()
 	{
 		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
 		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
@@ -249,7 +250,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, target.transform);
 	}
 
-	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius, LayerMask explosionMask)
+	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius)
 	{
 		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
 		{

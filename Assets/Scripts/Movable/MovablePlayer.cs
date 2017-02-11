@@ -8,7 +8,6 @@ public class MovablePlayer : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 20;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask;
 
 	[HideInInspector]
 	public bool basicMovable = true;
@@ -53,7 +52,7 @@ public class MovablePlayer : MovableScript
 			{
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 				GlobalMethods.Instance.ExplosionFX (other.gameObject, transform.position);
 
 				other.gameObject.GetComponent<PlayersFXAnimations> ().DeathParticles (other.contacts [0].point);

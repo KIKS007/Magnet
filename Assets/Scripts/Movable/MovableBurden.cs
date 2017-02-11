@@ -16,7 +16,6 @@ public class MovableBurden : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	private List<MovableBurden> otherMovables = new List<MovableBurden>();
 
@@ -150,7 +149,7 @@ public class MovableBurden : MovableScript
 	{
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	

@@ -15,7 +15,6 @@ public class MovablePlague : MovableScript
 	[Header ("Explosion")]
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
 	protected override void Update ()
 	{
@@ -67,7 +66,7 @@ public class MovablePlague : MovableScript
 			}
 			else if(tag == "DeadCube")
 			{
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius, explosionMask);
+				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 			}
 		}
 	}

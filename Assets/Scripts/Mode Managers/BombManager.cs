@@ -37,7 +37,6 @@ public class BombManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		bomb = GameObject.FindGameObjectWithTag ("Movable").gameObject;
 		bomb.gameObject.SetActive(false);
 		bombScript = bomb.GetComponent<MovableBomb> ();
 		textInitialSize = timerText.fontSize;
