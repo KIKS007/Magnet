@@ -64,6 +64,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 	[Header ("Debug Test")]
 	public bool slowMotion;
+	public bool pauseSlowMotion;
 	public float timeScaleDebug;
 
 	[HideInInspector]
@@ -106,6 +107,12 @@ public class SlowMotionCamera : MonoBehaviour
 		{
 			slowMotion = false;
 			StartSlowMotion ();
+		}
+
+		if(pauseSlowMotion)
+		{
+			pauseSlowMotion = false;
+			StartPauseSlowMotion ();
 		}
 
 		timeScaleDebug = Time.timeScale;

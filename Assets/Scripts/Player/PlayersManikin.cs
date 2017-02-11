@@ -75,7 +75,8 @@ public class PlayersManikin : PlayersGameplay
 
 			OnDeathVoid ();
 
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
 
 			gameObject.SetActive (false);
 		}

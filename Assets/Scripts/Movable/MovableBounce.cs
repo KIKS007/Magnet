@@ -45,7 +45,6 @@ public class MovableBounce : MovableScript
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
 					playerHit = other.gameObject;
-					GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 

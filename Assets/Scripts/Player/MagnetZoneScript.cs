@@ -44,6 +44,9 @@ public class MagnetZoneScript : MonoBehaviour
 	{
 		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 
+		if (playerScript.playerState == PlayerState.Startup)
+			return;
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)
 		{
 			if(other.tag == "Movable" || other.tag == "Suggestible")

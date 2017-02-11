@@ -158,7 +158,7 @@ public class MovableBurden : MovableScript
 
 	void Explode ()
 	{
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
+		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);

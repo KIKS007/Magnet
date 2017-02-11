@@ -48,6 +48,8 @@ public class MovableScript : MonoBehaviour
 
 	protected SlowMotionTriggerScript slowMoTrigger;
 
+	protected GameObject mainCamera;
+
 	[HideInInspector]
 	public Transform player;
 	[HideInInspector]
@@ -66,6 +68,7 @@ public class MovableScript : MonoBehaviour
 	protected virtual void Awake () 
 	{
 		initialScale = transform.localScale;
+		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 	}
 
 	protected virtual void Start () 
@@ -215,8 +218,7 @@ public class MovableScript : MonoBehaviour
 				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 				
 				playerHit = other.gameObject;
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-				
+
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
 				if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)

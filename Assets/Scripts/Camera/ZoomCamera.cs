@@ -40,6 +40,7 @@ public class ZoomCamera : MonoBehaviour
 	public void Zoom (FeedbackType whichZoom = FeedbackType.Default)
 	{
 		StartCoroutine (ZoomCoroutine (whichZoom));
+		StopCoroutine (ZoomCoroutine (whichZoom));
 	}
 
 	IEnumerator ZoomCoroutine (FeedbackType whichZoom)
@@ -47,9 +48,10 @@ public class ZoomCamera : MonoBehaviour
 		if (DOTween.IsTweening ("ZoomCamera"))
 			DOTween.Kill ("ZoomCamera");
 
-		float newFOV = 0;
+		float newFOV = 60;
 		float zoomDuration = 0;
 		float resetDuration = 0;
+		float delay = 0;
 
 		for(int i = 0; i < zoomList.Count; i++)
 		{
@@ -58,6 +60,7 @@ public class ZoomCamera : MonoBehaviour
 				newFOV = zoomList [i].newFOV;
 				zoomDuration = zoomList [i].zoomDuration;
 				resetDuration = zoomList [i].resetDuration;
+				delay = zoomList [i].delay;
 				break;
 			}
 		}
@@ -65,6 +68,8 @@ public class ZoomCamera : MonoBehaviour
 		Tween tween = cam.DOFieldOfView (newFOV, zoomDuration).SetEase (zoomEase).SetId ("ZoomCamera");
 
 		yield return tween.WaitForCompletion ();
+
+		yield return new WaitForSeconds (delay);
 
 		tween = cam.DOFieldOfView (initialFOV, resetDuration).SetEase (zoomEase).SetId ("ZoomCamera");
 	}
@@ -79,4 +84,5 @@ public class ZoomSettings
 	public float newFOV;
 	public float zoomDuration;
 	public float resetDuration;
+	public float delay = 0;
 }

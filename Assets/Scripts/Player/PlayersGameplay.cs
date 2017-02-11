@@ -125,6 +125,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected PlayersFXAnimations playerFX;
 
+	protected GameObject mainCamera;
+
 	#endregion
 
 	#region Setup
@@ -155,7 +157,7 @@ public class PlayersGameplay : MonoBehaviour
         magnetPoint = transform.GetChild(0).transform;
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
 		playerFX = GetComponent<PlayersFXAnimations> ();
-
+		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
 	protected void SetPlayerName()
@@ -488,7 +490,9 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+
             }
     }
 
@@ -507,7 +511,8 @@ public class PlayersGameplay : MonoBehaviour
                 playersHit.Add(other.gameObject);
                 other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
 
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
             }
     }
 	#endregion
@@ -567,6 +572,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		playerState = PlayerState.Stunned;
 		holdState = HoldState.CannotHold;
+
+		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
 		if (OnStun != null)
             OnStun();
@@ -646,7 +654,8 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Dead;
 
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
+		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
+		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{

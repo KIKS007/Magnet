@@ -335,7 +335,7 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 		//Enable Possiblity to play alone with one gamepad
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
-			GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
+			GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
 	}
 }
 

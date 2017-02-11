@@ -112,7 +112,8 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -127,7 +128,8 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -142,7 +144,8 @@ public class MovableBomb : MovableScript
 
 				playerHit = other.gameObject;
 
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
@@ -157,7 +160,8 @@ public class MovableBomb : MovableScript
 
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 
-			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 		}
@@ -204,7 +208,7 @@ public class MovableBomb : MovableScript
 			yield return StartCoroutine (GetToPlayerPosition ());
 		}
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
+		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 
