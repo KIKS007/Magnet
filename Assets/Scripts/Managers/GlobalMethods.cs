@@ -8,8 +8,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public LayerMask gameplayLayer = (1 << 9) | (1 << 12);
 	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
-	private float xLimit;
-	private float zLimit;
+	public Vector2 xLimits;
+	public Vector2 zLimits;
 
 	private float checkSphereRadius = 5f;
 
@@ -23,14 +23,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
 		GlobalVariables.Instance.OnMenu += () => StopAllCoroutines ();
-
-		LoadModeManager.Instance.OnLevelLoaded += SetLimits;
 	}
 
-	void SetLimits ()
+	public void SetLimits ()
 	{
-		xLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
-		zLimit = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
+		xLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
+		zLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
+
+		xLimits.x = GlobalVariables.Instance.currentModePosition.x - (xLimits.y - GlobalVariables.Instance.currentModePosition.x);
+		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
@@ -48,7 +49,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3 (Random.Range(-xLimit, xLimit), player.transform.position.y, Random.Range(-zLimit, zLimit));
+			newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), player.transform.position.y, Random.Range(zLimits.x, zLimits.y));
 			yield return null;	
 		}
 		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
@@ -87,7 +88,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			do
 			{
-				newPos = new Vector3 (Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
+				newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
 				yield return null;	
 			}
 			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));			
@@ -149,7 +150,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			do
 			{
-				newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
+				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
 			}
 			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
@@ -192,7 +193,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
 		}
 		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
@@ -221,7 +222,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(-xLimit, xLimit), cubeYPosition, Random.Range(-zLimit, zLimit));
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
 		}
 		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 

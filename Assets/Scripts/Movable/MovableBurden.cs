@@ -26,6 +26,7 @@ public class MovableBurden : MovableScript
 	protected override void Awake ()
 	{
 		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
+		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
 
 		for (int i = 0; i < transform.childCount; i++)

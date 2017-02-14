@@ -893,15 +893,13 @@ public class MenuManager : Singleton <MenuManager>
 			mainCamera.GetComponent<SlowMotionCamera> ().StartPauseSlowMotion ();
 			cameraMovement.StartCoroutine ("PausePosition");
 
-			yield return new WaitForSecondsRealtime(cameraMovement.cameraMovementDuration - 0.5f);
+			yield return new WaitForSecondsRealtime(cameraMovement.movementDuration - 0.5f);
 
 			MainMenu ();
 		}
 		else
 		{
-			yield return cameraMovement.StartCoroutine ("HideLogo");
-
-			MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
+  			MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
 			yield return cameraMovement.StartCoroutine ("PlayPosition");
 

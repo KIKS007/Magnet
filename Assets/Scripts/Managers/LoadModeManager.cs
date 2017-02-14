@@ -7,8 +7,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 {
 	public event EventHandler OnLevelLoaded;
 
-	[Header ("Load Mode Manager")]
-	public GameObject[] rootGameObjects;
+	[Header ("Movement")]
 
 	public float loadingX = -150;
 	public float reloadingX = 150;
@@ -44,9 +43,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
-		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
-		FindGameObjects ();
-
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
+		
 		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
@@ -54,8 +53,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		StatsManager.Instance.ResetStats (true);
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
 	}
 
 	public void LoadSceneVoid (string sceneToLoad)
@@ -97,19 +94,15 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
-
-		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
-
-		FindGameObjects ();
-
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
+		
 		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
 		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
 		GlobalVariables.Instance.SetWhichModeEnum ();
 		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
 	}
 
 	public void RestartSceneVoid ()
@@ -136,10 +129,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
+		
 		myTween = mainCamera.DOMoveX (0, movementDuration).SetEase(movementEase);
-
-		rootGameObjects = SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
-		FindGameObjects ();
 	
 		yield return myTween.WaitForCompletion ();
 
@@ -147,8 +140,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
 	}
 
 	public void ReloadSceneVoid ()
@@ -179,14 +170,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
-		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
-
-		rootGameObjects = SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
-
-		FindGameObjects ();
-
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
+
+		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 	}
 
 
@@ -207,30 +194,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		{
 			Destroy (particlesFX [i]);
 		}
-	}
-
-	void FindGameObjects ()
-	{
-		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
-
-		for(int i = 0; i < players.Length; i++)
-		{
-			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
-				GlobalVariables.Instance.Players [0] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
-				GlobalVariables.Instance.Players [1] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
-				GlobalVariables.Instance.Players [2] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
-				GlobalVariables.Instance.Players [3] = players [i];
-		}
-
-		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
-
-		UpdateGlobalVariables ();
 	}
 
 	void UpdateGlobalVariables ()

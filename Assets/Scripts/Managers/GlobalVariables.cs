@@ -19,9 +19,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
 
-	[Header ("Scenes")]
+	[Header ("Modes")]
 	public string firstSceneToLoad = "Crush";
 	public WhichMode WhichModeLoaded;
+	public Vector3 currentModePosition;
 	[HideInInspector]
 	public string CurrentModeLoaded = "";
 
@@ -86,7 +87,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public Player[] rewiredPlayers = new Player[5];
 
-	void Start ()
+	void Awake ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 		{
@@ -108,6 +109,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
+
+		LoadModeManager.Instance.OnLevelLoaded += GetPlayers;
+		LoadModeManager.Instance.OnLevelLoaded += SetModePosition;
 	}
 		
 	void Update ()
@@ -119,6 +123,40 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 		}
+	}
+
+	void SetModePosition ()
+	{
+		currentModePosition = GameObject.FindGameObjectWithTag ("ModeParent").transform.position;
+
+		GlobalMethods.Instance.SetLimits ();
+	}
+
+	void GetPlayers ()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+
+		Debug.Log ("Player Count : " + players.Length);
+
+		for(int i = 0; i < players.Length; i++)
+		{
+			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
+				Players [0] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
+				Players [1] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
+				Players [2] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
+				Players [3] = players [i];
+		}
+
+		StatsManager.Instance.GetPlayersEvents ();
+
+		SetPlayersControllerNumbers ();
+		ListPlayers ();
 	}
 
 	public void SetPlayersControllerNumbers ()

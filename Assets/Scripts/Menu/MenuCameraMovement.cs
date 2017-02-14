@@ -17,12 +17,14 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector3 pausePosition = new Vector3 (-48, 104, 18);
 	public Vector3 playPosition = new Vector3 (0, 60, 0);
 	public Vector3 endModePosition = new Vector3 (48, 104, 18);
-	public float cameraMovementDuration = 0.8f;
+	public float movementDuration = 0.8f;
 
 	[Header ("Camera Loading Movements")]
+	public Vector3 loadingPosition;
+	public Vector3 restartPosition;
 	public int loadingX = -150;
 	public int restartX = 150;
-	public float cameraLoadingMovementDuration = 0.25f;
+	public float loadingMovementDuration = 0.25f;
 
 	[Header ("Logo Movements")]
 	public RectTransform menuLogo;
@@ -33,7 +35,7 @@ public class MenuCameraMovement : MonoBehaviour
 	private Vector3 positionOnPause = Vector3.zero;
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		transform.position = startPosition;
 
@@ -49,50 +51,79 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator StartScreen ()
 	{
+		StopPreviousMovement ();
+
 		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
 		menuLogo.DOAnchorPos (logoNewPos, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		menuLogo.DOScale (logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
-		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (startScreenDuration);
 	}
 
 	public IEnumerator MainMenuPosition ()
 	{
-		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		StopPreviousMovement ();
+
+		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		StartCoroutine (ShowLogo ());
 
-		yield return new WaitForSecondsRealtime (cameraMovementDuration);
+		yield return new WaitForSecondsRealtime (movementDuration);
 	}
 
 	public IEnumerator PausePosition ()
 	{
+		StopPreviousMovement ();
+
 		positionOnPause = transform.position;
-		transform.DOMove (pausePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		StartCoroutine (ShowLogo ());
 
-		yield return new WaitForSecondsRealtime (cameraMovementDuration);
+		yield return new WaitForSecondsRealtime (movementDuration);
 	}
 
 	public IEnumerator PlayPosition ()
 	{
-		if(positionOnPause != Vector3.zero)
-			transform.DOMove (positionOnPause, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		StopPreviousMovement ();
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			transform.DOMove (positionOnPause, movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
 		else
-			transform.DOMove (playPosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+			transform.DOMove (ModeRelativePosition(playPosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		StartCoroutine (HideLogo ());
 
-		yield return new WaitForSecondsRealtime (cameraMovementDuration);
+		yield return new WaitForSecondsRealtime (movementDuration);
 	}
 
 	public IEnumerator EndModePosition ()
 	{
-		transform.DOMove (endModePosition, cameraMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		yield return new WaitForSecondsRealtime (cameraMovementDuration);
+		StopPreviousMovement ();
+
+		transform.DOMove (ModeRelativePosition(endModePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		yield return new WaitForSecondsRealtime (movementDuration);
+	}
+
+	public IEnumerator LoadingPosition ()
+	{
+		StopPreviousMovement ();
+
+		transform.DOMove (ModeRelativePosition(loadingPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (loadingMovementDuration);
+	}
+
+	public IEnumerator RestartPosition ()
+	{
+		StopPreviousMovement ();
+
+		transform.DOMove (ModeRelativePosition(restartPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (loadingMovementDuration);
 	}
 
 	public IEnumerator HideLogo ()
@@ -107,15 +138,14 @@ public class MenuCameraMovement : MonoBehaviour
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
-	public IEnumerator LoadingPosition ()
+	void StopPreviousMovement ()
 	{
-		transform.DOMoveX (loadingX, cameraLoadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		yield return new WaitForSecondsRealtime (cameraLoadingMovementDuration);
+		if (DOTween.IsTweening ("MenuCamera"))
+			DOTween.Kill ("MenuCamera");
 	}
 
-	public IEnumerator RestartPosition ()
+	Vector3 ModeRelativePosition (Vector3 position)
 	{
-		transform.DOMoveX (restartX, cameraLoadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		yield return new WaitForSecondsRealtime (cameraLoadingMovementDuration);
+		return position + GlobalVariables.Instance.currentModePosition;
 	}
 }
