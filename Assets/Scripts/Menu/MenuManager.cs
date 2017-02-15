@@ -362,7 +362,8 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
 			{
-				secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
+				if(secondaryContentList [i].content.anchoredPosition != secondaryContentList [i].onScreenPos)
+					secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
 				
 				Enable (secondaryContentList [i].content);
 				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
@@ -397,7 +398,8 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
 			{
-				secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
+				if(secondaryContentList [i].content.anchoredPosition != secondaryContentList [i].onScreenPos)
+					secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
 				
 				Enable (secondaryContentList [i].content);
 				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
@@ -467,7 +469,8 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
 			{
-				secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
+				if(secondaryContentList [i].content.anchoredPosition != secondaryContentList [i].onScreenPos)
+					secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
 
 				Enable (secondaryContentList [i].content);
 				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
@@ -778,12 +781,12 @@ public class MenuManager : Singleton <MenuManager>
 		return mainMenuFirstButtonY - (gapBetweenButtons * i);
 	}
 
-	void Enable (RectTransform target)
+	public void Enable (RectTransform target)
 	{
 		target.gameObject.SetActive (true);
 	}
 
-	void Disable (RectTransform target, float delayDuration = 0)
+	public void Disable (RectTransform target, float delayDuration = 0)
 	{
 		if (delayDuration == 0)
 			target.gameObject.SetActive (false);

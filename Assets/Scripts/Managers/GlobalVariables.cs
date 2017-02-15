@@ -136,8 +136,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
 
-		Debug.Log ("Player Count : " + players.Length);
-
 		for(int i = 0; i < players.Length; i++)
 		{
 			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
