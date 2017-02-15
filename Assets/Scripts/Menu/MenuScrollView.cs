@@ -190,6 +190,8 @@ public class MenuScrollView : MonoBehaviour
 
 	public void ButtonsMovement (RectTransform whichButton)
 	{
+		//Debug.Log ("IsTweening : " + DOTween.IsTweening ("Menu"));
+
 		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons && !mouseControl && scrollViewEnabled)
 		{
 			DOTween.Kill ("Viewport");

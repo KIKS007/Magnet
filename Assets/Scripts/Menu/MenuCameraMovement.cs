@@ -22,8 +22,6 @@ public class MenuCameraMovement : MonoBehaviour
 	[Header ("Camera Loading Movements")]
 	public Vector3 loadingPosition;
 	public Vector3 restartPosition;
-	public int loadingX = -150;
-	public int restartX = 150;
 	public float loadingMovementDuration = 0.25f;
 
 	[Header ("Logo Movements")]
@@ -33,6 +31,7 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
 	private Vector3 positionOnPause = Vector3.zero;
+	private Vector3 positionOnLoad = Vector3.zero;
 
 	// Use this for initialization
 	void Awake () 
@@ -112,7 +111,14 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		transform.DOMove (ModeRelativePosition(loadingPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(transform.position != ModeRelativePosition(loadingPosition))
+		{
+			positionOnLoad = transform.position;
+			transform.DOMove (ModeRelativePosition(loadingPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		}
+
+		else
+			transform.DOMove (positionOnLoad, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (loadingMovementDuration);
 	}
@@ -121,8 +127,12 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		transform.DOMove (ModeRelativePosition(restartPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(transform.position != ModeRelativePosition(restartPosition))
+			transform.DOMove (ModeRelativePosition(restartPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
+		else
+			transform.DOMove (ModeRelativePosition(new Vector3 (GlobalVariables.Instance.currentModePosition.x, ModeRelativePosition(restartPosition).y, ModeRelativePosition(restartPosition).z)), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		
 		yield return new WaitForSecondsRealtime (loadingMovementDuration);
 	}
 

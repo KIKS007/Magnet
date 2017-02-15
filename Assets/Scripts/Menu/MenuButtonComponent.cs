@@ -55,6 +55,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 			hasBeenSubmit = true;
 
 			menuComponentParent.Submit (buttonIndex);
+			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 			if(showOnSubmit)
 				ShowSecondaryContent ();
@@ -78,6 +79,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 				ShowSecondaryContent ();
 
 			menuComponentParent.Submit (buttonIndex);
+			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 			if(menuButtonType == MenuButtonType.StartMode)
 				MenuManager.Instance.MenuLoadMode (whichMode);
@@ -88,6 +90,8 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSelect (BaseEventData eventData)
 	{
+		menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+
 		if(showOnSelect)
 			ShowSecondaryContent ();
 	}

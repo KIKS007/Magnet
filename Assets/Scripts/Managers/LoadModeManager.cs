@@ -18,12 +18,14 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	private Transform mainCamera;
 	private SlowMotionCamera slowMo;
+	private MenuCameraMovement cameraMovement;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
 		slowMo = mainCamera.GetComponent<SlowMotionCamera> ();
+		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
 	}
@@ -31,74 +33,51 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Game First Scene Loaded
 	IEnumerator FirstLoadedScene (string sceneToLoad)
 	{
+		//Unload All other Scenes than Menu
 		for (int i = 0; i < SceneManager.sceneCount; i++)
-		{
 			if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
-			{
-				string name = SceneManager.GetSceneAt (i).name;
-				yield return SceneManager.UnloadSceneAsync (name);
-			}
-		}
+				yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
 
 		//Unload Scene if already loaded
 		if(SceneManager.GetSceneByName(sceneToLoad).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (sceneToLoad);
 
+		StatsManager.Instance.ResetStats (true);
+		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
+
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
-		
-		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
-
-		UpdateGlobalVariables (sceneToLoad);
-
-		StatsManager.Instance.ResetStats (true);
-
 	}
 
 	public void LoadSceneVoid (string sceneToLoad)
 	{
-		StopSlowMotion ();
-
-		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad)
-		{
-			StatsManager.Instance.ResetStats (true);
-
-			StartCoroutine (LoadScene (sceneToLoad));
-		}
+		if (GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Menu)
+			return;
 		
-		else if(GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-		{
-			StatsManager.Instance.ResetStats (true);
-
-			GlobalVariables.Instance.GameState = GameStateEnum.Menu;
-			StartCoroutine (LoadScene (sceneToLoad));
-		}
-
+		StartCoroutine (LoadScene (sceneToLoad));
 	}
 
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (string sceneToLoad)
 	{
-		float orginalPosition = mainCamera.transform.position.x;
-
-		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
-
-		DestroyParticules ();
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
+
+		DestroyParticules ();
+		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
+		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
-		
-		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
 
-		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 	public void RestartSceneVoid ()
@@ -108,33 +87,23 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator RestartScene ()
 	{
-		string sceneToLoad = GlobalVariables.Instance.CurrentModeLoaded;
-
-		Tween myTween = mainCamera.DOMoveX (reloadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
-
-		StatsManager.Instance.ResetStats (false);
-
-		DestroyParticules ();
+		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
 
-		UpdateGlobalVariables (sceneToLoad);
+		DestroyParticules ();
+		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
 
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
+		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded, LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
 		
-		myTween = mainCamera.DOMoveX (0, movementDuration).SetEase(movementEase);
-	
-		yield return myTween.WaitForCompletion ();
-
-		StopSlowMotion ();
+		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-
 	}
 
 	public void ReloadSceneVoid ()
@@ -144,11 +113,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator ReloadScene ()
 	{
-		float orginalPosition = mainCamera.transform.position.x;
-		string sceneToLoad = GlobalVariables.Instance.CurrentModeLoaded;
-
-		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		StatsManager.Instance.ResetStats (true);
 
@@ -157,17 +122,18 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
 
-
-		UpdateGlobalVariables (sceneToLoad);
+		DestroyParticules ();
 		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
 
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
+		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded, LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
 
-		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
+
 
 	void StopSlowMotion ()
 	{

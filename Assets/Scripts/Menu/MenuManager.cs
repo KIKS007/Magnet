@@ -15,11 +15,13 @@ public class MenuManager : Singleton <MenuManager>
 	#region Variables Declaration
 	[Header ("Infos")]
 	public bool tweening;
-
 	public GameObject mainMenu;
 	public MenuComponent currentMenu = null;
 
 	private MenuComponent mainMenuScript;
+
+	[Header ("Selectable")]
+	public bool selectPreviousElement = true;
 
 	[Header ("Ease")]
 	public Ease easeMenu = Ease.OutQuad;
@@ -52,8 +54,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Viewport Buttons Positions")]
 	public float viewportYOffscreen;
+	public float viewportButtonsDuration = 0.15f;
 	public float viewportButtonsDelay = 0.05f;
-	public float viewportButtonsMovementDuration;
 	public Ease viewportButtonsMovementEase;
 
 	[Header ("Back Buttons")]
@@ -182,17 +184,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	void CheckNothingSelected ()
 	{
-		if(eventSyst.currentSelectedGameObject == null && currentMenu != null)
-		{
-			if(currentMenu.selectable != null)
-			{
-				if (currentMenu.selectable.GetComponent<Button> () && currentMenu.selectable.GetComponent<Button> ().interactable == false)
-					return;
-
-				eventSyst.SetSelectedGameObject (null);
-				eventSyst.SetSelectedGameObject (currentMenu.selectable);
-			}
-		}
+		if(eventSyst.currentSelectedGameObject == null && currentMenu != null && !DOTween.IsTweening ("Menu"))
+			SelectPreviousElement (currentMenu);
 	}
 
 	void GamepadsDisconnected ()
@@ -265,7 +258,7 @@ public class MenuManager : Singleton <MenuManager>
 			cameraMovement.StartCoroutine ("ShowLogo");
 
 		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> SelectPreviousElement (mainMenuScript)); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -304,7 +297,7 @@ public class MenuManager : Singleton <MenuManager>
 			cameraMovement.StartCoroutine ("ShowLogo");
 
 		SetInteractable (underButtonsList [0], ButtonsDelay (delay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> SelectPreviousElement (mainMenuScript)); 
 
 		currentMenu = mainMenuScript;
 	}
@@ -372,7 +365,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		//Select First Under Menu Button
 		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> SelectPreviousElement (whichMenu)); 
 
 		currentMenu = whichMenu;
 	}
@@ -406,13 +399,7 @@ public class MenuManager : Singleton <MenuManager>
 			}			
 		}
 
-		if (whichMenu.selectable != null)
-		{
-			if(whichMenu.selectable.GetComponent<Button> () != null && whichMenu.selectable.GetComponent<Button> ().interactable)
-				eventSyst.SetSelectedGameObject (whichMenu.selectable);
-			else if(whichMenu.selectable.GetComponent<Button> () == null)
-				eventSyst.SetSelectedGameObject (whichMenu.selectable);
-		}
+		SelectPreviousElement (whichMenu);
 
 		currentMenu = whichMenu;
 	}
@@ -458,9 +445,13 @@ public class MenuManager : Singleton <MenuManager>
 		for(int i = underButtonsList.Count - 1; i >= 0; i--)
 		{
 			Enable (underButtonsList [i]);
-			SetInteractable (underButtonsList [i], durationToShow + ButtonsDelay (underDelay));
+			SetInteractable (underButtonsList [i], viewportButtonsDuration + ButtonsDelay (underDelay));
 
-			underButtonsList [i].DOAnchorPosY (ButtonsYPos (i) + GapAfterHeaderButton (), durationToShow).SetDelay (ViewportButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
+			if(whichMenu.underButtonsPositionsList.Count > 0)
+				underButtonsList [i].DOAnchorPosY (whichMenu.underButtonsPositionsList [i].y, viewportButtonsDuration).SetDelay (ViewportButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
+			else
+				underButtonsList [i].DOAnchorPosY (ButtonsYPos (i) + GapAfterHeaderButton (), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
+
 			underDelay++;
 		}
 
@@ -473,13 +464,13 @@ public class MenuManager : Singleton <MenuManager>
 					secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
 
 				Enable (secondaryContentList [i].content);
-				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, viewportButtonsDuration).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
 			}			
 		}
 
 		//Select First Under Menu Button
 		SetInteractable (underButtonsList [0], ButtonsDelay (underDelay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> underButtonsList [0].GetComponent<Button> ().Select ()); 
+		DOVirtual.DelayedCall (ButtonsDelay (underDelay), ()=> SelectPreviousElement (whichMenu)); 
 
 		currentMenu = whichMenu;
 	}
@@ -526,7 +517,12 @@ public class MenuManager : Singleton <MenuManager>
 		if (aboveMenu.menuComponentType == MenuComponentType.MainMenu)
 			MainMenu (menuButton);
 		else
-			ShowAboveButtons (aboveMenu, menuButton);
+		{
+			if(!aboveMenu.viewportContent)
+				ShowAboveButtons (aboveMenu, menuButton);
+			else
+				ShowAboveViewportButtons (aboveMenu, menuButton);
+		}
 
 	}
 
@@ -593,7 +589,12 @@ public class MenuManager : Singleton <MenuManager>
 		if (aboveMenu.menuComponentType == MenuComponentType.MainMenu)
 			MainMenu (menuButton);
 		else
-			ShowAboveButtons (aboveMenu, menuButton);
+		{
+			if(!aboveMenu.viewportContent)
+				ShowAboveButtons (aboveMenu, menuButton);
+			else
+				ShowAboveViewportButtons (aboveMenu, menuButton);
+		}
 
 	}
 
@@ -640,18 +641,18 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
 			{
-				Disable (secondaryContentList [i].content, durationToHide + secondaryContentList [i].delay);
-				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationToHide).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+				Disable (secondaryContentList [i].content, viewportButtonsDuration + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, viewportButtonsDuration).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
 			}			
 		}
 
 		//Under Buttons
 		for(int i = 0; i < underButtonsList.Count; i++)
 		{
-			Disable (underButtonsList [i], durationToHide + ViewportButtonsDelay (delay));
+			Disable (underButtonsList [i], viewportButtonsDuration + ViewportButtonsDelay (delay));
 			SetNonInteractable (underButtonsList [i]);
 
-			tween = underButtonsList [i].DOAnchorPosY (viewportYOffscreen, durationToHide).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			tween = underButtonsList [i].DOAnchorPosY (viewportYOffscreen, viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			delay++;
 		}
 
@@ -660,7 +661,12 @@ public class MenuManager : Singleton <MenuManager>
 		if (aboveMenu.menuComponentType == MenuComponentType.MainMenu)
 			MainMenu (menuButton);
 		else
-			ShowAboveButtons (aboveMenu, menuButton);
+		{
+			if(!aboveMenu.viewportContent)
+				ShowAboveButtons (aboveMenu, menuButton);
+			else
+				ShowAboveViewportButtons (aboveMenu, menuButton);
+		}
 	}
 
 	IEnumerator HideViewportButtonsResume (List<RectTransform> underButtonsList, MenuComponent aboveMenu, RectTransform menuButton, List<SecondaryContent> secondaryContentList = null)
@@ -675,18 +681,18 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
 			{
-				Disable (secondaryContentList [i].content, durationToHide + secondaryContentList [i].delay);
-				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, durationToHide).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+				Disable (secondaryContentList [i].content, viewportButtonsDuration + secondaryContentList [i].delay);
+				secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, viewportButtonsDuration).SetDelay (secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
 			}			
 		}
 
 		//Under Buttons
 		for(int i = 0; i < underButtonsList.Count; i++)
 		{
-			Disable (underButtonsList [i], durationToHide + ViewportButtonsDelay (delay));
+			Disable (underButtonsList [i], viewportButtonsDuration + ViewportButtonsDelay (delay));
 			SetNonInteractable (underButtonsList [i]);
 
-			tween = underButtonsList [i].DOAnchorPosY (viewportYOffscreen, durationToHide).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			tween = underButtonsList [i].DOAnchorPosY (viewportYOffscreen, viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			delay++;
 		}
 
@@ -709,7 +715,9 @@ public class MenuManager : Singleton <MenuManager>
 
 		SetInteractable (aboveMenu.underButtonsList [cancelButton], durationToShow + ButtonsDelay (delay));
 		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
+
 		aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+		
 		delay++;
 
 		for(int i = aboveMenu.underButtonsList.Count - 1; i >= 0; i--)
@@ -727,7 +735,51 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		SetInteractable (aboveMenu.underButtonsList [0], ButtonsDelay (delay) * 0.5f);
-		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> aboveMenu.underButtonsList [0].gameObject.GetComponent<Button> ().Select ()); 
+		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> SelectPreviousElement (aboveMenu)); 
+
+		currentMenu = aboveMenu;
+	}
+
+	void ShowAboveViewportButtons (MenuComponent aboveMenu, RectTransform menuButton)
+	{
+		int cancelButton = 0;
+
+		for (int i = 0; i < aboveMenu.underButtonsList.Count; i++)
+			if (aboveMenu.underButtonsList [i] == menuButton)
+				cancelButton = i;
+
+		int delay = 0;
+
+		SetInteractable (aboveMenu.underButtonsList [cancelButton], viewportButtonsDuration + ViewportButtonsDelay (delay));
+		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
+
+		if(aboveMenu.viewportContent && aboveMenu.underButtonsPositionsList.Count > 0)
+			aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, aboveMenu.underButtonsPositionsList [cancelButton].y), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+
+		else
+			aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+
+		delay++;
+
+		for(int i = aboveMenu.underButtonsList.Count - 1; i >= 0; i--)
+		{
+			if(i != cancelButton)
+			{
+				if(aboveMenu.viewportContent && aboveMenu.underButtonsPositionsList.Count > 0)
+					aboveMenu.underButtonsList [i].DOAnchorPos (new Vector2(onScreenX, aboveMenu.underButtonsPositionsList [i].y), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				else
+					aboveMenu.underButtonsList [i].anchoredPosition = new Vector2(offScreenX, ButtonsYPos (i) + GapAfterHeaderButton ());
+
+				Enable (aboveMenu.underButtonsList [i]);
+				SetInteractable (aboveMenu.underButtonsList [i], viewportButtonsDuration + ViewportButtonsDelay (delay));
+
+				aboveMenu.underButtonsList [i].DOAnchorPosX (onScreenX, viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				delay++;
+			}
+		}
+
+		SetInteractable (aboveMenu.underButtonsList [0], ButtonsDelay (delay) * 0.5f);
+		DOVirtual.DelayedCall (ButtonsDelay (delay), ()=> SelectPreviousElement (aboveMenu)); 
 
 		currentMenu = aboveMenu;
 	}
@@ -801,6 +853,27 @@ public class MenuManager : Singleton <MenuManager>
 		target.gameObject.SetActive (false);
 	}
 
+
+	void SelectPreviousElement (MenuComponent whichMenu)
+	{
+		GameObject selectable = null;
+		eventSyst.SetSelectedGameObject (null);
+
+		if (whichMenu.previousSelected != null && selectPreviousElement)
+			selectable = whichMenu.previousSelected;
+
+		else if(whichMenu.selectable != null)
+			selectable = whichMenu.selectable;
+
+		if(selectable != null)
+		{
+			if(selectable.GetComponent<Button> () != null && selectable.GetComponent<Button> ().interactable)
+				eventSyst.SetSelectedGameObject (selectable);
+
+			else if(selectable.GetComponent<Button> () == null)
+				eventSyst.SetSelectedGameObject (selectable);
+		}
+	}
 
 	void SetInteractable (RectTransform target, float delayDuration = 0)
 	{
@@ -992,14 +1065,9 @@ public class MenuManager : Singleton <MenuManager>
 
 		for (int i = 0; i < playerScore.Length; i++)
 			playerScore[i].DOScale(1, durationToShow).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
+		
 
-		if (whichMenu.selectable != null)
-		{
-			if(whichMenu.selectable.GetComponent<Button> () != null && whichMenu.selectable.GetComponent<Button> ().interactable)
-				eventSyst.SetSelectedGameObject (whichMenu.selectable);
-			else if(whichMenu.selectable.GetComponent<Button> () == null)
-				eventSyst.SetSelectedGameObject (whichMenu.selectable);
-		}
+		SelectPreviousElement (whichMenu);
 
 		currentMenu = whichMenu;
 	}

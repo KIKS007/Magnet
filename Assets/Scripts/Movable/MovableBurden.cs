@@ -54,7 +54,7 @@ public class MovableBurden : MovableScript
 	void FindTarget ()
 	{
 		List<MovableBurden> otherMovables = new List<MovableBurden>();
-		List<GameObject> playersList = GlobalVariables.Instance.AlivePlayersList;
+		List<GameObject> playersList = new List<GameObject>(GlobalVariables.Instance.AlivePlayersList);
 
 		int randomPlayer = Random.Range (0, playersList.Count);
 		targetPlayer = playersList [randomPlayer];
@@ -142,14 +142,13 @@ public class MovableBurden : MovableScript
 
 			else
 			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				Explode ();
+
 				for (int i = 0; i < otherMovables.Count; i++)
 					if (otherMovables [i].targetPlayer == other.gameObject)
-					{
-						other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-						InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-						Explode ();
 						otherMovables [i].StopTrackingPlayer ();
-					}
 			}
 
 

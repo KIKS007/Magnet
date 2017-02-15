@@ -299,7 +299,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 
 		//Allow to play Alone and choose any character 
-		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 
+		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0 && GamepadsManager.Instance.gamepadsList.Count == 0) 
 		{ 
 			if(GlobalVariables.Instance.PlayersControllerNumber[0] == 0) 
 				GlobalVariables.Instance.PlayersControllerNumber[1] = 1; 

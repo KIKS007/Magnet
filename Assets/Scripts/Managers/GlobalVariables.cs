@@ -11,7 +11,7 @@ public enum StartupType {Delayed, Wave, Done};
 
 public enum ModeSequenceType {Selection, Random, Cocktail};
 
-public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Training, Default};
+public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Training, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -211,6 +211,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
+
 	}
 
 	void PlayersNumber ()
