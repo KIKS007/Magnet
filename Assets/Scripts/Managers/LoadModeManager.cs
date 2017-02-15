@@ -80,12 +80,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
-	public void RestartSceneVoid ()
+	public void RestartSceneVoid (bool resetStats = true)
 	{
-		StartCoroutine (RestartScene ());
+		StartCoroutine (RestartScene (resetStats));
 	}
 
-	IEnumerator RestartScene ()
+	IEnumerator RestartScene (bool resetStats = true)
 	{
 		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
@@ -94,7 +94,9 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		DestroyParticules ();
 		StopSlowMotion ();
-		StatsManager.Instance.ResetStats (true);
+
+		if(resetStats)
+			StatsManager.Instance.ResetStats (false);
 
 		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded, LoadSceneMode.Additive);
 
@@ -114,10 +116,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	IEnumerator ReloadScene ()
 	{
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
-
-		StatsManager.Instance.ResetStats (true);
-
-		DestroyParticules ();
 
 		if (GlobalVariables.Instance.CurrentModeLoaded != "")
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);

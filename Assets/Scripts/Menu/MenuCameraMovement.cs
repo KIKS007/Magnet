@@ -19,7 +19,7 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector3 endModePosition = new Vector3 (48, 104, 18);
 	public float movementDuration = 0.8f;
 
-	[Header ("Camera Loading Movements")]
+	[Header ("Camera Loading Relative Movements")]
 	public Vector3 loadingPosition;
 	public Vector3 restartPosition;
 	public float loadingMovementDuration = 0.25f;
@@ -32,6 +32,9 @@ public class MenuCameraMovement : MonoBehaviour
 
 	private Vector3 positionOnPause = Vector3.zero;
 	private Vector3 positionOnLoad = Vector3.zero;
+
+	private bool loading = false;
+	private bool restarting = false;
 
 	// Use this for initialization
 	void Awake () 
@@ -111,14 +114,17 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		if(transform.position != ModeRelativePosition(loadingPosition))
+		if(!loading)
 		{
-			positionOnLoad = transform.position;
-			transform.DOMove (ModeRelativePosition(loadingPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+			loading = true;
+			transform.DOMove (loadingPosition, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").SetRelative ();
 		}
 
 		else
-			transform.DOMove (positionOnLoad, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		{
+			loading = false;
+			transform.DOMove (-loadingPosition, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").SetRelative ();
+		}
 
 		yield return new WaitForSecondsRealtime (loadingMovementDuration);
 	}
@@ -127,11 +133,17 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		if(transform.position != ModeRelativePosition(restartPosition))
-			transform.DOMove (ModeRelativePosition(restartPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(!restarting)
+		{
+			restarting = true;
+			transform.DOMove (restartPosition, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").SetRelative ();
+		}
 
 		else
-			transform.DOMove (ModeRelativePosition(new Vector3 (GlobalVariables.Instance.currentModePosition.x, ModeRelativePosition(restartPosition).y, ModeRelativePosition(restartPosition).z)), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		{
+			restarting = false;
+			transform.DOMove (-restartPosition, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").SetRelative ();
+		}
 		
 		yield return new WaitForSecondsRealtime (loadingMovementDuration);
 	}

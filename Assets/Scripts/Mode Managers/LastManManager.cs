@@ -73,17 +73,24 @@ public class LastManManager : MonoBehaviour
 	IEnumerator GameEnd ()
 	{
 		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-
+		
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-
+		
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-
+		
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-		if(SceneManager.GetActiveScene().name != "Scene Testing")
-			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		GlobalVariables.Instance.GamesCount--;
+
+		if(GlobalVariables.Instance.GamesCount == 0)
+		{
+			if(SceneManager.GetActiveScene().name != "Scene Testing")
+				MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		}
+		else
+			MenuManager.Instance.RestartInstantly ();
 	}
 
 	IEnumerator GameEndDraw ()
@@ -98,8 +105,15 @@ public class LastManManager : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-		if(SceneManager.GetActiveScene().name != "Scene Testing")
-			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		GlobalVariables.Instance.GamesCount--;
+
+		if(GlobalVariables.Instance.GamesCount == 0)
+		{
+			if(SceneManager.GetActiveScene().name != "Scene Testing")
+				MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		}
+		else
+			MenuManager.Instance.RestartInstantly ();
 	}
 	
 }

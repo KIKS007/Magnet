@@ -857,13 +857,15 @@ public class MenuManager : Singleton <MenuManager>
 	void SelectPreviousElement (MenuComponent whichMenu)
 	{
 		GameObject selectable = null;
-		eventSyst.SetSelectedGameObject (null);
 
 		if (whichMenu.previousSelected != null && selectPreviousElement)
 			selectable = whichMenu.previousSelected;
 
 		else if(whichMenu.selectable != null)
 			selectable = whichMenu.selectable;
+		
+		if(eventSyst.currentSelectedGameObject != selectable)
+			eventSyst.SetSelectedGameObject (null);
 
 		if(selectable != null)
 		{
@@ -1094,6 +1096,11 @@ public class MenuManager : Singleton <MenuManager>
 		MainMenu ();
 	}
 
+	public void RestartInstantly ()
+	{
+		loadModeScript.RestartSceneVoid (false);
+	}
+
 	public void RestartMode ()
 	{
 		StartCoroutine (RestartModeCoroutine ());
@@ -1108,7 +1115,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
-		loadModeScript.RestartSceneVoid ();
+		loadModeScript.RestartSceneVoid (true);
 	}
 
 	IEnumerator HideEndMode (RectTransform content, List<SecondaryContent> secondaryContentList)
