@@ -31,7 +31,6 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
 	private Vector3 positionOnPause = Vector3.zero;
-	private Vector3 positionOnLoad = Vector3.zero;
 
 	private bool loading = false;
 	private bool restarting = false;
@@ -142,7 +141,7 @@ public class MenuCameraMovement : MonoBehaviour
 		else
 		{
 			restarting = false;
-			transform.DOMove (-restartPosition, loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").SetRelative ();
+			transform.DOMove (ModeRelativePosition(playPosition), loadingMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		}
 		
 		yield return new WaitForSecondsRealtime (loadingMovementDuration);

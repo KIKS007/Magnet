@@ -80,17 +80,24 @@ public class LastManManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
 		
-		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-		GlobalVariables.Instance.GamesCount--;
+		GlobalVariables.Instance.CurrentGamesCount--;
 
-		if(GlobalVariables.Instance.GamesCount == 0)
+		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
 		{
+			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+
 			if(SceneManager.GetActiveScene().name != "Scene Testing")
 				MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
 		else
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
+
 			MenuManager.Instance.RestartInstantly ();
+		}
 	}
 
 	IEnumerator GameEndDraw ()
@@ -103,17 +110,24 @@ public class LastManManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
 
-		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-		GlobalVariables.Instance.GamesCount--;
+		GlobalVariables.Instance.CurrentGamesCount--;
 
-		if(GlobalVariables.Instance.GamesCount == 0)
+		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
 		{
+			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+
 			if(SceneManager.GetActiveScene().name != "Scene Testing")
 				MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
 		else
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
+
 			MenuManager.Instance.RestartInstantly ();
+		}
 	}
 	
 }

@@ -9,7 +9,6 @@ public class GamesCountInput : MonoBehaviour
 	public GameObject decreaseButton;
 
 	private InputField input;
-	private int previousValue;
 
 	// Use this for initialization
 	void Start () 
@@ -24,28 +23,32 @@ public class GamesCountInput : MonoBehaviour
 
 	void OnEnable ()
 	{
-		GlobalVariables.Instance.GamesCount = previousValue;
+		GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
 		input = GetComponent<InputField> ();
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
+
+		CheckBounds ();
 	}
 
 	void OnDisable ()
 	{
-		previousValue = GlobalVariables.Instance.GamesCount;
+		GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 	}
 
 	public void GetValue ()
 	{
 		int value = 0;
 
-		if (!int.TryParse (input.text, out value))
+		if (!int.TryParse (input.text, out value) || value == 0)
 		{
 			value = 1;
 			input.text = value.ToString ();
 		}
 
 		GlobalVariables.Instance.GamesCount = value;
+
+		CheckBounds ();
 	}
 
 	public void Increase ()
@@ -53,12 +56,7 @@ public class GamesCountInput : MonoBehaviour
 		GlobalVariables.Instance.GamesCount++;
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		if (GlobalVariables.Instance.GamesCount >= 99)
-			increaseButton.SetActive (false);
-
-		if(decreaseButton.activeSelf == false)
-			decreaseButton.SetActive (false);
-
+		CheckBounds ();
 	}
 
 	public void Decrease ()
@@ -66,10 +64,20 @@ public class GamesCountInput : MonoBehaviour
 		GlobalVariables.Instance.GamesCount--;
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
+		CheckBounds ();
+	}
+
+	void CheckBounds ()
+	{
 		if (GlobalVariables.Instance.GamesCount <= 1)
 			decreaseButton.SetActive (false);
-
-		if(increaseButton.activeSelf == false)
+		else
+			decreaseButton.SetActive (true);
+		
+		if (GlobalVariables.Instance.GamesCount >= 99)
 			increaseButton.SetActive (false);
+
+		else
+			increaseButton.SetActive (true);
 	}
 }
