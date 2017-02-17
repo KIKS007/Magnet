@@ -30,7 +30,7 @@ public class MenuComponentEditor : Editor
 
 	SerializedProperty endModeContentList;
 
-	SerializedProperty underButtonsPositionsList;
+	//SerializedProperty underButtonsPositionsList;
 
 	void OnEnable ()
 	{
@@ -58,7 +58,7 @@ public class MenuComponentEditor : Editor
 
 		endModeContentList = serializedObject.FindProperty ("endModeContentList");
 
-		underButtonsPositionsList = serializedObject.FindProperty ("underButtonsPositionsList");
+		//underButtonsPositionsList = serializedObject.FindProperty ("underButtonsPositionsList");
 	}
 	
 	public override void OnInspectorGUI ()
@@ -71,7 +71,7 @@ public class MenuComponentEditor : Editor
 
 		EditorGUILayout.PropertyField (viewportContent, true);
 
-		if(menuComponentType.enumValueIndex != (int)MenuComponentType.EndModeMenu)
+		if(menuComponentType.enumValueIndex != (int)MenuComponentType.EndMode)
 		{
 			if(menuComponentType.enumValueIndex != (int)MenuComponentType.MainMenu)
 			{
@@ -83,13 +83,13 @@ public class MenuComponentEditor : Editor
 				EditorGUILayout.PropertyField (otherButtonsList, true);		
 			}
 			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsListMenu || menuComponentType.enumValueIndex == (int)MenuComponentType.MainMenu)
+			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsList || menuComponentType.enumValueIndex == (int)MenuComponentType.MainMenu)
 			{
 				EditorGUILayout.PropertyField (underMenuList, true);
 				EditorGUILayout.PropertyField (underButtonsList, true);
 			}
 			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ContentMenu || viewportContent.boolValue == true)
+			if(menuComponentType.enumValueIndex == (int)MenuComponentType.Content || viewportContent.boolValue == true)
 			{
 				EditorGUILayout.PropertyField (content, true);			
 			}
@@ -108,12 +108,12 @@ public class MenuComponentEditor : Editor
 
 		EditorGUILayout.Space ();
 		
-		if(menuComponentType.enumValueIndex == (int)MenuComponentType.EndModeMenu)
+		if(menuComponentType.enumValueIndex == (int)MenuComponentType.EndMode)
 		{
 			EditorGUILayout.PropertyField (endModeContentList, true);			
 		}
 
-		EditorGUILayout.PropertyField (underButtonsPositionsList, true);
+		//EditorGUILayout.PropertyField (underButtonsPositionsList, true);
 
 		serializedObject.ApplyModifiedProperties ();
 	}

@@ -170,6 +170,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 		StopSlowMotion ();
 		StatsManager.Instance.ResetStats (true);
+		UpdateGlobalVariables (WhichMode.Default, GameStateEnum.Menu);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}

@@ -977,7 +977,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	void BackButtons ()
 	{
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && currentMenu && currentMenu.menuComponentType != MenuComponentType.MainMenu && currentMenu.menuComponentType != MenuComponentType.EndModeMenu)
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && currentMenu && currentMenu.menuComponentType != MenuComponentType.MainMenu && currentMenu.menuComponentType != MenuComponentType.EndMode)
 		{
 			if (backButtons.gameObject.activeSelf == false)
 				backButtons.gameObject.SetActive (true);

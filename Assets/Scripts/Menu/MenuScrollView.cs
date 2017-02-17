@@ -9,7 +9,7 @@ using System;
 
 public class MenuScrollView : MonoBehaviour
 {
-	public enum ViewportType {Buttons, Content};
+	public enum ViewportType {Menus, Content, Buttons};
 	public ViewportType viewportType;
 
 	[Header ("Buttons")]
@@ -51,7 +51,7 @@ public class MenuScrollView : MonoBehaviour
 
 		MenuManager.Instance.OnMenuChange += CheckScrollEnabled;
 
-		if(viewportType == ViewportType.Buttons)
+		if(viewportType == ViewportType.Menus)
 		{
 			for(int i = 0; i < transform.childCount; i++)
 				underMenuList.Add (transform.GetChild (i).GetComponent<RectTransform> ());
@@ -59,6 +59,13 @@ public class MenuScrollView : MonoBehaviour
 			for (int i = 0; i < underMenuList.Count; i++)
 				underButtonsList.Add (underMenuList [i].transform.GetChild (0).GetComponent<RectTransform> ());			
 		}
+
+		if(viewportType == ViewportType.Buttons)
+		{
+			for (int i = 0; i < transform.childCount; i++)
+				underButtonsList.Add (transform.GetChild (i).GetComponent<RectTransform> ());	
+		}
+
 	}
 
 	void CheckScrollEnabled ()
@@ -89,7 +96,7 @@ public class MenuScrollView : MonoBehaviour
 			if (viewportType == ViewportType.Content)
 				CheckContentInput ();
 			
-			if (viewportType == ViewportType.Buttons && mouseControl)
+			if (viewportType == ViewportType.Menus && mouseControl || viewportType == ViewportType.Buttons && mouseControl)
 				CheckButtonsWheelInput ();
 			
 			
@@ -192,7 +199,7 @@ public class MenuScrollView : MonoBehaviour
 	{
 		//Debug.Log ("IsTweening : " + DOTween.IsTweening ("Menu"));
 
-		if(viewportType == ViewportType.Buttons)
+		if(viewportType == ViewportType.Menus || viewportType == ViewportType.Buttons)
 		{
 			if(!DOTween.IsTweening ("Menu") && !mouseControl && scrollViewEnabled)
 			{
