@@ -257,6 +257,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 	}
 
+	public void ChangeSequence (int modeSequence)
+	{
+		ModeSequenceType = (ModeSequenceType) modeSequence;
+	}
+
 	public event EventHandler OnEndMode;
 	public event EventHandler OnStartMode;
 	public event EventHandler OnRestartMode;

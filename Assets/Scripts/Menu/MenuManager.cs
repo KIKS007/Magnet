@@ -1040,7 +1040,18 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void StartMode ()
 	{
-		StartCoroutine (StartModeCoroutine ());
+		switch (GlobalVariables.Instance.ModeSequenceType)
+		{
+		case ModeSequenceType.Selection:
+			StartCoroutine (StartModeCoroutine ());
+			break;
+		case ModeSequenceType.Random:
+			StartCoroutine (StartRandomModeCoroutine ());
+			break;
+		case ModeSequenceType.Cocktail:
+			break;
+		}
+
 	}
 
 	IEnumerator StartModeCoroutine ()
@@ -1048,6 +1059,24 @@ public class MenuManager : Singleton <MenuManager>
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 
 		currentMenu.HideMenu ();
+
+		yield return new WaitForSecondsRealtime(durationToHide);
+
+		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
+
+		yield return cameraMovement.StartCoroutine ("PlayPosition");
+
+		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
+	}
+
+	IEnumerator StartRandomModeCoroutine ()
+	{
+		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		currentMenu.HideMenu ();
+
+		LoadModeManager.Instance.LoadRandomSceneVoid ();
+
+		yield return new WaitForSeconds (cameraMovement.loadingMovementDuration * 2);
 
 		yield return new WaitForSecondsRealtime(durationToHide);
 
@@ -1142,7 +1171,17 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void RestartInstantly ()
 	{
-		loadModeScript.RestartSceneVoid (false);
+		switch (GlobalVariables.Instance.ModeSequenceType)
+		{
+		case ModeSequenceType.Selection:
+			loadModeScript.RestartSceneVoid (false, false);
+			break;
+		case ModeSequenceType.Random:
+			loadModeScript.RestartSceneVoid (false, true);
+			break;
+		case ModeSequenceType.Cocktail:
+			break;
+		}
 	}
 
 	public void RestartMode ()
@@ -1159,7 +1198,17 @@ public class MenuManager : Singleton <MenuManager>
 
 		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
-		loadModeScript.RestartSceneVoid (true);
+		switch (GlobalVariables.Instance.ModeSequenceType)
+		{
+		case ModeSequenceType.Selection:
+			loadModeScript.RestartSceneVoid (false, false);
+			break;
+		case ModeSequenceType.Random:
+			loadModeScript.RestartSceneVoid (false, true);
+			break;
+		case ModeSequenceType.Cocktail:
+			break;
+		}
 	}
 
 	IEnumerator HideEndMode (RectTransform content, List<SecondaryContent> secondaryContentList)

@@ -32,16 +32,11 @@ public class DynamicCamera : MonoBehaviour
 
 	public List<GameObject> targetsList = new List<GameObject>();	
 
-	// Use this for initialization
-	void Awake () 
+	void Awake ()
 	{
-		for(int i = 0; i < modesSettingsList.Count; i++)
-		{
-			modesSettingsList [i].cameraMovementLerp = cameraMovementLerp * Time.fixedDeltaTime / 0.02f;
-			modesSettingsList [i].cameraZoomLerp = cameraZoomLerp * Time.fixedDeltaTime / 0.02f;
-		}
+		LoadModeManager.Instance.OnLevelLoaded += GetNewSettings;
 	}
-	
+
 	// Update is called once per frame
 	void Update () 
 	{

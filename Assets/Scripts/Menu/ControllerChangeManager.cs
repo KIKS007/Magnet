@@ -218,20 +218,20 @@ public class ControllerChangeManager : MonoBehaviour
 		int player3Choice = 0; 
 		int player4Choice = 0; 
 
-		for(int i = 0; i < imagesNumber.Length; i++) 
-		{ 
-			switch(imagesNumber[i]) 
+		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++) 
+		{
+			switch(GlobalVariables.Instance.PlayersControllerNumber[i]) 
 			{ 
-			case 1: 
+			case 0: 
 				player1Choice++; 
 				break; 
-			case 2: 
+			case 1: 
 				player2Choice++; 
 				break; 
-			case 3: 
+			case 2: 
 				player3Choice++; 
 				break; 
-			case 4: 
+			case 3: 
 				player4Choice++; 
 				break; 
 			} 
@@ -240,7 +240,7 @@ public class ControllerChangeManager : MonoBehaviour
 		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1) 
 			return false; 
 
-		else if (GlobalVariables.Instance.NumberOfPlayers < 2) 
+		else if ((player1Choice + player2Choice + player3Choice + player4Choice) < 2) 
 			return false; 
 
 		else 

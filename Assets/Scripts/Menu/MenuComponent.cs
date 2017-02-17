@@ -284,11 +284,34 @@ public class MenuComponent : MonoBehaviour
 			}
 			break;
 		}
+
+		if(button != null && button.parent != transform)
+		{
+			button.SetParent (transform);
+			button.SetAsFirstSibling ();
+		}
 	}
 
 	public void EndMode (WhichMode whichMode)
 	{
-		MenuManager.Instance.ShowEndMode (endModeContentList [(int)whichMode], secondaryContentList, this);
+		bool foundContent = false;
+
+		for(int i = 0; i < endModeContentList.Length; i++)
+		{
+			if(endModeContentList [i].name == whichMode.ToString ())
+			{
+				MenuManager.Instance.ShowEndMode (endModeContentList [i], secondaryContentList, this);
+				foundContent = true;
+				break;
+			}
+		}
+
+		if(!foundContent)
+		{
+			Debug.LogWarning ("Missing Stats Content");
+			MenuManager.Instance.ShowEndMode (endModeContentList [0], secondaryContentList, this);
+		}
+
 	}
 		
 	public void SubmitUnderMenu ()

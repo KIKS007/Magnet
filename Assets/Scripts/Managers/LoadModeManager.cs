@@ -2,19 +2,13 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using System;
 
 public enum LoadType { LoadMode, LoadMenu, Restart };
 
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
 	public event EventHandler OnLevelLoaded;
-
-	[Header ("Movement")]
-
-	public float loadingX = -150;
-	public float reloadingX = 150;
-	public float movementDuration = 0.25f;
-	public Ease movementEase = Ease.InOutCubic;
 
 	private Transform mainCamera;
 	private SlowMotionCamera slowMo;
@@ -59,6 +53,11 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StartCoroutine (LoadScene (sceneToLoad));
 	}
 
+	public void LoadRandomSceneVoid ()
+	{
+		StartCoroutine (LoadScene ( (WhichMode) UnityEngine.Random.Range (0, (int) Enum.GetNames (typeof (WhichMode)).Length - 2)) );
+	}
+
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (WhichMode sceneToLoad)
 	{
@@ -80,12 +79,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
-	public void RestartSceneVoid (bool resetStats = true)
+	public void RestartSceneVoid (bool resetStats = true, bool random = false)
 	{
-		StartCoroutine (RestartScene (resetStats));
+		StartCoroutine (RestartScene (resetStats, random));
 	}
 
-	IEnumerator RestartScene (bool resetStats = true)
+	IEnumerator RestartScene (bool resetStats = true, bool random = false)
 	{
 		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
@@ -98,7 +97,16 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(resetStats)
 			StatsManager.Instance.ResetStats (false);
 
-		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
+		if(!random)
+			yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
+
+		else
+		{
+			WhichMode randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
+			UpdateGlobalVariables (randomScene);
+
+			yield return SceneManager.LoadSceneAsync ( randomScene.ToString (), LoadSceneMode.Additive);
+		}
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
@@ -128,6 +136,25 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
+
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+	}
+
+	public void UnLoadSceneVoid ()
+	{
+		StartCoroutine (UnLoadScene ());
+	}
+
+	IEnumerator UnLoadScene ()
+	{
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+
+		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
+
+		DestroyParticules ();
+		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
