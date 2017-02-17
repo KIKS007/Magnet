@@ -12,7 +12,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	public MenuButtonType menuButtonType = MenuButtonType.Basic;
 
 	[Header ("Start Mode")]
-	public string whichMode = "";
+	public WhichMode whichMode;
 
 	[Header ("Secondary Content")]
 	public bool showOnSelect = true;

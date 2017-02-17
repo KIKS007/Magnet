@@ -1033,7 +1033,7 @@ public class MenuManager : Singleton <MenuManager>
 	#endregion
 
 	#region StartMode
-	public void MenuLoadMode (string whichMode)
+	public void MenuLoadMode (WhichMode whichMode)
 	{
 		LoadModeManager.Instance.LoadSceneVoid (whichMode);
 	}

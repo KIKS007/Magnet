@@ -11,7 +11,7 @@ public enum StartupType {Delayed, Wave, Done};
 
 public enum ModeSequenceType {Selection, Random, Cocktail};
 
-public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Training, Default};
+public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -20,11 +20,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public bool FirstGameLaunch = true;
 
 	[Header ("Modes")]
-	public string firstSceneToLoad = "Crush";
-	public WhichMode WhichModeLoaded;
+	public WhichMode firstSceneToLoad;
+	public WhichMode CurrentModeLoaded;
 	public Vector3 currentModePosition;
-	[HideInInspector]
-	public string CurrentModeLoaded = "";
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
@@ -91,11 +89,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	void Awake ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
-		{
 			GameState = GameStateEnum.Playing;
-			CurrentModeLoaded = "Scene Testing";
-			SetWhichModeEnum ();
-		}
 		
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
@@ -261,27 +255,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 				Cursor.visible = false;
 			}			
 		}
-	}
-
-	public void SetWhichModeEnum ()
-	{
-		switch(CurrentModeLoaded)
-		{
-		default:
-			WhichModeLoaded = WhichMode.Default;
-			break;
-		case "Bomb":
-			WhichModeLoaded = WhichMode.Bomb;
-			break;
-		case "Crush":
-			WhichModeLoaded = WhichMode.Crush;
-			break;
-		case "Training":
-			WhichModeLoaded = WhichMode.Training;
-			break;
-		}
-
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 
 	public event EventHandler OnEndMode;
