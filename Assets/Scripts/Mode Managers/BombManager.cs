@@ -201,7 +201,10 @@ public class BombManager : MonoBehaviour
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 		timerText.fontSize = 0;
 
-		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, new Vector3(0, 2, 0));
+		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
+		bombPosition.y = 2;
+
+		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
 
 		yield return new WaitWhile (()=> bomb.activeSelf == false);
 
@@ -234,6 +237,7 @@ public class BombManager : MonoBehaviour
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
 
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 

@@ -11,7 +11,7 @@ public enum StartupType {Delayed, Wave, Done};
 
 public enum ModeSequenceType {Selection, Random, Cocktail};
 
-public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Training, Default};
+public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -19,15 +19,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;
 
-	[Header ("Scenes")]
-	public string firstSceneToLoad = "Crush";
-	public WhichMode WhichModeLoaded;
-	[HideInInspector]
-	public string CurrentModeLoaded = "";
+	[Header ("Modes")]
+	public WhichMode firstSceneToLoad;
+	public WhichMode CurrentModeLoaded;
+	public Vector3 currentModePosition;
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
 	public int GamesCount = 1;
+	public int CurrentGamesCount = 1;
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
@@ -86,14 +86,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public Player[] rewiredPlayers = new Player[5];
 
-	void Start ()
+	void Awake ()
 	{
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
-		{
 			GameState = GameStateEnum.Playing;
-			CurrentModeLoaded = "Scene Testing";
-			SetWhichModeEnum ();
-		}
 		
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
@@ -108,6 +104,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
+
+		LoadModeManager.Instance.OnLevelLoaded += GetPlayers;
+		LoadModeManager.Instance.OnLevelLoaded += SetModePosition;
 	}
 		
 	void Update ()
@@ -119,6 +118,38 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 		}
+	}
+
+	void SetModePosition ()
+	{
+		currentModePosition = GameObject.FindGameObjectWithTag ("ModeParent").transform.position;
+
+		GlobalMethods.Instance.SetLimits ();
+	}
+
+	void GetPlayers ()
+	{
+		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+
+		for(int i = 0; i < players.Length; i++)
+		{
+			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
+				Players [0] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
+				Players [1] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
+				Players [2] = players [i];
+
+			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
+				Players [3] = players [i];
+		}
+
+		StatsManager.Instance.GetPlayersEvents ();
+
+		SetPlayersControllerNumbers ();
+		ListPlayers ();
 	}
 
 	public void SetPlayersControllerNumbers ()
@@ -175,6 +206,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
+
 	}
 
 	void PlayersNumber ()
@@ -223,27 +255,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 				Cursor.visible = false;
 			}			
 		}
-	}
-
-	public void SetWhichModeEnum ()
-	{
-		switch(CurrentModeLoaded)
-		{
-		default:
-			WhichModeLoaded = WhichMode.Default;
-			break;
-		case "Bomb":
-			WhichModeLoaded = WhichMode.Bomb;
-			break;
-		case "Crush":
-			WhichModeLoaded = WhichMode.Crush;
-			break;
-		case "Training":
-			WhichModeLoaded = WhichMode.Training;
-			break;
-		}
-
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().GetNewSettings ();
 	}
 
 	public event EventHandler OnEndMode;

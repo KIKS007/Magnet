@@ -54,11 +54,14 @@ public class DynamicCamera : MonoBehaviour
 			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)
 				targetsList.Add (otherTargetsList [i]);
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
+		if(dynamicEnabled)
 		{
-			FindLargestDistance ();
-			FindCenterPosition ();
-			FindYPosition ();
+			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			{
+				FindLargestDistance ();
+				FindCenterPosition ();
+				FindYPosition ();
+			}
 		}
 	}
 
@@ -138,7 +141,7 @@ public class DynamicCamera : MonoBehaviour
 
 		for(int i = 0; i < modesSettingsList.Count; i++)
 		{
-			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.WhichModeLoaded)
+			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.CurrentModeLoaded)
 			{
 				cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;
 				cameraMovementLerp = modesSettingsList [i].cameraMovementLerp;

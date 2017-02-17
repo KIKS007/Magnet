@@ -9,6 +9,13 @@ public class SlowMotionTriggerScript : MonoBehaviour
 	[HideInInspector]
 	public GameObject playerThatThrew;
 
+	private SlowMotionCamera slowMotionCamera;
+
+	void Start ()
+	{
+		slowMotionCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera>();
+	}
+
 	void OnTriggerEnter (Collider other)
 	{
 		if(triggerEnabled && (1<<other.gameObject.layer & playerLayerMask) != 0)
@@ -19,8 +26,8 @@ public class SlowMotionTriggerScript : MonoBehaviour
 			{
 				triggerEnabled = false;
 				
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion ();
-				GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().ContrastVignette(transform.position);
+				slowMotionCamera.StartSlowMotion ();
+				slowMotionCamera.ContrastVignette(transform.position);
 			}			
 		}
 	}

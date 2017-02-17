@@ -3,12 +3,13 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
+public enum LoadType { LoadMode, LoadMenu, Restart };
+
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
 	public event EventHandler OnLevelLoaded;
 
-	[Header ("Load Mode Manager")]
-	public GameObject[] rootGameObjects;
+	[Header ("Movement")]
 
 	public float loadingX = -150;
 	public float reloadingX = 150;
@@ -16,139 +17,95 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public Ease movementEase = Ease.InOutCubic;
 
 	private Transform mainCamera;
+	private SlowMotionCamera slowMo;
+	private MenuCameraMovement cameraMovement;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
+		slowMo = mainCamera.GetComponent<SlowMotionCamera> ();
+		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
 	}
 
 	//Game First Scene Loaded
-	IEnumerator FirstLoadedScene (string sceneToLoad)
+	IEnumerator FirstLoadedScene (WhichMode sceneToLoad)
 	{
+		//Unload All other Scenes than Menu
 		for (int i = 0; i < SceneManager.sceneCount; i++)
-		{
 			if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
-			{
-				string name = SceneManager.GetSceneAt (i).name;
-				yield return SceneManager.UnloadSceneAsync (name);
-			}
-		}
+				yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
 
-		if(SceneManager.GetSceneByName(sceneToLoad).isLoaded)
-		{
-			yield return SceneManager.UnloadSceneAsync (sceneToLoad);
-		}
-
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
-
-		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
-		FindGameObjects ();
-
-		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
-
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-		GlobalVariables.Instance.SetWhichModeEnum ();
+		//Unload Scene if already loaded
+		if(SceneManager.GetSceneByName(sceneToLoad.ToString ()).isLoaded)
+			yield return SceneManager.UnloadSceneAsync (sceneToLoad.ToString ());
 
 		StatsManager.Instance.ResetStats (true);
+		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
+
+		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
 	}
 
-	public void LoadSceneVoid (string sceneToLoad)
+	public void LoadSceneVoid (WhichMode sceneToLoad)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
-		else
-			mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
-
-		if(GlobalVariables.Instance.CurrentModeLoaded != sceneToLoad)
-		{
-			StatsManager.Instance.ResetStats (true);
-
-			StartCoroutine (LoadScene (sceneToLoad));
-		}
+		if (GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Menu)
+			return;
 		
-		else if(GlobalVariables.Instance.CurrentModeLoaded == sceneToLoad && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-		{
-			StatsManager.Instance.ResetStats (true);
-
-			GlobalVariables.Instance.GameState = GameStateEnum.Menu;
-			StartCoroutine (LoadScene (sceneToLoad));
-		}
-
+		StartCoroutine (LoadScene (sceneToLoad));
 	}
 
 	//Menu Load Scene to choose mode
-	IEnumerator LoadScene (string sceneToLoad)
+	IEnumerator LoadScene (WhichMode sceneToLoad)
 	{
-		float orginalPosition = mainCamera.transform.position.x;
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
-		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
+		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
+		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
+		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
 
-		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
-
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
-
-
-		rootGameObjects = SceneManager.GetSceneByName (sceneToLoad).GetRootGameObjects ();
-
-		FindGameObjects ();
-
-		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
-
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-		GlobalVariables.Instance.SetWhichModeEnum ();
-		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
+		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
+
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
-	public void RestartSceneVoid ()
+	public void RestartSceneVoid (bool resetStats = true)
 	{
-		StartCoroutine (RestartScene ());
+		StartCoroutine (RestartScene (resetStats));
 	}
 
-	IEnumerator RestartScene ()
+	IEnumerator RestartScene (bool resetStats = true)
 	{
-		string sceneToLoad = GlobalVariables.Instance.CurrentModeLoaded;
+		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
-		Tween myTween = mainCamera.DOMoveX (reloadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
-
-		StatsManager.Instance.ResetStats (false);
+		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
+		StopSlowMotion ();
 
-		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
+		if(resetStats)
+			StatsManager.Instance.ResetStats (false);
 
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-		GlobalVariables.Instance.SetWhichModeEnum ();
+		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
 
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
-
-		myTween = mainCamera.DOMoveX (0, movementDuration).SetEase(movementEase);
-
-		rootGameObjects = SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
-		FindGameObjects ();
-	
-		yield return myTween.WaitForCompletion ();
-
-		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
+		
+		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
 	}
 
 	public void ReloadSceneVoid ()
@@ -158,38 +115,42 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator ReloadScene ()
 	{
-		float orginalPosition = mainCamera.transform.position.x;
-		string sceneToLoad = GlobalVariables.Instance.CurrentModeLoaded;
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
-		Tween myTween = mainCamera.DOMoveX (loadingX, movementDuration).SetEase(movementEase);
-		yield return myTween.WaitForCompletion ();
-
-		StatsManager.Instance.ResetStats (true);
+		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
+			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
+		StopSlowMotion ();
+		StatsManager.Instance.ResetStats (true);
 
-		if (GlobalVariables.Instance.CurrentModeLoaded != "")
-			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded);
-
-
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-		GlobalVariables.Instance.SetWhichModeEnum ();
-
-		mainCamera.GetComponent<SlowMotionCamera> ().StopEndGameSlowMotion ();
-
-		yield return SceneManager.LoadSceneAsync (sceneToLoad, LoadSceneMode.Additive);
-
-		mainCamera.DOMoveX (orginalPosition, movementDuration).SetEase(movementEase);
-
-		rootGameObjects = SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded).GetRootGameObjects ();
-
-		FindGameObjects ();
+		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
 
 		if (OnLevelLoaded != null)
 			OnLevelLoaded ();
+
+		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 
+	void StopSlowMotion ()
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			slowMo.StopPauseSlowMotion ();
+		else
+			slowMo.StopEndGameSlowMotion ();
+	}
+
+	void UpdateGlobalVariables (WhichMode sceneToLoad)
+	{
+		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+	}
+
+	void UpdateGlobalVariables (WhichMode sceneToLoad, GameStateEnum gameState)
+	{
+		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
+		GlobalVariables.Instance.GameState = gameState;
+	}
 
 	void DestroyParticules ()
 	{
@@ -208,37 +169,4 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			Destroy (particlesFX [i]);
 		}
 	}
-
-	void FindGameObjects ()
-	{
-		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
-
-		for(int i = 0; i < players.Length; i++)
-		{
-			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
-				GlobalVariables.Instance.Players [0] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
-				GlobalVariables.Instance.Players [1] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
-				GlobalVariables.Instance.Players [2] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
-				GlobalVariables.Instance.Players [3] = players [i];
-		}
-
-		mainCamera.GetComponent<SlowMotionCamera> ().mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
-
-		UpdateGlobalVariables ();
-	}
-
-	void UpdateGlobalVariables ()
-	{
-		StatsManager.Instance.GetPlayersEvents ();
-
-		GlobalVariables.Instance.SetPlayersControllerNumbers ();
-		GlobalVariables.Instance.ListPlayers ();
-	}
-		
 }

@@ -46,7 +46,7 @@ public class MenuScrollView : MonoBehaviour
 		underButtonsList.Clear ();
 
 		aboveMenu = transform.parent.GetComponent<MenuComponent> ();
-			
+	
 		buttonsCenterYPos = MenuManager.Instance.firstButtonY;
 
 		MenuManager.Instance.OnMenuChange += CheckScrollEnabled;
@@ -190,6 +190,8 @@ public class MenuScrollView : MonoBehaviour
 
 	public void ButtonsMovement (RectTransform whichButton)
 	{
+		//Debug.Log ("IsTweening : " + DOTween.IsTweening ("Menu"));
+
 		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons && !mouseControl && scrollViewEnabled)
 		{
 			DOTween.Kill ("Viewport");

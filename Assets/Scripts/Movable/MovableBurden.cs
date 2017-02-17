@@ -26,6 +26,7 @@ public class MovableBurden : MovableScript
 	protected override void Awake ()
 	{
 		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
+		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
 
 		for (int i = 0; i < transform.childCount; i++)
@@ -53,7 +54,7 @@ public class MovableBurden : MovableScript
 	void FindTarget ()
 	{
 		List<MovableBurden> otherMovables = new List<MovableBurden>();
-		List<GameObject> playersList = GlobalVariables.Instance.AlivePlayersList;
+		List<GameObject> playersList = new List<GameObject>(GlobalVariables.Instance.AlivePlayersList);
 
 		int randomPlayer = Random.Range (0, playersList.Count);
 		targetPlayer = playersList [randomPlayer];
@@ -141,14 +142,13 @@ public class MovableBurden : MovableScript
 
 			else
 			{
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				Explode ();
+
 				for (int i = 0; i < otherMovables.Count; i++)
 					if (otherMovables [i].targetPlayer == other.gameObject)
-					{
-						other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-						InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-						Explode ();
 						otherMovables [i].StopTrackingPlayer ();
-					}
 			}
 
 
@@ -158,7 +158,7 @@ public class MovableBurden : MovableScript
 
 	void Explode ()
 	{
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartSlowMotion();
+		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);

@@ -24,12 +24,13 @@ public class MenuComponentEditor : Editor
 
 	SerializedProperty selectable;
 
+	SerializedProperty previousSelected;
+
 	SerializedProperty secondaryContentList;
 
 	SerializedProperty endModeContentList;
 
-	bool selectableEnabled = true;
-	bool secondaryContentEnabled = true;
+	SerializedProperty underButtonsPositionsList;
 
 	void OnEnable ()
 	{
@@ -51,9 +52,13 @@ public class MenuComponentEditor : Editor
 
 		selectable = serializedObject.FindProperty ("selectable");
 
+		previousSelected = serializedObject.FindProperty ("previousSelected");
+
 		secondaryContentList = serializedObject.FindProperty ("secondaryContentList");
 
 		endModeContentList = serializedObject.FindProperty ("endModeContentList");
+
+		underButtonsPositionsList = serializedObject.FindProperty ("underButtonsPositionsList");
 	}
 	
 	public override void OnInspectorGUI ()
@@ -93,19 +98,13 @@ public class MenuComponentEditor : Editor
 
 		EditorGUILayout.Space ();			
 
-		selectableEnabled = EditorGUILayout.Toggle ("Select On Enable", selectableEnabled);
-
-		if(selectableEnabled)
-			EditorGUILayout.PropertyField (selectable, true);
+		EditorGUILayout.PropertyField (selectable, true);
+		EditorGUILayout.PropertyField (previousSelected, true);
 
 
 		EditorGUILayout.Space ();
 	
-		secondaryContentEnabled = EditorGUILayout.Toggle ("Secondary Content", secondaryContentEnabled);
-
-		if(secondaryContentEnabled)
-			EditorGUILayout.PropertyField (secondaryContentList, true);
-
+		EditorGUILayout.PropertyField (secondaryContentList, true);
 
 		EditorGUILayout.Space ();
 		
@@ -114,6 +113,7 @@ public class MenuComponentEditor : Editor
 			EditorGUILayout.PropertyField (endModeContentList, true);			
 		}
 
+		EditorGUILayout.PropertyField (underButtonsPositionsList, true);
 
 		serializedObject.ApplyModifiedProperties ();
 	}

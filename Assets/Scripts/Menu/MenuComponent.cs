@@ -28,12 +28,16 @@ public class MenuComponent : MonoBehaviour
 	[Header ("Content")]
 	public RectTransform content = null;
 
+	[Header ("Selectable")]
 	public GameObject selectable;
+	public GameObject previousSelected;
 
 	public List<SecondaryContent> secondaryContentList;
 
 	[Header ("End Mode Content List")]
 	public RectTransform[] endModeContentList = new RectTransform[0];
+
+	public List<Vector2> underButtonsPositionsList;
 
 	void Awake ()
 	{
@@ -172,6 +176,10 @@ public class MenuComponent : MonoBehaviour
 
 		if (content != null)
 			content.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, content.anchoredPosition.y);
+
+		if(secondaryContentList.Count > 0)
+			for (int i = 0; i < secondaryContentList.Count; i++)
+				secondaryContentList [i].content.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, secondaryContentList [i].content.anchoredPosition.y);
 	}
 
 	void DisableAll ()
@@ -221,6 +229,9 @@ public class MenuComponent : MonoBehaviour
 	//Menu Manager Call Methods
 	public void Submit (int buttonIndex)
 	{
+		if (aboveMenuScript != null)
+			aboveMenuScript.SubmitUnderMenu ();
+
 		if (menuComponentType == MenuComponentType.MainMenu)
 			MenuManager.Instance.ShowUnderButtons (otherButtonsList, buttonIndex, underButtonsList, this, secondaryContentList);
 
@@ -243,7 +254,10 @@ public class MenuComponent : MonoBehaviour
 			if(!viewportContent)
 				MenuManager.Instance.HideUnderButtons (underButtonsList, aboveMenuScript, button, false, secondaryContentList);
 			else
+			{
+				SetButtonsPositions ();
 				MenuManager.Instance.HideViewportButtons (underButtonsList, aboveMenuScript, button, false, secondaryContentList);
+			}
 		}
 		
 		else if (menuComponentType == MenuComponentType.ContentMenu)
@@ -264,7 +278,10 @@ public class MenuComponent : MonoBehaviour
 			if(!viewportContent)
 				MenuManager.Instance.HideUnderButtons (underButtonsList, aboveMenuScript, button, true, secondaryContentList);
 			else
+			{
+				SetButtonsPositions ();
 				MenuManager.Instance.HideViewportButtons (underButtonsList, aboveMenuScript, button, true, secondaryContentList);
+			}
 			break;
 		}
 	}
@@ -272,6 +289,23 @@ public class MenuComponent : MonoBehaviour
 	public void EndMode (WhichMode whichMode)
 	{
 		MenuManager.Instance.ShowEndMode (endModeContentList [(int)whichMode], secondaryContentList, this);
+	}
+		
+	public void SubmitUnderMenu ()
+	{
+		if (menuComponentType == MenuComponentType.ButtonsListMenu && viewportContent)
+				SetButtonsPositions ();
+	}
+
+	void SetButtonsPositions ()
+	{
+		if (menuComponentType == MenuComponentType.ButtonsListMenu && viewportContent)
+		{
+			underButtonsPositionsList.Clear ();
+
+			for (int i = 0; i < underButtonsList.Count; i++)
+				underButtonsPositionsList.Add (underButtonsList [i].anchoredPosition);
+		}
 	}
 
 	#region Editor Methods

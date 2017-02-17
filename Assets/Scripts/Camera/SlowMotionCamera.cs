@@ -64,6 +64,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 	[Header ("Debug Test")]
 	public bool slowMotion;
+	public bool pauseSlowMotion;
 	public float timeScaleDebug;
 
 	[HideInInspector]
@@ -91,6 +92,7 @@ public class SlowMotionCamera : MonoBehaviour
 
 		GlobalVariables.Instance.OnStartMode += () => slowMoNumber = 0;
 		GlobalVariables.Instance.OnRestartMode += () => slowMoNumber = 0;
+		LoadModeManager.Instance.OnLevelLoaded += () => mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
 	}
 
 	// Called when this script starts
@@ -106,6 +108,12 @@ public class SlowMotionCamera : MonoBehaviour
 		{
 			slowMotion = false;
 			StartSlowMotion ();
+		}
+
+		if(pauseSlowMotion)
+		{
+			pauseSlowMotion = false;
+			StartPauseSlowMotion ();
 		}
 
 		timeScaleDebug = Time.timeScale;
