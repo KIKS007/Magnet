@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 4c6c69ea3858ca64e8e81246560a6edb
+timeCreated: 1472906720
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Player1: {instanceID: 0}
+  - Player2: {instanceID: 0}
+  - Player3: {instanceID: 0}
+  - Player4: {instanceID: 0}
+  - HitParticles: {instanceID: 0}
+  - WallHitParticles: {instanceID: 0}
+  - DeadParticles: {instanceID: 0}
+  - MovableExplosion: {instanceID: 0}
+  - PlayerSpawnParticles: {instanceID: 0}
+  - ParticulesClonesParent: {instanceID: 0}
+  executionOrder: 20
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -176,6 +176,10 @@ public class MenuComponent : MonoBehaviour
 
 		if (content != null)
 			content.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, content.anchoredPosition.y);
+
+		if(secondaryContentList.Count > 0)
+			for (int i = 0; i < secondaryContentList.Count; i++)
+				secondaryContentList [i].content.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, secondaryContentList [i].content.anchoredPosition.y);
 	}
 
 	void DisableAll ()

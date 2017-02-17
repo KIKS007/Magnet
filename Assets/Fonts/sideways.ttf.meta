@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: d2b9815dd5bd7b846b69e4d6fdbead67
+timeCreated: 1473630026
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Sideways BRK
+  fontNames:
+  - Sideways BRK
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
