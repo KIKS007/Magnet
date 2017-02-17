@@ -23,6 +23,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public WhichMode firstSceneToLoad;
 	public WhichMode CurrentModeLoaded;
 	public Vector3 currentModePosition;
+	public List<WhichMode> lastPlayedModes = new List<WhichMode>();
+	public List<WhichMode> cocktailModes = new List<WhichMode>();
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
@@ -101,6 +103,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnStartupDoneEvent ());
 
 		OnPlaying += ()=> HideMouseCursor();
+		OnPlaying += UpdatePlayedModes;
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
@@ -227,6 +230,14 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		NumberOfAlivePlayers = AlivePlayersList.Count;
 		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
+	}
+
+	void UpdatePlayedModes ()
+	{
+		lastPlayedModes.Add (CurrentModeLoaded);
+
+		if (lastPlayedModes.Count > 5)
+			lastPlayedModes.RemoveAt (0);
 	}
 
 	public void SetPlayerMouseCursor ()

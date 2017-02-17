@@ -192,14 +192,17 @@ public class MenuScrollView : MonoBehaviour
 	{
 		//Debug.Log ("IsTweening : " + DOTween.IsTweening ("Menu"));
 
-		if(!DOTween.IsTweening ("Menu") && viewportType == ViewportType.Buttons && !mouseControl && scrollViewEnabled)
+		if(viewportType == ViewportType.Buttons)
 		{
-			DOTween.Kill ("Viewport");
-
-			float yMovement = buttonsCenterYPos - whichButton.anchoredPosition.y;
-
-			for (int i = 0; i < underButtonsList.Count; i++)
-				underButtonsList [i].DOAnchorPosY (underButtonsList [i].anchoredPosition.y + yMovement, buttonsMovementDuration).SetEase (buttonsEase).SetId ("Viewport");			
+			if(!DOTween.IsTweening ("Menu") && !mouseControl && scrollViewEnabled)
+			{
+				DOTween.Kill ("Viewport");
+				
+				float yMovement = buttonsCenterYPos - whichButton.anchoredPosition.y;
+				
+				for (int i = 0; i < underButtonsList.Count; i++)
+					underButtonsList [i].DOAnchorPosY (underButtonsList [i].anchoredPosition.y + yMovement, buttonsMovementDuration).SetEase (buttonsEase).SetId ("Viewport");			
+			}
 		}
 	}
 }

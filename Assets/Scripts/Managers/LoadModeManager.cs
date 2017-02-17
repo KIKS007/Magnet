@@ -55,7 +55,15 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	public void LoadRandomSceneVoid ()
 	{
-		StartCoroutine (LoadScene ( (WhichMode) UnityEngine.Random.Range (0, (int) Enum.GetNames (typeof (WhichMode)).Length - 2)) );
+		WhichMode randomScene = WhichMode.Bomb;
+
+		do
+		{
+			randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
+		}
+		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));
+
+		StartCoroutine (LoadScene (randomScene));
 	}
 
 	//Menu Load Scene to choose mode
@@ -102,7 +110,14 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		else
 		{
-			WhichMode randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
+			WhichMode randomScene = WhichMode.Bomb;
+
+			do
+			{
+				randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
+			}
+			while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));	
+
 			UpdateGlobalVariables (randomScene);
 
 			yield return SceneManager.LoadSceneAsync ( randomScene.ToString (), LoadSceneMode.Additive);
