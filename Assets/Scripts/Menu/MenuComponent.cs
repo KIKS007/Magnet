@@ -219,28 +219,38 @@ public class MenuComponent : MonoBehaviour
 		
 	void SetupButtonsNavigation ()
 	{
-		for(int i = 0; i < underButtonsList.Count; i++)
+		if(underButtonsList.Count == 1)
 		{
-			Navigation nav = underButtonsList [i].GetComponent<Button> ().navigation;
-			nav.mode = Navigation.Mode.Explicit;
+			Navigation nav = underButtonsList [0].GetComponent<Button> ().navigation;
+			nav.mode = Navigation.Mode.Automatic;
 
-			if(i == 0)
+			underButtonsList [0].GetComponent<Button> ().navigation = nav;
+		}
+		else
+		{
+			for(int i = 0; i < underButtonsList.Count; i++)
 			{
-				nav.selectOnUp = underButtonsList [underButtonsList.Count - 1].GetComponent<Button> ();
-				nav.selectOnDown = underButtonsList [1].GetComponent<Button> ();
+				Navigation nav = underButtonsList [i].GetComponent<Button> ().navigation;
+				nav.mode = Navigation.Mode.Explicit;
+				
+				if(i == 0)
+				{
+					nav.selectOnUp = underButtonsList [underButtonsList.Count - 1].GetComponent<Button> ();
+					nav.selectOnDown = underButtonsList [1].GetComponent<Button> ();
+				}
+				else if(i == underButtonsList.Count - 1)
+				{
+					nav.selectOnUp = underButtonsList [underButtonsList.Count - 2].GetComponent<Button> ();
+					nav.selectOnDown = underButtonsList [0].GetComponent<Button> ();
+				}
+				else
+				{
+					nav.selectOnUp = underButtonsList [i - 1].GetComponent<Button> ();
+					nav.selectOnDown = underButtonsList [i + 1].GetComponent<Button> ();
+				}
+				
+				underButtonsList [i].GetComponent<Button> ().navigation = nav;
 			}
-			else if(i == underButtonsList.Count - 1)
-			{
-				nav.selectOnUp = underButtonsList [underButtonsList.Count - 2].GetComponent<Button> ();
-				nav.selectOnDown = underButtonsList [0].GetComponent<Button> ();
-			}
-			else
-			{
-				nav.selectOnUp = underButtonsList [i - 1].GetComponent<Button> ();
-				nav.selectOnDown = underButtonsList [i + 1].GetComponent<Button> ();
-			}
-
-			underButtonsList [i].GetComponent<Button> ().navigation = nav;
 		}
 	}
 

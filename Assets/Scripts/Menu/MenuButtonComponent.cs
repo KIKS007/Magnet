@@ -50,6 +50,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnPointerClick( PointerEventData data )
 	{
+		if (DOTween.IsTweening ("Menu"))
+			return;
+
 		if(button.interactable)
 		{
 			hasBeenSubmit = true;
@@ -69,6 +72,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSubmit( BaseEventData data )
 	{
+		if (DOTween.IsTweening ("Menu"))
+			return;
+		
 		if(button.interactable)
 		{
 			hasBeenSubmit = true;
@@ -90,6 +96,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSelect (BaseEventData eventData)
 	{
+		if (DOTween.IsTweening ("Menu"))
+			return;
+		
 		menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 		if(showOnSelect)

@@ -33,7 +33,8 @@ public class GamesCountInput : MonoBehaviour
 
 	void OnDisable ()
 	{
-		GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+		if(GlobalVariables.Instance)
+			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 	}
 
 	public void GetValue ()

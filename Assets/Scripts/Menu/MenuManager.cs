@@ -408,6 +408,16 @@ public class MenuManager : Singleton <MenuManager>
 
 	Tween HideOtherButtons (List<RectTransform> otherButtonsList, int submitButton, MenuComponent whichMenu)
 	{
+		//Secondary Content
+		if(whichMenu.secondaryContentList.Count > 0)
+		{
+			for(int i = 0; i < whichMenu.secondaryContentList.Count; i++)
+			{
+				Disable (whichMenu.secondaryContentList [i].content, durationToHide + whichMenu.secondaryContentList [i].delay);
+				whichMenu.secondaryContentList [i].content.DOAnchorPos (whichMenu.secondaryContentList [i].offScreenPos, durationToHide).SetDelay (whichMenu.secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}
+		}
+
 		//Hide Other Buttons and Get Header Button At Top
 		int aboveDelay = 0;
 
@@ -533,9 +543,9 @@ public class MenuManager : Singleton <MenuManager>
 		else
 		{
 			if(!aboveMenu.viewportContent)
-				ShowAboveButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveMenu (aboveMenu, menuButton));
 			else
-				ShowAboveViewportButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveViewportMenu (aboveMenu, menuButton));
 		}
 
 	}
@@ -605,9 +615,9 @@ public class MenuManager : Singleton <MenuManager>
 		else
 		{
 			if(!aboveMenu.viewportContent)
-				ShowAboveButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveMenu (aboveMenu, menuButton));
 			else
-				ShowAboveViewportButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveViewportMenu (aboveMenu, menuButton));
 		}
 
 	}
@@ -677,9 +687,9 @@ public class MenuManager : Singleton <MenuManager>
 		else
 		{
 			if(!aboveMenu.viewportContent)
-				ShowAboveButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveMenu (aboveMenu, menuButton));
 			else
-				ShowAboveViewportButtons (aboveMenu, menuButton);
+				StartCoroutine (ShowAboveViewportMenu (aboveMenu, menuButton));
 		}
 	}
 
@@ -717,7 +727,7 @@ public class MenuManager : Singleton <MenuManager>
 		currentMenu = null;
 	}
 
-	void ShowAboveButtons (MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator ShowAboveMenu (MenuComponent aboveMenu, RectTransform menuButton)
 	{
 		int cancelButton = 0;
 
@@ -745,8 +755,24 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-		
+		Tween tween = aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+
+		yield return tween.WaitForCompletion ();
+
+		//Secondary Content
+		if(aboveMenu.secondaryContentList != null)
+		{
+			for(int i = 0; i < aboveMenu.secondaryContentList.Count; i++)
+			{
+				if(aboveMenu.secondaryContentList [i].content.anchoredPosition != aboveMenu.secondaryContentList [i].onScreenPos)
+					aboveMenu.secondaryContentList [i].content.anchoredPosition = aboveMenu.secondaryContentList [i].offScreenPos;
+
+				Enable (aboveMenu.secondaryContentList [i].content);
+				aboveMenu.secondaryContentList [i].content.DOAnchorPos (aboveMenu.secondaryContentList [i].onScreenPos, durationToShow).SetDelay (aboveMenu.secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
+		}
+
+
 		delay++;
 
 		for(int i = aboveMenu.underButtonsList.Count - 1; i >= 0; i--)
@@ -769,7 +795,7 @@ public class MenuManager : Singleton <MenuManager>
 		currentMenu = aboveMenu;
 	}
 
-	void ShowAboveViewportButtons (MenuComponent aboveMenu, RectTransform menuButton)
+	IEnumerator ShowAboveViewportMenu (MenuComponent aboveMenu, RectTransform menuButton)
 	{
 		int cancelButton = 0;
 
@@ -797,11 +823,29 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
+		Tween tween = null;
+
 		if(aboveMenu.viewportContent && aboveMenu.underButtonsPositionsList.Count > 0)
-			aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, aboveMenu.underButtonsPositionsList [cancelButton].y), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			tween = aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, aboveMenu.underButtonsPositionsList [cancelButton].y), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 		else
-			aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			tween = aboveMenu.underButtonsList [cancelButton].DOAnchorPos (new Vector2(onScreenX, ButtonsYPos (cancelButton) + GapAfterHeaderButton ()), viewportButtonsDuration).SetDelay (ViewportButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+
+
+		yield return tween.WaitForCompletion ();
+
+		//Secondary Content
+		if(aboveMenu.secondaryContentList != null)
+		{
+			for(int i = 0; i < aboveMenu.secondaryContentList.Count; i++)
+			{
+				if(aboveMenu.secondaryContentList [i].content.anchoredPosition != aboveMenu.secondaryContentList [i].onScreenPos)
+					aboveMenu.secondaryContentList [i].content.anchoredPosition = aboveMenu.secondaryContentList [i].offScreenPos;
+
+				Enable (aboveMenu.secondaryContentList [i].content);
+				aboveMenu.secondaryContentList [i].content.DOAnchorPos (aboveMenu.secondaryContentList [i].onScreenPos, durationToShow).SetDelay (aboveMenu.secondaryContentList [i].delay).SetEase (easeMenu).SetId ("Menu");
+			}			
+		}
 
 		delay++;
 
