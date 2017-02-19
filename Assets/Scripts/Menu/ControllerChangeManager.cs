@@ -195,7 +195,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 	IEnumerator WaitEndMenuAnimation () 
 	{ 
-		yield return new WaitWhile (() => DOTween.IsTweening ("Menu")); 
+		yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
 
 		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 

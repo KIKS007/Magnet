@@ -100,7 +100,7 @@ public class MenuScrollView : MonoBehaviour
 				CheckButtonsWheelInput ();
 			
 			
-			if (DOTween.IsTweening ("Menu") || DOTween.IsTweening ("MenuCamera"))
+			if (MenuManager.Instance.isTweening || DOTween.IsTweening ("MenuCamera"))
 			{
 				if(DOTween.IsTweening ("Viewport"))
 					DOTween.Kill ("Viewport");
@@ -201,7 +201,7 @@ public class MenuScrollView : MonoBehaviour
 
 		if(viewportType == ViewportType.Menus || viewportType == ViewportType.Buttons)
 		{
-			if(!DOTween.IsTweening ("Menu") && !mouseControl && scrollViewEnabled)
+			if(!MenuManager.Instance.isTweening && !mouseControl && scrollViewEnabled)
 			{
 				DOTween.Kill ("Viewport");
 				

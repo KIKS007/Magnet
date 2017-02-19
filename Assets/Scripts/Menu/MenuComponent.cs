@@ -24,7 +24,6 @@ public class MenuComponent : MonoBehaviour
 	[HideInInspector]
 	public GameObject previousSelected;
 
-	[HideInInspector]
 	public RectTransform menuButton;
 	[HideInInspector]
 	public MenuComponent aboveMenuScript;
@@ -123,6 +122,9 @@ public class MenuComponent : MonoBehaviour
 		SetupButtonsNavigation (underButtons);
 
 		EnableSecondaryContentParent ();
+
+		if (contentDisplay.Count == 0)
+			SetupContentDisplay ();
 	}
 
 
@@ -348,6 +350,36 @@ public class MenuComponent : MonoBehaviour
 		}
 	}
 
+	void SetupContentDisplay ()
+	{
+		//UNDER MENUS
+		if(underMenusButtons.Count > 0)
+		{
+			contentDisplay.Add (new MenuContent ());
+			contentDisplay [0].contentType = MenuContentType.Menus;
+		}
+
+		//UNDER BUTTONS
+		if(underButtons.Count > 0)
+		{
+			contentDisplay.Add (new MenuContent ());
+			contentDisplay [0].contentType = MenuContentType.Buttons;
+		}
+
+		//CONTENT
+		if(mainContent != null)
+		{
+			contentDisplay.Add (new MenuContent ());
+			contentDisplay [0].contentType = MenuContentType.MainContent;
+		}
+
+		//SECONDARY CONTENT
+		if(secondaryContents.Count > 0)
+		{
+			contentDisplay.Add (new MenuContent ());
+			contentDisplay [0].contentType = MenuContentType.SecondaryContent;
+		}
+	}
 
 	//Menu Manager Call Methods
 	public void Submit (int buttonIndex)
@@ -360,7 +392,8 @@ public class MenuComponent : MonoBehaviour
 
 	public void Cancel ()
 	{
-		MenuManager.Instance.CancelMenu (this, menuButton.GetComponent<MenuButtonComponent> ().buttonIndex);
+		if(menuComponentType != MenuComponentType.MainMenu && menuComponentType != MenuComponentType.EndMode)
+			MenuManager.Instance.CancelMenu (this, menuButton.GetComponent<MenuButtonComponent> ().buttonIndex);
 
 		if(menuButton != null && menuButton.parent != transform)
 		{

@@ -50,7 +50,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnPointerClick( PointerEventData data )
 	{
-		if (DOTween.IsTweening ("Menu"))
+		if (MenuManager.Instance.isTweening)
 			return;
 
 		if(button.interactable)
@@ -72,7 +72,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSubmit( BaseEventData data )
 	{
-		if (DOTween.IsTweening ("Menu"))
+		if (MenuManager.Instance.isTweening)
 			return;
 		
 		if(button.interactable)
@@ -98,7 +98,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSelect (BaseEventData eventData)
 	{
-		if (DOTween.IsTweening ("Menu"))
+		if (MenuManager.Instance.isTweening)
 			return;
 
 		if(menuComponentParent.menuComponentType != MenuComponentType.MainMenu || menuComponentParent.menuComponentType != MenuComponentType.EndMode)
