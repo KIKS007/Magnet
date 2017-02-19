@@ -377,11 +377,17 @@ public class MenuManager : Singleton <MenuManager>
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
 
+
 		//Show Under Menus Buttons
 		for(int i = whichMenu.underMenusButtons.Count - 1; i >= 0; i--)
 		{
 			if(i != cancelButton)
-				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, ButtonsYPos (i) + GapAfterHeaderButton ());
+			{
+				if(whichMenu.underMenusButtonsPositions.Count > 0)
+					whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, whichMenu.underMenusButtonsPositions [i].y);
+				else
+					whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
+			}
 
 			Enable (whichMenu.underMenusButtons [i]);
 			SetInteractable (whichMenu.underMenusButtons [i], durationToShow + ButtonsDelay (delay));
@@ -389,35 +395,18 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underMenusButtonsPositions.Count > 0)
 				whichMenu.underMenusButtons [i].DOAnchorPos (whichMenu.underMenusButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			else
-				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-			
+				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+
+			if (i == cancelButton)
+				StartCoroutine (EnableViewScroll (whichMenu, durationToShow + ButtonsDelay (delay) * 0.5f));
+
 			delay++;
 		}
 
 		//Remove Current Header From List
 		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
 
-		//Show Previous Header Button
-		if(whichMenu.menuButton != null)
-		{
-			Enable (whichMenu.menuButton);
-			SetInteractable (whichMenu.menuButton, durationToShow);
-			
-			if(hidePreviousHeaderButton)
-			{
-				if(whichMenu.menuButton != null)
-				{
-					whichMenu.menuButton.DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-					headerButtonsList.Add (whichMenu.menuButton);
-				}
-				
-				/*if(whichMenu.aboveMenuScript.viewportContent)
-				{
-					whichMenu.underMenusButtons [cancelButton].SetParent (whichMenu.underMenusButtons [cancelButton].GetComponent<MenuButtonComponent> ().menuComponentParent.transform);
-					whichMenu.underMenusButtons [cancelButton].SetAsFirstSibling ();
-				}*/
-			}
-		}
+		ShowPreviousHeader (whichMenu, cancelButton, delay);
 
 		//Wait
 		if(contentIndex == whichMenu.contentDisplay.Count - 1 || whichMenu.contentDisplay [contentIndex + 1].waitPreviousContent)
@@ -437,7 +426,10 @@ public class MenuManager : Singleton <MenuManager>
 
 		for(int i = whichMenu.underMenusButtons.Count - 1; i >= 0; i--)
 		{
-			whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, ButtonsYPos (i) + GapAfterHeaderButton ());
+			if(whichMenu.underMenusButtonsPositions.Count > 0)
+				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, whichMenu.underMenusButtonsPositions [i].y);
+			else
+				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
 
 			Enable (whichMenu.underMenusButtons [i]);
 			SetInteractable (whichMenu.underMenusButtons [i], durationToShow + ButtonsDelay (delay));
@@ -445,7 +437,7 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underMenusButtonsPositions.Count > 0)
 				whichMenu.underMenusButtons [i].DOAnchorPos (whichMenu.underMenusButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			else
-				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 			delay++;
 		}
@@ -456,7 +448,34 @@ public class MenuManager : Singleton <MenuManager>
 		else
 			yield break;
 	}
-		
+
+	IEnumerator EnableViewScroll (MenuComponent whichMenu, float delay)
+	{
+		yield return new WaitForSeconds (delay);
+
+		if (whichMenu.scrollViewButtons)
+			whichMenu.menusParent.GetComponent<Image> ().enabled = true;
+	}
+
+	void ShowPreviousHeader (MenuComponent whichMenu, int cancelButton, int delay)
+	{
+		//Show Previous Header Button
+		if(whichMenu.menuButton != null)
+		{
+			Enable (whichMenu.menuButton);
+			SetInteractable (whichMenu.menuButton, durationToShow);
+
+			if(hidePreviousHeaderButton)
+			{
+				if(whichMenu.menuButton != null)
+				{
+					whichMenu.menuButton.DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+					headerButtonsList.Add (whichMenu.menuButton);
+				}
+			}
+		}
+	}
+
 	IEnumerator ShowUnderButtons (MenuComponent whichMenu, int contentIndex)
 	{
 		//Wait delay
@@ -530,58 +549,6 @@ public class MenuManager : Singleton <MenuManager>
 			yield return new WaitForSeconds (durationToShow + whichMenu.secondaryContents [whichMenu.secondaryContents.Count - 1].delay);
 		else
 			yield break;
-	}
-		
-	void HidePreviousHeader (MenuComponent whichMenu, int submitButton, int delay)
-	{
-		//Hide Previous Header Button
-		if(hidePreviousHeaderButton)
-		{
-			if(headerButtonsList.Count > 0)
-			{
-				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (offScreenX, durationToHide).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-				headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
-			}
-
-			if(whichMenu.aboveMenuScript && whichMenu.aboveMenuScript.scrollViewButtons)
-				whichMenu.underMenusButtons [submitButton].transform.SetParent (whichMenu.aboveMenuScript.transform);
-		}
-	}
-
-	void ShowPreviousHeader (MenuComponent whichMenu, int cancelButton)
-	{
-		//Enable Previous Header
-		Enable (whichMenu.aboveMenuScript.underMenusButtons [cancelButton]);
-		SetInteractable (whichMenu.aboveMenuScript.underMenusButtons [cancelButton], durationToShow);
-
-		//Show Previous Header Button
-		if(hidePreviousHeaderButton)
-		{
-			if(whichMenu.aboveMenuScript.menuButton != null)
-			{
-				whichMenu.aboveMenuScript.menuButton.DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (0).SetEase (easeMenu).SetId ("Menu");
-				headerButtonsList.Add (whichMenu.aboveMenuScript.menuButton);
-			}
-
-			if(whichMenu.aboveMenuScript.scrollViewButtons)
-			{
-				whichMenu.underMenusButtons [cancelButton].SetParent (whichMenu.underMenusButtons [cancelButton].GetComponent<MenuButtonComponent> ().menuComponentParent.transform);
-				whichMenu.underMenusButtons [cancelButton].SetAsFirstSibling ();
-			}
-		}
-	}
-
-	IEnumerator PlaceHeaderButton ()
-	{
-		yield break;
-
-		/*Enable (whichMenu.underMenusButtons [i]);
-		SetInteractable (whichMenu.underMenusButtons [i], durationToShow + ButtonsDelay (underDelay));
-
-		if(whichMenu.underMenusButtonsPositions.Count > 0)
-			whichMenu.underMenusButtons [i].DOAnchorPos (whichMenu.underMenusButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
-		else
-			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");*/
 	}
 	#endregion
 
@@ -662,23 +629,8 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		//Hide Previous Header Button
-		if(hidePreviousHeaderButton)
-		{
-			if(headerButtonsList.Count > 0)
-			{
-				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (offScreenX, durationToHide).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-				headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
-			}
-
-			/*if(whichMenu.aboveMenuScript && whichMenu.aboveMenuScript.viewportContent)
-				whichMenu.underMenusButtons [submitButton].transform.SetParent (whichMenu.aboveMenuScript.transform);*/
-		}
-
-		//Place Submit Button as Header
-		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
-		Tween tween = whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton])).SetId ("Menu");
-
+		HidePreviousHeader (delay);
+		Tween tween = PlaceCurrentHeader (whichMenu, submitButton, delay);
 
 		//Wait
 		if(contentIndex == 0 || whichMenu.contentDisplay [contentIndex].waitPreviousContent)
@@ -687,6 +639,47 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
+	void HidePreviousHeader (int delay)
+	{
+		//Hide Previous Header Button
+		if(hidePreviousHeaderButton)
+		{
+			if(headerButtonsList.Count > 0)
+			{
+				Disable (headerButtonsList [headerButtonsList.Count - 1], durationToHide + ButtonsDelay (delay));
+				SetNonInteractable (headerButtonsList [headerButtonsList.Count - 1]);
+
+				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (offScreenX, durationToHide).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
+			}
+		}
+	}
+
+	Tween PlaceCurrentHeader (MenuComponent whichMenu, int submitButton, int delay)
+	{
+		//Get Cancel Button Out Of ScrollView
+		if (whichMenu.scrollViewButtons)
+			StartCoroutine (DisableViewScroll (whichMenu, durationToShow + ButtonsDelay (delay) * 0.5f));
+
+		//Place Submit Button as Header
+		Enable (whichMenu.underMenusButtons [submitButton]);
+		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
+
+		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(onScreenX, HeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, durationToShow)
+			.SetDelay (ButtonsDelay (delay))
+			.SetEase (easeMenu)
+			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
+			.SetId ("Menu");
+	}
+
+	IEnumerator DisableViewScroll (MenuComponent whichMenu, float delay)
+	{
+		yield return new WaitForSeconds (delay);
+
+		if (whichMenu.scrollViewButtons)
+			whichMenu.menusParent.GetComponent<Image> ().enabled = false;
+	}
+		
 	IEnumerator HideUnderMenusSolo (MenuComponent whichMenu, int contentIndex)
 	{
 		//Wait delay

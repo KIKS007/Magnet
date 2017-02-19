@@ -34,7 +34,6 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	void Awake () 
 	{
 		button = GetComponent<Button> ();
-		menuComponentParent = transform.parent.GetComponent<MenuComponent> ();
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 	}
 
