@@ -86,7 +86,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 			menuComponentParent.Submit (buttonIndex);
 
-			if(menuComponentParent.menuComponentType != MenuComponentType.MainMenu || menuComponentParent.menuComponentType != MenuComponentType.EndMode)
+			if(menuComponentParent.menuComponentType != MenuComponentType.MainMenu || menuComponentParent.menuComponentType != MenuComponentType.EndModeMenu)
 				menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 			if(menuButtonType == MenuButtonType.StartMode)
@@ -101,7 +101,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		if (MenuManager.Instance.isTweening)
 			return;
 
-		if(menuComponentParent.menuComponentType != MenuComponentType.MainMenu || menuComponentParent.menuComponentType != MenuComponentType.EndMode)
+		if(menuComponentParent.menuComponentType != MenuComponentType.MainMenu || menuComponentParent.menuComponentType != MenuComponentType.EndModeMenu)
 			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 		if(showOnSelect)

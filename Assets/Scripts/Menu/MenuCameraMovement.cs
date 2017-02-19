@@ -149,13 +149,13 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator HideLogo ()
 	{
-		menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
 	public IEnumerator ShowLogo ()
 	{
-		menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
