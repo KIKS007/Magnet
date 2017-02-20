@@ -11,7 +11,9 @@ public enum MenuContentType { Menus, Buttons, MainContent, SecondaryContent };
 public class MenuComponent : MonoBehaviour 
 {
 	public MenuComponentType menuComponentType;
+	[HideInInspector]
 	public bool scrollViewButtons = false;
+	[HideInInspector]
 	public bool scrollViewContent = false;
 
 	[Header ("Content Order")]
@@ -28,6 +30,20 @@ public class MenuComponent : MonoBehaviour
 	[Header ("End Mode Content List")]
 	public RectTransform[] endModeContents = new RectTransform[0];
 
+	[Header ("Override Properties")]
+	public bool overrideMenuPos = false;
+	public float menuOffScreenX = -2000;
+	public float menuOnScreenX = -650;
+
+	public bool overrideButtonPos = false;
+	public float buttonOffScreenX = -2000;
+	public float buttonOnScreenX = -650;
+
+	public bool overrideContentPos = false;
+	public Vector2 offScreenContent = new Vector2 (-2000, 0);
+	public Vector2 onScreenContent = new Vector2 (0, 0);
+
+
 	public RectTransform menuButton;
 	[HideInInspector]
 	public MenuComponent aboveMenuScript;
@@ -40,7 +56,9 @@ public class MenuComponent : MonoBehaviour
 	[HideInInspector]
 	public RectTransform mainContent;
 
+	[HideInInspector]
 	public List<Vector2> underMenusButtonsPositions;
+	[HideInInspector]
 	public List<Vector2> underButtonsPositions;
 
 	[HideInInspector]
@@ -161,19 +179,19 @@ public class MenuComponent : MonoBehaviour
 	{
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
-			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, menuButton.anchoredPosition.y);
+			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, menuButton.anchoredPosition.y);
 		
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
-			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.offScreenX, MenuManager.Instance.ButtonsYPos (i));
+			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.ButtonsYPos (i));
 
 		//UNDER BUTTONS
 		for (int i = 0; i < underButtons.Count; i++)
-			underButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.offScreenX, MenuManager.Instance.ButtonsYPos (i));
+			underButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.ButtonsYPos (i));
 
 		//CONTENT
 		if(mainContent != null)
-			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenX, mainContent.anchoredPosition.y);
+			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, mainContent.anchoredPosition.y);
 
 		//SECONDARY CONTENT
 		if (secondaryContents.Count > 0)
@@ -461,6 +479,8 @@ public class SecondaryContent
 	public Vector2 onScreenPos;
 	public Vector2 offScreenPos;
 	public float delay = 0;
+	public bool hideOnCancel = true;
+	public bool showOnSubmit = true;
 }
 
 [Serializable]

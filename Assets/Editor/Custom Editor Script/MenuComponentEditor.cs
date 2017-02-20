@@ -1,4 +1,4 @@
-﻿/*using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
@@ -8,57 +8,51 @@ public class MenuComponentEditor : Editor
 {
 	SerializedProperty menuComponentType;
 
-	SerializedProperty viewportContent;
+	SerializedProperty contentDisplay;
 
-	SerializedProperty aboveMenuScript;
-
-	SerializedProperty otherMenuList;
-	SerializedProperty otherButtonsList;
-
-	SerializedProperty underMenuList;
-	SerializedProperty underButtonsList;
-
-	SerializedProperty button;
-
-	SerializedProperty content;
+	SerializedProperty secondaryContents;
 
 	SerializedProperty selectable;
 
-	SerializedProperty previousSelected;
+	SerializedProperty endModeContents;
 
-	SerializedProperty secondaryContentList;
+	SerializedProperty overrideMenuPos;
+	SerializedProperty menuOffScreenX;
+	SerializedProperty menuOnScreenX;
 
-	SerializedProperty endModeContentList;
+	SerializedProperty overrideButtonPos;
+	SerializedProperty buttonOffScreenX;
+	SerializedProperty buttonOnScreenX;
 
-	//SerializedProperty underButtonsPositionsList;
+	SerializedProperty overrideContentPos;
+	SerializedProperty offScreenContent;
+	SerializedProperty onScreenContent;
 
 	void OnEnable ()
 	{
 		menuComponentType = serializedObject.FindProperty ("menuComponentType");
 
-		viewportContent = serializedObject.FindProperty ("viewportContent");
+		contentDisplay = serializedObject.FindProperty ("contentDisplay");
 
-		aboveMenuScript = serializedObject.FindProperty ("aboveMenuScript");
-
-		otherMenuList = serializedObject.FindProperty ("otherMenuList");
-		otherButtonsList = serializedObject.FindProperty ("otherButtonsList");
-
-		underMenuList = serializedObject.FindProperty ("underMenuList");
-		underButtonsList = serializedObject.FindProperty ("underButtonsList");
-
-		button = serializedObject.FindProperty ("button");
-
-		content = serializedObject.FindProperty ("content");
+		secondaryContents = serializedObject.FindProperty ("secondaryContents");
 
 		selectable = serializedObject.FindProperty ("selectable");
 
-		previousSelected = serializedObject.FindProperty ("previousSelected");
+		endModeContents = serializedObject.FindProperty ("endModeContents");
 
-		secondaryContentList = serializedObject.FindProperty ("secondaryContentList");
 
-		endModeContentList = serializedObject.FindProperty ("endModeContentList");
+		overrideMenuPos = serializedObject.FindProperty ("overrideMenuPos");
+		menuOffScreenX = serializedObject.FindProperty ("menuOffScreenX");
+		menuOnScreenX = serializedObject.FindProperty ("menuOnScreenX");
 
-		//underButtonsPositionsList = serializedObject.FindProperty ("underButtonsPositionsList");
+		overrideButtonPos = serializedObject.FindProperty ("overrideButtonPos");
+		buttonOffScreenX = serializedObject.FindProperty ("buttonOffScreenX");
+		buttonOnScreenX = serializedObject.FindProperty ("buttonOnScreenX");
+
+		overrideContentPos = serializedObject.FindProperty ("overrideContentPos");
+		offScreenContent = serializedObject.FindProperty ("offScreenContent");
+		onScreenContent = serializedObject.FindProperty ("onScreenContent");
+
 	}
 	
 	public override void OnInspectorGUI ()
@@ -69,53 +63,43 @@ public class MenuComponentEditor : Editor
 
 		EditorGUILayout.PropertyField (menuComponentType, true);
 
-		EditorGUILayout.PropertyField (viewportContent, true);
+		EditorGUILayout.PropertyField (contentDisplay, true);
 
-		if(menuComponentType.enumValueIndex != (int)MenuComponentType.EndMode)
-		{
-			if(menuComponentType.enumValueIndex != (int)MenuComponentType.MainMenu)
-			{
-				EditorGUILayout.PropertyField (aboveMenuScript, true);
-				
-				EditorGUILayout.PropertyField (button, true);
-				
-				EditorGUILayout.PropertyField (otherMenuList, true);
-				EditorGUILayout.PropertyField (otherButtonsList, true);		
-			}
-			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.ButtonsList || menuComponentType.enumValueIndex == (int)MenuComponentType.MainMenu)
-			{
-				EditorGUILayout.PropertyField (underMenuList, true);
-				EditorGUILayout.PropertyField (underButtonsList, true);
-			}
-			
-			if(menuComponentType.enumValueIndex == (int)MenuComponentType.Content || viewportContent.boolValue == true)
-			{
-				EditorGUILayout.PropertyField (content, true);			
-			}
-			
-		}
-
-		EditorGUILayout.Space ();			
+		EditorGUILayout.PropertyField (secondaryContents, true);
 
 		EditorGUILayout.PropertyField (selectable, true);
-		EditorGUILayout.PropertyField (previousSelected, true);
 
+		if(menuComponentType.enumValueIndex == (int)MenuComponentType.EndModeMenu)
+			EditorGUILayout.PropertyField (endModeContents, true);			
 
-		EditorGUILayout.Space ();
-	
-		EditorGUILayout.PropertyField (secondaryContentList, true);
+		EditorGUILayout.PropertyField (overrideMenuPos, true);
 
-		EditorGUILayout.Space ();
-		
-		if(menuComponentType.enumValueIndex == (int)MenuComponentType.EndMode)
+		if(overrideMenuPos.boolValue == true)
 		{
-			EditorGUILayout.PropertyField (endModeContentList, true);			
+			EditorGUILayout.PropertyField (menuOffScreenX, true);
+			EditorGUILayout.PropertyField (menuOnScreenX, true);
 		}
 
-		//EditorGUILayout.PropertyField (underButtonsPositionsList, true);
+			EditorGUILayout.Space ();
+		
+		EditorGUILayout.PropertyField (overrideButtonPos, true);
 
+		if(overrideButtonPos.boolValue == true)
+		{
+			EditorGUILayout.PropertyField (buttonOffScreenX, true);
+			EditorGUILayout.PropertyField (buttonOnScreenX, true);
+		}
+
+			EditorGUILayout.Space ();
+
+		EditorGUILayout.PropertyField (overrideContentPos, true);
+
+		if(overrideContentPos.boolValue == true)
+		{
+			EditorGUILayout.PropertyField (offScreenContent, true);
+			EditorGUILayout.PropertyField (onScreenContent, true);
+		}
+			
 		serializedObject.ApplyModifiedProperties ();
 	}
 }
-*/
