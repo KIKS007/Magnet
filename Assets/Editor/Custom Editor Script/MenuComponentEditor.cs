@@ -28,6 +28,27 @@ public class MenuComponentEditor : Editor
 	SerializedProperty offScreenContent;
 	SerializedProperty onScreenContent;
 
+
+	SerializedProperty overrideHeaderPos;
+	SerializedProperty menuHeaderY;
+	SerializedProperty menuFirstButtonY;
+	SerializedProperty buttonFirstButtonY;
+
+	SerializedProperty overrideMenuDisplay;
+	SerializedProperty showMenuOnSubmit;
+	SerializedProperty hideMenuOnCancel;
+	SerializedProperty hideMenuOnUnderSubmit;
+
+	SerializedProperty overrideButtonsDisplay;
+	SerializedProperty showButtonsOnSubmit;
+	SerializedProperty hideButtonsOnCancel;
+	SerializedProperty hideButtonsOnUnderSubmit;
+
+	SerializedProperty overrideContentDisplay;
+	SerializedProperty showContentOnSubmit;
+	SerializedProperty hideContentOnCancel;
+	SerializedProperty hideContentOnUnderSubmit;
+
 	void OnEnable ()
 	{
 		menuComponentType = serializedObject.FindProperty ("menuComponentType");
@@ -39,6 +60,12 @@ public class MenuComponentEditor : Editor
 		selectable = serializedObject.FindProperty ("selectable");
 
 		endModeContents = serializedObject.FindProperty ("endModeContents");
+
+
+		overrideHeaderPos = serializedObject.FindProperty ("overrideHeaderPos");
+		menuHeaderY = serializedObject.FindProperty ("menuHeaderY");
+		menuFirstButtonY = serializedObject.FindProperty ("menuFirstButtonY");
+		buttonFirstButtonY = serializedObject.FindProperty ("buttonFirstButtonY");
 
 
 		overrideMenuPos = serializedObject.FindProperty ("overrideMenuPos");
@@ -53,11 +80,27 @@ public class MenuComponentEditor : Editor
 		offScreenContent = serializedObject.FindProperty ("offScreenContent");
 		onScreenContent = serializedObject.FindProperty ("onScreenContent");
 
+
+		overrideMenuDisplay = serializedObject.FindProperty ("overrideMenuDisplay");
+		showMenuOnSubmit = serializedObject.FindProperty ("showMenuOnSubmit");
+		hideMenuOnCancel = serializedObject.FindProperty ("hideMenuOnCancel");
+		hideMenuOnUnderSubmit = serializedObject.FindProperty ("hideMenuOnUnderSubmit");
+
+		overrideButtonsDisplay = serializedObject.FindProperty ("overrideButtonsDisplay");
+		showButtonsOnSubmit = serializedObject.FindProperty ("showButtonsOnSubmit");
+		hideButtonsOnCancel = serializedObject.FindProperty ("hideButtonsOnCancel");
+		hideButtonsOnUnderSubmit = serializedObject.FindProperty ("hideButtonsOnUnderSubmit");
+
+		overrideContentDisplay = serializedObject.FindProperty ("overrideContentDisplay");
+		showContentOnSubmit = serializedObject.FindProperty ("showContentOnSubmit");
+		hideContentOnCancel = serializedObject.FindProperty ("hideContentOnCancel");
+		hideContentOnUnderSubmit = serializedObject.FindProperty ("hideContentOnUnderSubmit");
 	}
 	
 	public override void OnInspectorGUI ()
 	{
 		serializedObject.Update ();
+
 
 		EditorGUILayout.Space ();
 
@@ -72,32 +115,90 @@ public class MenuComponentEditor : Editor
 		if(menuComponentType.enumValueIndex == (int)MenuComponentType.EndModeMenu)
 			EditorGUILayout.PropertyField (endModeContents, true);			
 
+		EditorGUILayout.PropertyField (overrideHeaderPos, true);
+
+		if(overrideHeaderPos.boolValue == true)
+		{
+			EditorGUI.indentLevel = 1;
+			EditorGUILayout.PropertyField (menuHeaderY, true);
+			EditorGUILayout.PropertyField (menuFirstButtonY, true);
+			EditorGUILayout.PropertyField (buttonFirstButtonY, true);
+			EditorGUI.indentLevel = 0;
+		}
+
+		EditorGUILayout.Space ();
+
 		EditorGUILayout.PropertyField (overrideMenuPos, true);
 
 		if(overrideMenuPos.boolValue == true)
 		{
+			EditorGUI.indentLevel = 1;
 			EditorGUILayout.PropertyField (menuOffScreenX, true);
 			EditorGUILayout.PropertyField (menuOnScreenX, true);
+			EditorGUI.indentLevel = 0;
 		}
 
-			EditorGUILayout.Space ();
+		EditorGUILayout.Space ();
 		
 		EditorGUILayout.PropertyField (overrideButtonPos, true);
 
 		if(overrideButtonPos.boolValue == true)
 		{
+			EditorGUI.indentLevel = 1;
 			EditorGUILayout.PropertyField (buttonOffScreenX, true);
 			EditorGUILayout.PropertyField (buttonOnScreenX, true);
+			EditorGUI.indentLevel = 0;
 		}
 
-			EditorGUILayout.Space ();
+		EditorGUILayout.Space ();
 
 		EditorGUILayout.PropertyField (overrideContentPos, true);
 
 		if(overrideContentPos.boolValue == true)
 		{
+			EditorGUI.indentLevel = 1;
 			EditorGUILayout.PropertyField (offScreenContent, true);
 			EditorGUILayout.PropertyField (onScreenContent, true);
+			EditorGUI.indentLevel = 0;
+		}
+
+		EditorGUILayout.Space ();
+
+		EditorGUILayout.PropertyField (overrideMenuDisplay, true);
+
+		if(overrideMenuDisplay.boolValue == true)
+		{
+			EditorGUI.indentLevel = 1;
+			EditorGUILayout.PropertyField (showMenuOnSubmit, true);
+			EditorGUILayout.PropertyField (hideMenuOnCancel, true);
+			EditorGUILayout.PropertyField (hideMenuOnUnderSubmit, true);
+			EditorGUI.indentLevel = 0;
+		}
+
+		EditorGUILayout.Space ();
+
+		EditorGUILayout.PropertyField (overrideButtonsDisplay, true);
+
+		if(overrideButtonsDisplay.boolValue == true)
+		{
+			EditorGUI.indentLevel = 1;
+			EditorGUILayout.PropertyField (showButtonsOnSubmit, true);
+			EditorGUILayout.PropertyField (hideButtonsOnCancel, true);
+			EditorGUILayout.PropertyField (hideButtonsOnUnderSubmit, true);
+			EditorGUI.indentLevel = 0;
+		}
+
+		EditorGUILayout.Space ();
+
+		EditorGUILayout.PropertyField (overrideContentDisplay, true);
+
+		if(overrideContentDisplay.boolValue == true)
+		{
+			EditorGUI.indentLevel = 1;
+			EditorGUILayout.PropertyField (showContentOnSubmit, true);
+			EditorGUILayout.PropertyField (hideContentOnCancel, true);
+			EditorGUILayout.PropertyField (hideContentOnUnderSubmit, true);
+			EditorGUI.indentLevel = 0;
 		}
 			
 		serializedObject.ApplyModifiedProperties ();

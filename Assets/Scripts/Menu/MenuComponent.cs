@@ -30,7 +30,13 @@ public class MenuComponent : MonoBehaviour
 	[Header ("End Mode Content List")]
 	public RectTransform[] endModeContents = new RectTransform[0];
 
-	[Header ("Override Properties")]
+	[Header ("Override Headers Properties")]
+	public bool overrideHeaderPos = false;
+	public float menuHeaderY = 540;
+	public float menuFirstButtonY = 278;
+	public float buttonFirstButtonY = 278;
+
+	[Header ("Override Positions Properties")]
 	public bool overrideMenuPos = false;
 	public float menuOffScreenX = -2000;
 	public float menuOnScreenX = -650;
@@ -43,6 +49,21 @@ public class MenuComponent : MonoBehaviour
 	public Vector2 offScreenContent = new Vector2 (-2000, 0);
 	public Vector2 onScreenContent = new Vector2 (0, 0);
 
+	[Header ("Override Display Properties")]
+	public bool overrideMenuDisplay = false;
+	public bool showMenuOnSubmit = true;
+	public bool hideMenuOnCancel = true;
+	public bool hideMenuOnUnderSubmit = true;
+
+	public bool overrideButtonsDisplay = false;
+	public bool showButtonsOnSubmit = true;
+	public bool hideButtonsOnCancel = true;
+	public bool hideButtonsOnUnderSubmit = true;
+
+	public bool overrideContentDisplay = false;
+	public bool showContentOnSubmit = true;
+	public bool hideContentOnCancel = true;
+	public bool hideContentOnUnderSubmit = true;
 
 	public RectTransform menuButton;
 	[HideInInspector]
@@ -144,7 +165,24 @@ public class MenuComponent : MonoBehaviour
 			
 			mainContent = transform.Find ("MainContent").GetComponent<RectTransform> ();
 		}
-		
+
+		//SECONDARY CONTENT
+		bool sorted = false;
+
+		do
+		{
+			sorted = true;
+
+			for (int i = 0; i < secondaryContents.Count; i++)
+				if(secondaryContents [i].content == null)
+				{
+					secondaryContents.RemoveAt (i);
+					sorted = false;
+				}
+		}
+		while (!sorted);
+
+
 		HideAll ();
 
 		DisableAll ();
@@ -183,11 +221,11 @@ public class MenuComponent : MonoBehaviour
 		
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
-			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.ButtonsYPos (i));
+			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
 
 		//UNDER BUTTONS
 		for (int i = 0; i < underButtons.Count; i++)
-			underButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.ButtonsYPos (i));
+			underButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
 
 		//CONTENT
 		if(mainContent != null)
@@ -479,8 +517,9 @@ public class SecondaryContent
 	public Vector2 onScreenPos;
 	public Vector2 offScreenPos;
 	public float delay = 0;
-	public bool hideOnCancel = true;
 	public bool showOnSubmit = true;
+	public bool hideOnCancel = true;
+	public bool hideOnUnderSubmit = true;
 }
 
 [Serializable]

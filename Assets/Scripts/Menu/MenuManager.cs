@@ -46,14 +46,15 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Header Buttons")]
 	public bool hidePreviousHeaderButton;
-	public float headerButtonsYPosition = 540;
+	public float menuHeaderY = 540;
 	public List<RectTransform> headerButtonsList;
 
 	[Header ("MainMenu Buttons Positions")]
 	public float mainMenuFirstButtonY = 100;
 	
 	[Header ("Buttons Positions")]
-	public float firstButtonY = 100;
+	public float menuFirstButtonY = 278;
+	public float buttonFirstButtonY = 278;
 	public float gapBetweenButtons = 131;
 
 	[Header ("Selectable")]
@@ -89,6 +90,17 @@ public class MenuManager : Singleton <MenuManager>
 
 	private bool startScreen = true;
 
+	private float initialMenuHeaderY;
+	private float initialMenuFirstButtonY;
+	private float initialButtonFirstButtonY;
+
+	private float initialMenuOffScreenX;
+	private float initialMenuOnScreenX;
+	private float initialButtonOffScreenX;
+	private float initialButtonOnScreenX;
+	private Vector2 initialOffScreenContent;
+	private Vector2 initialOnScreenContent;
+
 	#endregion
 
 	#region Setup
@@ -110,6 +122,8 @@ public class MenuManager : Singleton <MenuManager>
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
+		SetupInitialSettings ();
+
 		for (int i = 0; i < elementsToEnable.Count; i++)
 			elementsToEnable [i].SetActive (true);
 	}
@@ -120,7 +134,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		cameraMovement.StartCoroutine ("StartScreen");
 
-		StartCoroutine (ShowMainMenuSolo ());
+		ShowMenu (mainMenuScript);
 		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
 
 		startScreen = false;
@@ -243,7 +257,13 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
-	#region Main Menu		
+	#region Main Menu
+
+	void ShowMainMenu ()
+	{
+		
+	}
+
 	IEnumerator ShowMainMenu (int cancelButton = -1)
 	{
 		currentMenu = mainMenuScript;
@@ -305,24 +325,14 @@ public class MenuManager : Singleton <MenuManager>
 		//Select First Under Menu Button
 		SelectPreviousElement (mainMenuScript); 
 	}
-
-	public void HideMainMenu ()
-	{
-		StartCoroutine (HideMenuCoroutine (mainMenuScript));
-
-		cameraMovement.StartCoroutine ("HideLogo");
-
-		currentMenu = null;
-	}
 	#endregion		
 
 	#region Submit Methods
 	public void ShowMenu (MenuComponent whichMenu)
 	{
-		if(whichMenu.menuComponentType == MenuComponentType.MainMenu)
-			StartCoroutine (ShowMainMenu ());
-		else
-			StartCoroutine (ShowMenuCoroutine (whichMenu));
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
+		StartCoroutine (ShowMenuCoroutine (whichMenu));
+		ResetOverrideSettings (WhichOverrideSettings.All);
 	}
 
 	public void SubmitMenu (MenuComponent whichMenu, int submitButton)
@@ -334,8 +344,17 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		menuTweening = true;
 		PlaySubmitSound ();
+
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.HeaderPos);
+		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.MenuPos | WhichOverrideSettings.ButtonPos | WhichOverrideSettings.ContentPos);
 		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript, submitButton));
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
+
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
 		yield return StartCoroutine (ShowMenuCoroutine (whichMenu));
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
 		menuTweening = false;
 	}
 
@@ -388,7 +407,7 @@ public class MenuManager : Singleton <MenuManager>
 				if(whichMenu.underMenusButtonsPositions.Count > 0)
 					whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, whichMenu.underMenusButtonsPositions [i].y);
 				else
-					whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
+					whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
 			}
 
 			Enable (whichMenu.underMenusButtons [i]);
@@ -397,7 +416,7 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underMenusButtonsPositions.Count > 0)
 				whichMenu.underMenusButtons [i].DOAnchorPos (whichMenu.underMenusButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			else
-				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 			if (i == cancelButton)
 				StartCoroutine (EnableViewScroll (whichMenu, durationToShow + ButtonsDelay (delay) * 0.5f));
@@ -431,7 +450,7 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underMenusButtonsPositions.Count > 0)
 				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, whichMenu.underMenusButtonsPositions [i].y);
 			else
-				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
+				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
 
 			Enable (whichMenu.underMenusButtons [i]);
 			SetInteractable (whichMenu.underMenusButtons [i], durationToShow + ButtonsDelay (delay));
@@ -439,7 +458,7 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underMenusButtonsPositions.Count > 0)
 				whichMenu.underMenusButtons [i].DOAnchorPos (whichMenu.underMenusButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			else
-				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 			delay++;
 		}
@@ -471,7 +490,7 @@ public class MenuManager : Singleton <MenuManager>
 			{
 				if(whichMenu.menuButton != null)
 				{
-					whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, HeaderButtonPosition ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+					whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 					headerButtonsList.Add (whichMenu.menuButton);
 				}
 			}
@@ -489,7 +508,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		for(int i = whichMenu.underButtons.Count - 1; i >= 0; i--)
 		{
-			whichMenu.underButtons [i].anchoredPosition = new Vector2 (buttonOffScreenX, ButtonsYPos (i) + GapAfterHeaderButton ());
+			whichMenu.underButtons [i].anchoredPosition = new Vector2 (buttonOffScreenX, ButtonYPos (i) + GapAfterHeaderButton ());
 
 			Enable (whichMenu.underButtons [i]);
 			SetInteractable (whichMenu.underButtons [i], durationToShow + ButtonsDelay (underDelay));
@@ -497,7 +516,7 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.underButtonsPositions.Count > 0)
 				whichMenu.underButtons [i].DOAnchorPos (whichMenu.underButtonsPositions [i], durationToShow).SetDelay (ButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
 			else
-				whichMenu.underButtons [i].DOAnchorPos (new Vector2 (buttonOnScreenX, ButtonsYPos (i) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underButtons [i].DOAnchorPos (new Vector2 (buttonOnScreenX, ButtonYPos (i) + GapAfterHeaderButton ()), durationToShow).SetDelay (ButtonsDelay (underDelay)).SetEase (easeMenu).SetId ("Menu");
 			
 			underDelay++;
 		}
@@ -557,10 +576,9 @@ public class MenuManager : Singleton <MenuManager>
 	#region Cancel Methods
 	public void HideMenu (MenuComponent whichMenu)
 	{
-		if (whichMenu.menuComponentType == MenuComponentType.MainMenu)
-			HideMainMenu ();
-		else
-			StartCoroutine (HideMenuCoroutine (whichMenu));
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
+		StartCoroutine (HideMenuCoroutine (whichMenu));
+		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		currentMenu = null;
 	}
@@ -574,12 +592,15 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		menuTweening = true;
 		PlayReturnSound ();
-		yield return StartCoroutine (HideMenuCoroutine (whichMenu));
 
-		if(whichMenu.aboveMenuScript.menuComponentType == MenuComponentType.MainMenu)
-			yield return StartCoroutine (ShowMainMenu (cancelButton));
-		else
-			yield return StartCoroutine (ShowMenuCoroutine (whichMenu.aboveMenuScript, cancelButton));
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
+		yield return StartCoroutine (HideMenuCoroutine (whichMenu));
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
+		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.All);
+		yield return StartCoroutine (ShowMenuCoroutine (whichMenu.aboveMenuScript, cancelButton));
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
 		menuTweening = false;
 	}
 
@@ -667,7 +688,7 @@ public class MenuManager : Singleton <MenuManager>
 		Enable (whichMenu.underMenusButtons [submitButton]);
 		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
 
-		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, HeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, durationToShow)
+		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, durationToShow)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
 			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
@@ -772,9 +793,93 @@ public class MenuManager : Singleton <MenuManager>
 	#endregion
 
 	#region Other Methods
-	public float HeaderButtonPosition ()
+	public enum WhichOverrideSettings { HeaderPos = 1, MenuPos = 2, ButtonPos = 4, ContentPos = 8, All = 16}
+
+	void SetupInitialSettings ()
 	{
-		return headerButtonsYPosition - gapBetweenButtons * headerButtonsList.Count;
+		initialMenuHeaderY = menuHeaderY;
+		initialMenuFirstButtonY = menuFirstButtonY;
+		initialButtonFirstButtonY = buttonFirstButtonY;
+
+		initialMenuOffScreenX = menuOffScreenX;
+		initialMenuOnScreenX = menuOnScreenX;
+
+		initialButtonOffScreenX = buttonOffScreenX;
+		initialButtonOnScreenX = buttonOnScreenX;
+
+		initialOffScreenContent = offScreenContent;
+		initialOnScreenContent = onScreenContent;
+	}
+
+	void CheckOverrideSettings (MenuComponent whichMenu, WhichOverrideSettings whichSettings)
+	{
+		if((whichSettings & WhichOverrideSettings.HeaderPos) == WhichOverrideSettings.HeaderPos || whichSettings == WhichOverrideSettings.All)
+		{
+			if (!whichMenu.overrideHeaderPos)
+				return;
+
+			menuHeaderY = whichMenu.menuHeaderY;
+			menuFirstButtonY = whichMenu.menuFirstButtonY;
+			buttonFirstButtonY = whichMenu.buttonFirstButtonY;
+		}
+		if((whichSettings & WhichOverrideSettings.MenuPos) == WhichOverrideSettings.MenuPos || whichSettings == WhichOverrideSettings.All)
+		{
+			if (!whichMenu.overrideMenuPos)
+				return;
+
+			menuOffScreenX = whichMenu.menuOffScreenX;
+			menuOnScreenX = whichMenu.menuOnScreenX;
+		}
+		if((whichSettings & WhichOverrideSettings.ButtonPos) == WhichOverrideSettings.ButtonPos || whichSettings == WhichOverrideSettings.All)
+		{
+			if (!whichMenu.overrideButtonPos)
+				return;
+			
+			buttonOffScreenX = whichMenu.buttonOffScreenX;
+			buttonOnScreenX = whichMenu.buttonOnScreenX;
+		}
+		if((whichSettings & WhichOverrideSettings.ContentPos) == WhichOverrideSettings.ContentPos || whichSettings == WhichOverrideSettings.All)
+		{
+			if (!whichMenu.overrideContentPos)
+				return;
+			
+			offScreenContent = whichMenu.offScreenContent;
+			onScreenContent = whichMenu.onScreenContent;
+		}
+	}
+
+	void ResetOverrideSettings (WhichOverrideSettings whichSettings)
+	{
+		if((whichSettings & WhichOverrideSettings.HeaderPos) == WhichOverrideSettings.HeaderPos || whichSettings == WhichOverrideSettings.All)
+		{
+			menuHeaderY = initialMenuHeaderY;
+			menuFirstButtonY = initialMenuFirstButtonY;
+			buttonFirstButtonY = initialButtonFirstButtonY;
+		}
+		if((whichSettings & WhichOverrideSettings.MenuPos) == WhichOverrideSettings.MenuPos || whichSettings == WhichOverrideSettings.All)
+		{
+			
+			menuOffScreenX = initialMenuOffScreenX;
+			menuOnScreenX = initialMenuOnScreenX;
+		}
+		if((whichSettings & WhichOverrideSettings.ButtonPos) == WhichOverrideSettings.ButtonPos || whichSettings == WhichOverrideSettings.All)
+		{
+			buttonOffScreenX = initialButtonOffScreenX;
+			buttonOnScreenX = initialButtonOnScreenX;
+			
+		}
+		if((whichSettings & WhichOverrideSettings.ContentPos) == WhichOverrideSettings.ContentPos || whichSettings == WhichOverrideSettings.All)
+		{
+			offScreenContent = initialOffScreenContent;
+			onScreenContent = initialOnScreenContent;
+			
+		}
+	}
+
+
+	public float MenuHeaderButtonPosition ()
+	{
+		return menuHeaderY - gapBetweenButtons * headerButtonsList.Count;
 	}
 
 	public float GapAfterHeaderButton ()
@@ -790,9 +895,14 @@ public class MenuManager : Singleton <MenuManager>
 		return buttonsDelay * i;
 	}
 
-	public float ButtonsYPos (int i)
+	public float MenuButtonYPos (int i)
 	{
-		return firstButtonY - (gapBetweenButtons * i);
+		return menuFirstButtonY - (gapBetweenButtons * i);
+	}
+
+	public float ButtonYPos (int i)
+	{
+		return buttonFirstButtonY - (gapBetweenButtons * i);
 	}
 
 	public float MainMenuButtonsYPos (int i)

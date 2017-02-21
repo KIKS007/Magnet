@@ -47,7 +47,7 @@ public class MenuScrollView : MonoBehaviour
 
 		aboveMenu = transform.parent.GetComponent<MenuComponent> ();
 	
-		buttonsCenterYPos = MenuManager.Instance.firstButtonY;
+		buttonsCenterYPos = MenuManager.Instance.menuFirstButtonY;
 
 		MenuManager.Instance.OnMenuChange += CheckScrollEnabled;
 
