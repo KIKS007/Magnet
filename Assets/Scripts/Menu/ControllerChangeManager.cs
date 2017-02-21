@@ -199,6 +199,7 @@ public class ControllerChangeManager : MonoBehaviour
 
 		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
+			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
 			playButton.GetComponent<Button> ().Select (); 
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
@@ -207,7 +208,7 @@ public class ControllerChangeManager : MonoBehaviour
 		if(!CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
 			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu); 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
 		} 
 	} 
 
