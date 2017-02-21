@@ -34,11 +34,6 @@ public class MenuComponentEditor : Editor
 	SerializedProperty menuFirstButtonY;
 	SerializedProperty buttonFirstButtonY;
 
-	SerializedProperty overrideMenuDisplay;
-	SerializedProperty showMenuOnSubmit;
-	SerializedProperty hideMenuOnCancel;
-	SerializedProperty hideMenuOnUnderSubmit;
-
 	SerializedProperty overrideButtonsDisplay;
 	SerializedProperty showButtonsOnSubmit;
 	SerializedProperty hideButtonsOnCancel;
@@ -80,11 +75,6 @@ public class MenuComponentEditor : Editor
 		offScreenContent = serializedObject.FindProperty ("offScreenContent");
 		onScreenContent = serializedObject.FindProperty ("onScreenContent");
 
-
-		overrideMenuDisplay = serializedObject.FindProperty ("overrideMenuDisplay");
-		showMenuOnSubmit = serializedObject.FindProperty ("showMenuOnSubmit");
-		hideMenuOnCancel = serializedObject.FindProperty ("hideMenuOnCancel");
-		hideMenuOnUnderSubmit = serializedObject.FindProperty ("hideMenuOnUnderSubmit");
 
 		overrideButtonsDisplay = serializedObject.FindProperty ("overrideButtonsDisplay");
 		showButtonsOnSubmit = serializedObject.FindProperty ("showButtonsOnSubmit");
@@ -159,19 +149,6 @@ public class MenuComponentEditor : Editor
 			EditorGUI.indentLevel = 1;
 			EditorGUILayout.PropertyField (offScreenContent, true);
 			EditorGUILayout.PropertyField (onScreenContent, true);
-			EditorGUI.indentLevel = 0;
-		}
-
-		EditorGUILayout.Space ();
-
-		EditorGUILayout.PropertyField (overrideMenuDisplay, true);
-
-		if(overrideMenuDisplay.boolValue == true)
-		{
-			EditorGUI.indentLevel = 1;
-			EditorGUILayout.PropertyField (showMenuOnSubmit, true);
-			EditorGUILayout.PropertyField (hideMenuOnCancel, true);
-			EditorGUILayout.PropertyField (hideMenuOnUnderSubmit, true);
 			EditorGUI.indentLevel = 0;
 		}
 

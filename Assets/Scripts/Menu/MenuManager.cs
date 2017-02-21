@@ -122,10 +122,18 @@ public class MenuManager : Singleton <MenuManager>
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
+		SetupLogo ();
+
 		SetupInitialSettings ();
 
 		for (int i = 0; i < elementsToEnable.Count; i++)
 			elementsToEnable [i].SetActive (true);
+	}
+
+	void SetupLogo ()
+	{
+		mainMenuScript.secondaryContents [0].content.gameObject.SetActive (true);
+		mainMenuScript.secondaryContents [0].content.anchoredPosition = mainMenuScript.secondaryContents [0].onScreenPos;
 	}
 		
 	void StartScreen ()
@@ -257,81 +265,11 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
-	#region Main Menu
-
-	void ShowMainMenu ()
-	{
-		
-	}
-
-	IEnumerator ShowMainMenu (int cancelButton = -1)
-	{
-		currentMenu = mainMenuScript;
-
-		int delay = 0;
-
-		//Show Under Menus Buttons
-		for(int i = mainMenuScript.underMenusButtons.Count - 1; i >= 0; i--)
-		{
-			if(i != cancelButton)
-				mainMenuScript.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MainMenuButtonsYPos (i));
-
-			Enable (mainMenuScript.underMenusButtons [i]);
-			SetInteractable (mainMenuScript.underMenusButtons [i], durationToShow + ButtonsDelay (delay));
-
-			mainMenuScript.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MainMenuButtonsYPos (i)), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-
-			delay++;
-		}
-
-		//Remove Current Header From List
-		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
-
-		if(!startScreen)
-			cameraMovement.StartCoroutine ("ShowLogo");
-		
-		//Wait
-		yield return new WaitForSeconds (durationToShow + ButtonsDelay (delay));
-
-		//Select First Under Menu Button
-		SelectPreviousElement (mainMenuScript); 
-	}
-
-	IEnumerator ShowMainMenuSolo ()
-	{
-		currentMenu = mainMenuScript;
-
-		//Show Under Menu Buttons
-		int delay = 0;
-
-		for(int i = mainMenuScript.underMenusButtons.Count - 1; i >= 0; i--)
-		{
-			mainMenuScript.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MainMenuButtonsYPos (i));
-
-			Enable (mainMenuScript.underMenusButtons [i]);
-			SetInteractable (mainMenuScript.underMenusButtons [i], durationToShow + ButtonsDelay (delay));
-
-			mainMenuScript.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MainMenuButtonsYPos (i)), durationToShow).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-
-			delay++;
-		}
-
-		if(!startScreen)
-			cameraMovement.StartCoroutine ("ShowLogo");
-		
-		//Wait
-		yield return new WaitForSeconds (durationToShow + ButtonsDelay (delay));
-
-		//Select First Under Menu Button
-		SelectPreviousElement (mainMenuScript); 
-	}
-	#endregion		
-
 	#region Submit Methods
 	public void ShowMenu (MenuComponent whichMenu)
 	{
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		StartCoroutine (ShowMenuCoroutine (whichMenu));
+		StartCoroutine (ShowMenuCoroutine (whichMenu, false));
 		ResetOverrideSettings (WhichOverrideSettings.All);
 	}
 
@@ -347,19 +285,22 @@ public class MenuManager : Singleton <MenuManager>
 
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.HeaderPos);
 		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.MenuPos | WhichOverrideSettings.ButtonPos | WhichOverrideSettings.ContentPos);
-		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript, submitButton));
+
+		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript, true, submitButton));
+
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
-
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		yield return StartCoroutine (ShowMenuCoroutine (whichMenu));
+
+		yield return StartCoroutine (ShowMenuCoroutine (whichMenu, false));
+
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		menuTweening = false;
 	}
 
 
-	IEnumerator ShowMenuCoroutine (MenuComponent whichMenu, int cancelButton = -1)
+	IEnumerator ShowMenuCoroutine (MenuComponent whichMenu, bool cancel, int cancelButton = -1)
 	{
 		currentMenu = whichMenu;
 
@@ -369,18 +310,18 @@ public class MenuManager : Singleton <MenuManager>
 			{
 			case MenuContentType.Menus:
 				if(cancelButton != -1)
-					yield return StartCoroutine (ShowUnderMenus (whichMenu, i, cancelButton));
+					yield return StartCoroutine (ShowUnderMenus (whichMenu, cancel, i, cancelButton));
 				else
-					yield return StartCoroutine (ShowUnderMenusSolo (whichMenu, i));
+					yield return StartCoroutine (ShowUnderMenusSolo (whichMenu, cancel, i));
 				break;
 			case MenuContentType.Buttons:
-				yield return StartCoroutine (ShowUnderButtons (whichMenu, i));
+				yield return StartCoroutine (ShowUnderButtons (whichMenu, cancel, i));
 				break;
 			case MenuContentType.MainContent:
-				yield return StartCoroutine (ShowMainContent (whichMenu, i));
+				yield return StartCoroutine (ShowMainContent (whichMenu, cancel, i));
 				break;
 			case MenuContentType.SecondaryContent:
-				yield return StartCoroutine (ShowSecondaryContent (whichMenu, i));
+				yield return StartCoroutine (ShowSecondaryContent (whichMenu, cancel, i));
 				break;
 			}
 		}
@@ -390,7 +331,7 @@ public class MenuManager : Singleton <MenuManager>
 	}
 
 
-	IEnumerator ShowUnderMenus (MenuComponent whichMenu, int contentIndex, int cancelButton = -1)
+	IEnumerator ShowUnderMenus (MenuComponent whichMenu, bool cancel, int contentIndex, int cancelButton = -1)
 	{
 		int delay = 0;
 
@@ -436,7 +377,7 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator ShowUnderMenusSolo (MenuComponent whichMenu, int contentIndex)
+	IEnumerator ShowUnderMenusSolo (MenuComponent whichMenu, bool cancel, int contentIndex)
 	{
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
@@ -497,8 +438,11 @@ public class MenuManager : Singleton <MenuManager>
 		}
 	}
 
-	IEnumerator ShowUnderButtons (MenuComponent whichMenu, int contentIndex)
+	IEnumerator ShowUnderButtons (MenuComponent whichMenu, bool cancel, int contentIndex)
 	{
+		if(whichMenu.overrideButtonsDisplay && !whichMenu.showButtonsOnSubmit)
+			yield break;
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -528,8 +472,11 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator ShowMainContent (MenuComponent whichMenu, int contentIndex)
+	IEnumerator ShowMainContent (MenuComponent whichMenu, bool cancel, int contentIndex)
 	{
+		if(whichMenu.overrideContentDisplay && !whichMenu.showContentOnSubmit)
+			yield break;
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -546,8 +493,10 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator ShowSecondaryContent (MenuComponent whichMenu, int contentIndex)
+	IEnumerator ShowSecondaryContent (MenuComponent whichMenu, bool cancel, int contentIndex)
 	{
+		float waitDelay = 0;
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -560,6 +509,12 @@ public class MenuManager : Singleton <MenuManager>
 				if(whichMenu.secondaryContents [i].content.anchoredPosition != whichMenu.secondaryContents [i].onScreenPos)
 					whichMenu.secondaryContents [i].content.anchoredPosition = whichMenu.secondaryContents [i].offScreenPos;
 
+				if (!whichMenu.secondaryContents [i].showOnSubmit)
+					break;
+
+				if (whichMenu.secondaryContents [i].delay > waitDelay)
+					waitDelay = whichMenu.secondaryContents [i].delay;
+
 				Enable (whichMenu.secondaryContents [i].content);
 				whichMenu.secondaryContents [i].content.DOAnchorPos (whichMenu.secondaryContents [i].onScreenPos, durationToShow).SetDelay (whichMenu.secondaryContents [i].delay).SetEase (easeMenu).SetId ("Menu");
 			}			
@@ -567,7 +522,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		//Wait
 		if(contentIndex == whichMenu.contentDisplay.Count - 1 || whichMenu.contentDisplay [contentIndex + 1].waitPreviousContent)
-			yield return new WaitForSeconds (durationToShow + whichMenu.secondaryContents [whichMenu.secondaryContents.Count - 1].delay);
+			yield return new WaitForSeconds (durationToShow + waitDelay);
 		else
 			yield break;
 	}
@@ -577,7 +532,7 @@ public class MenuManager : Singleton <MenuManager>
 	public void HideMenu (MenuComponent whichMenu)
 	{
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		StartCoroutine (HideMenuCoroutine (whichMenu));
+		StartCoroutine (HideMenuCoroutine (whichMenu, false));
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		currentMenu = null;
@@ -594,18 +549,22 @@ public class MenuManager : Singleton <MenuManager>
 		PlayReturnSound ();
 
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		yield return StartCoroutine (HideMenuCoroutine (whichMenu));
+
+		yield return StartCoroutine (HideMenuCoroutine (whichMenu, false));
+
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.All);
-		yield return StartCoroutine (ShowMenuCoroutine (whichMenu.aboveMenuScript, cancelButton));
+
+		yield return StartCoroutine (ShowMenuCoroutine (whichMenu.aboveMenuScript, true, cancelButton));
+
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		menuTweening = false;
 	}
 
 
-	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1)
+	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, bool submit, int submitButton = -1)
 	{
 		for(int i = whichMenu.contentDisplay.Count - 1; i >= 0; i--)
 		{
@@ -613,25 +572,25 @@ public class MenuManager : Singleton <MenuManager>
 			{
 			case MenuContentType.Menus:
 				if(submitButton != -1)
-					yield return StartCoroutine (HideUnderMenus (whichMenu, i, submitButton));
+					yield return StartCoroutine (HideUnderMenus (whichMenu, submit, i, submitButton));
 				else
-					yield return StartCoroutine (HideUnderMenusSolo (whichMenu, i));
+					yield return StartCoroutine (HideUnderMenusSolo (whichMenu, submit, i));
 				break;
 			case MenuContentType.Buttons:
-				yield return StartCoroutine (HideUnderButton (whichMenu, i));
+				yield return StartCoroutine (HideUnderButtons (whichMenu, submit, i));
 				break;
 			case MenuContentType.MainContent:
-				yield return StartCoroutine (HideMainContent (whichMenu, i));
+				yield return StartCoroutine (HideMainContent (whichMenu, submit, i));
 				break;
 			case MenuContentType.SecondaryContent:
-				yield return StartCoroutine (HideSecondaryContent (whichMenu, i));
+				yield return StartCoroutine (HideSecondaryContent (whichMenu, submit, i));
 				break;
 			}
 		}
 	}
 
 
-	IEnumerator HideUnderMenus (MenuComponent whichMenu, int contentIndex, int submitButton)
+	IEnumerator HideUnderMenus (MenuComponent whichMenu, bool submit, int contentIndex, int submitButton)
 	{
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
@@ -703,7 +662,7 @@ public class MenuManager : Singleton <MenuManager>
 			whichMenu.menusParent.GetComponent<Image> ().enabled = false;
 	}
 		
-	IEnumerator HideUnderMenusSolo (MenuComponent whichMenu, int contentIndex)
+	IEnumerator HideUnderMenusSolo (MenuComponent whichMenu, bool submit, int contentIndex)
 	{
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
@@ -728,8 +687,17 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator HideUnderButton (MenuComponent whichMenu, int contentIndex)
+	IEnumerator HideUnderButtons (MenuComponent whichMenu, bool submit, int contentIndex)
 	{
+		if(whichMenu.overrideButtonsDisplay)
+		{
+			if(submit && !whichMenu.hideButtonsOnUnderSubmit)
+				yield break;
+
+			if(!submit && !whichMenu.hideButtonsOnCancel)
+				yield break;
+		}
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -753,8 +721,17 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator HideMainContent (MenuComponent whichMenu, int contentIndex)
+	IEnumerator HideMainContent (MenuComponent whichMenu, bool submit, int contentIndex)
 	{
+		if(whichMenu.overrideContentDisplay)
+		{
+			if(submit && !whichMenu.hideContentOnUnderSubmit)
+				yield break;
+
+			if(!submit && !whichMenu.hideContentOnCancel)
+				yield break;
+		}
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -768,8 +745,10 @@ public class MenuManager : Singleton <MenuManager>
 			yield break;
 	}
 
-	IEnumerator HideSecondaryContent (MenuComponent whichMenu, int contentIndex)
+	IEnumerator HideSecondaryContent (MenuComponent whichMenu, bool submit, int contentIndex)
 	{
+		float waitDelay = 0;
+
 		//Wait delay
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSeconds (whichMenu.contentDisplay [contentIndex].delay);
@@ -779,14 +758,20 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			for(int i = 0; i < whichMenu.secondaryContents.Count; i++)
 			{
+				if (submit && !whichMenu.secondaryContents [i].hideOnUnderSubmit || !submit && !whichMenu.secondaryContents [i].hideOnCancel)
+					break;
+
+				if (whichMenu.secondaryContents [i].delay > waitDelay)
+					waitDelay = whichMenu.secondaryContents [i].delay;
+
 				Disable (whichMenu.secondaryContents [i].content, durationToHide + whichMenu.secondaryContents [i].delay);
 				whichMenu.secondaryContents [i].content.DOAnchorPos (whichMenu.secondaryContents [i].offScreenPos, durationToHide).SetDelay (whichMenu.secondaryContents [i].delay).SetEase (easeMenu).SetId ("Menu");
 			}			
 		}
-
+	
 		//Wait
 		if(contentIndex == 0 || whichMenu.contentDisplay [contentIndex].waitPreviousContent)
-			yield return new WaitForSeconds (durationToHide + whichMenu.secondaryContents [whichMenu.secondaryContents.Count - 1].delay);
+			yield return new WaitForSeconds (durationToHide + waitDelay);
 		else
 			yield break;
 	}
@@ -1042,7 +1027,7 @@ public class MenuManager : Singleton <MenuManager>
 
 			yield return new WaitForSecondsRealtime(cameraMovement.movementDuration - 0.5f);
 
-			StartCoroutine (ShowMainMenuSolo ());
+			ShowMenu (mainMenuScript);
 		}
 		else
 		{
@@ -1192,7 +1177,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
-		StartCoroutine (ShowMainMenuSolo ());
+		ShowMenu (mainMenuScript);
 	}
 
 	public void RestartInstantly ()

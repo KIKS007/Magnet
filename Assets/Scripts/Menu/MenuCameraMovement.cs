@@ -55,8 +55,7 @@ public class MenuCameraMovement : MonoBehaviour
 		StopPreviousMovement ();
 
 		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
-		menuLogo.DOAnchorPos (logoNewPos, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		menuLogo.DOScale (logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 

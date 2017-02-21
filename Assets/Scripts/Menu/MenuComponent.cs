@@ -50,11 +50,6 @@ public class MenuComponent : MonoBehaviour
 	public Vector2 onScreenContent = new Vector2 (0, 0);
 
 	[Header ("Override Display Properties")]
-	public bool overrideMenuDisplay = false;
-	public bool showMenuOnSubmit = true;
-	public bool hideMenuOnCancel = true;
-	public bool hideMenuOnUnderSubmit = true;
-
 	public bool overrideButtonsDisplay = false;
 	public bool showButtonsOnSubmit = true;
 	public bool hideButtonsOnCancel = true;
@@ -307,28 +302,28 @@ public class MenuComponent : MonoBehaviour
 		if(underMenusButtons.Count > 0)
 		{
 			contentDisplay.Add (new MenuContent ());
-			contentDisplay [0].contentType = MenuContentType.Menus;
+			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.Menus;
 		}
 
 		//UNDER BUTTONS
 		if(underButtons.Count > 0)
 		{
 			contentDisplay.Add (new MenuContent ());
-			contentDisplay [0].contentType = MenuContentType.Buttons;
+			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.Buttons;
 		}
 
 		//CONTENT
 		if(mainContent != null)
 		{
 			contentDisplay.Add (new MenuContent ());
-			contentDisplay [0].contentType = MenuContentType.MainContent;
+			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.MainContent;
 		}
 
 		//SECONDARY CONTENT
 		if(secondaryContents.Count > 0)
 		{
 			contentDisplay.Add (new MenuContent ());
-			contentDisplay [0].contentType = MenuContentType.SecondaryContent;
+			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.SecondaryContent;
 		}
 	}
 
