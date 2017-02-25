@@ -20,6 +20,9 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
+		if (playerScript.rewiredPlayer == null)
+			return;
+		
 		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && other.tag == "Movable")

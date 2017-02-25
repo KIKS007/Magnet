@@ -12,14 +12,14 @@ public class LastManManager : MonoBehaviour
 	[Header ("Cubes Spawn")]
 	public float durationBetweenSpawn = 0.1f;
 
-	private bool gameEndLoopRunning = false;
+	protected bool gameEndLoopRunning = false;
 
-	void Start ()
+	protected virtual void Start ()
 	{
 		StartCoroutine (WaitForBeginning ());
 	}
 
-	IEnumerator WaitForBeginning ()
+	protected virtual IEnumerator WaitForBeginning ()
 	{
 		List<GameObject> allMovables = new List<GameObject>();
 
@@ -46,13 +46,13 @@ public class LastManManager : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			FindPlayers ();
 	}
 
-	void FindPlayers ()
+	protected virtual void FindPlayers ()
 	{
 		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
 		{
@@ -63,14 +63,13 @@ public class LastManManager : MonoBehaviour
 
 		if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
 		{
-			Debug.Log ("End Game : " + GlobalVariables.Instance.NumberOfAlivePlayers + " - Time : " + Time.time.ToString ());
 			gameEndLoopRunning = true;
 
 			StartCoroutine (GameEndDraw ());
 		}
 	}
 
-	IEnumerator GameEnd ()
+	protected virtual IEnumerator GameEnd ()
 	{
 		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 		
@@ -83,24 +82,30 @@ public class LastManManager : MonoBehaviour
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 
-		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
+		if(SceneManager.GetActiveScene().name == "Scene Testing")
 		{
-			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
-
 			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-			if(SceneManager.GetActiveScene().name != "Scene Testing")
-				MenuManager.Instance.endModeMenu.EndMode (whichMode);
+			LoadModeManager.Instance.RestartSceneVoid (false, false);
 		}
-		else
+
+		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
 		{
 			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
 
 			MenuManager.Instance.RestartInstantly ();
 		}
+		else
+		{
+			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		}
 	}
 
-	IEnumerator GameEndDraw ()
+	protected virtual IEnumerator GameEndDraw ()
 	{
 		StatsManager.Instance.Winner(WhichPlayer.Draw);
 
@@ -113,20 +118,26 @@ public class LastManManager : MonoBehaviour
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 
-		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
+		if(SceneManager.GetActiveScene().name == "Scene Testing")
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+
+			LoadModeManager.Instance.RestartSceneVoid (false, false);
+		}
+
+		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
+
+			MenuManager.Instance.RestartInstantly ();
+		}
+		else
 		{
 			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
 			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-			if(SceneManager.GetActiveScene().name != "Scene Testing")
-				MenuManager.Instance.endModeMenu.EndMode (whichMode);
-		}
-		else
-		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
-
-			MenuManager.Instance.RestartInstantly ();
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
 	}
 	

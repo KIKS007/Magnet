@@ -6,10 +6,8 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-public class BombManager : MonoBehaviour 
+public class BombManager : LastManManager 
 {
-	public WhichMode whichMode;
-
 	[Header ("Bomb Settings")]
 	public GameObject bomb;
 	public int playersNumber;
@@ -23,10 +21,8 @@ public class BombManager : MonoBehaviour
 	public Text timerText;
 	public float timer;
 	public string timerClock;
-	public float timeBeforeEndGame = 1;
 
 	private bool firstSpawn = true;
-
 	private bool lastSeconds = false;
 
 	private MovableBomb bombScript;
@@ -35,7 +31,7 @@ public class BombManager : MonoBehaviour
 	private Vector3 textLocalPosition;
 
 	// Use this for initialization
-	void Start () 
+	protected override void Start () 
 	{
 		bomb.gameObject.SetActive(false);
 		bombScript = bomb.GetComponent<MovableBomb> ();
@@ -53,7 +49,7 @@ public class BombManager : MonoBehaviour
 		StartCoroutine (WaitForBeginning ());
 	}
 
-	IEnumerator WaitForBeginning ()
+	protected override IEnumerator WaitForBeginning ()
 	{
 		List<GameObject> allMovables = new List<GameObject>();
 
@@ -112,10 +108,12 @@ public class BombManager : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	protected override void Update () 
 	{
-		if(bomb.activeSelf == true && !lastSeconds && timer < 4)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
+			Debug.Log ("End : " + GlobalVariables.Instance.AlivePlayersList.Count);
+
 			lastSeconds = true;
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
 		}
@@ -226,35 +224,6 @@ public class BombManager : MonoBehaviour
 			
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
 				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
-		}
-	}
-		
-	IEnumerator GameEnd ()
-	{
-		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-			
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-
-		GlobalVariables.Instance.CurrentGamesCount--;
-
-		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
-		{
-			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
-
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
-
-			if(SceneManager.GetActiveScene().name != "Scene Testing")
-				MenuManager.Instance.endModeMenu.EndMode (whichMode);
-		}
-		else
-		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
-
-			MenuManager.Instance.RestartInstantly ();
 		}
 	}
 }

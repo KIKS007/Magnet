@@ -70,6 +70,33 @@ public class GamepadsManager : Singleton<GamepadsManager>
 		SetupPlayersAndControllers ();
 	}
 
+	//Setup Players Controllers 
+	void SetupPlayersAndControllers ()
+	{
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
+		{
+			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
+
+			for(int i = 0; i < 3; i++)
+			{
+				if (gamepadsPluggedAtStart[i])
+					GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
+			}
+		}
+		else
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				if (gamepadsPluggedAtStart[i])
+					GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
+			}			
+		}
+
+		//Enable Possiblity to play alone with one gamepad
+		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
+			GlobalVariables.Instance.PlayersControllerNumber[1] = 1;
+	}
+
 	void Update ()
 	{
 		numberOfGamepads = ReInput.controllers.joystickCount;
@@ -309,33 +336,6 @@ public class GamepadsManager : Singleton<GamepadsManager>
 
 		if (GamepadsChange != null)
 			GamepadsChange ();
-	}
-
-	//Set Players Controllers 
-	void SetupPlayersAndControllers ()
-	{
-		if (SceneManager.GetActiveScene ().name == "Scene Testing")
-		{
-			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
-
-			for(int i = 0; i < 3; i++)
-			{
-				if (gamepadsPluggedAtStart[i])
-					GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
-			}
-		}
-		else
-		{
-			for(int i = 0; i < 4; i++)
-			{
-				if (gamepadsPluggedAtStart[i])
-					GlobalVariables.Instance.PlayersControllerNumber [i] = i + 1;
-			}			
-		}
-
-		//Enable Possiblity to play alone with one gamepad
-		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0)
-			GlobalVariables.Instance.PlayersControllerNumber[0] = 1;
 	}
 }
 

@@ -40,11 +40,17 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		transform.position = startPosition;
 
-		menuLogo.transform.parent.gameObject.SetActive (true);
-		startScreenText.transform.parent.gameObject.SetActive (true);
+		if(menuLogo != null)
+		{
+			menuLogo.transform.parent.gameObject.SetActive (true);
+			startScreenText.transform.parent.gameObject.SetActive (true);
 
-		menuLogo.gameObject.SetActive (true);
-		startScreenText.gameObject.SetActive (true);
+			menuLogo.gameObject.SetActive (true);
+			startScreenText.gameObject.SetActive (true);
+		}
+		else
+			Debug.LogWarning ("No Menu Logo");
+
 
 		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
@@ -54,8 +60,11 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
-		menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(menuLogo != null)
+		{
+			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
+			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		}
 
 		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
@@ -148,13 +157,17 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator HideLogo ()
 	{
-		menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		if(menuLogo != null)
+			menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
 	public IEnumerator ShowLogo ()
 	{
-		menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		if(menuLogo != null)
+			menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 

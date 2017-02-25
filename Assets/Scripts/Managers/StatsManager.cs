@@ -34,7 +34,7 @@ public class StatsManager : Singleton<StatsManager>
 
 	private WhichPlayer previousWinner = WhichPlayer.None;
 
-	void Awake ()
+	void Start ()
 	{
 		GlobalVariables.Instance.OnEndMode += UpdateTotalStats;
 

@@ -5,7 +5,7 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
 
-public enum GameStateEnum {Menu, Playing, Paused, EndMode};
+public enum GameStateEnum {Menu, Playing, Paused, EndMode, Loading};
 
 public enum StartupType {Delayed, Wave, Done};
 
@@ -90,9 +90,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void Awake ()
 	{
-		if(SceneManager.GetActiveScene().name == "Scene Testing")
-			GameState = GameStateEnum.Playing;
-		
 		StartCoroutine (OnEndModeEvent ());
 		StartCoroutine (OnStartModeEvent ());
 		StartCoroutine (OnRestartModeEvent ());
@@ -107,9 +104,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
-
-		LoadModeManager.Instance.OnLevelLoaded += GetPlayers;
-		LoadModeManager.Instance.OnLevelLoaded += SetModePosition;
 	}
 		
 	void Update ()
@@ -123,11 +117,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 	}
 
-	void SetModePosition ()
+	public void LevelWasLoaded (WhichMode levelLoaded, GameStateEnum gameState)
 	{
-		currentModePosition = GameObject.FindGameObjectWithTag ("ModeParent").transform.position;
+		GetPlayers ();
+		SetModePosition ();
 
-		GlobalMethods.Instance.SetLimits ();
+		CurrentModeLoaded = levelLoaded;
+		GameState = gameState;
 	}
 
 	void GetPlayers ()
@@ -136,23 +132,43 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		for(int i = 0; i < players.Length; i++)
 		{
-			if (players [i].GetComponent <PlayersGameplay> ().playerName == PlayerName.Player1)
+			switch (players [i].GetComponent <PlayersGameplay> ().playerName)
+			{
+			case PlayerName.Player1:
 				Players [0] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player2)
+				break;
+			case PlayerName.Player2:
 				Players [1] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player3)
+				break;
+			case PlayerName.Player3:
 				Players [2] = players [i];
-
-			if (players [i].GetComponent <PlayersGameplay>().playerName == PlayerName.Player4)
+				break;
+			case PlayerName.Player4:
 				Players [3] = players [i];
+				break;
+			}
 		}
+
+		if (Players.Length == 0)
+		{
+			Debug.LogWarning ("No Players Found !");
+			return;
+		}
+
+		foreach (GameObject player in Players)
+			player.GetComponent <PlayersGameplay> ().SetupController ();
 
 		StatsManager.Instance.GetPlayersEvents ();
 
 		SetPlayersControllerNumbers ();
 		ListPlayers ();
+	}
+
+	void SetModePosition ()
+	{
+		currentModePosition = GameObject.FindGameObjectWithTag ("ModeParent").transform.position;
+
+		GlobalMethods.Instance.SetLimits ();
 	}
 
 	public void SetPlayersControllerNumbers ()
@@ -196,30 +212,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void ListPlayers ()
 	{
-		AlivePlayersNumber ();
-		PlayersNumber ();
-
+		//ENABLED PLAYERS
 		EnabledPlayersList.Clear ();
-
+		
 		for(int i = 0; i < Players.Length; i++)
 		{
 			if (PlayersControllerNumber [i] != -1 && !EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Add (Players [i]);
-
+			
 			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
 
-	}
-
-	void PlayersNumber ()
-	{
 		NumberOfPlayers = EnabledPlayersList.Count;
 		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
-	}
 
-	void AlivePlayersNumber ()
-	{
+
+		//ALIVE PLAYERS
 		AlivePlayersList.Clear ();
 
 		for (int i = 0; i < Players.Length; i++)
@@ -230,6 +239,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		NumberOfAlivePlayers = AlivePlayersList.Count;
 		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
+
 	}
 
 	void UpdatePlayedModes ()

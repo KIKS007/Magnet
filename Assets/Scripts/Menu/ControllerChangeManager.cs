@@ -331,9 +331,7 @@ public class ControllerChangeManager : MonoBehaviour
 				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1) 
 					GlobalVariables.Instance.Players[i].SetActive (true); 
 
-				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().GetControllerNumber (); 
-
-				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().Controller (); 
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().SetupController (); 
 			} 
 		} 
 	} 

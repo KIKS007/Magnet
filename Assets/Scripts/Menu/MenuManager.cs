@@ -118,7 +118,6 @@ public class MenuManager : Singleton <MenuManager>
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
-		loadModeScript = GameObject.FindObjectOfType<LoadModeManager> ();
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
@@ -1177,7 +1176,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 
-		loadModeScript.ReloadSceneVoid ();
+		LoadModeManager.Instance.ReloadSceneVoid ();
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
@@ -1189,10 +1188,10 @@ public class MenuManager : Singleton <MenuManager>
 		switch (GlobalVariables.Instance.ModeSequenceType)
 		{
 		case ModeSequenceType.Selection:
-			loadModeScript.RestartSceneVoid (false, false);
+			LoadModeManager.Instance.RestartSceneVoid (false, false);
 			break;
 		case ModeSequenceType.Random:
-			loadModeScript.RestartSceneVoid (false, true);
+			LoadModeManager.Instance.RestartSceneVoid (false, true);
 			break;
 		case ModeSequenceType.Cocktail:
 			break;
@@ -1216,10 +1215,10 @@ public class MenuManager : Singleton <MenuManager>
 		switch (GlobalVariables.Instance.ModeSequenceType)
 		{
 		case ModeSequenceType.Selection:
-			loadModeScript.RestartSceneVoid (false, false);
+			LoadModeManager.Instance.RestartSceneVoid (false, false);
 			break;
 		case ModeSequenceType.Random:
-			loadModeScript.RestartSceneVoid (false, true);
+			LoadModeManager.Instance.RestartSceneVoid (false, true);
 			break;
 		case ModeSequenceType.Cocktail:
 			break;

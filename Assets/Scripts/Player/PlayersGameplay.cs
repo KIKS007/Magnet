@@ -141,10 +141,6 @@ public class PlayersGameplay : MonoBehaviour
 		GlobalVariables.Instance.OnStartMode += StartModeTime;
 		GlobalVariables.Instance.OnRestartMode += StartModeTime;
 
-        GetControllerNumber();
-
-        Controller();
-
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
 
@@ -188,6 +184,9 @@ public class PlayersGameplay : MonoBehaviour
     {
         StartCoroutine(WaitTillPlayerEnabled());
 
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			StartCoroutine (Startup ());
+
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
         
@@ -207,6 +206,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
+		if (controllerNumber == -1)
+			yield break;
+		
 		switch (GlobalVariables.Instance.Startup)
 		{
 		case StartupType.Delayed:
@@ -233,10 +235,7 @@ public class PlayersGameplay : MonoBehaviour
 	protected IEnumerator WaitTillPlayerEnabled()
 	{
 		yield return new WaitUntil(() => gameObject.activeSelf == true);
-
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && controllerNumber != -1)
-			StartCoroutine (Startup ());
-		
+				
 		StartCoroutine(OnPlayerStateChange());
 		StartCoroutine(OnDashAvailableEvent());
 	}
@@ -246,6 +245,9 @@ public class PlayersGameplay : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+		if (rewiredPlayer == null)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
 			//Movement Vector
@@ -296,6 +298,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+		if (rewiredPlayer == null)
+			return;
+		
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
 			//Movement
@@ -339,13 +344,10 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Rewired Controller
-    public void GetControllerNumber()
+    public void SetupController()
     {
 		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
-    }
 
-    public void Controller()
-    {
         if (controllerNumber == -1)
         {
             gameObject.SetActive(false);
@@ -477,7 +479,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
-		if(playerState == PlayerState.Startup)
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone")
@@ -498,7 +500,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
-		if(playerState == PlayerState.Startup)
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone")

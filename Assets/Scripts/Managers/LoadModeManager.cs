@@ -27,22 +27,41 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Game First Scene Loaded
 	IEnumerator FirstLoadedScene (WhichMode sceneToLoad)
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
+
 		//Unload All other Scenes than Menu
-		for (int i = 0; i < SceneManager.sceneCount; i++)
-			if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
-				yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
+		if(SceneManager.GetActiveScene ().name != "Scene Testing")
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+				if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
+					yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
+		}
 
 		//Unload Scene if already loaded
 		if(SceneManager.GetSceneByName(sceneToLoad.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (sceneToLoad.ToString ());
 
 		StatsManager.Instance.ResetStats (true);
-		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
 
-		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
+		if(SceneManager.GetActiveScene ().name != "Scene Testing")
+		{
+			yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
+			LevelWasLoaded (sceneToLoad, GameStateEnum.Menu);
+		}
+		else
+		{
+			if(SceneManager.sceneCount > 1)
+			{
+				yield return new WaitUntil (()=> SceneManager.GetSceneAt (1).isLoaded);
+				LevelWasLoaded ((WhichMode) Enum.Parse(typeof(WhichMode), SceneManager.GetSceneAt (1).name), GameStateEnum.Playing);
+			}
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
+			else
+			{
+				yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
+				LevelWasLoaded (sceneToLoad, GameStateEnum.Playing);
+			}
+		}
 	}
 
 	public void LoadSceneVoid (WhichMode sceneToLoad)
@@ -69,6 +88,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (WhichMode sceneToLoad)
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
+
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
@@ -77,12 +98,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 		StopSlowMotion ();
 		StatsManager.Instance.ResetStats (true);
-		UpdateGlobalVariables (sceneToLoad, GameStateEnum.Menu);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
+		LevelWasLoaded (sceneToLoad, GameStateEnum.Menu);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
@@ -94,6 +113,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator RestartScene (bool resetStats = true, bool random = false)
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
+
 		yield return cameraMovement.StartCoroutine ("RestartPosition");
 
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
@@ -106,7 +127,13 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			StatsManager.Instance.ResetStats (false);
 
 		if(!random)
+		{
 			yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
+
+			LevelWasLoaded (GlobalVariables.Instance.CurrentModeLoaded, GameStateEnum.Playing);
+
+			yield return cameraMovement.StartCoroutine ("RestartPosition");
+		}
 
 		else
 		{
@@ -118,17 +145,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			}
 			while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));	
 
-			UpdateGlobalVariables (randomScene);
-
 			yield return SceneManager.LoadSceneAsync ( randomScene.ToString (), LoadSceneMode.Additive);
+
+			LevelWasLoaded (randomScene, GameStateEnum.Playing);
+
+			yield return cameraMovement.StartCoroutine ("RestartPosition");
 		}
-
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
-		
-		yield return cameraMovement.StartCoroutine ("RestartPosition");
-
-		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 	}
 
 	public void ReloadSceneVoid ()
@@ -138,6 +160,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator ReloadScene ()
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
+
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
@@ -149,8 +173,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		yield return SceneManager.LoadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString (), LoadSceneMode.Additive);
 
-		if (OnLevelLoaded != null)
-			OnLevelLoaded ();
+		LevelWasLoaded (GlobalVariables.Instance.CurrentModeLoaded, GameStateEnum.Menu);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
@@ -162,6 +185,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator UnLoadScene ()
 	{
+		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
+
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
@@ -170,9 +195,19 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 		StopSlowMotion ();
 		StatsManager.Instance.ResetStats (true);
-		UpdateGlobalVariables (WhichMode.Default, GameStateEnum.Menu);
+	
+		LevelWasLoaded (WhichMode.Default, GameStateEnum.Menu);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+	}
+
+
+	void LevelWasLoaded (WhichMode sceneLoaded, GameStateEnum gameState)
+	{
+		GlobalVariables.Instance.LevelWasLoaded (sceneLoaded, gameState);
+
+		if (OnLevelLoaded != null)
+			OnLevelLoaded ();
 	}
 
 
@@ -182,17 +217,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			slowMo.StopPauseSlowMotion ();
 		else
 			slowMo.StopEndGameSlowMotion ();
-	}
-
-	void UpdateGlobalVariables (WhichMode sceneToLoad)
-	{
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-	}
-
-	void UpdateGlobalVariables (WhichMode sceneToLoad, GameStateEnum gameState)
-	{
-		GlobalVariables.Instance.CurrentModeLoaded = sceneToLoad;
-		GlobalVariables.Instance.GameState = gameState;
 	}
 
 	void DestroyParticules ()
