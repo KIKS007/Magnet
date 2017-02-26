@@ -664,6 +664,7 @@ public class PlayersGameplay : MonoBehaviour
 			yield return new WaitWhile(() => gettingMovable == true);
 
 			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+			holdMovableTransform.tag = "Movable";
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
 			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
