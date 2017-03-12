@@ -112,8 +112,6 @@ public class BombManager : LastManManager
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
-			Debug.Log ("End : " + GlobalVariables.Instance.AlivePlayersList.Count);
-
 			lastSeconds = true;
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
 		}

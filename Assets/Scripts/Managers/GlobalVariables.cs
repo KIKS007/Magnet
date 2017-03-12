@@ -126,6 +126,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameState = gameState;
 	}
 
+	public void LevelWasUnloaded (GameStateEnum gameState)
+	{
+		GameState = gameState;
+	}
+
 	void GetPlayers ()
 	{
 		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");

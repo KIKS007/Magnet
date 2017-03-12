@@ -9,6 +9,7 @@ public enum LoadType { LoadMode, LoadMenu, Restart };
 public class LoadModeManager : Singleton<LoadModeManager> 
 {
 	public event EventHandler OnLevelLoaded;
+	public event EventHandler OnLevelUnloaded;
 
 	private Transform mainCamera;
 	private SlowMotionCamera slowMo;
@@ -196,7 +197,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StopSlowMotion ();
 		StatsManager.Instance.ResetStats (true);
 	
-		LevelWasLoaded (WhichMode.Default, GameStateEnum.Menu);
+		LevelWasUnloaded (GameStateEnum.Menu);
 
 		yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
@@ -210,6 +211,13 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			OnLevelLoaded ();
 	}
 
+	void LevelWasUnloaded (GameStateEnum gameState)
+	{
+		GlobalVariables.Instance.LevelWasUnloaded (gameState);
+
+		if (OnLevelUnloaded != null)
+			OnLevelUnloaded ();
+	}
 
 	void StopSlowMotion ()
 	{

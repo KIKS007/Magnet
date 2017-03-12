@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GameAnalyticsSDK;
 
-public class ResolutionManager : Singleton<ResolutionManager>
+public class ResolutionManager : MonoBehaviour
 {
 	public Vector2 currentScreenRes = new Vector2();
 
