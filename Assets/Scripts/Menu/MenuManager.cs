@@ -383,6 +383,8 @@ public class MenuManager : Singleton <MenuManager>
 		if (whichMenu.contentDisplay.Count > 0 && whichMenu.contentDisplay [contentIndex].delay > 0)
 			yield return new WaitForSecondsRealtime (whichMenu.contentDisplay [contentIndex].delay);
 
+		StartCoroutine (EnableViewScroll (whichMenu, 0));
+
 		//Show Under Menu Buttons
 		int delay = 0;
 
