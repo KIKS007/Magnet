@@ -107,6 +107,17 @@ public class MenuComponent : MonoBehaviour
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
 		{
+			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
+			{
+				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
+
+				if (transform.parent.GetComponent<MenuScrollView> () != null)
+				{
+					menuButton.SetParent (transform);
+					menuButton.SetSiblingIndex (0);
+				}
+			}
+
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.GetComponent<MenuButtonComponent> ().menuComponentParent = this;
 		}
@@ -415,6 +426,10 @@ public class MenuComponent : MonoBehaviour
 				aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();
 		}
 
+		gameObject.SetActive (true);
+		aboveMenuScript.gameObject.SetActive (true);
+		transform.parent.gameObject.SetActive (true);
+
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();
@@ -424,6 +439,13 @@ public class MenuComponent : MonoBehaviour
 		if(menuComponentType == MenuComponentType.BasicMenu)
 		{
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
+			menuButton.gameObject.SetActive (true);
+
+			if (transform.parent.GetComponent<MenuScrollView> () != null)
+			{
+				menuButton.SetParent (aboveMenuScript.transform);
+				menuButton.SetSiblingIndex (0);
+			}
 
 			if(overrideHeaderPos)
 				menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuHeaderY);
@@ -439,9 +461,12 @@ public class MenuComponent : MonoBehaviour
 
 			if (menusParent.GetComponent<MenuScrollView> () != null)
 				scrollViewButtons = true;
-
+			
 			for(int i = 0; i < menusParent.childCount; i++)
+			{
 				underMenus.Add (menusParent.GetChild (i).GetComponent<RectTransform> ());
+				underMenus [i].gameObject.SetActive (true);
+			}
 		}
 
 		for (int i = 0; i < underMenus.Count; i++)
@@ -454,6 +479,8 @@ public class MenuComponent : MonoBehaviour
 				underMenusButtons [i].anchoredPosition = new Vector2 (menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
 			else
 				underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
+
+			underMenusButtons [i].gameObject.SetActive (true);
 		}
 
 		//UNDER BUTTONS
@@ -477,6 +504,8 @@ public class MenuComponent : MonoBehaviour
 					underButtons [i].anchoredPosition = new Vector2 (buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
 				else
 					underButtons [i].anchoredPosition = new Vector2 (menuManager.buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
+
+				underButtons [i].gameObject.SetActive (true);
 			}
 
 		}
@@ -513,10 +542,114 @@ public class MenuComponent : MonoBehaviour
 		while (!sorted);
 
 		for(int i = 0; i < secondaryContents.Count; i++)
+		{
+			secondaryContents [i].content.gameObject.SetActive (true);
 			secondaryContents [i].content.anchoredPosition = secondaryContents [i].onScreenPos;
+		}
 
 		EnableUnderMenus ();
 		EnableSecondaryContentParent ();
+	}
+
+	[ContextMenu ("Hide Menu")]
+	public void HideMenuEditor ()
+	{
+		gameObject.SetActive (false);
+		transform.parent.gameObject.SetActive (false);
+
+		//GET ABOVE MENU
+		if(menuComponentType == MenuComponentType.BasicMenu)
+		{
+			if(transform.parent.parent.GetComponent<MenuComponent> () != null)
+				aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();
+		}
+
+		//CLEAR ALL
+		underMenus.Clear ();
+		underMenusButtons.Clear ();
+		underButtons.Clear ();
+
+		//MENU BUTTON
+		if(menuComponentType == MenuComponentType.BasicMenu)
+		{
+			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
+			{
+				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
+				
+				if (transform.parent.GetComponent<MenuScrollView> () != null)
+				{
+					menuButton.SetParent (transform);
+					menuButton.SetSiblingIndex (0);
+				}
+			}
+
+			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
+			menuButton.gameObject.SetActive (false);
+
+		}
+
+		//UNDER MENUS
+		if(transform.Find ("Menus") != null)
+		{
+			menusParent = transform.Find ("Menus").GetComponent<RectTransform> ();
+			menusParent.gameObject.SetActive (false);
+
+			for(int i = 0; i < menusParent.childCount; i++)
+			{
+				underMenus.Add (menusParent.GetChild (i).GetComponent<RectTransform> ());
+				underMenus [i].gameObject.SetActive (false);
+			}
+		}
+
+		for (int i = 0; i < underMenus.Count; i++)
+			underMenusButtons.Add (underMenus [i].transform.GetChild (0).GetComponent<RectTransform> ());
+
+		//UNDER MENUS BUTTONS
+		for (int i = 0; i < underMenusButtons.Count; i++)
+			underMenusButtons [i].gameObject.SetActive (false);
+		
+
+		//UNDER BUTTONS
+		if(transform.Find ("Buttons") != null)
+		{
+			buttonsParent = transform.Find ("Buttons").GetComponent<RectTransform> ();
+			buttonsParent.gameObject.SetActive (false);
+
+			for(int i = 0; i < buttonsParent.childCount; i++)
+			{
+				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
+				buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
+			}
+
+			for(int i = 0; i < underButtons.Count; i++)
+				underButtons [i].gameObject.SetActive (false);
+		}
+
+		//CONTENT
+		if(transform.Find ("MainContent") != null)
+		{
+			mainContent = transform.Find ("MainContent").GetComponent<RectTransform> ();
+			mainContent.gameObject.SetActive (false);
+		}
+
+		//SECONDARY CONTENT
+		bool sorted = false;
+
+		do
+		{
+			sorted = true;
+
+			for (int i = 0; i < secondaryContents.Count; i++)
+				if(secondaryContents [i].content == null)
+				{
+					secondaryContents.RemoveAt (i);
+					sorted = false;
+				}
+		}
+		while (!sorted);
+
+		for(int i = 0; i < secondaryContents.Count; i++)
+			secondaryContents [i].content.gameObject.SetActive (false);
 
 		//CLEAR ALL
 		underMenus.Clear ();
