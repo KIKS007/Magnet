@@ -11,6 +11,8 @@ public enum StartupType {Delayed, Wave, Done};
 
 public enum ModeSequenceType {Selection, Random, Cocktail};
 
+public enum ModeObjective {LastMan, LeastDeath};
+
 public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
@@ -25,6 +27,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Vector3 currentModePosition;
 	public List<WhichMode> lastPlayedModes = new List<WhichMode>();
 	public List<WhichMode> cocktailModes = new List<WhichMode>();
+
+	[Header ("Mode Objective")]
+	public ModeObjective MoveObjective = ModeObjective.LastMan;
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;

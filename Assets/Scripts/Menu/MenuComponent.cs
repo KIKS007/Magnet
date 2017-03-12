@@ -84,10 +84,29 @@ public class MenuComponent : MonoBehaviour
 
 	void Awake ()
 	{
+		ResetButton ();
+
 		SetupMenu ();
 
 		if (menuComponentType == MenuComponentType.EndModeMenu)
 			EnableSecondaryContentParent ();
+	}
+
+	void ResetButton ()
+	{
+		if(menuComponentType == MenuComponentType.BasicMenu)
+		{
+			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
+			{
+				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
+				
+				if (transform.parent.GetComponent<MenuScrollView> () != null)
+				{
+					menuButton.SetParent (transform);
+					menuButton.SetSiblingIndex (0);
+				}
+			}
+		}
 	}
 
 	public void SetupMenu ()
@@ -107,17 +126,6 @@ public class MenuComponent : MonoBehaviour
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
 		{
-			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
-			{
-				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
-
-				if (transform.parent.GetComponent<MenuScrollView> () != null)
-				{
-					menuButton.SetParent (transform);
-					menuButton.SetSiblingIndex (0);
-				}
-			}
-
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.GetComponent<MenuButtonComponent> ().menuComponentParent = this;
 		}
@@ -135,8 +143,14 @@ public class MenuComponent : MonoBehaviour
 				underMenus.Add (menusParent.GetChild (i).GetComponent<RectTransform> ());
 		}
 
+
 		for (int i = 0; i < underMenus.Count; i++)
+		{
+			if (underMenus [i].transform.childCount == 0)
+				underMenus [i].transform.GetComponent<MenuComponent> ().SetupMenu ();
+			
 			underMenusButtons.Add (underMenus [i].transform.GetChild (0).GetComponent<RectTransform> ());
+		}
 
 		//Setup Buttons Child Index
 		for (int i = 0; i < underMenusButtons.Count; i++)
@@ -585,7 +599,6 @@ public class MenuComponent : MonoBehaviour
 
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.gameObject.SetActive (false);
-
 		}
 
 		//UNDER MENUS

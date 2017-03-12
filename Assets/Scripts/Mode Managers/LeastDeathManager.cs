@@ -1,21 +1,29 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.SceneManagement;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class LastManManager : MonoBehaviour 
+public class LeastDeathManager : MonoBehaviour 
 {
 	[Header ("Settings")]
 	public WhichMode whichMode;
 	public float timeBeforeEndGame = 2;
+
+	[Header ("Death Count")]
+	public int maxDeath = 15;
+	public int[] deathCount = new int[4];
 
 	[Header ("Cubes Spawn")]
 	public float durationBetweenSpawn = 0.1f;
 
 	protected bool gameEndLoopRunning = false;
 
-	protected virtual void Start ()
+	// Use this for initialization
+	protected virtual void Start () 
 	{
+		for(int i = 0; i < deathCount.Length; i++)
+			deathCount[i] = 0;
+		
 		StartCoroutine (WaitForBeginning ());
 	}
 
@@ -34,7 +42,7 @@ public class LastManManager : MonoBehaviour
 		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
 			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
 				allMovables.Add (movable);
-		
+
 
 		for (int i = 0; i < allMovables.Count; i++)
 			allMovables [i].SetActive (false);
@@ -45,40 +53,26 @@ public class LastManManager : MonoBehaviour
 			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray (), durationBetweenSpawn);
 	}
 
-	// Update is called once per frame
-	protected virtual void Update () 
+	public virtual void PlayerDeath (PlayerName player)
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			FindPlayers ();
-	}
+		deathCount [(int)player]++;
 
-	protected virtual void FindPlayers ()
-	{
-		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
+		if(deathCount >= maxDeath && !gameEndLoopRunning)
 		{
 			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 
-			StartCoroutine (GameEnd ());
-		}
 
-		if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
-		{
-			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(WhichPlayer.Draw);
-
-			StartCoroutine (GameEnd ());
 		}
 	}
 
 	protected virtual IEnumerator GameEnd ()
 	{
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-		
+
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-		
+
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 
@@ -103,5 +97,5 @@ public class LastManManager : MonoBehaviour
 
 			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
-	}	
+	}
 }
