@@ -1,21 +1,21 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
-public class BombManager : LastManManager 
+public class BombLeastDeathManager : LeastDeathManager 
 {
 	[Header ("Bomb Settings")]
 	public GameObject bomb;
-	public int playersNumber;
-	public int firstBombTimer = 300;
-	public int secondBombTimer = 300;
-	public int thirdBombTimer = 300;
 	public float timeBeforeFirstSpawn = 1;
 	public float timeBetweenSpawn = 2;
+
+	[Header ("Timer Settings")]
+	public float currentTimer;
+	public Vector2 timerLimits = new Vector2 (20, 5);
+	public int eachBombReducedTime = 1;
 
 	[Header ("Timer")]
 	public Text timerText;
@@ -41,6 +41,7 @@ public class BombManager : LastManManager
 		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
 
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
+
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
@@ -76,24 +77,12 @@ public class BombManager : LastManManager
 			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray ());
 	}
 
-	protected virtual IEnumerator Setup ()
+	protected IEnumerator Setup ()
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		playersNumber = GlobalVariables.Instance.NumberOfPlayers;
-
-		switch(playersNumber)
-		{
-		case 4:
-			timer = firstBombTimer;
-			break;
-		case 3:
-			timer = secondBombTimer;
-			break;
-		case 2:
-			timer = thirdBombTimer;
-			break;
-		}
+		timer = timerLimits.x;
+		currentTimer = timerLimits.x;
 
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 		timerClock = seconds;
@@ -106,9 +95,9 @@ public class BombManager : LastManManager
 
 		StartCoroutine (Timer ());
 	}
-	
+
 	// Update is called once per frame
-	protected override void Update () 
+	protected void Update () 
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
@@ -129,7 +118,6 @@ public class BombManager : LastManManager
 			timerClock = seconds;
 
 			timerText.text = timerClock;
-		
 
 			StartCoroutine (Timer ());
 		}
@@ -137,42 +125,27 @@ public class BombManager : LastManManager
 		else
 		{
 			timerText.text = "00";
-			
+
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeTrackingSound, bomb.transform);
 			bombScript.StartCoroutine ("Explode");
-	
 
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
 
-			playersNumber--;
+			if (gameEndLoopRunning)
+				yield break;
 
-			switch(playersNumber)
-			{
-			case 4:
-				timer = firstBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			currentTimer -= eachBombReducedTime;
 
-				StartCoroutine (Timer ());
-				break;
-			case 3:
-				timer = secondBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			if(currentTimer < timerLimits.y)
+				currentTimer = timerLimits.y;
 
-				StartCoroutine (Timer ());
-				break;
-			case 2:
-				timer = thirdBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			timer = currentTimer;
 
-				StartCoroutine (Timer ());
-				break;
-			case 1:
-				StartCoroutine(GameEnd ());
-				break;
-			}
+			StartCoroutine (SpawnBomb ());
+
+			yield return new WaitWhile (() => bombScript.playerHolding == null);
+
+			StartCoroutine (Timer ());
 
 			string seconds = Mathf.Floor(timer % 60).ToString("00");
 			timerClock = seconds;
@@ -219,9 +192,16 @@ public class BombManager : LastManManager
 		{
 			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
 				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
-			
+
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
 				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
 		}
+	}
+
+	protected override IEnumerator GameEnd ()
+	{
+		StopCoroutine (Timer ());
+
+		return base.GameEnd ();
 	}
 }

@@ -675,14 +675,19 @@ public class PlayersGameplay : MonoBehaviour
 
 		gameObject.SetActive(false);
 
-		if(playerDeadCube)
-			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
+		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
+		{
+			if(playerDeadCube)
+				GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
+		}
+		else
+			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
 	}
 		
     protected virtual void OnDestroy()
     {
         if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
-            VibrationManager.Instance.StopVibration(controllerNumber);
+			VibrationManager.Instance.StopVibration(controllerNumber);
     }
 
     protected virtual void OnDisable()

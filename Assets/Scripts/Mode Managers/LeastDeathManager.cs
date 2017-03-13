@@ -12,6 +12,7 @@ public class LeastDeathManager : MonoBehaviour
 	[Header ("Death Count")]
 	public int maxDeath = 15;
 	public int[] deathCount = new int[4];
+	public float timeBeforePlayerRespawn = 2;
 
 	[Header ("Cubes Spawn")]
 	public float durationBetweenSpawn = 0.1f;
@@ -21,6 +22,9 @@ public class LeastDeathManager : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Start () 
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
+			return;
+
 		for(int i = 0; i < deathCount.Length; i++)
 			deathCount[i] = 0;
 		
@@ -53,16 +57,22 @@ public class LeastDeathManager : MonoBehaviour
 			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray (), durationBetweenSpawn);
 	}
 
-	public virtual void PlayerDeath (PlayerName player)
+	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
 	{
-		deathCount [(int)player]++;
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
+			return;
+		
+		deathCount [(int)playerName]++;
 
-		if(deathCount >= maxDeath && !gameEndLoopRunning)
-		{
-			gameEndLoopRunning = true;
+		foreach(int death in deathCount)
+			if(death >= maxDeath && !gameEndLoopRunning)
+			{
+				gameEndLoopRunning = true;
+				StartCoroutine (GameEnd ());	
+			}
 
-
-		}
+		if(!gameEndLoopRunning)
+			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn);
 	}
 
 	protected virtual IEnumerator GameEnd ()

@@ -29,7 +29,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<WhichMode> cocktailModes = new List<WhichMode>();
 
 	[Header ("Mode Objective")]
-	public ModeObjective MoveObjective = ModeObjective.LastMan;
+	public ModeObjective modeObjective = ModeObjective.LastMan;
+	public LastManManager lastManManager;
+	public LeastDeathManager leastDeathManager;
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
@@ -127,6 +129,20 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GetPlayers ();
 		SetModePosition ();
 
+		lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
+		leastDeathManager = GameObject.FindGameObjectWithTag("LeastDeathManager").GetComponent<LeastDeathManager> ();
+
+		if (modeObjective == ModeObjective.LastMan)
+		{
+			lastManManager.gameObject.SetActive (true);
+			leastDeathManager.gameObject.SetActive (false);
+		}
+		else
+		{
+			leastDeathManager.gameObject.SetActive (true);
+			lastManManager.gameObject.SetActive (false);
+		}
+
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
 	}
@@ -134,6 +150,28 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public void LevelWasUnloaded (GameStateEnum gameState)
 	{
 		GameState = gameState;
+	}
+
+	public void ModeObjectiveChange ()
+	{
+		if (modeObjective == ModeObjective.LastMan)
+			modeObjective = ModeObjective.LeastDeath;
+		else
+			modeObjective = ModeObjective.LastMan;
+
+		if (modeObjective == ModeObjective.LastMan)
+		{
+			lastManManager.gameObject.SetActive (true);
+			leastDeathManager.gameObject.SetActive (false);
+		}
+		else
+		{
+			leastDeathManager.gameObject.SetActive (true);
+			lastManManager.gameObject.SetActive (false);
+		}
+
+		if (OnModeObjectiveChange != null)
+			OnModeObjectiveChange ();
 	}
 
 	void GetPlayers ()
@@ -301,6 +339,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnResume;
 	public event EventHandler OnMenu;
 	public event EventHandler OnStartupDone;
+	public event EventHandler OnModeObjectiveChange;
 
 	IEnumerator OnEndModeEvent ()
 	{

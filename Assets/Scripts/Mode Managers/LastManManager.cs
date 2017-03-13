@@ -16,6 +16,9 @@ public class LastManManager : MonoBehaviour
 
 	protected virtual void Start ()
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
+			return;
+		
 		StartCoroutine (WaitForBeginning ());
 	}
 
@@ -48,6 +51,9 @@ public class LastManManager : MonoBehaviour
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
+			return;
+		
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			FindPlayers ();
 	}
