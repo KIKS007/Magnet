@@ -23,10 +23,13 @@ public class MovableBurden : MovableScript
 
 	private GameObject[] allMovables = new GameObject[0];
 
+	private float initialTrackSpeed;
+
 	protected override void Awake ()
 	{
 		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
+		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
 
 		for (int i = 0; i < transform.childCount; i++)
@@ -150,9 +153,6 @@ public class MovableBurden : MovableScript
 					if (otherMovables [i].targetPlayer == other.gameObject)
 						otherMovables [i].StopTrackingPlayer ();
 			}
-
-
-
 		}
 	}
 
@@ -169,5 +169,22 @@ public class MovableBurden : MovableScript
 	public void StopTrackingPlayer ()
 	{
 		StopCoroutine (GetToPlayerPosition ());
+		StopCoroutine (AddSpeed ());
+
+		if (GlobalVariables.Instance.modeObjective == ModeObjective.LeastDeath)
+			StartCoroutine (WaitToTrackAgain ());
+	}
+
+	IEnumerator WaitToTrackAgain ()
+	{
+		rigidbodyMovable.velocity = Vector3.zero;
+
+		yield return new WaitWhile (() => targetPlayer.activeSelf == false);
+
+		yield return new WaitForSeconds (1f);
+
+		trackSpeed = initialTrackSpeed;
+		GetToPlayerVoid ();
+		StartCoroutine (AddSpeed ());
 	}
 }

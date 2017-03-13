@@ -112,6 +112,9 @@ public class MovableScript : MonoBehaviour
 			
 			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
 				slowMoTrigger.triggerEnabled = false;
 				gameObject.tag = "Movable";
 				playerThatThrew = null;
