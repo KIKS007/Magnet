@@ -1064,6 +1064,7 @@ public class MenuManager : Singleton <MenuManager>
 			StartCoroutine (StartRandomModeCoroutine ());
 			break;
 		case ModeSequenceType.Cocktail:
+			StartCoroutine (StartRandomCocktailModeCoroutine ());
 			break;
 		}
 
@@ -1089,7 +1090,27 @@ public class MenuManager : Singleton <MenuManager>
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 		currentMenu.HideMenu ();
 
-		LoadModeManager.Instance.LoadRandomSceneVoid ();
+		LoadModeManager.Instance.LoadRandomScene ();
+
+		yield return new WaitForSecondsRealtime (cameraMovement.loadingMovementDuration * 2);
+
+		yield return new WaitForSecondsRealtime(durationToHide);
+
+		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
+
+		yield return cameraMovement.StartCoroutine ("PlayPosition");
+
+		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
+	}
+
+	IEnumerator StartRandomCocktailModeCoroutine ()
+	{
+		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
+		currentMenu.HideMenu ();
+
+		GlobalVariables.Instance.currentCocktailModes = GlobalVariables.Instance.selectedCocktailModes;
+
+		LoadModeManager.Instance.LoadRandomCocktailScene ();
 
 		yield return new WaitForSecondsRealtime (cameraMovement.loadingMovementDuration * 2);
 

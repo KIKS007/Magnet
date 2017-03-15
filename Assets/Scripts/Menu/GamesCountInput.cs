@@ -28,7 +28,7 @@ public class GamesCountInput : MonoBehaviour
 		GlobalVariables.Instance.OnCocktailModesChange += () =>
 		{
 			if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail)
-				bounds.x = GlobalVariables.Instance.cocktailModes.Count;
+				bounds.x = GlobalVariables.Instance.selectedCocktailModes.Count;
 
 			GetValue ();
 		};
@@ -56,7 +56,7 @@ public class GamesCountInput : MonoBehaviour
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
 		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail)
-			bounds.x = GlobalVariables.Instance.cocktailModes.Count;
+			bounds.x = GlobalVariables.Instance.selectedCocktailModes.Count;
 
 		GetValue ();
 	}
@@ -77,9 +77,9 @@ public class GamesCountInput : MonoBehaviour
 			input.text = value.ToString ();
 		}
 
-		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail && value < GlobalVariables.Instance.cocktailModes.Count)
+		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail && value < GlobalVariables.Instance.selectedCocktailModes.Count)
 		{
-			value = GlobalVariables.Instance.cocktailModes.Count;
+			value = GlobalVariables.Instance.selectedCocktailModes.Count;
 			input.text = value.ToString ();
 		}
 

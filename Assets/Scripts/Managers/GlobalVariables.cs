@@ -27,7 +27,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public WhichMode CurrentModeLoaded;
 	public Vector3 currentModePosition;
 	public List<WhichMode> lastPlayedModes = new List<WhichMode>();
-	public List<WhichMode> cocktailModes = new List<WhichMode>();
+	public List<WhichMode> selectedCocktailModes = new List<WhichMode>();
+	public List<WhichMode> currentCocktailModes = new List<WhichMode>();
 
 	[Header ("Mode Objective")]
 	public ModeObjective modeObjective = ModeObjective.LastMan;
@@ -102,7 +103,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		StartCoroutine (OnGameStateChange (GameState));
 		StartCoroutine (OnStartupDoneEvent ());
-		StartCoroutine (OnCocktailModes (cocktailModes.Count));
+		StartCoroutine (OnCocktailModes (selectedCocktailModes.Count));
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
 
 		OnPlaying += ()=> HideMouseCursor();
@@ -391,12 +392,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	IEnumerator OnCocktailModes (int count)
 	{
-		yield return new WaitUntil (() => cocktailModes.Count != count);
+		yield return new WaitUntil (() => selectedCocktailModes.Count != count);
 
 		if (OnCocktailModesChange != null)
 			OnCocktailModesChange ();
 
-		StartCoroutine (OnCocktailModes (cocktailModes.Count));
+		StartCoroutine (OnCocktailModes (selectedCocktailModes.Count));
 	}
 
 	IEnumerator OnStartupDoneEvent ()

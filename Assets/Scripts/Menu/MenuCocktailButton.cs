@@ -14,9 +14,13 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	private Sprite initialSprite;
 	private Sprite pressedSprite;
 
+	private static List<MenuCocktailButton> allButtons = new List<MenuCocktailButton> ();
+
 	// Use this for initialization
 	void Start () 
 	{
+		allButtons.Add (this);
+
 		imageComponent = GetComponent<Image> ();
 		buttonComponent = GetComponent<Button> ();
 		initialSprite = imageComponent.sprite;
@@ -36,8 +40,8 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 		imageComponent.sprite = pressedSprite;
 
-		if (!GlobalVariables.Instance.cocktailModes.Contains (mode))
-			GlobalVariables.Instance.cocktailModes.Add (mode);
+		if (!GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
+			GlobalVariables.Instance.selectedCocktailModes.Add (mode);
 	}
 
 	public void Disable ()
@@ -46,10 +50,10 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 		imageComponent.sprite = initialSprite;
 
-		if (GlobalVariables.Instance.cocktailModes.Contains (mode))
-			GlobalVariables.Instance.cocktailModes.Remove (mode);
+		if (GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
+			GlobalVariables.Instance.selectedCocktailModes.Remove (mode);
 
-		if (GlobalVariables.Instance.cocktailModes.Count == 0)
+		if (GlobalVariables.Instance.selectedCocktailModes.Count == 0)
 			transform.parent.GetChild (0).GetComponent<MenuCocktailButton> ().Enable ();
 	}
 
@@ -67,5 +71,20 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 			Disable ();
 		else
 			Enable ();
+	}
+
+	public void SelectAll ()
+	{
+		foreach (MenuCocktailButton button in allButtons)
+			button.Enable ();
+	}
+
+	public void DeselectAll ()
+	{
+		foreach (MenuCocktailButton button in allButtons)
+			if(button.mode != (WhichMode)0)
+				button.Disable ();
+			else
+				button.Enable ();
 	}
 }

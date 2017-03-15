@@ -506,7 +506,9 @@ public class MenuComponent : MonoBehaviour
 			for(int i = 0; i < buttonsParent.childCount; i++)
 			{
 				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
-				buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
+
+				if(buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> () != null)
+					buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
 			}
 
 			for(int i = 0; i < underButtons.Count; i++)

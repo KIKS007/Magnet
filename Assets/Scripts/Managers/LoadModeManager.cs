@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 
 public enum LoadType { LoadMode, LoadMenu, Restart };
 
@@ -71,7 +72,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StartCoroutine (LoadScene (sceneToLoad));
 	}
 
-	public void LoadRandomSceneVoid ()
+	public void LoadRandomScene ()
 	{
 		WhichMode randomScene = WhichMode.Bomb;
 
@@ -82,6 +83,18 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));
 
 		StartCoroutine (LoadScene (randomScene));
+	}
+
+	public void LoadRandomCocktailScene ()
+	{
+		WhichMode randomMode = GlobalVariables.Instance.currentCocktailModes [UnityEngine.Random.Range (0, GlobalVariables.Instance.currentCocktailModes.Count)];
+
+		GlobalVariables.Instance.currentCocktailModes.Remove (randomMode);
+
+		if (GlobalVariables.Instance.currentCocktailModes.Count == 0)
+			GlobalVariables.Instance.currentCocktailModes = GlobalVariables.Instance.selectedCocktailModes;
+
+		StartCoroutine (LoadScene (randomMode));
 	}
 
 	//Menu Load Scene to choose mode
@@ -178,8 +191,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator UnLoadScene ()
 	{
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
-
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
