@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class MenuButtonAnimationsAndSounds : EventTrigger
+public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler, ISelectHandler, IPointerEnterHandler, IPointerExitHandler, IDeselectHandler, ISubmitHandler, IPointerDownHandler, IPointerUpHandler
 {
 	[Header ("On Selected Feedback")]
 	public bool selected;
@@ -89,7 +89,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 
 	//OnSelect Methods
-	public override void OnPointerClick( PointerEventData data )
+	public void OnPointerClick( PointerEventData data )
 	{
 		if(buttonComponent.interactable == true)
 		{
@@ -99,7 +99,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		}
 	}
 
-	public override void OnSelect( BaseEventData data )
+	public void OnSelect( BaseEventData data )
 	{
 		OnSelect ();
 
@@ -107,7 +107,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 	}
 
 
-	public override void OnPointerEnter(PointerEventData data )
+	public void OnPointerEnter(PointerEventData data )
 	{
 		if(buttonComponent.interactable == true)
 		{
@@ -123,7 +123,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		SoundsManager.Instance.MenuNavigation ();
 	}
 
-	public override void OnPointerExit( PointerEventData data )
+	public void OnPointerExit( PointerEventData data )
 	{
 		pointerDown = false;
 
@@ -134,12 +134,12 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 
 
-	public override void OnDeselect( BaseEventData data )
+	public void OnDeselect( BaseEventData data )
 	{
 		OnDeselect ();
 	}
 
-	public override void OnSubmit( BaseEventData data )
+	public void OnSubmit( BaseEventData data )
 	{
 		if(buttonComponent.interactable == true)
 		{
@@ -151,7 +151,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 		}
 	}
 
-	public override void OnPointerDown (PointerEventData eventData)
+	public void OnPointerDown (PointerEventData eventData)
 	{
 		if(buttonComponent.interactable == true)
 		{
@@ -162,7 +162,7 @@ public class MenuButtonAnimationsAndSounds : EventTrigger
 
 	}
 
-	public override void OnPointerUp (PointerEventData eventData)
+	public void OnPointerUp (PointerEventData eventData)
 	{
 		if(buttonComponent.interactable == true)
 			pointerDown = false;

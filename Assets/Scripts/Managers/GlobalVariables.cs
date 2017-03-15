@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public enum GameStateEnum {Menu, Playing, Paused, EndMode, Loading};
+public enum GameStateEnum {Menu, Playing, Paused, EndMode};
 
 public enum StartupType {Delayed, Wave, Done};
 
@@ -30,7 +31,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Mode Objective")]
 	public ModeObjective modeObjective = ModeObjective.LastMan;
+	[HideInInspector]
 	public LastManManager lastManManager;
+	[HideInInspector]
 	public LeastDeathManager leastDeathManager;
 
 	[Header ("Mode Sequence")]
@@ -97,14 +100,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void Awake ()
 	{
-		StartCoroutine (OnEndModeEvent ());
-		StartCoroutine (OnStartModeEvent ());
-		StartCoroutine (OnRestartModeEvent ());
-		StartCoroutine (OnPlayingEvent ());
-		StartCoroutine (OnPauseEvent ());
-		StartCoroutine (OnResumeEvent ());
-		StartCoroutine (OnMenuEvent ());
+		StartCoroutine (OnGameStateChange (GameState));
 		StartCoroutine (OnStartupDoneEvent ());
+		StartCoroutine (OnCocktailModes (cocktailModes.Count));
+		StartCoroutine (OnSequenceChangement (ModeSequenceType));
 
 		OnPlaying += ()=> HideMouseCursor();
 		OnPlaying += UpdatePlayedModes;
@@ -152,22 +151,28 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameState = gameState;
 	}
 
-	public void ModeObjectiveChange ()
+	public void ModeObjectiveChange (Toggle toggle)
 	{
-		if (modeObjective == ModeObjective.LastMan)
+		if(toggle.isOn)
 			modeObjective = ModeObjective.LeastDeath;
 		else
 			modeObjective = ModeObjective.LastMan;
-
+			
 		if (modeObjective == ModeObjective.LastMan)
 		{
-			lastManManager.gameObject.SetActive (true);
-			leastDeathManager.gameObject.SetActive (false);
+			if(lastManManager != null)
+			{
+				lastManManager.gameObject.SetActive (true);
+				leastDeathManager.gameObject.SetActive (false);
+			}
 		}
 		else
 		{
-			leastDeathManager.gameObject.SetActive (true);
-			lastManManager.gameObject.SetActive (false);
+			if(lastManManager != null)
+			{
+				leastDeathManager.gameObject.SetActive (true);
+				lastManManager.gameObject.SetActive (false);
+			}
 		}
 
 		if (OnModeObjectiveChange != null)
@@ -338,116 +343,81 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnPause;
 	public event EventHandler OnResume;
 	public event EventHandler OnMenu;
+
 	public event EventHandler OnStartupDone;
 	public event EventHandler OnModeObjectiveChange;
+	public event EventHandler OnCocktailModesChange;
+	public event EventHandler OnSequenceChange;
 
-	IEnumerator OnEndModeEvent ()
+	IEnumerator OnGameStateChange (GameStateEnum state)
 	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+		yield return new WaitUntil (() => GameState != state);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
+		switch(GameState)
+		{
+		case GameStateEnum.EndMode:
+			if(state == GameStateEnum.Playing)
+			if (OnEndMode != null)
+				OnEndMode ();
+			break;
+		case GameStateEnum.Menu:
+			if (OnMenu != null)
+				OnMenu ();
+			break;
+		case GameStateEnum.Paused:
+			if (OnPause != null)
+				OnPause ();
+			break;
+		case GameStateEnum.Playing:
+			if (OnPlaying != null)
+				OnPlaying ();
+			
+			if(state == GameStateEnum.Menu)
+			if (OnStartMode != null)
+				OnStartMode ();
+			
+			if(state == GameStateEnum.EndMode)
+			if (OnRestartMode != null)
+				OnRestartMode ();
+			
+			if(state == GameStateEnum.Paused)
+			if (OnResume != null)
+				OnResume ();
+			break;
+		}
 
-		if (OnEndMode != null)
-			OnEndMode ();
-
-		yield return null;
-
-		StartCoroutine (OnEndModeEvent ());
+		StartCoroutine (OnGameStateChange (GameState));
 	}
 
-	IEnumerator OnStartModeEvent ()
+	IEnumerator OnCocktailModes (int count)
 	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
+		yield return new WaitUntil (() => cocktailModes.Count != count);
 
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
+		if (OnCocktailModesChange != null)
+			OnCocktailModesChange ();
 
-		if (OnStartMode != null)
-			OnStartMode ();
-
-		yield return null;
-
-		StartCoroutine (OnStartModeEvent ());
-	}
-
-	IEnumerator OnRestartModeEvent ()
-	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.EndMode);
-
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
-
-		if (OnRestartMode != null)
-			OnRestartMode ();
-
-		yield return null;
-
-		StartCoroutine (OnRestartModeEvent ());
-	}
-
-	IEnumerator OnPlayingEvent ()
-	{
-		yield return new WaitUntil (() => GameState != GameStateEnum.Playing);
-
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
-
-		if (OnPlaying != null)
-			OnPlaying ();
-
-		yield return null;
-
-		StartCoroutine (OnPlayingEvent ());
-	}
-
-	IEnumerator OnPauseEvent ()
-	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
-
-		yield return new WaitUntil (() => GameState == GameStateEnum.Paused);
-
-		if (OnPause != null)
-			OnPause ();
-
-		yield return null;
-
-		StartCoroutine (OnPauseEvent ());
-	}
-
-	IEnumerator OnResumeEvent ()
-	{
-		yield return new WaitUntil (() => GameState == GameStateEnum.Paused);
-
-		yield return new WaitUntil (() => GameState == GameStateEnum.Playing);
-
-		if (OnResume != null)
-			OnResume ();
-
-		yield return null;
-
-		StartCoroutine (OnResumeEvent ());
-	}
-
-	IEnumerator OnMenuEvent ()
-	{
-		yield return new WaitUntil (() => GameState != GameStateEnum.Menu);
-
-		yield return new WaitUntil (() => GameState == GameStateEnum.Menu);
-
-		if (OnMenu != null)
-			OnMenu ();
-
-		yield return null;
-
-		StartCoroutine (OnMenuEvent ());
+		StartCoroutine (OnCocktailModes (cocktailModes.Count));
 	}
 
 	IEnumerator OnStartupDoneEvent ()
 	{
 		yield return new WaitUntil (() => Startup != StartupType.Done);
-	
+
 		yield return new WaitUntil (() => Startup == StartupType.Done);
 
 		if (OnStartupDone != null)
 			OnStartupDone ();
-	
+
 		StartCoroutine (OnStartupDoneEvent ());
+	}
+
+	IEnumerator OnSequenceChangement (ModeSequenceType sequence)
+	{
+		if (OnSequenceChange != null)
+			OnSequenceChange ();
+
+		yield return new WaitUntil (() => sequence != ModeSequenceType);
+
+		StartCoroutine (OnSequenceChangement (ModeSequenceType));
 	}
 }

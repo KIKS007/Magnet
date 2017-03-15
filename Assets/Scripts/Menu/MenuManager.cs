@@ -804,36 +804,36 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if((whichSettings & WhichOverrideSettings.HeaderPos) == WhichOverrideSettings.HeaderPos || whichSettings == WhichOverrideSettings.All)
 		{
-			if (!whichMenu.overrideHeaderPos)
-				return;
-
-			menuHeaderY = whichMenu.menuHeaderY;
-			menuFirstButtonY = whichMenu.menuFirstButtonY;
-			buttonFirstButtonY = whichMenu.buttonFirstButtonY;
+			if (whichMenu.overrideHeaderPos)
+			{
+				menuHeaderY = whichMenu.menuHeaderY;
+				menuFirstButtonY = whichMenu.menuFirstButtonY;
+				buttonFirstButtonY = whichMenu.buttonFirstButtonY;
+			}
 		}
-		if((whichSettings & WhichOverrideSettings.MenuPos) == WhichOverrideSettings.MenuPos || whichSettings == WhichOverrideSettings.All)
+		if(whichSettings == WhichOverrideSettings.All || (whichSettings & WhichOverrideSettings.MenuPos) == WhichOverrideSettings.MenuPos)
 		{
-			if (!whichMenu.overrideMenuPos)
-				return;
-
-			menuOffScreenX = whichMenu.menuOffScreenX;
-			menuOnScreenX = whichMenu.menuOnScreenX;
+			if (whichMenu.overrideMenuPos)
+			{
+				menuOffScreenX = whichMenu.menuOffScreenX;
+				menuOnScreenX = whichMenu.menuOnScreenX;
+			}
 		}
 		if((whichSettings & WhichOverrideSettings.ButtonPos) == WhichOverrideSettings.ButtonPos || whichSettings == WhichOverrideSettings.All)
 		{
-			if (!whichMenu.overrideButtonPos)
-				return;
-			
-			buttonOffScreenX = whichMenu.buttonOffScreenX;
-			buttonOnScreenX = whichMenu.buttonOnScreenX;
+			if (whichMenu.overrideButtonPos)
+			{
+				buttonOffScreenX = whichMenu.buttonOffScreenX;
+				buttonOnScreenX = whichMenu.buttonOnScreenX;
+			}
 		}
 		if((whichSettings & WhichOverrideSettings.ContentPos) == WhichOverrideSettings.ContentPos || whichSettings == WhichOverrideSettings.All)
 		{
-			if (!whichMenu.overrideContentPos)
-				return;
-			
-			offScreenContent = whichMenu.offScreenContent;
-			onScreenContent = whichMenu.onScreenContent;
+			if (whichMenu.overrideContentPos)
+			{
+				offScreenContent = whichMenu.offScreenContent;
+				onScreenContent = whichMenu.onScreenContent;
+			}			
 		}
 	}
 

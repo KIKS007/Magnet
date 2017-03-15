@@ -166,10 +166,7 @@ public class MenuComponent : MonoBehaviour
 				scrollViewButtons = true;
 
 			for(int i = 0; i < buttonsParent.childCount; i++)
-			{
 				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
-				buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
-			}
 		}
 
 		//CONTENT

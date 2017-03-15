@@ -15,8 +15,8 @@ public class MenuScrollView : MonoBehaviour
 	[Header ("Buttons")]
 	public float buttonsMovementDuration = 0.01f;
 	public Ease buttonsEase = Ease.OutQuad;
-
-	private float buttonsCenterYPos = 0;
+	public bool overrideButtonCenterYPos = false;
+	public float buttonsCenterYPos = -1;
 
 	[Header ("Buttons Wheel")]
 	public float buttonsWheelSpeed = 50;
@@ -46,8 +46,9 @@ public class MenuScrollView : MonoBehaviour
 		underButtonsList.Clear ();
 
 		aboveMenu = transform.parent.GetComponent<MenuComponent> ();
-	
-		buttonsCenterYPos = MenuManager.Instance.menuFirstButtonY;
+
+		if(!overrideButtonCenterYPos)
+			buttonsCenterYPos = MenuManager.Instance.menuFirstButtonY;
 
 		MenuManager.Instance.OnMenuChange += CheckScrollEnabled;
 

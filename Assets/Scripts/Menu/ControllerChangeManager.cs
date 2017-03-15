@@ -55,6 +55,8 @@ public class ControllerChangeManager : MonoBehaviour
 	void Awake () 
 	{ 
 		OnControllerChange += GlobalVariables.Instance.SetPlayerMouseCursor; 
+		LoadModeManager.Instance.OnLevelLoaded += GetPlayers;
+		LoadModeManager.Instance.OnLevelUnloaded += GetPlayers;
 	} 
 
 	void Start () 
@@ -75,12 +77,9 @@ public class ControllerChangeManager : MonoBehaviour
 	{ 
 		getInput = true; 
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu) 
-		{ 
-			GamepadsManager.Instance.FindGamepadsPluggedAtStart (); 
-
-			UpdateAllSettings (); 
-		} 
+		GamepadsManager.Instance.FindGamepadsPluggedAtStart (); 
+		
+		UpdateAllSettings (); 
 	} 
 
 	void UpdateAllSettings () 
@@ -119,6 +118,9 @@ public class ControllerChangeManager : MonoBehaviour
 
 	void GetInput () 
 	{ 
+		if (mouseKeyboard == null)
+			return;
+
 		if (mouseKeyboard.GetAxisRaw("Move Horizontal") < -0.5f && !keyboardMoving) 
 		{ 
 			GoOnTheLeft (0); 
