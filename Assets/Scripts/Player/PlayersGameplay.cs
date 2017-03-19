@@ -698,8 +698,8 @@ public class PlayersGameplay : MonoBehaviour
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
 
-		if (controllerNumber == 0 && GlobalVariables.Instance != null)
-			GlobalVariables.Instance.HideMouseCursor (true);
+		if (controllerNumber == 0 && GlobalVariables.Instance != null && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			GlobalVariables.Instance.SetMouseVisibility (true);
 
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());

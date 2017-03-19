@@ -6,7 +6,7 @@ using Rewired;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum GameStateEnum {Menu, Playing, Paused, EndMode};
+public enum GameStateEnum {Menu, Playing, Paused, EndMode, Loading };
 
 public enum StartupType {Delayed, Wave, Done};
 
@@ -62,6 +62,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int NumberOfAlivePlayers;
 	public int NumberOfDeadPlayers;
 
+	[Header ("Movables")]
+	public List<GameObject> AllMovables = new List<GameObject> ();
+
 	[Header ("Mouse Cursor")]
 	public Texture2D[] mouseCursor = new Texture2D[4];
 
@@ -106,7 +109,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnCocktailModes (selectedCocktailModes.Count));
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
 
-		OnPlaying += ()=> HideMouseCursor();
+		OnPlaying += ()=> SetMouseVisibility();
 		OnPlaying += UpdatePlayedModes;
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
@@ -145,6 +148,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
+
+		GetMovables ();
 	}
 
 	public void LevelWasUnloaded (GameStateEnum gameState)
@@ -178,6 +183,26 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (OnModeObjectiveChange != null)
 			OnModeObjectiveChange ();
+	}
+
+	void GetMovables ()
+	{
+		AllMovables.Clear ();
+
+		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
+				AllMovables.Add (movable);
+
+		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
+				AllMovables.Add (movable);
+
+		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
+			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
+				AllMovables.Add (movable);
+
+		for (int i = 0; i < AllMovables.Count; i++)
+			AllMovables [i].SetActive (false);
 	}
 
 	void GetPlayers ()
@@ -315,20 +340,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			}
 	}
 
-	public void HideMouseCursor (bool forcedHide = false)
+	public void SetMouseVisibility (bool forcedHide = false)
 	{
-		if(forcedHide)
+		if(forcedHide || PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
 		{
-			Cursor.lockState = CursorLockMode.Locked;
-			Cursor.visible = false;
-		}
-		else
-		{
-			if(PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+			if(Cursor.lockState != CursorLockMode.Locked)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
 				Cursor.visible = false;
-			}			
+			}
+		}
+		else
+		{
+			if(Cursor.lockState != CursorLockMode.None)
+			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+			}
 		}
 	}
 

@@ -31,8 +31,11 @@ public class BombLeastDeathManager : LeastDeathManager
 	protected Vector3 textLocalPosition;
 
 	// Use this for initialization
-	protected override void Start () 
+	protected override void OnEnable () 
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
+			return;
+		
 		bomb.gameObject.SetActive(false);
 		bombScript = bomb.GetComponent<MovableBomb> ();
 		textInitialSize = timerText.fontSize;
@@ -42,39 +45,26 @@ public class BombLeastDeathManager : LeastDeathManager
 
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
-
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
 
 		StartCoroutine (Setup ());
+
+		for(int i = 0; i < deathCount.Length; i++)
+			deathCount[i] = 0;
+
+		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
 
 	protected override IEnumerator WaitForBeginning ()
 	{
-		List<GameObject> allMovables = new List<GameObject>();
-
-		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
-				allMovables.Add (movable);
-
-		allMovables.Remove (bomb);
-
-		for (int i = 0; i < allMovables.Count; i++)
-			allMovables [i].SetActive (false);
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(allMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray ());
+		GlobalVariables.Instance.AllMovables.Remove (bomb);
+
+		if(GlobalVariables.Instance.AllMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
 	protected IEnumerator Setup ()

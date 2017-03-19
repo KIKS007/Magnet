@@ -269,8 +269,13 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void ShowMenu (MenuComponent whichMenu)
 	{
+		StartCoroutine (ShowMenuCoroutine (whichMenu));
+	}
+
+	IEnumerator ShowMenuCoroutine (MenuComponent whichMenu)
+	{
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		StartCoroutine (ShowMenuCoroutine (whichMenu, MenuAnimationType.Show));
+		yield return StartCoroutine (ShowMenuCoroutine (whichMenu, MenuAnimationType.Show));
 		ResetOverrideSettings (WhichOverrideSettings.All);
 	}
 
@@ -530,8 +535,13 @@ public class MenuManager : Singleton <MenuManager>
 	#region Cancel Methods
 	public void HideMenu (MenuComponent whichMenu)
 	{
+		StartCoroutine (HideMenuCoroutine (whichMenu));
+	}
+
+	IEnumerator HideMenuCoroutine (MenuComponent whichMenu)
+	{
 		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
-		StartCoroutine (HideMenuCoroutine (whichMenu, MenuAnimationType.Hide));
+		yield return StartCoroutine (HideMenuCoroutine (whichMenu, MenuAnimationType.Hide));
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
 		currentMenu = null;
@@ -1108,7 +1118,7 @@ public class MenuManager : Singleton <MenuManager>
 		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
 		currentMenu.HideMenu ();
 
-		GlobalVariables.Instance.currentCocktailModes = GlobalVariables.Instance.selectedCocktailModes;
+		GlobalVariables.Instance.currentCocktailModes.AddRange (GlobalVariables.Instance.selectedCocktailModes);
 
 		LoadModeManager.Instance.LoadRandomCocktailScene ();
 
@@ -1211,12 +1221,13 @@ public class MenuManager : Singleton <MenuManager>
 		switch (GlobalVariables.Instance.ModeSequenceType)
 		{
 		case ModeSequenceType.Selection:
-			LoadModeManager.Instance.RestartSceneVoid (false, false);
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		case ModeSequenceType.Random:
-			LoadModeManager.Instance.RestartSceneVoid (false, true);
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		case ModeSequenceType.Cocktail:
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		}
 	}
@@ -1238,12 +1249,13 @@ public class MenuManager : Singleton <MenuManager>
 		switch (GlobalVariables.Instance.ModeSequenceType)
 		{
 		case ModeSequenceType.Selection:
-			LoadModeManager.Instance.RestartSceneVoid (false, false);
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		case ModeSequenceType.Random:
-			LoadModeManager.Instance.RestartSceneVoid (false, true);
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		case ModeSequenceType.Cocktail:
+			LoadModeManager.Instance.RestartSceneVoid (false);
 			break;
 		}
 	}

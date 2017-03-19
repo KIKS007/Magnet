@@ -14,38 +14,21 @@ public class LastManManager : MonoBehaviour
 
 	protected bool gameEndLoopRunning = false;
 
-	protected virtual void Start ()
+	protected virtual void OnEnable ()
 	{
 		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
 			return;
-		
+
+		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
 
 	protected virtual IEnumerator WaitForBeginning ()
 	{
-		List<GameObject> allMovables = new List<GameObject>();
-
-		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
-				allMovables.Add (movable);
-		
-
-		for (int i = 0; i < allMovables.Count; i++)
-			allMovables [i].SetActive (false);
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(allMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray (), durationBetweenSpawn);
+		if(GlobalVariables.Instance.AllMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
 	// Update is called once per frame
@@ -92,7 +75,7 @@ public class LastManManager : MonoBehaviour
 		{
 			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-			LoadModeManager.Instance.RestartSceneVoid (false, false);
+			LoadModeManager.Instance.RestartSceneVoid (false);
 		}
 
 		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
