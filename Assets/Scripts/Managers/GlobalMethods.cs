@@ -236,7 +236,6 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		target.transform.position = position;
 
-		target.transform.localScale = Vector3.zero;
 		target.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		target.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
@@ -245,6 +244,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
 	{
+		target.transform.localScale = Vector3.zero;
 		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
 

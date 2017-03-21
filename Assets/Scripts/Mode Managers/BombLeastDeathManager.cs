@@ -181,10 +181,10 @@ public class BombLeastDeathManager : LeastDeathManager
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
 		{
 			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
-				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
+				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
+				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
 		}
 	}
 

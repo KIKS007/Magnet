@@ -107,7 +107,7 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				playerHit = other.gameObject;
@@ -123,7 +123,7 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				playerHit = other.gameObject;
@@ -139,7 +139,7 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersBomb>().GetBomb(GetComponent<Collider>());
+				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				playerHit = other.gameObject;
