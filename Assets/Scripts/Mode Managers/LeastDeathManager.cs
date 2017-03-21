@@ -10,7 +10,7 @@ public class LeastDeathManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Death Count")]
-	public int maxDeath = 15;
+	private int maxDeath = 5;
 	public int[] deathCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
 

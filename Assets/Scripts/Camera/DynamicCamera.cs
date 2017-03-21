@@ -42,8 +42,12 @@ public class DynamicCamera : MonoBehaviour
 	{
 		targetsList.Clear ();
 
-		for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
-			targetsList.Add (GlobalVariables.Instance.AlivePlayersList [i]);
+		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
+			for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
+				targetsList.Add (GlobalVariables.Instance.AlivePlayersList [i]);
+		else
+			for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
+				targetsList.Add (GlobalVariables.Instance.EnabledPlayersList [i]);
 
 		for (int i = 0; i < otherTargetsList.Count(); i++)
 			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)

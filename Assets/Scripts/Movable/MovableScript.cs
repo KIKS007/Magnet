@@ -60,6 +60,7 @@ public class MovableScript : MonoBehaviour
 	public MeshFilter cubeMeshFilter;
 	[HideInInspector]
 	public Material cubeMaterial;
+	[HideInInspector]
 	public Vector3 initialScale;
 	#endregion
 
