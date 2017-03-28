@@ -238,7 +238,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		ps.startSize = 2 + whichCube.transform.lossyScale.x;
+
+		//ps.startSize = 2 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetAttractionParticles (whichCube, fx, ps));
 
@@ -262,7 +263,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (transform.position.x, fx.transform.position.y, transform.position.z);
 			fx.transform.LookAt(lookPos);
 
-			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
+			/*	float dist = Vector3.Distance (transform.position, whichCube.transform.position);
 			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
 
 			ps.startLifetime = lifeTime;
@@ -277,7 +278,7 @@ public class PlayersFXAnimations : MonoBehaviour
 				particlesList [i].startLifetime = lifeTime;
 			}
 
-			ps.SetParticles (particlesList, particlesList.Length);
+			ps.SetParticles (particlesList, particlesList.Length);*/
 
 			yield return null;
 		}
@@ -289,7 +290,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		ps.startSize = 2 + whichCube.transform.lossyScale.x;
+
+		//ps.startSize = 2 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
 
@@ -324,7 +326,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
 			fx.transform.LookAt(lookPos);
 
-			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
+			/*float dist = Vector3.Distance (transform.position, whichCube.transform.position);
 			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
 
 			ps.startLifetime = lifeTime;
@@ -339,7 +341,7 @@ public class PlayersFXAnimations : MonoBehaviour
 				particlesList [i].startLifetime = lifeTime;
 			}
 
-			ps.SetParticles (particlesList, particlesList.Length);
+			ps.SetParticles (particlesList, particlesList.Length);*/
 
 			yield return null;
 		}
