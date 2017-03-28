@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b04a763904d0f224f9b9257443baab44
+timeCreated: 1490729891
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _T_Lava01: {fileID: 2800000, guid: 28c17e75ad3dcb7468d177c1f6b86ac1, type: 3}
+  - _T_Lava02: {fileID: 2800000, guid: 64bcf5ba77b515841af46bf7980e6064, type: 3}
+  - _T_Lavalpha02: {fileID: 2800000, guid: 03210bed239f8154a87180c5a248e5e3, type: 3}
+  - _T_Lava03: {fileID: 2800000, guid: eb2233c54dfc6f845bfe43fe04d7d340, type: 3}
+  - _T_Lavalpha03: {fileID: 2800000, guid: 0c802e14264713d479db105839971052, type: 3}
+  - _T_Lava04: {fileID: 2800000, guid: 2e0856832b820c64585aff91694fa027, type: 3}
+  - _T_Lavalpha04: {fileID: 2800000, guid: a9be5c57f93d8054f80577e3a08cce5b, type: 3}
+  - _T_Lava05: {fileID: 2800000, guid: c4000dc48317f5344b78352d54528712, type: 3}
+  - _T_Lavalpha05: {fileID: 2800000, guid: 65653538d87aa2d4ebba08df5a3ae447, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

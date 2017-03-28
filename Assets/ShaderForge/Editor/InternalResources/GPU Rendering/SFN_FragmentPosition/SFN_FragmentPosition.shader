@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
 Shader "Hidden/Shader Forge/SFN_FragmentPosition" {
     Properties {
         _OutputMask ("Output Mask", Vector) = (1,1,1,1)

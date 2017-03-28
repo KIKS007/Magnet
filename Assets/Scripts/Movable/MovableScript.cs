@@ -73,7 +73,7 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void Start () 
 	{
-		
+
 	}
 
 	protected virtual void OnEnable ()
@@ -86,9 +86,6 @@ public class MovableScript : MonoBehaviour
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 			
-		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
-
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
@@ -141,7 +138,7 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Color
-	public virtual void ToColor (GameObject otherPlayer = null)
+	/*public virtual void ToColor (GameObject otherPlayer = null)
 	{
 		int whichPlayer = 0;
 
@@ -168,22 +165,66 @@ public class MovableScript : MonoBehaviour
 
 			StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
 		}
+	}*/
+
+	public virtual void ToColor (GameObject otherPlayer = null)
+	{
+		int whichPlayer = 0;
+
+		if(otherPlayer != null)
+			whichPlayer = (int)otherPlayer.GetComponent<PlayersGameplay> ().playerName;
+		else
+			whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+
+		CubeColor whichColor = (CubeColor)whichPlayer + 1;
+
+		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
+			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
+
+		DisableAllColor (whichColor, toColorDuration);
+
+		switch(whichColor)
+		{
+		case CubeColor.Blue:
+			cubeMaterial.DOFloat (1, "_LerpBLUE", toColorDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Pink:
+			cubeMaterial.DOFloat (1, "_LerpPINK", toColorDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Green:
+			cubeMaterial.DOFloat (1, "_LerpGREEN", toColorDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Yellow:
+			cubeMaterial.DOFloat (1, "_LerpYELLOW", toColorDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		}
 	}
 
 	public virtual void ToNeutralColor ()
 	{
 		if(!hold)
 		{
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
 			//Debug.Log ("Neutral Color");
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
+			DisableAllColor (CubeColor.Neutral, toColorDuration);
 
 			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, toNeutralDuration));
 		}
+	}
+
+	public virtual void DisableAllColor (CubeColor excludeColor, float duration)
+	{
+		if(cubeColor != CubeColor.Blue)
+			cubeMaterial.DOFloat (0, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		if(cubeColor != CubeColor.Pink)
+			cubeMaterial.DOFloat (0, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		if(cubeColor != CubeColor.Green)
+			cubeMaterial.DOFloat (0, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		if(cubeColor != CubeColor.Yellow)
+			cubeMaterial.DOFloat (0, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 	}
 
 	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)

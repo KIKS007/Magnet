@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
-
 Shader "Hidden/Shader Forge/SFN_ObjectScale_Reciprocal" {
     Properties {
         _OutputMask ("Output Mask", Vector) = (1,1,1,1)
