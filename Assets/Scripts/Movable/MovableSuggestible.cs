@@ -13,6 +13,7 @@ public class MovableSuggestible : MovableScript
 	{
 		gameObject.tag = "Suggestible";
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+		ToDeadlyColor ();
 	}
 
 	protected override void Update ()

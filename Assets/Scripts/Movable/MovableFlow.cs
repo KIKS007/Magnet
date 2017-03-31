@@ -12,6 +12,8 @@ public class MovableFlow : MovableScript
 	{
 		gameObject.tag = "Suggestible";
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		ToDeadlyColor ();
 	}
 
 	protected override void Update ()

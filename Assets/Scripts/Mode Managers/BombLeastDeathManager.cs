@@ -151,10 +151,10 @@ public class BombLeastDeathManager : LeastDeathManager
 	{
 		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
 		firstSpawn = false;
+		bombScript.ResetColor ();
 
 		yield return new WaitForSeconds (timeBeforeSpawn);
 
-		bombScript.ResetColor ();
 		bomb.tag = "Movable";
 
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);

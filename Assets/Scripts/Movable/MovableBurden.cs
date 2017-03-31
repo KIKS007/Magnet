@@ -75,9 +75,10 @@ public class MovableBurden : MovableScript
 				randomPlayer = Random.Range (0, playersList.Count);
 				otherMovables [i].targetPlayer = playersList [randomPlayer];
 
-				otherMovables [i].ToColor (otherMovables [i].targetPlayer);
+				//otherMovables [i].ToColor (otherMovables [i].targetPlayer);
 				otherMovables [i].GetToPlayerVoid ();
 				otherMovables [i].DisplayCube ();
+				otherMovables [i].ToDeadlyColor ();
 				otherMovables [i].StartCoroutine ("AddSpeed");
 
 				playersList.RemoveAt (randomPlayer);
@@ -88,9 +89,11 @@ public class MovableBurden : MovableScript
 			}
 		}
 
-		ToColor (targetPlayer);
+
+		//ToColor (targetPlayer);
 		GetToPlayerVoid ();
 		DisplayCube ();
+		ToDeadlyColor ();
 		StartCoroutine (AddSpeed ());
 	}
 

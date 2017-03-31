@@ -31,19 +31,7 @@ public class MovableDeadCube : MovableScript
 
 	protected override void Start ()
 	{
-		SetDeadColor ();
-	}
-
-	void SetDeadColor ()
-	{
-		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-
-		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, Color.black, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		ToDeadlyColor ();
 	}
 
 	protected override void Update ()

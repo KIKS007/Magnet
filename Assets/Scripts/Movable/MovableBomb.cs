@@ -62,41 +62,7 @@ public class MovableBomb : MovableScript
 			}
 		}
 	}
-
-	protected void SetCubeColor ()
-	{
-		int whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
-		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
-
-		/*	switch(player.GetComponent <PlayersGameplay>().playerName)
-		{
-		case PlayerName.Player1:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer1;
-			break;
-		case PlayerName.Player2:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer2;
-			break;
-		case PlayerName.Player3:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer3;
-			break;
-		case PlayerName.Player4:
-			cubeCorrectColor = GlobalVariables.Instance.cubeColorplayer4;
-			break;
-		}*/
-
-		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-		{
-			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-		}
-
-		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 		
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ()).OnComplete (()=> GetComponent<Renderer> ().material.color = cubeMaterial.GetColor ("_Color"));
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-
-	}
-
 	protected override void HitPlayer (Collision other)
 	{
 		if(tag == "Movable" && other.gameObject.tag == "Player" 
@@ -173,8 +139,6 @@ public class MovableBomb : MovableScript
 		base.OnHold ();
 
 		playerHolding = player.gameObject;
-
-		SetCubeColor ();
 	}
 
 	public override void OnRelease ()
@@ -182,24 +146,27 @@ public class MovableBomb : MovableScript
 		OnReleaseEventVoid ();
 	}
 
-	public void ResetColor ()
+	public virtual void ResetColor ()
 	{
-		if(playerHolding == null && hold == false)
-		{
-			if(cubeMaterial == null)
-				cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-			
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-			
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
-		}
+		//Debug.Log ("Neutral Color");
+		
+		if (deadlyParticle == null)
+			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 
+		if(cubeMaterial == null)
+			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
+		deadlyParticle.Stop ();
+		
+		DisableAllColor (toColorDuration);
+		
+		cubeColor = CubeColor.Neutral;
 	}
 
 	public IEnumerator Explode ()
 	{
+		ToDeadlyColor ();
+
 		if (!hold)
 		{
 			trackingPlayer = true;
@@ -220,6 +187,8 @@ public class MovableBomb : MovableScript
 		playerHolding.GetComponent<PlayersGameplay> ().Death (DeathFX.All, explosionPos);
 
 		gameObject.SetActive (false);
+
+		ToNeutralColor ();
 
 		playerHolding = null;
 		trackingPlayer = false;
