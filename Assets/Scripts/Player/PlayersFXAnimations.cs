@@ -44,6 +44,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	private Color playerColor;
 
+	public float distance;
+
 	void Awake ()
 	{
 		initialScale = transform.localScale;
@@ -239,7 +241,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 
-		//ps.startSize = 2 + whichCube.transform.lossyScale.x;
+		ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetAttractionParticles (whichCube, fx, ps));
 
@@ -263,8 +265,8 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (transform.position.x, fx.transform.position.y, transform.position.z);
 			fx.transform.LookAt(lookPos);
 
-			/*	float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
+			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 
 			ps.startLifetime = lifeTime;
 
@@ -274,11 +276,11 @@ public class PlayersFXAnimations : MonoBehaviour
 			for (int i = 0; i < ps.particleCount; i++)
 			{
 				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+				lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 				particlesList [i].startLifetime = lifeTime;
 			}
 
-			ps.SetParticles (particlesList, particlesList.Length);*/
+			ps.SetParticles (particlesList, particlesList.Length);
 
 			yield return null;
 		}
@@ -291,15 +293,13 @@ public class PlayersFXAnimations : MonoBehaviour
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 
-		//ps.startSize = 2 + whichCube.transform.lossyScale.x;
+		ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
 
 		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (whichCube));
 
-		ps.Stop ();
-
-		ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
+		/*ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
 		ps.GetParticles (particlesList);
 
 		for (int i = 0; i < ps.particleCount; i++)
@@ -308,7 +308,9 @@ public class PlayersFXAnimations : MonoBehaviour
 			yield return null;
 		}
 
-		ps.SetParticles (particlesList, particlesList.Length);
+		ps.SetParticles (particlesList, particlesList.Length);*/
+
+		ps.Stop ();
 
 		yield return new WaitWhile(() => ps.IsAlive());
 
@@ -326,8 +328,10 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
 			fx.transform.LookAt(lookPos);
 
-			/*float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+			distance = Vector3.Distance (transform.position, whichCube.transform.position);
+
+			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
+			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 
 			ps.startLifetime = lifeTime;
 
@@ -337,11 +341,11 @@ public class PlayersFXAnimations : MonoBehaviour
 			for (int i = 0; i < ps.particleCount; i++)
 			{
 				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+				lifeTime =  0.027491408934708f * dist -0.036082474226804f;
 				particlesList [i].startLifetime = lifeTime;
 			}
 
-			ps.SetParticles (particlesList, particlesList.Length);*/
+			ps.SetParticles (particlesList, particlesList.Length);
 
 			yield return null;
 		}
