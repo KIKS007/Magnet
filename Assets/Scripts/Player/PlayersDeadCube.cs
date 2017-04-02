@@ -51,7 +51,13 @@ public class PlayersDeadCube : MonoBehaviour
 		halfScale = transform.lossyScale.x * 0.5f;
 
 		Controller ();
-		movableScript.ToColor (playerName);
+		SetReincarnationFX ();
+		//movableScript.ToColor (playerName);
+	}
+
+	void SetReincarnationFX ()
+	{
+		GameObject FX = Instantiate (GlobalVariables.Instance.reincarnationFX [(int)playerName], transform.position, transform.rotation, transform) as GameObject;
 	}
 
 	public void Controller()

@@ -97,6 +97,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
 			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
+			deadCube.GetComponent<MovablePlayer> ().CubeColor (tag);
 			
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;

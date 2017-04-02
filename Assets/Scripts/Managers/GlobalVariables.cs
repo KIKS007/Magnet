@@ -83,6 +83,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject[] repulseFX = new GameObject[4];
 	public GameObject[] wallImpactFX = new GameObject[5];
 	public GameObject[] waveFX = new GameObject[4];
+	public GameObject[] reincarnationFX = new GameObject[4];
 
 	[Header ("Particles Prefab")]
 	public GameObject HitParticles;

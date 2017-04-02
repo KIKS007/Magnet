@@ -12,6 +12,19 @@ public class MovablePlayer : MovableScript
 	[HideInInspector]
 	public bool basicMovable = true;
 
+	protected override void Start ()
+	{
+		
+	}
+
+	public void CubeColor (string tag)
+	{
+		if (tag == "Suggestible" || tag == "DeadCube")
+			ToDeadlyColor ();
+		else
+			ToNeutralColor ();
+	}
+
 	protected override void Update ()
 	{
 		if(hold == false && rigidbodyMovable != null)
@@ -66,15 +79,17 @@ public class MovablePlayer : MovableScript
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 
+		ToColor();
+
 		OnHoldEventVoid ();
 	}
 
-	public override void OnRelease ()
+	/*public override void OnRelease ()
 	{
 		OnReleaseEventVoid ();
-	}
+	}*/
 
-	public void ToColor (PlayerName playerName)
+	/*public void ToColor (PlayerName playerName)
 	{
 		int whichPlayer = (int)playerName;
 
@@ -96,7 +111,7 @@ public class MovablePlayer : MovableScript
 
 			StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
 		}
-	}
+	}*/
 
 	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{

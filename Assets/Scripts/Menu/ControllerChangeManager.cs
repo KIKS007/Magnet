@@ -9,6 +9,8 @@ public class ControllerChangeManager : MonoBehaviour
 { 
 	public event EventHandler OnControllerChange; 
 
+	public bool correctChoice;
+
 	[Header ("Connect Gamepad Text")] 
 	public GameObject[] gamepadsConnectText = new GameObject[4]; 
 
@@ -191,13 +193,15 @@ public class ControllerChangeManager : MonoBehaviour
 
 	#region Correct Players Selection 
 	void CheckCanPlay () 
-	{ 
+	{
 		StartCoroutine (WaitEndMenuAnimation ()); 
 	} 
 
 	IEnumerator WaitEndMenuAnimation () 
 	{ 
 		yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
+
+		correctChoice = CorrectPlayerChoice ();
 
 		if(CorrectPlayerChoice () && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
@@ -221,20 +225,20 @@ public class ControllerChangeManager : MonoBehaviour
 		int player3Choice = 0; 
 		int player4Choice = 0; 
 
-		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++) 
+		for(int i = 0; i < imagesNumber.Length; i++) 
 		{
-			switch(GlobalVariables.Instance.PlayersControllerNumber[i]) 
+			switch(imagesNumber[i]) 
 			{ 
-			case 0: 
+			case 1: 
 				player1Choice++; 
 				break; 
-			case 1: 
+			case 2: 
 				player2Choice++; 
 				break; 
-			case 2: 
+			case 3: 
 				player3Choice++; 
 				break; 
-			case 3: 
+			case 4: 
 				player4Choice++; 
 				break; 
 			} 
