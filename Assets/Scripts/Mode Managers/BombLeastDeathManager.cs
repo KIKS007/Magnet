@@ -163,7 +163,10 @@ public class BombLeastDeathManager : LeastDeathManager
 		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
 		bombPosition.y = 2;
 
-		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		if(!Physics.CheckSphere(bombPosition, 5f, GlobalMethods.Instance.gameplayLayer))
+			GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		else
+			GlobalMethods.Instance.SpawnExistingMovableRandom (new Vector2(0, 0), new Vector2 (-8, 8), bomb);
 
 		yield return new WaitWhile (()=> bomb.activeSelf == false);
 

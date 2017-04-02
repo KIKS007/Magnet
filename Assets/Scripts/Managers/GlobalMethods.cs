@@ -202,6 +202,23 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 
+	public void SpawnExistingMovableRandom (Vector2 xLimits, Vector2 zLimits, GameObject movable, float scaleDuration = defaultScaleDuration)
+	{
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+		movable.tag = "Untagged";
+
+		do
+		{
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+		}
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+
+		EnableGameObject (movable, newPos);
+		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
+	}
+
 	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
 	{
 		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration));

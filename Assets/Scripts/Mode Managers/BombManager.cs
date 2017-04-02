@@ -94,15 +94,45 @@ public class BombManager : LastManManager
 
 		StartCoroutine (Timer ());
 	}
-	
+
 	// Update is called once per frame
 	protected override void Update () 
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && bomb.activeSelf == true && !lastSeconds && timer < 4)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			lastSeconds = true;
-			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
+			if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
+			{
+				gameEndLoopRunning = true;
+				StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
+				
+				StopAllCoroutines ();
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
+				bombScript.StopAllCoroutines ();
+
+				StartCoroutine (GameEnd ());
+			}
+			
+			if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
+			{
+				gameEndLoopRunning = true;
+				StatsManager.Instance.Winner(WhichPlayer.Draw);
+				
+				StopAllCoroutines ();
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
+				bombScript.StopAllCoroutines ();
+
+				StartCoroutine (GameEnd ());
+			}
+			
+			if(bomb.activeSelf == true && !lastSeconds && timer < 4)
+			{
+				lastSeconds = true;
+				MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
+			}
 		}
+
 	}
 
 	IEnumerator Timer ()
@@ -188,7 +218,10 @@ public class BombManager : LastManManager
 		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
 		bombPosition.y = 2;
 
-		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		if(!Physics.CheckSphere(bombPosition, 5f, GlobalMethods.Instance.gameplayLayer))
+			GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		else
+			GlobalMethods.Instance.SpawnExistingMovableRandom (new Vector2(0, 0), new Vector2 (-8, 8), bomb);
 
 		yield return new WaitWhile (()=> bomb.activeSelf == false);
 

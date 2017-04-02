@@ -22,6 +22,7 @@ public class MovableBomb : MovableScript
 	protected override void OnEnable ()
 	{
 		hold = false;
+		trackingPlayer = false;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
