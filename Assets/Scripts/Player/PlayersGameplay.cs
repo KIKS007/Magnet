@@ -106,7 +106,7 @@ public class PlayersGameplay : MonoBehaviour
 
     [HideInInspector]
     public Rigidbody playerRigidbody;
-    protected Vector3 movement;
+	public Vector3 movement;
 
     protected int triggerMask;
     protected float camRayLength = 200f;
@@ -442,6 +442,7 @@ public class PlayersGameplay : MonoBehaviour
 
         holdMovableTransform = movable.GetComponent<Transform>();
 		holdMovableTransform.SetParent (transform);
+//		holdMovableTransform.SetParent (playerFX.playerMesh);
 
 
         for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)

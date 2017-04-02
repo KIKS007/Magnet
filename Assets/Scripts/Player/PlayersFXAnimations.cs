@@ -30,6 +30,11 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Dash Available FX")]
 	public ParticleSystem dashAvailableFX;
 
+	[Header ("Player Mesh")]
+	public Transform playerMesh;
+	public float leanSpeed;
+	public float leanLerp = 0.1f;
+	public float leanMaxAngle;
 
 	private PlayersGameplay playerScript;
 	private PlayersSounds playerSoundsScript;
@@ -98,7 +103,54 @@ public class PlayersFXAnimations : MonoBehaviour
 		}
 
 		if (dashFX != null && playerScript.dashState != DashState.Dashing)
-			DisableDashFX ();		
+			DisableDashFX ();
+
+		LeanMesh ();
+	}
+
+	void LeanMesh ()
+	{
+		Vector3 movementDirection = transform.InverseTransformDirection (playerScript.movement);
+		Vector3 newRotation = new Vector3 ();
+
+		if (movementDirection.z > 0.5f || movementDirection.z < -0.5f)
+			newRotation.x = movementDirection.z * leanSpeed;
+		else
+			newRotation.x = 0;
+
+		if (movementDirection.x > 0.5f || movementDirection.x < -0.5f)
+			newRotation.z = -movementDirection.x * leanSpeed;
+		else
+			newRotation.z = 0;
+
+		if (playerScript.holdState == HoldState.Holding)
+			newRotation = Vector3.zero;
+
+		playerMesh.localRotation = Quaternion.Lerp (playerMesh.localRotation, Quaternion.Euler (newRotation), leanLerp);
+
+		playerMesh.localEulerAngles = new Vector3 (ClampAngle (playerMesh.localEulerAngles.x, -leanMaxAngle, leanMaxAngle), playerMesh.localEulerAngles.y, ClampAngle (playerMesh.localEulerAngles.z, -leanMaxAngle, leanMaxAngle));
+	}
+
+	float ClampAngle(float angle, float min, float max) 
+	{
+		if(angle < 90 || angle > 270)
+		{
+			if (angle > 180)
+				angle -= 360;
+
+			if (max > 180)
+				max -= 360;
+
+			if (min > 180)
+				min -= 360;
+		}
+
+		angle = Mathf.Clamp(angle, min, max);
+
+		if(angle < 0) 
+			angle += 360;
+
+		return angle;
 	}
 
 	void TrailLength ()

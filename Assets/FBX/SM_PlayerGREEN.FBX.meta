@@ -1,0 +1,168 @@
+fileFormatVersion: 2
+guid: 2a6ee2f88d99b2041a897430e49fcd8e
+timeCreated: 1490889626
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Box036
+    100002: Box037
+    100004: Box038
+    100006: Cylinder023
+    100008: Cylinder024
+    100010: Cylinder025
+    100012: Cylinder026
+    100014: Cylinder027
+    100016: Cylinder028
+    100018: Cylinder029
+    100020: Cylinder030
+    100022: Cylinder031
+    100024: Cylinder032
+    100026: Cylinder033
+    100028: Object004
+    100030: //RootNode
+    100032: Sphere006
+    100034: Sphere007
+    100036: Torus003
+    400000: Box036
+    400002: Box037
+    400004: Box038
+    400006: Cylinder023
+    400008: Cylinder024
+    400010: Cylinder025
+    400012: Cylinder026
+    400014: Cylinder027
+    400016: Cylinder028
+    400018: Cylinder029
+    400020: Cylinder030
+    400022: Cylinder031
+    400024: Cylinder032
+    400026: Cylinder033
+    400028: Object004
+    400030: //RootNode
+    400032: Sphere006
+    400034: Sphere007
+    400036: Torus003
+    2300000: Box036
+    2300002: Box037
+    2300004: Box038
+    2300006: Cylinder023
+    2300008: Cylinder024
+    2300010: Cylinder025
+    2300012: Cylinder026
+    2300014: Cylinder027
+    2300016: Cylinder028
+    2300018: Cylinder029
+    2300020: Cylinder030
+    2300022: Cylinder031
+    2300024: Cylinder032
+    2300026: Cylinder033
+    2300028: Object004
+    2300030: Sphere006
+    2300032: Sphere007
+    2300034: Torus003
+    3300000: Box036
+    3300002: Box037
+    3300004: Box038
+    3300006: Cylinder023
+    3300008: Cylinder024
+    3300010: Cylinder025
+    3300012: Cylinder026
+    3300014: Cylinder027
+    3300016: Cylinder028
+    3300018: Cylinder029
+    3300020: Cylinder030
+    3300022: Cylinder031
+    3300024: Cylinder032
+    3300026: Cylinder033
+    3300028: Object004
+    3300030: Sphere006
+    3300032: Sphere007
+    3300034: Torus003
+    4300000: Sphere006
+    4300002: Object004
+    4300004: Cylinder033
+    4300006: Cylinder030
+    4300008: Sphere007
+    4300010: Cylinder029
+    4300012: Cylinder028
+    4300014: Cylinder031
+    4300016: Cylinder027
+    4300018: Torus003
+    4300020: Cylinder026
+    4300022: Cylinder025
+    4300024: Cylinder023
+    4300026: Cylinder024
+    4300028: Cylinder032
+    4300030: Box037
+    4300032: Box038
+    4300034: Box036
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 2
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
