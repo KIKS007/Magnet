@@ -247,8 +247,13 @@ public class ControllerChangeManager : MonoBehaviour
 		if (player1Choice > 1 || player2Choice > 1 || player3Choice > 1 || player4Choice > 1) 
 			return false; 
 
-		else if ((player1Choice + player2Choice + player3Choice + player4Choice) < 2) 
-			return false; 
+		else if ((player1Choice + player2Choice + player3Choice + player4Choice) < 2)
+		{
+			if (GlobalVariables.Instance.EnabledPlayersList.Count > 1)
+				return true;
+			else
+				return false; 
+		}
 
 		else 
 			return true; 

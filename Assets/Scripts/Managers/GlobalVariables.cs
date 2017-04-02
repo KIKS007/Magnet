@@ -75,6 +75,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Players Dead Cubes")]
 	public GameObject[] deadCubesPrefabs = new GameObject[3];
+	public Mesh deadCubesMeshFilter;
 
 	[Header ("FX Prefabs")]
 	public GameObject[] shootFX = new GameObject[4];

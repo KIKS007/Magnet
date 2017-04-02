@@ -17,6 +17,23 @@ public class MovablePlayer : MovableScript
 		
 	}
 
+	protected override void OnEnable ()
+	{
+		hold = false;
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		deadlyParticle.Stop ();
+		cubeMeshFilter.mesh = GlobalVariables.Instance.deadCubesMeshFilter;
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
+	}
+
 	public void CubeColor (string tag)
 	{
 		if (tag == "Suggestible" || tag == "DeadCube")
