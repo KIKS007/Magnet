@@ -106,6 +106,7 @@ public class PlayersGameplay : MonoBehaviour
 
     [HideInInspector]
     public Rigidbody playerRigidbody;
+	[HideInInspector]
 	public Vector3 movement;
 
     protected int triggerMask;
@@ -566,14 +567,17 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual IEnumerator Stun(bool cubeHit)
     {
+		playerState = PlayerState.Stunned;
+
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
+			holdState = HoldState.CannotHold;
+
 			yield return new WaitWhile(() => gettingMovable == true);
 			
 			Shoot();
 		}
 
-		playerState = PlayerState.Stunned;
 		holdState = HoldState.CannotHold;
 
 		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
@@ -593,7 +597,8 @@ public class PlayersGameplay : MonoBehaviour
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
 
-		holdState = HoldState.CanHold;
+		if(holdState == HoldState.CannotHold)
+			holdState = HoldState.CanHold;
     }
 	#endregion
 

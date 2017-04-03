@@ -27,8 +27,14 @@ public class BombLeastDeathManager : LeastDeathManager
 
 	protected MovableBomb bombScript;
 
-	protected int textInitialSize;
-	protected Vector3 textLocalPosition;
+	public int textInitialSize;
+	public Vector3 textLocalPosition;
+
+	protected void Awake ()
+	{
+		textInitialSize = timerText.fontSize;
+		textLocalPosition = timerText.transform.parent.transform.localPosition;
+	}
 
 	// Use this for initialization
 	protected override void OnEnable () 
@@ -38,15 +44,6 @@ public class BombLeastDeathManager : LeastDeathManager
 		
 		bomb.gameObject.SetActive(false);
 		bombScript = bomb.GetComponent<MovableBomb> ();
-		textInitialSize = timerText.fontSize;
-		timerText.fontSize = 0;
-		textLocalPosition = timerText.transform.parent.transform.localPosition;
-		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
-
-		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
-
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
 
 		StartCoroutine (Setup ());
 
@@ -70,6 +67,12 @@ public class BombLeastDeathManager : LeastDeathManager
 	protected IEnumerator Setup ()
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		bombScript = bomb.GetComponent<MovableBomb> ();
+		timerText.fontSize = 0;
+		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+
+		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
 		timer = timerLimits.x;
 		currentTimer = timerLimits.x;

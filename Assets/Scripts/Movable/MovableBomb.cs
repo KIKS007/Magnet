@@ -69,7 +69,7 @@ public class MovableBomb : MovableScript
 		if(tag == "Movable" && other.gameObject.tag == "Player" 
 			|| tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
-			if(playerThatThrew == null)
+			if(playerThatThrew == null && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
@@ -101,7 +101,7 @@ public class MovableBomb : MovableScript
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 			}
 
-			else if(playerThatThrew != other.gameObject)
+			else if(playerThatThrew != other.gameObject && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);

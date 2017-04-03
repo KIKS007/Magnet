@@ -10,6 +10,7 @@ public class LastManManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Cubes Spawn")]
+	public bool spawnCubes = true;
 	public float durationBetweenSpawn = 0.1f;
 
 	protected bool gameEndLoopRunning = false;
@@ -27,7 +28,7 @@ public class LastManManager : MonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(GlobalVariables.Instance.AllMovables.Count > 0)
+		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 

@@ -260,7 +260,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		target.gameObject.SetActive(true);
 	}
 
-	void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
+	public void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
 	{
 		target.transform.localScale = Vector3.zero;
 		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);

@@ -2,6 +2,7 @@
 using System.Collections;
 using DarkTonic.MasterAudio;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class MovableBurden : MovableScript 
 {
@@ -31,9 +32,6 @@ public class MovableBurden : MovableScript
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
-
-		for (int i = 0; i < transform.childCount; i++)
-			transform.GetChild (i).gameObject.SetActive (false);
 	}
 
 	protected override void OnEnable ()
@@ -49,7 +47,7 @@ public class MovableBurden : MovableScript
 		repulsedBy.Clear ();
 
 		if (targetFinder && !firstStart)
-			FindTarget ();
+			DOVirtual.DelayedCall (0.1f, ()=> FindTarget (), true);
 
 		firstStart = false;
 	}
@@ -77,8 +75,7 @@ public class MovableBurden : MovableScript
 
 				//otherMovables [i].ToColor (otherMovables [i].targetPlayer);
 				otherMovables [i].GetToPlayerVoid ();
-				otherMovables [i].DisplayCube ();
-				otherMovables [i].ToDeadlyColor ();
+				otherMovables [i].StartCoroutine ("ColorTransition");
 				otherMovables [i].StartCoroutine ("AddSpeed");
 
 				playersList.RemoveAt (randomPlayer);
@@ -92,20 +89,22 @@ public class MovableBurden : MovableScript
 
 		//ToColor (targetPlayer);
 		GetToPlayerVoid ();
-		DisplayCube ();
-		ToDeadlyColor ();
+		StartCoroutine (ColorTransition ());
 		StartCoroutine (AddSpeed ());
-	}
-
-	void DisplayCube ()
-	{
-		for (int i = 0; i < transform.childCount; i++)
-			transform.GetChild (i).gameObject.SetActive (true);
 	}
 
 	void GetToPlayerVoid ()
 	{
 		StartCoroutine (GetToPlayerPosition ());
+	}
+
+	IEnumerator ColorTransition ()
+	{
+		ToColor (targetPlayer);
+
+		yield return new WaitForSeconds (1f);
+
+		ToDeadlyColor ();
 	}
 
 	IEnumerator GetToPlayerPosition ()
