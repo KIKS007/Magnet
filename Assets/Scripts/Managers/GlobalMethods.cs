@@ -11,9 +11,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public Vector2 xLimits;
 	public Vector2 zLimits;
 
-	private float checkSphereRadius = 5f;
+	private int maxWhileLoop = 300;
 
-	private float cubeYPosition = 3f;
+	private const float checkSphereRadius = 4;
+
+	private const float cubeYPosition = 3f;
 
 	private const float defaultScaleDuration = 0.8f;
 
@@ -42,6 +44,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0)
 	{
 		Vector3 newPos = new Vector3();
+		int loopCount = 0;
 
 		player.SetActive (false);
 
@@ -49,10 +52,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
+			loopCount++;
 			newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), player.transform.position.y, Random.Range(zLimits.x, zLimits.y));
 			yield return null;	
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
@@ -81,6 +85,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
+		int loopCount = 0;
 
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
@@ -88,11 +93,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			do
 			{
-				newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+				loopCount++;
+				newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 				yield return null;	
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));			
-			
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);			
+
+			newPos.y = cubeYPosition;
 			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
 			
 			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
@@ -131,6 +138,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string[] allTags = new string[allMovables.Length];
+		int loopCount = 0;
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
@@ -151,11 +159,14 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			do
 			{
-				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+				loopCount++;
+				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
+
+			newPos.y = cubeYPosition;
 
 			if(allMovables[i] != null)
 			{
@@ -191,12 +202,16 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
+		int loopCount = 0;
 
 		do
 		{
-			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+
+		newPos.y = cubeYPosition;
 
 		EnableGameObject (movable, newPos);
 		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
@@ -208,23 +223,27 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
+		int loopCount = 0;
 
 		do
 		{
-			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+
+		newPos.y = cubeYPosition;
 
 		EnableGameObject (movable, newPos);
 		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 
-	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
+	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius)
 	{
-		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration));
+		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration, checkSphere));
 	}
 
-	IEnumerator SpawnNewMovableRandom (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
+	IEnumerator SpawnNewMovableRandom (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius)
 	{
 		if (movable == null)
 			movable = GlobalVariables.Instance.cubesPrefabs [Random.Range (0, GlobalVariables.Instance.cubesPrefabs.Length)];
@@ -232,6 +251,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
+		int loopCount = 0;
 
 		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
 		clone.gameObject.SetActive(false);
@@ -240,10 +260,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer) && loopCount < maxWhileLoop);
 
+		newPos.y = cubeYPosition;
 		clone.tag = "Untagged";
 
 		EnableGameObject (clone, newPos);

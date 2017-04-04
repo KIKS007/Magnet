@@ -160,6 +160,8 @@ public class BombLeastDeathManager : LeastDeathManager
 
 		bomb.tag = "Movable";
 
+		bomb.transform.rotation = Quaternion.Euler (Vector3.zero);
+
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 		timerText.fontSize = 0;
 

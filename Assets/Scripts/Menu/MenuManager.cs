@@ -172,7 +172,8 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(!isTweening && !DOTween.IsTweening ("MenuCamera"))
 		{
-			for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+			//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+			for(int i = 0; i < 2; i++)
 			{
 				if(startScreen)
 				{
@@ -192,7 +193,8 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if(!isTweening && !DOTween.IsTweening ("MenuCamera"))
 		{
-			for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+			//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+			for(int i = 0; i < 2; i++)
 			{
 				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
 				{
