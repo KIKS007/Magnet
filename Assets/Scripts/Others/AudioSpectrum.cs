@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections;
 using DarkTonic.MasterAudio;
 
-public class AudioSpectrum : MonoBehaviour
+public class AudioSpectrum : Singleton<AudioSpectrum>
 {
 	public PlaylistController playlistController;
 	private AudioSource audioSource;
@@ -89,8 +89,8 @@ public class AudioSpectrum : MonoBehaviour
         float[] middlefrequencies = middleFrequenciesForBands [(int)bandType];
         var bandwidth = bandwidthForBands [(int)bandType];
 
-        var falldown = fallSpeed * Time.deltaTime;
-        var filter = Mathf.Exp (-sensibility * Time.deltaTime);
+		var falldown = fallSpeed * Time.unscaledDeltaTime;
+		var filter = Mathf.Exp (-sensibility * Time.unscaledDeltaTime);
 
         for (var bi = 0; bi < levels.Length; bi++) 
 		{
