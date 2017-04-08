@@ -21,6 +21,13 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
         ThirtyOneBand
     };
 
+	public enum LevelsType
+	{
+		Basic,
+		Peak,
+		Mean
+	};
+
     static float[][] middleFrequenciesForBands = 
 	{
         new float[]{ 125.0f, 500, 1000, 2000 },
@@ -53,6 +60,14 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
     float[] levels;
     float[] peakLevels;
     float[] meanLevels;
+
+	float[] levelsNormalized;
+	float[] peakLevelsNormalized;
+	float[] meanLevelsNormalized;
+
+	float[] levelsHighest;
+	float[] peakLevelsHighest;
+	float[] meanLevelsHighest;
     #endregion
 
     #region Public property
@@ -70,6 +85,22 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
 	{
         get { return meanLevels; }
     }
+
+
+	public float[] LevelsNormalized 
+	{
+		get { return levelsNormalized; }
+	}
+
+	public float[] PeakLevelsNormalized 
+	{
+		get { return peakLevelsNormalized; }
+	}
+
+	public float[] MeanLevelsNormalized 
+	{
+		get { return meanLevelsNormalized; }
+	}
     #endregion
 
 	void Awake ()
@@ -106,6 +137,21 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
             levels [bi] = bandMax;
             peakLevels [bi] = Mathf.Max (peakLevels [bi] - falldown, bandMax);
             meanLevels [bi] = bandMax - (bandMax - meanLevels [bi]) * filter;
+
+			//Highest
+			if (levels [bi] > levelsHighest [bi])
+				levelsHighest [bi] = levels [bi];
+
+			if (peakLevels [bi] > peakLevelsHighest [bi])
+				peakLevelsHighest [bi] = peakLevels [bi];
+			
+			if (meanLevels [bi] > meanLevelsHighest [bi])
+				meanLevelsHighest [bi] = meanLevels [bi];
+
+			//Normalized Levels
+			levelsNormalized [bi] = levels [bi] / levelsHighest [bi];
+			peakLevelsNormalized [bi] = peakLevels [bi] / peakLevelsHighest [bi];
+			meanLevelsNormalized [bi] = meanLevels [bi] / meanLevelsHighest [bi];
         }
     }
 
@@ -122,6 +168,14 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
 			levels = new float[bandCount];
 			peakLevels = new float[bandCount];
 			meanLevels = new float[bandCount];
+
+			levelsHighest = new float[bandCount];
+			peakLevelsHighest = new float[bandCount];
+			meanLevelsHighest = new float[bandCount];
+
+			levelsNormalized = new float[bandCount];
+			peakLevelsNormalized = new float[bandCount];
+			meanLevelsNormalized = new float[bandCount];
 		}
 	}
 
