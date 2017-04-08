@@ -159,10 +159,10 @@ public class MovableScript : MonoBehaviour
 		DisableAllColor (overrideDuration);
 
 		if(deadlyParticle == null)
-		{
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		
+		if(deadlyParticle2 == null)
 			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
-		}
 
 		deadlyParticle.Stop ();
 		deadlyParticle2.Stop ();
@@ -191,10 +191,10 @@ public class MovableScript : MonoBehaviour
 		if(!hold)
 		{
 			if(deadlyParticle == null)
-			{
 				deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+
+			if(deadlyParticle2 == null)
 				deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
-			}
 
 			deadlyParticle.Stop ();
 			deadlyParticle2.Stop ();
@@ -210,10 +210,10 @@ public class MovableScript : MonoBehaviour
 		DisableAllColor (overrideDuration);
 
 		if(deadlyParticle == null)
-		{
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+
+		if(deadlyParticle2 == null)
 			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
-		}
 
 		deadlyParticle.Play ();
 		deadlyParticle2.Play ();

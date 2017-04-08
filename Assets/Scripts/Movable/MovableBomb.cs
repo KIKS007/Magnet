@@ -28,6 +28,11 @@ public class MovableBomb : MovableScript
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+		deadlyParticle.Stop ();
+		deadlyParticle2.Stop ();
 
 		if(playerHolding == null)
 		{

@@ -135,7 +135,6 @@ public class MovableBurden : MovableScript
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
-		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	
 	}

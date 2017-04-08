@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: b04a763904d0f224f9b9257443baab44
-timeCreated: 1490729891
-licenseType: Free
+timeCreated: 1490721659
+licenseType: Pro
 ShaderImporter:
   defaultTextures:
   - _T_Lava01: {fileID: 2800000, guid: 28c17e75ad3dcb7468d177c1f6b86ac1, type: 3}
