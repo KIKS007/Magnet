@@ -76,7 +76,7 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void Start () 
 	{
-		ToNeutralColor ();
+		//ToNeutralColor ();
 	}
 
 	protected virtual void OnEnable ()
@@ -154,6 +154,9 @@ public class MovableScript : MonoBehaviour
 		
 		DisableAllColor (overrideDuration);
 
+		if(deadlyParticle == null)
+			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		
 		deadlyParticle.Stop ();
 
 		switch(whichColor)
@@ -241,7 +244,7 @@ public class MovableScript : MonoBehaviour
 			if(other.gameObject.tag == "Movable")
 				HitOtherMovable (other);	
 			
-			if(other.gameObject.layer == 16)
+			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
 				HitWall (other);			
 		}
 	}
@@ -282,8 +285,8 @@ public class MovableScript : MonoBehaviour
 	{
 		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);
+			/*if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);*/
 
 			if(canPlaySound)
 				StartCoroutine(HitSound ());

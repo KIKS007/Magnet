@@ -11,6 +11,9 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public Vector2 xLimits;
 	public Vector2 zLimits;
 
+	[HideInInspector]
+	public float safeDuration = 1.5f;
+
 	private int maxWhileLoop = 300;
 
 	private const float checkSphereRadius = 4;
@@ -58,9 +61,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
+		player.layer = LayerMask.NameToLayer ("Safe");
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
+		DOVirtual.DelayedCall (safeDuration, ()=> player.layer = LayerMask.NameToLayer ("Player"));
 
 		player.transform.position = newPos;
 		SpawnParticles (player);

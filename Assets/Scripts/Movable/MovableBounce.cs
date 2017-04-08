@@ -51,7 +51,6 @@ public class MovableBounce : MovableScript
 
 					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
 				}				
 			}
 		}
@@ -70,13 +69,13 @@ public class MovableBounce : MovableScript
 	{
 		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);
+			/*if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);*/
 
 			if(canPlaySound)
 				StartCoroutine(HitSound ());
 
-			if(tag == "ThrownMovable" && currentVelocity > limitVelocity)
+			if(currentVelocity > limitVelocity)
 				StartCoroutine (DeadlyTransition ());
 		}
 	}

@@ -8,6 +8,7 @@ public class MovableBurden : MovableScript
 {
 	[Header ("BURDEN")]
 	public bool targetFinder = false;
+	public PlayerName targetPlayerName;
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
 	public float trackSpeedAdded = 0.001f;
@@ -22,13 +23,10 @@ public class MovableBurden : MovableScript
 
 	private bool firstStart = true;
 
-	private GameObject[] allMovables = new GameObject[0];
-
 	private float initialTrackSpeed;
 
 	protected override void Awake ()
 	{
-		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
@@ -46,51 +44,25 @@ public class MovableBurden : MovableScript
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 
-		if (targetFinder && !firstStart)
-			DOVirtual.DelayedCall (0.1f, ()=> FindTarget (), true);
-
-		firstStart = false;
+		FindTarget ();
 	}
 
 	void FindTarget ()
 	{
-		List<MovableBurden> otherMovables = new List<MovableBurden>();
-		List<GameObject> playersList = new List<GameObject>(GlobalVariables.Instance.AlivePlayersList);
+		if (GlobalVariables.Instance.Players [(int)targetPlayerName] == null)
+			return;
 
-		int randomPlayer = Random.Range (0, playersList.Count);
-		targetPlayer = playersList [randomPlayer];
-
-		playersList.RemoveAt (randomPlayer);
-
-		for (int i = 0; i < allMovables.Length; i++)
-			if (allMovables [i] != gameObject)
-				otherMovables.Add (allMovables [i].GetComponent<MovableBurden> ());
-
-		for (int i = 0; i < otherMovables.Count; i++)
+		if (GlobalVariables.Instance.Players [(int)targetPlayerName].activeSelf == false)
 		{
-			if(playersList.Count > 0)
-			{
-				randomPlayer = Random.Range (0, playersList.Count);
-				otherMovables [i].targetPlayer = playersList [randomPlayer];
-
-				//otherMovables [i].ToColor (otherMovables [i].targetPlayer);
-				otherMovables [i].GetToPlayerVoid ();
-				otherMovables [i].StartCoroutine ("ColorTransition");
-				otherMovables [i].StartCoroutine ("AddSpeed");
-
-				playersList.RemoveAt (randomPlayer);
-			}
-			else
-			{
-				Destroy (otherMovables [i].gameObject);
-			}
+			gameObject.SetActive (false);
+			return;
 		}
 
+		targetPlayer = GlobalVariables.Instance.Players [(int)targetPlayerName];
 
-		//ToColor (targetPlayer);
-		GetToPlayerVoid ();
 		StartCoroutine (ColorTransition ());
 		StartCoroutine (AddSpeed ());
+		GetToPlayerVoid ();
 	}
 
 	void GetToPlayerVoid ()

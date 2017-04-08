@@ -88,8 +88,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		//TrailLength ();
-
 		if(dashAvailableFX.isPlaying)
 		{
 			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];
@@ -151,42 +149,6 @@ public class PlayersFXAnimations : MonoBehaviour
 			angle += 360;
 
 		return angle;
-	}
-
-	void TrailLength ()
-	{
-		if(playerScript.playerState != PlayerState.Dead && playerScript.dashState != DashState.Dashing && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if(playerScript.playerRigidbody.velocity.magnitude > 1 && !DOTween.IsTweening("Trail"))
-			{
-				Debug.Log ("High");
-
-				DOTween.To(()=> trail.time, x=> trail.time =x, highSpeedtime, trailTweenDuration).SetId("Trail");
-				DOTween.To(()=> trail.startWidth, x=> trail.startWidth =x, highSpeedstartWidth, trailTweenDuration).SetId("Trail");
-
-			}
-			else if (playerScript.playerRigidbody.velocity.magnitude < 1 && !DOTween.IsTweening("Trail"))
-			{
-				Debug.Log ("Low");
-
-				DOTween.To(()=> trail.time, x=> trail.time =x, lowSpeedtime, trailTweenDuration).SetId("Trail");
-				DOTween.To(()=> trail.startWidth, x=> trail.startWidth =x, lowSpeedstartWidth, trailTweenDuration).SetId("Trail");
-			}
-		}
-
-		else if(playerScript.playerState != PlayerState.Dead && playerScript.dashState == DashState.Dashing && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			Debug.Log ("Dash");
-
-			trail.time = dashingTime;
-			trail.startWidth = dashingStartWidth;
-		}
-
-		else
-		{
-			trail.time = 0f;
-			trail.startWidth = 0f;
-		}
 	}
 
 	void EnableDashFX ()
