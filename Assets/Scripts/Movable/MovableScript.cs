@@ -52,6 +52,7 @@ public class MovableScript : MonoBehaviour
 	protected GameObject mainCamera;
 
 	protected ParticleSystem deadlyParticle;
+	protected ParticleSystem deadlyParticle2;
 
 	[HideInInspector]
 	public Transform player;
@@ -88,9 +89,12 @@ public class MovableScript : MonoBehaviour
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
 		deadlyParticle.Stop ();
+		deadlyParticle2.Stop ();
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
@@ -155,9 +159,13 @@ public class MovableScript : MonoBehaviour
 		DisableAllColor (overrideDuration);
 
 		if(deadlyParticle == null)
+		{
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
-		
+			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+		}
+
 		deadlyParticle.Stop ();
+		deadlyParticle2.Stop ();
 
 		switch(whichColor)
 		{
@@ -183,9 +191,13 @@ public class MovableScript : MonoBehaviour
 		if(!hold)
 		{
 			if(deadlyParticle == null)
+			{
 				deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
-			
+				deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+			}
+
 			deadlyParticle.Stop ();
+			deadlyParticle2.Stop ();
 
 			DisableAllColor (overrideDuration);
 
@@ -198,9 +210,13 @@ public class MovableScript : MonoBehaviour
 		DisableAllColor (overrideDuration);
 
 		if(deadlyParticle == null)
+		{
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+		}
 
 		deadlyParticle.Play ();
+		deadlyParticle2.Play ();
 
 		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 

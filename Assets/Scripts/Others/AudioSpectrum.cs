@@ -105,6 +105,9 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
 
 	void Awake ()
     {
+		if (playlistController == null)
+			playlistController = FindObjectOfType<PlaylistController> ();
+
 		audioSource = playlistController.ActiveAudioSource;
 		playlistController.SongChanged += OnSongChanged;
 
