@@ -471,7 +471,7 @@ public class PlayersGameplay : MonoBehaviour
 		Vector3 v3 = magnetPoint.localPosition;
 		v3.x = 0f;
 		v3.y = (scaleTemp.y /2 + 0.1f) - 1;
-		v3.z = 0.5f * scaleTemp.z + 0.8f;
+		v3.z = 0.5f * scaleTemp.z + 1.2f;
 		magnetPoint.localPosition = v3;
 	}
 	#endregion

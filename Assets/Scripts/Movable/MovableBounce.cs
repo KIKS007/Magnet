@@ -21,13 +21,16 @@ public class MovableBounce : MovableScript
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			else if(currentVelocity < limitVelocity && gameObject.tag == "DeadCube")
+			else if(currentVelocity < limitVelocity)
 			{
-				ToNeutralColor ();
-
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
+				if(gameObject.tag == "DeadCube" || gameObject.tag == "ThrownMovable")
+				{
+					ToNeutralColor ();
+					
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
+					playerThatThrew = null;
+				}
 			}
 		}
 	}
@@ -80,7 +83,7 @@ public class MovableBounce : MovableScript
 
 	IEnumerator DeadlyTransition ()
 	{
-		ToDeadlyColor ();
+		ToDeadlyColor (0.15f);
 
 		yield return new WaitForSeconds (0.01f);
 

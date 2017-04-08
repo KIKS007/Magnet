@@ -35,9 +35,9 @@ public class MovableScript : MonoBehaviour
 
 	protected bool canPlaySound = true;
 
-	protected float toColorDuration = 0.5f;
-	protected float toNeutralDuration = 1.5f;
-	protected float toDeadlyDuration = 1f;
+	protected const float toColorDuration = 0.5f;
+	protected const float toNeutralDuration = 1.5f;
+	protected const float toDeadlyDuration = 1f;
 
 	protected Rigidbody rigidbodyMovable;
 
@@ -143,69 +143,63 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Color
-	public virtual void ToColor (GameObject otherPlayer = null, float overrideDuration = -1)
+	public virtual void ToColor (GameObject otherPlayer = null, float overrideDuration = toColorDuration)
 	{
 		int whichPlayer = otherPlayer != null ? (int)otherPlayer.GetComponent<PlayersGameplay> ().playerName : (int)player.GetComponent<PlayersGameplay> ().playerName;
 
 		CubeColor whichColor = (CubeColor)whichPlayer + 1;
 
-		float duration = overrideDuration != -1 ? overrideDuration : toColorDuration;
-
 		if (DOTween.IsTweening ("CubeColorTween" + gameObject.GetInstanceID ()))
 			DOTween.Kill ("CubeColorTween" + gameObject.GetInstanceID ());
 		
-		DisableAllColor (duration);
+		DisableAllColor (overrideDuration);
 
 		deadlyParticle.Stop ();
 
 		switch(whichColor)
 		{
 		case CubeColor.Blue:
-			cubeMaterial.DOFloat (1f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 			break;
 		case CubeColor.Pink:
-			cubeMaterial.DOFloat (1f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 			break;
 		case CubeColor.Green:
-			cubeMaterial.DOFloat (1f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 			break;
 		case CubeColor.Yellow:
-			cubeMaterial.DOFloat (1f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 			break;
 		}
 
-		StartCoroutine (WaitToChangeColorEnum (whichColor, duration));
+		StartCoroutine (WaitToChangeColorEnum (whichColor, overrideDuration));
 	}
 
-	public virtual void ToNeutralColor (float overrideDuration = -1)
+	public virtual void ToNeutralColor (float overrideDuration = toNeutralDuration)
 	{
 		if(!hold)
 		{
-			float duration = overrideDuration != -1 ? overrideDuration : toNeutralDuration;
-
 			if(deadlyParticle == null)
 				deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 			
 			deadlyParticle.Stop ();
 
-			DisableAllColor (duration);
+			DisableAllColor (overrideDuration);
 
-			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, duration));
+			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, overrideDuration));
 		}
 	}
 
-	public virtual void ToDeadlyColor (float overrideDuration = -1)
+	public virtual void ToDeadlyColor (float overrideDuration = toColorDuration)
 	{
-		float duration = overrideDuration != -1 ? overrideDuration : toColorDuration;
-
-		DisableAllColor (duration);
+		DisableAllColor (overrideDuration);
 
 		if(deadlyParticle == null)
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 
 		deadlyParticle.Play ();
 
-		cubeMaterial.DOFloat (1f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 
 		cubeColor = CubeColor.Deadly;
 	}

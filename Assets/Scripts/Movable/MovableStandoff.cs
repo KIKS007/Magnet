@@ -62,6 +62,18 @@ public class MovableStandoff : MovableScript
 		}
 	}
 
+	public override void OnHold ()
+	{
+		hold = true;
+
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
+
+		StartCoroutine (DeadlyTransition ());
+
+		OnHoldEventVoid ();
+	}
+
 	public override void OnRelease ()
 	{
 		OnReleaseEventVoid ();
