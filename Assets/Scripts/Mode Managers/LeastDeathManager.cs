@@ -55,7 +55,7 @@ public class LeastDeathManager : MonoBehaviour
 			}
 
 		if(!gameEndLoopRunning)
-			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn);
+			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
 	}
 
 	protected virtual IEnumerator GameEnd ()

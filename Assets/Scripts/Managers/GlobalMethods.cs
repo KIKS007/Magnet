@@ -39,12 +39,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
 	}
 
-	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
+	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
 	{
-		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn));
+		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn, waveAtSpawn));
 	}
 
-	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0)
+	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
 	{
 		Vector3 newPos = new Vector3();
 		int loopCount = 0;
@@ -65,12 +65,18 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
-		DOVirtual.DelayedCall (safeDuration, ()=> player.layer = LayerMask.NameToLayer ("Player"));
+		DOVirtual.DelayedCall (safeDuration, ()=> 
+		{
+			player.layer = LayerMask.NameToLayer ("Player");
+		});
 
 		player.transform.position = newPos;
-		SpawnParticles (player);
+		//SpawnParticles (player);
 
 		player.SetActive (true);
+
+		if(waveAtSpawn)
+			player.GetComponent<PlayersFXAnimations> ().WaveFX (true);
 	}
 
 	void SpawnParticles (GameObject player)

@@ -36,6 +36,9 @@ public class PlayersFXAnimations : MonoBehaviour
 	public float leanLerp = 0.1f;
 	public float leanMaxAngle;
 
+	[Header ("Safe FX")]
+	public float safeDurationBetween = 0.5f;
+
 	private PlayersGameplay playerScript;
 	private PlayersSounds playerSoundsScript;
 	private PlayerName playerName;
@@ -49,7 +52,11 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	private Color playerColor;
 
+	[HideInInspector]
 	public float distance;
+
+	[HideInInspector]
+	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
 
 	void Awake ()
 	{
@@ -70,6 +77,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
 		playerScript.OnDash += EnableDashFX;
 		playerScript.OnDeath += RemoveAttractionRepulsionFX;
+		playerScript.OnSafe += () => StartCoroutine (SafeFX ());
 
 		playerName = playerScript.playerName;
 		playerNumber = (int)playerScript.playerName;
@@ -246,8 +254,34 @@ public class PlayersFXAnimations : MonoBehaviour
 			dashAvailableFX.Stop ();
 	}
 
-	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
+	IEnumerator SafeFX ()
+	{
+		while(gameObject.layer == LayerMask.NameToLayer ("Safe"))
+		{
+			for (int i = 0; i < playerMaterials.Length; i++)
+				playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
+			playerSoundsScript.StunOFF ();
+
+			if (gameObject.layer != LayerMask.NameToLayer ("Safe"))
+				break;
+			
+			yield return new WaitForSeconds (safeDurationBetween);
+
+			for (int i = 0; i < playerMaterials.Length; i++)
+				playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+			playerSoundsScript.StunON ();
+
+			yield return new WaitForSeconds (safeDurationBetween);
+		}
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		playerSoundsScript.StunON ();
+	}
+		
 	public IEnumerator AttractionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
@@ -393,13 +427,25 @@ public class PlayersFXAnimations : MonoBehaviour
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 	}
 
-	public virtual void WaveFX()
+	public virtual void WaveFX(bool singleWave = false)
 	{
-		int playerNumber = (int)playerName;
-		Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+		int loopsCount = !singleWave ? (int)playerName + 1 : 1;
 
-		GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+		for(int i = 0; i < loopsCount; i++)
+		{
+			DOVirtual.DelayedCall (GlobalVariables.Instance.delayBetweenWavesFX * i, ()=> 
+			{
+				int playerNumber = (int)playerName;
+				Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+
+				GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation) as GameObject;
+				instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+				GetComponent<PlayersVibration> ().Wave ();
+			});
+		}
+
+
 	}
 
 	public virtual GameObject DeathParticles (Vector3 position)

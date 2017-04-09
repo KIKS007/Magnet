@@ -199,6 +199,10 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (controllerNumber == 0)
 			GlobalVariables.Instance.SetPlayerMouseCursor ();
+
+		if(gameObject.layer == LayerMask.NameToLayer ("Safe"))
+		if (OnSafe != null)
+			OnSafe();
     }
 
 	protected IEnumerator Startup ()
@@ -217,14 +221,7 @@ public class PlayersGameplay : MonoBehaviour
 			break;
 		case StartupType.Wave:
 			yield return new WaitForSeconds (0.25f);
-
-			for(int i = 0; i < (int)playerName + 1; i++)
-			{
-				DOVirtual.DelayedCall (GlobalVariables.Instance.delayBetweenWavesFX * i, ()=> {
-					playerFX.WaveFX ();
-					GetComponent<PlayersVibration> ().Wave ();
-				});
-			}
+			playerFX.WaveFX ();
 			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
 			break;
 		}
@@ -266,10 +263,18 @@ public class PlayersGameplay : MonoBehaviour
 			if (holdState == HoldState.Holding && rewiredPlayer.GetButtonUp("Attract"))
 				Shoot();
 
-
 			//Dash
 			if (rewiredPlayer.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
 				StartCoroutine(Dash());
+
+			//Taunt
+			if (rewiredPlayer.GetButtonDown ("Taunt") && playerState != PlayerState.Stunned)
+			{
+				playerFX.WaveFX (true);
+
+				if (OnTaunt != null)
+					OnTaunt();
+			}
 
 			//Stunned Rotation
             if (playerState == PlayerState.Stunned)
@@ -726,6 +731,8 @@ public class PlayersGameplay : MonoBehaviour
 	public event EventHandler OnDash;
 	public event EventHandler OnDashAvailable;
 	public event EventHandler OnDeath;
+	public event EventHandler OnTaunt;
+	public event EventHandler OnSafe;
 
 	public event EventHandler OnPlayerstateChange;
 

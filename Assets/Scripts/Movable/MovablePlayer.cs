@@ -29,7 +29,8 @@ public class MovablePlayer : MovableScript
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
 		deadlyParticle.Stop ();
-		cubeMeshFilter.mesh = GlobalVariables.Instance.deadCubesMeshFilter;
+		//cubeMeshFilter.mesh = GlobalVariables.Instance.deadCubesMeshFilter;
+		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
