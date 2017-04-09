@@ -239,7 +239,7 @@ public class MovableScript : MonoBehaviour
 		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
 	}
 
-	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
+	protected virtual IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{
 		yield return new WaitForSeconds (waitTime * 0.5f);		
 

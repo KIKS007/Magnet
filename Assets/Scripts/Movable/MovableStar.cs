@@ -9,6 +9,45 @@ public class MovableStar : MovableScript
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 
+	[Header ("Trail")]
+	public Color trailNormalColor;
+
+	public Color trailDeadlyColor;
+
+	protected override void Awake ()
+	{
+		base.Awake ();
+
+		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+		trailDeadlyColor = deadlyParticle2.main.startColor.color;
+	}
+
+	protected override void OnEnable ()
+	{
+		hold = false;
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		deadlyParticle.Stop ();
+		//deadlyParticle2.Stop ();
+
+		var main = deadlyParticle2.main;
+		main.startColor = trailNormalColor;
+
+		cubeMaterial.DOColor (trailNormalColor, "_EmissionNEUTRAL", 0.1f).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+
+		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
+	}
+
 	protected override void Update () 
 	{
 		if(hold == false && rigidbodyMovable != null)
@@ -60,6 +99,56 @@ public class MovableStar : MovableScript
 				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
 			}
 		}
+	}
+
+	public override void ToColor (GameObject otherPlayer = null, float overrideDuration = toColorDuration)
+	{
+		return;
+	}
+
+	public override void ToNeutralColor (float overrideDuration = toNeutralDuration)
+	{
+		if(!hold)
+		{
+			if(deadlyParticle == null)
+				deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+
+			if(deadlyParticle2 == null)
+				deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+			deadlyParticle.Stop ();
+			//deadlyParticle2.main.startColor.color = trailNormalColor;
+
+			var main = deadlyParticle2.main;
+			main.startColor = trailNormalColor;
+
+			//deadlyParticle2.Stop ();
+
+			DisableAllColor (overrideDuration);
+
+			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, overrideDuration));
+		}
+	}
+
+	public override void ToDeadlyColor (float overrideDuration = toColorDuration)
+	{
+		DisableAllColor (overrideDuration);
+
+		if(deadlyParticle == null)
+			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+
+		if(deadlyParticle2 == null)
+			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+		deadlyParticle.Play ();
+		//deadlyParticle2.Play ();
+
+		var main = deadlyParticle2.main;
+		main.startColor = trailDeadlyColor;
+
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+
+		cubeColor = CubeColor.Deadly;
 	}
 
 	public override void OnHold ()
