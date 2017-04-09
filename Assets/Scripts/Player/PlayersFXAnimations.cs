@@ -438,8 +438,8 @@ public class PlayersFXAnimations : MonoBehaviour
 				int playerNumber = (int)playerName;
 				Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
 
-				GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation) as GameObject;
-				instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+				GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform) as GameObject;
+				//instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 
 				GetComponent<PlayersVibration> ().Wave ();
 			});
