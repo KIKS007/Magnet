@@ -67,13 +67,13 @@ public class ArenaDeadzones : MonoBehaviour
 		{
 			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-			yield return new WaitForSeconds (waitTime);
-
 			for(int j = 0; j  < indexes.Length; j++)
 			{
 				if (indexes [j] == i)
 					SetDeadly (columns [j]);
 			}
+
+			yield return new WaitForSeconds (waitTime);
 		}
 	}
 
