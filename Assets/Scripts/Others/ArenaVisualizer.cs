@@ -32,14 +32,14 @@ public class ArenaVisualizer : MonoBehaviour
 	{
 		foreach(ArenaSettings arena in allSettings)
 		{
-			if(arena.frontIndex.Length != 27 || 
-				arena.backIndex.Length != 27 ||
-				arena.rightIndex.Length != 17 ||
-				arena.leftIndex.Length != 17 ||
+			if(arena.frontIndex.Length != frontColumns.Length || 
+				arena.backIndex.Length != backColumns.Length ||
+				arena.rightIndex.Length != rightColumns.Length ||
+				arena.leftIndex.Length != leftColumns.Length ||
 				frontColumns.Length != 27 ||
 				backColumns.Length != 27 ||
-				rightColumns.Length != 17 ||
-				leftColumns.Length != 17)
+				rightColumns.Length != 15 ||
+				leftColumns.Length != 15)
 			{
 				wrongSettings = true;
 				Debug.LogWarning ("Wrong Arena Settings !");
@@ -121,25 +121,21 @@ public class ArenaVisualizer : MonoBehaviour
 				return currentMinimumHeight + AudioSpectrum.Instance.Levels[index] * currentFactor;
 			else
 				return currentMinimumHeight + AudioSpectrum.Instance.LevelsNormalized[index] * currentFactor;
-			break;
 		case AudioSpectrum.LevelsType.Peak:
 			if(!normalizedValues)
 				return currentMinimumHeight + AudioSpectrum.Instance.PeakLevels[index] * currentFactor;
 			else
 				return currentMinimumHeight + AudioSpectrum.Instance.PeakLevelsNormalized[index] * currentFactor;
-			break;
 		case AudioSpectrum.LevelsType.Mean:
 			if(!normalizedValues)
 				return currentMinimumHeight + AudioSpectrum.Instance.MeanLevels[index] * currentFactor;
 			else
 				return currentMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[index] * currentFactor;
-			break;
 		default:
 			if(!normalizedValues)
 				return currentMinimumHeight + AudioSpectrum.Instance.Levels[index] * currentFactor;
 			else
 				return currentMinimumHeight + AudioSpectrum.Instance.LevelsNormalized[index] * currentFactor;
-			break;
 		}
 	}
 }

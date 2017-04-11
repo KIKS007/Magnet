@@ -43,8 +43,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	private PlayersSounds playerSoundsScript;
 	private PlayerName playerName;
 
-	private TrailRenderer trail;
-
 	private int playerNumber = -1;
 
 	private float spawnDuration = 0.2f;
@@ -68,7 +66,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
-		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 		playerColor = GetComponent <Renderer> ().material.color;
 
 		playerScript.OnShoot += ShootFX;
@@ -438,7 +435,7 @@ public class PlayersFXAnimations : MonoBehaviour
 				int playerNumber = (int)playerName;
 				Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
 
-				GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform) as GameObject;
+				Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
 				//instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 
 				GetComponent<PlayersVibration> ().Wave ();

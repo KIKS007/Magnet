@@ -6,10 +6,21 @@ using DG.Tweening;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
+	public enum RandomType { Single, AllSettings, CurrentSettings };
+
+	[Header ("Random")]
+	public RandomType randomType = RandomType.Single;
+
 	[Header ("Settings")]
 	public Ease ease = Ease.OutQuad;
 	public int currentSettings = 0;
 	public List<ArenaDeadzonesSettings> deadzonesSettings = new List<ArenaDeadzonesSettings> ();
+
+	[Header ("Single")]
+	public float singleDelay = 0;
+	public float currentInterval;
+	public Vector2 intervalLimits = new Vector2 (10, 1);
+	public float reducedTime = 1f;
 
 	[Header ("Deadly State")]
 	public Color deadlyColor;
@@ -25,10 +36,25 @@ public class ArenaDeadzones : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].frontDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].frontIndex, frontColumns));
-		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].backDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].backIndex, backColumns));
-		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].rightDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].rightIndex, rightColumns));
-		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].leftDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].leftIndex, leftColumns));
+		int settingsIndex = currentSettings;
+
+		switch (randomType)
+		{
+		case RandomType.Single:
+			StartCoroutine (SingleDeadzone ());
+			break;
+		case RandomType.AllSettings:
+			settingsIndex = Random.Range (0, deadzonesSettings.Count);
+			break;
+		}
+
+		if(randomType != RandomType.Single)
+		{
+			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].frontDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].frontIndex, frontColumns));
+			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].backDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].backIndex, backColumns));
+			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].rightDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].rightIndex, rightColumns));
+			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].leftDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].leftIndex, leftColumns));
+		}
 	}
 
 	IEnumerator Deadzones (float delay, float duration, int[] indexes, Transform[] columns)
@@ -51,17 +77,53 @@ public class ArenaDeadzones : MonoBehaviour
 		}
 	}
 
+	IEnumerator SingleDeadzone ()
+	{
+		currentInterval = intervalLimits.x;
+
+		List<Transform> allColumns = new List<Transform> (frontColumns);
+		allColumns.AddRange (backColumns);
+		allColumns.AddRange (rightColumns);
+		allColumns.AddRange (leftColumns);
+
+		yield return new WaitForSeconds (singleDelay);
+
+		int columnsCount = frontColumns.Length + backColumns.Length + rightColumns.Length + leftColumns.Length;
+
+		for(int i = 0; i < columnsCount; i++)
+		{
+			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+			Transform column = null;
+
+			do
+			{
+				column = allColumns [Random.Range (0, allColumns.Count)];
+			}
+			while(column.GetChild (0).tag == "DeadZone");
+
+			SetDeadly (column);
+
+			yield return new WaitForSeconds (currentInterval);
+
+			currentInterval -= reducedTime;
+			if (currentInterval < intervalLimits.y)
+				currentInterval = intervalLimits.y;
+		}
+	}
+
 	void SetDeadly (Transform column)
 	{
-		Transform columnChild = column.GetChild (0);
-
-		columnChild.tag = "DeadZone";
-		columnChild.GetComponent<Collider> ().enabled = true;
-
-		columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration);
-		columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
-
-		columnChild.DOScaleZ (zScale, transitionDuration);
+		foreach(Transform columnChild in column)
+		{
+			columnChild.tag = "DeadZone";
+			columnChild.GetComponent<Collider> ().enabled = true;
+			
+			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration);
+			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
+			
+			columnChild.DOScaleZ (zScale, transitionDuration);
+		}
 	}
 }
 

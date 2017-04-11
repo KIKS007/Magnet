@@ -21,8 +21,6 @@ public class MovableBurden : MovableScript
 
 	private List<MovableBurden> otherMovables = new List<MovableBurden>();
 
-	private bool firstStart = true;
-
 	private float initialTrackSpeed;
 
 	protected override void Awake ()
