@@ -1,10 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
+	[Header ("Settings")]
+	public Ease ease = Ease.OutQuad;
+	public int currentSettings = 0;
+	public List<ArenaDeadzonesSettings> deadzonesSettings = new List<ArenaDeadzonesSettings> ();
+
 	[Header ("Deadly State")]
 	public Color deadlyColor;
 	public float zScale = 3f;
@@ -19,40 +25,59 @@ public class ArenaDeadzones : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		
+		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].frontDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].frontIndex, frontColumns));
+		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].backDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].backIndex, backColumns));
+		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].rightDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].rightIndex, rightColumns));
+		StartCoroutine (Deadzones (deadzonesSettings [currentSettings].leftDelay, deadzonesSettings [currentSettings].duration, deadzonesSettings [currentSettings].leftIndex, leftColumns));
 	}
 
-	IEnumerator Deadzones (float delay, int[] indexes, Transform[] columns)
+	IEnumerator Deadzones (float delay, float duration, int[] indexes, Transform[] columns)
 	{
-		yield return new WaitForSeconds (1);
+		yield return new WaitForSeconds (delay);
+
+		float waitTime = duration / columns.Length;
+
+		for(int i = 0; i < columns.Length; i++)
+		{
+			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+			yield return new WaitForSeconds (waitTime);
+
+			for(int j = 0; j  < indexes.Length; j++)
+			{
+				if (indexes [j] == i)
+					SetDeadly (columns [j]);
+			}
+		}
 	}
 
 	void SetDeadly (Transform column)
 	{
-		column.tag = "DeadZone";
-		column.GetComponent<Collider> ().enabled = true;
+		Transform columnChild = column.GetChild (0);
 
-		column.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EMISSION", transitionDuration);
-		column.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
+		columnChild.tag = "DeadZone";
+		columnChild.GetComponent<Collider> ().enabled = true;
 
-		column.DOScaleZ (zScale, transitionDuration);
+		columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration);
+		columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
+
+		columnChild.DOScaleZ (zScale, transitionDuration);
 	}
 }
 
 [System.Serializable]
 public class ArenaDeadzonesSettings
 {
+	[Header ("Duration")]
+	public float duration;
+
+	[Header ("Delays")]
 	public float frontDelay;
 	public float backDelay;
 	public float rightDelay;
 	public float leftDelay;
 
+	[Header ("Indexes")]
 	public int[] frontIndex = new int[27];
 	public int[] backIndex = new int[27];
 	public int[] rightIndex = new int[17];
