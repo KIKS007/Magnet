@@ -51,16 +51,16 @@ public class ArenaVisualizer : MonoBehaviour
 	public void Rename ()
 	{
 		for (int i = 0; i < frontColumns.Length; i++)
-			frontColumns [i].name = "Cube Pivot " + i;
+			frontColumns [i].name = "Pivot " + i;
 
 		for (int i = 0; i < backColumns.Length; i++)
-			backColumns [i].name = "Cube Pivot " + i;
+			backColumns [i].name = "Pivot " + i;
 
 		for (int i = 0; i < rightColumns.Length; i++)
-			rightColumns [i].name = "Cube Pivot " + i;
+			rightColumns [i].name = "Pivot " + i;
 
 		for (int i = 0; i < leftColumns.Length; i++)
-			leftColumns [i].name = "Cube Pivot " + i;
+			leftColumns [i].name = "Pivot " + i;
 	}
 
 	// Update is called once per frame
