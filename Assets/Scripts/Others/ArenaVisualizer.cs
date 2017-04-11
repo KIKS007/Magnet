@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using DarkTonic.MasterAudio;
 
 public class ArenaVisualizer : MonoBehaviour 
 {
@@ -45,6 +46,36 @@ public class ArenaVisualizer : MonoBehaviour
 				Debug.LogWarning ("Wrong Arena Settings !");
 			}
 		}
+
+		float currentMinimumHeight = normalizedValues ? normalizedMinimumHeight : minimumHeight;
+	
+		for(int i = 0; i < frontColumns.Length; i++)
+		{
+			Vector3 scale = frontColumns[i].localScale;
+			scale.y = currentMinimumHeight;
+			frontColumns[i].localScale = scale;
+		}
+
+		for(int i = 0; i < backColumns.Length; i++)
+		{
+			Vector3 scale = backColumns[i].localScale;
+			scale.y = currentMinimumHeight;
+			backColumns[i].localScale = scale;
+		}
+
+		for(int i = 0; i < rightColumns.Length; i++)
+		{
+			Vector3 scale = rightColumns[i].localScale;
+			scale.y = currentMinimumHeight;
+			rightColumns[i].localScale = scale;
+		}
+
+		for(int i = 0; i < leftColumns.Length; i++)
+		{
+			Vector3 scale = leftColumns[i].localScale;
+			scale.y = currentMinimumHeight;
+			leftColumns[i].localScale = scale;
+		}
 	}
 
 	[ContextMenu ("Rename Columns")]
@@ -70,6 +101,9 @@ public class ArenaVisualizer : MonoBehaviour
 			return;
 
 		if (currentSettings >= allSettings.Count)
+			return;
+
+		if (MasterAudio.PlaylistMasterVolume == 0)
 			return;
 
 		float currentFactor = normalizedValues ? normalizedFactor : factor;

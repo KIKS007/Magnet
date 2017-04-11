@@ -9,6 +9,8 @@ using System.Collections;
 public class AudioSpectrumInspector : Editor
 {
 	SerializedProperty playlistController;
+	SerializedProperty meanLevels;
+	SerializedProperty meanLevelsHighest;
 
     #region Static definitions
     static string[] sampleOptionStrings = {
@@ -37,6 +39,8 @@ public class AudioSpectrumInspector : Editor
 	void OnEnable () 
 	{
 		playlistController = serializedObject.FindProperty ("playlistController");
+		meanLevels = serializedObject.FindProperty ("meanLevels");
+		meanLevelsHighest = serializedObject.FindProperty ("meanLevelsHighest");
 	}
 
     #region Private functions
@@ -71,6 +75,8 @@ public class AudioSpectrumInspector : Editor
 
         // Component properties.
 		EditorGUILayout.PropertyField (playlistController, true);
+		EditorGUILayout.PropertyField (meanLevels, true);
+		EditorGUILayout.PropertyField (meanLevelsHighest, true);
 
         spectrum.numberOfSamples = EditorGUILayout.IntPopup ("Number of samples", spectrum.numberOfSamples, sampleOptionStrings, sampleOptions);
         spectrum.bandType = (AudioSpectrum.BandType)EditorGUILayout.IntPopup ("Band type", (int)spectrum.bandType, bandOptionStrings, bandOptions);

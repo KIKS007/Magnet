@@ -56,18 +56,18 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
     #endregion
 
     #region Private variables
-    float[] rawSpectrum;
-    float[] levels;
-    float[] peakLevels;
-    float[] meanLevels;
+	public float[] rawSpectrum;
+	public float[] levels;
+	public float[] peakLevels;
+	public float[] meanLevels;
 
-	float[] levelsNormalized;
-	float[] peakLevelsNormalized;
-	float[] meanLevelsNormalized;
+	public float[] levelsNormalized;
+	public float[] peakLevelsNormalized;
+	public float[] meanLevelsNormalized;
 
-	float[] levelsHighest;
-	float[] peakLevelsHighest;
-	float[] meanLevelsHighest;
+	public float[] levelsHighest;
+	public float[] peakLevelsHighest;
+	public float[] meanLevelsHighest;
     #endregion
 
     #region Public property
