@@ -179,6 +179,13 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
 			levelsNormalized = new float[bandCount];
 			peakLevelsNormalized = new float[bandCount];
 			meanLevelsNormalized = new float[bandCount];
+
+			for(int i = 0; i < bandCount; i++)
+			{
+				levelsHighest [i] = 0.0001f;
+				peakLevelsHighest [i] = 0.0001f;
+				meanLevelsHighest [i] = 0.0001f;
+			}
 		}
 	}
 

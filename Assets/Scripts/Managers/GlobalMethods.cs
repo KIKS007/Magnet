@@ -10,6 +10,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 	public Vector2 xLimits;
 	public Vector2 zLimits;
+	public float playerLimitReduction = 1.5f;
 
 	[HideInInspector]
 	public float safeDuration = 1.5f;
@@ -56,7 +57,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		do
 		{
 			loopCount++;
-			newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), player.transform.position.y, Random.Range(zLimits.x, zLimits.y));
+			newPos = new Vector3 (Random.Range(xLimits.x + playerLimitReduction, xLimits.y - playerLimitReduction), player.transform.position.y, Random.Range(zLimits.x + playerLimitReduction, zLimits.y - playerLimitReduction));
 			yield return null;	
 		}
 		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);

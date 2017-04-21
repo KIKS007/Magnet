@@ -103,9 +103,6 @@ public class ArenaVisualizer : MonoBehaviour
 		if (currentSettings >= allSettings.Count)
 			return;
 
-		if (MasterAudio.PlaylistMasterVolume == 0)
-			return;
-
 		float currentFactor = normalizedValues ? normalizedFactor : factor;
 		float currentMinimumHeight = normalizedValues ? normalizedMinimumHeight : minimumHeight;
 
