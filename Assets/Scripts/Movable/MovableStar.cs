@@ -84,7 +84,7 @@ public class MovableStar : MovableScript
 
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
-					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
+					if(playerThatThrew != null)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 
 				}				
