@@ -21,9 +21,16 @@ public class MenuChoosePlayer : MonoBehaviour
 	[Header ("Positions")]
 	public float controllersOffPositionGap;
 
+	[Header ("Play Button")] 
+	public RectTransform playButton; 
+	public Vector2 playButtonYPos; 
+
 	private float controllersOnPosition;
 	private float[] playersLogosInitialPos = new float[4];
 	private bool[] hasJoined = new bool[5];
+	private float playerChangeMovement;
+
+	public event EventHandler OnControllerChange; 
 
 	// Use this for initialization
 	void Awake () 
@@ -32,6 +39,7 @@ public class MenuChoosePlayer : MonoBehaviour
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
 
 		controllersOnPosition = controllers [0].anchoredPosition.y;
+		playerChangeMovement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
 
 		for (int i = 0; i < playersLogos.Length; i++)
 			playersLogosInitialPos [i] = playersLogos [i].anchoredPosition.x;
@@ -88,7 +96,26 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		ChangePlayersPosition ();
 		UpdateControllerNumber ();
+		UpdatePlayersControllers ();
+		CheckCanPlay ();
+
+		if (OnControllerChange != null) 
+			OnControllerChange (); 
 	}
+
+	void UpdatePlayersControllers () 
+	{ 
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && GlobalVariables.Instance.Players[0] != null) 
+		{ 
+			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++) 
+			{ 
+				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1) 
+					GlobalVariables.Instance.Players[i].SetActive (true); 
+
+				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().SetupController (); 
+			} 
+		} 
+	} 
 
 	void UpdateControllerNumber ()
 	{
@@ -110,16 +137,18 @@ public class MenuChoosePlayer : MonoBehaviour
 				else
 					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = -1;
 		}
+
+		//Allow to play Alone and choose any character 
+		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 
+			GlobalVariables.Instance.PlayersControllerNumber[1] = 1; 
 	}
 
 	void ChangePlayersPosition ()
 	{
 		if(!hasJoined [0])
 		{
-			float movement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
-
 			for(int i = 0; i < playersLogos.Length; i++)
-				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i] + movement, tweenDuration).SetEase (tweenEase);
+				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i] + playerChangeMovement, tweenDuration).SetEase (tweenEase);
 		}
 		else
 		{
@@ -128,19 +157,37 @@ public class MenuChoosePlayer : MonoBehaviour
 		}
 	}
 
+	void CheckCanPlay () 
+	{
+		if(gameObject.activeSelf)
+			StartCoroutine (WaitEndMenuAnimation ()); 
+	} 
+
+	IEnumerator WaitEndMenuAnimation () 
+	{ 
+		yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
+
+		if(GlobalVariables.Instance.EnabledPlayersList.Count > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
+		{ 
+			playButton.gameObject.SetActive (true);
+			playButton.GetComponent<Button> ().interactable = true; 
+			playButton.GetComponent<Button> ().Select (); 
+			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+		} 
+
+		if(GlobalVariables.Instance.EnabledPlayersList.Count < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
+		{ 
+			playButton.GetComponent<Button> ().interactable = false; 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
+		} 
+	} 
+
 	void PunchPlayersScale (int controller)
 	{
-		if(hasJoined [0])
-			playersLogos [controller].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-		else
-			playersLogos [controller - 1].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-
-//
-//		for(int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
-//		{
-//			if (GlobalVariables.Instance.PlayersControllerNumber [i] != -1)
-//				playersLogos [i].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-//		}
+//		if(hasJoined [0])
+//			playersLogos [controller].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
+//		else
+//			playersLogos [controller - 1].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
 	}
 
 	public void ToggleJoinLeave (int controller)

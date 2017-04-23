@@ -261,8 +261,8 @@ public class MenuComponent : MonoBehaviour
 			underMenusButtons[i].gameObject.SetActive (false);
 
 		//UNDER BUTTONS
-		for (int i = 0; i < underMenusButtons.Count; i++)
-			underMenusButtons[i].gameObject.SetActive (false);
+		for (int i = 0; i < underButtons.Count; i++)
+			underButtons[i].gameObject.SetActive (false);
 		
 		//CONTENT
 		if(mainContent != null)
