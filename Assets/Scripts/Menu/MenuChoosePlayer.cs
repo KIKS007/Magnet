@@ -62,7 +62,6 @@ public class MenuChoosePlayer : MonoBehaviour
 			else
 				GamepadOff (i);
 		}
-
 	}
 	
 	// Update is called once per frame
@@ -97,7 +96,9 @@ public class MenuChoosePlayer : MonoBehaviour
 		ChangePlayersPosition ();
 		UpdateControllerNumber ();
 		UpdatePlayersControllers ();
-		CheckCanPlay ();
+
+		if(transform.GetChild (0).gameObject.activeSelf)
+			CheckCanPlay ();
 
 		if (OnControllerChange != null) 
 			OnControllerChange (); 

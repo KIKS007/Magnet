@@ -88,7 +88,8 @@ public class MenuManager : Singleton <MenuManager>
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
 
-	private bool startScreen = true;
+	[HideInInspector]
+	public bool startScreen = true;
 
 	private float initialMenuHeaderY;
 	private float initialMenuFirstButtonY;
@@ -222,33 +223,33 @@ public class MenuManager : Singleton <MenuManager>
 
 	void GamepadsDisconnected ()
 	{
-		if (disconnectedGamepads [0].parent.gameObject.activeSelf == false)
-			disconnectedGamepads [0].parent.gameObject.SetActive (true);
-
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
-		{
-			for(int i = 0; i < 4; i++)
-			{
-				if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
-					oneGamepadDisconnected = true;
-			}
-
-			if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
-				oneGamepadDisconnected = false;
-		}		
-
-		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-		{
-			for(int i = 0; i < 4; i++)
-			{
-				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.y && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
-					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.y, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());
-				
-
-				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
-					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
-			}
-		}
+//		if (disconnectedGamepads [0].parent.gameObject.activeSelf == false)
+//			disconnectedGamepads [0].parent.gameObject.SetActive (true);
+//
+//		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+//		{
+//			for(int i = 0; i < 4; i++)
+//			{
+//				if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
+//					oneGamepadDisconnected = true;
+//			}
+//
+//			if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
+//				oneGamepadDisconnected = false;
+//		}		
+//
+//		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+//		{
+//			for(int i = 0; i < 4; i++)
+//			{
+//				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.y && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
+//					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.y, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());
+//				
+//
+//				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
+//					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
+//			}
+//		}
 	}
 
 	void ResetGamepadsDisconnected ()

@@ -51,6 +51,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Controller Numbers")]
 	public int[] PlayersControllerNumber = new int[4] {-1, -1, -1, -1};
 
+	[Header ("Gamepads")]
+	public List<Gamepad> GamepadList = new List<Gamepad> ();
+
 	[Header ("Players")]
 	public GameObject[] Players = new GameObject[4];
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
@@ -110,6 +113,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnStartupDoneEvent ());
 		StartCoroutine (OnCocktailModes (selectedCocktailModes.Count));
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
+
+		SetupRewiredPlayers ();
+		ListGamepads ();
+
+		ReInput.ControllerConnectedEvent += GamepadConnected;
+		ReInput.ControllerDisconnectedEvent += GamepadDisconnected;
 
 		OnPlaying += ()=> SetMouseVisibility();
 		OnPlaying += UpdatePlayedModes;
@@ -263,32 +272,18 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		for(int i = 0; i < 5; i++)
 			rewiredPlayers [i] = ReInput.players.GetPlayer (i);
 
-		if(GamepadsManager.Instance.gamepadIdControl)
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
 		{
-			for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-			{
-				switch(GamepadsManager.Instance.gamepadsList [i].GamepadId)
-				{
-				case 1:
-					rewiredPlayers [1].controllers.ClearAllControllers ();
-					rewiredPlayers [1].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-					break;
-				case 2:
-					rewiredPlayers [2].controllers.ClearAllControllers ();
-					rewiredPlayers [2].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-					break;
-				case 3:
-					rewiredPlayers [3].controllers.ClearAllControllers ();
-					rewiredPlayers [3].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-					break;
-				case 4:
-					rewiredPlayers [4].controllers.ClearAllControllers ();
-					rewiredPlayers [4].controllers.AddController (ControllerType.Joystick, GamepadsManager.Instance.gamepadsList [i].GamepadRewiredId, false);
-					break;
-				}
-			}			
-		}
+			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
 
+			for(int i = 0; i < ReInput.controllers.joystickCount; i++)
+			{
+				if (i == 3)
+					break;
+
+				GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
+			}
+		}
 	}
 
 	public void ListPlayers ()
@@ -365,6 +360,35 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public void ChangeSequence (int modeSequence)
 	{
 		ModeSequenceType = (ModeSequenceType) modeSequence;
+	}
+
+	void GamepadDisconnected (ControllerStatusChangedEventArgs arg)
+	{
+		foreach (Gamepad g in GamepadList)
+			if (arg.controllerType == ControllerType.Joystick && g.GamepadRewiredId == arg.controllerId)
+				g.GamepadIsDiconnected = true;
+	}
+
+	void GamepadConnected (ControllerStatusChangedEventArgs arg)
+	{
+		ListGamepads ();
+	}
+
+	void ListGamepads ()
+	{
+		GamepadList.Clear ();
+
+		if (ReInput.controllers.joystickCount == 0)
+			return;
+
+		foreach(Joystick j in ReInput.controllers.GetJoysticks ())
+		{
+			GamepadList.Add (new Gamepad ());
+
+			GamepadList [GamepadList.Count - 1].GamepadName = j.name;
+			GamepadList [GamepadList.Count - 1].GamepadRewiredId = j.id;
+			GamepadList [GamepadList.Count - 1].GamepadIsDiconnected = !j.isConnected;
+		}
 	}
 
 	public event EventHandler OnEndMode;
@@ -451,4 +475,14 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
 	}
+}
+
+[System.Serializable]
+public class Gamepad
+{
+	[HideInInspector]
+	public string GamepadName;
+	public int GamepadRewiredId;
+	public bool GamepadIsUsed = false;
+	public bool GamepadIsDiconnected = false;
 }
