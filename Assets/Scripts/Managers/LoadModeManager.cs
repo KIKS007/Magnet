@@ -100,7 +100,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (WhichMode sceneToLoad)
 	{
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
 
@@ -115,7 +115,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		LevelWasLoaded (sceneToLoad, GameStateEnum.Menu);
 
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 	public void RestartSceneVoid (bool resetStats = true)
@@ -125,7 +125,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator RestartScene (bool resetStats = true)
 	{
-		yield return cameraMovement.StartCoroutine ("RestartPosition");
+		//yield return cameraMovement.StartCoroutine ("RestartPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
 
@@ -145,7 +145,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 			LevelWasLoaded (GlobalVariables.Instance.CurrentModeLoaded, GameStateEnum.Playing);
 
-			yield return cameraMovement.StartCoroutine ("RestartPosition");
+			//yield return cameraMovement.StartCoroutine ("RestartPosition");
 			break;
 
 		case ModeSequenceType.Random:
@@ -161,7 +161,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 			LevelWasLoaded (randomScene, GameStateEnum.Playing);
 
-			yield return cameraMovement.StartCoroutine ("RestartPosition");
+			//yield return cameraMovement.StartCoroutine ("RestartPosition");
 			break;
 
 		case ModeSequenceType.Cocktail:
@@ -176,9 +176,11 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 			LevelWasLoaded (randomCocktailScene, GameStateEnum.Playing);
 
-			yield return cameraMovement.StartCoroutine ("RestartPosition");
+			//yield return cameraMovement.StartCoroutine ("RestartPosition");
 			break;
 		}
+
+		yield return cameraMovement.StartCoroutine ("NewPlayPosition");
 	}
 
 	public void ReloadSceneVoid ()
@@ -188,7 +190,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator ReloadScene ()
 	{
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
 
@@ -203,7 +205,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		LevelWasLoaded (GlobalVariables.Instance.CurrentModeLoaded, GameStateEnum.Menu);
 
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 	public void UnLoadSceneVoid ()
@@ -224,7 +226,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	
 		LevelWasUnloaded (GameStateEnum.Menu);
 
-		yield return cameraMovement.StartCoroutine ("LoadingPosition");
+		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 

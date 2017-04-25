@@ -24,7 +24,7 @@ public class ScreenShakeCamera : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		initialRotation = new Vector3 (90, 45, 45);
+		//initialRotation = new Vector3 (90, 45, 45);
 		//initialRotation = transform.rotation.eulerAngles;
 
 		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
@@ -49,6 +49,8 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
 	{
+		return;
+
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
 		bool exactType = true;
@@ -85,7 +87,7 @@ public class ScreenShakeCamera : MonoBehaviour
 	void ResetCameraRotation ()
 	{
 //		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
-		transform.DORotate(initialRotation, 0.5f);
+		//transform.DORotate(initialRotation, 0.5f);
 	}
 	
 }

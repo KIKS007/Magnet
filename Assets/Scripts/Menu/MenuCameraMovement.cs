@@ -30,6 +30,11 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoNewPos = new Vector2 (0, 365);
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
+	[Header ("New Movements")]
+	public Vector3 newMenuPosition;
+	public Vector3 newPlayPosition;
+	public float newMovementDuration = 0.8f;
+
 	private Vector3 positionOnPause = Vector3.zero;
 
 	private bool loading = false;
@@ -38,7 +43,7 @@ public class MenuCameraMovement : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		transform.position = startPosition;
+		//transform.position = startPosition;
 
 		if(menuLogo != null)
 		{
@@ -169,6 +174,41 @@ public class MenuCameraMovement : MonoBehaviour
 			menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
 		
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
+	}
+
+	public IEnumerator NewMenuPosition ()
+	{
+		StopPreviousMovement ();
+
+		if(startScreenText != null)
+		{
+			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
+			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		}
+
+		Debug.Log ("Menu");
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			positionOnPause = transform.position;
+
+		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewPlayPosition ()
+	{
+		StopPreviousMovement ();
+
+		Debug.Log ("Play");
+
+		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
+
+		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3 (90, 0, 0), newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
 	}
 
 	void StopPreviousMovement ()
