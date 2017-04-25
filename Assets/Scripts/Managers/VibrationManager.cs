@@ -42,34 +42,19 @@ public class VibrationManager : Singleton<VibrationManager>
 	// Update is called once per frame
 	void Update () 
 	{
-		foreach(Joystick j in gamepad1.controllers.Joysticks) 
+		for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		{
-			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[1], playersRightMotor[1]);
-		}
+			if (GlobalVariables.Instance.rewiredPlayers [i] == null)
+				continue;
 
-		foreach(Joystick j in gamepad2.controllers.Joysticks) 
-		{
-			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[2], playersRightMotor[2]);
-		}
-
-		foreach(Joystick j in gamepad3.controllers.Joysticks) 
-		{
-			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[3], playersRightMotor[3]);
-		}
-
-		foreach(Joystick j in gamepad4.controllers.Joysticks) 
-		{
-			if(!j.supportsVibration) continue;
-			j.SetVibration(playersLeftMotor[4], playersRightMotor[4]);
+			if(GlobalVariables.Instance.rewiredPlayers [i].controllers.joystickCount != 0 && GlobalVariables.Instance.rewiredPlayers [i].controllers.Joysticks [0].supportsVibration)
+				GlobalVariables.Instance.rewiredPlayers [i].controllers.Joysticks [0].SetVibration(playersLeftMotor[i], playersRightMotor[i]);
 		}
 
 		if(test)
 		{
 			test = false;
-			Vibrate (0, whichFeedbackTest);
+			Vibrate (1, whichFeedbackTest);
 		}
 	}
 
@@ -126,7 +111,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		playersVibrationCount [whichPlayer]++;
 
 		if(duration > 0)
-			yield return new WaitForSeconds (duration);
+			yield return new WaitForSecondsRealtime (duration);
 
 		if(playersVibrationCount [whichPlayer] == 1)
 			StopVibration (whichPlayer);
@@ -146,7 +131,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		yield return myTween.WaitForCompletion ();
 
 		if(duration > 0)
-			yield return new WaitForSeconds (duration);
+			yield return new WaitForSecondsRealtime (duration);
 
 		myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
@@ -158,7 +143,7 @@ public class VibrationManager : Singleton<VibrationManager>
 
 		playersVibrationCount [whichPlayer]--;
 	}
-
+		
 	IEnumerator VibrationBurst (int whichPlayer, int burstNumber, float leftMotor, float rightMotor, float burstDuration, float durationBetweenBurst)
 	{
 		for (int i = 0; i < burstNumber; i++)
@@ -169,7 +154,7 @@ public class VibrationManager : Singleton<VibrationManager>
 			playersVibrationCount [whichPlayer]++;
 
 			if(burstDuration > 0)
-				yield return new WaitForSeconds (burstDuration);
+				yield return new WaitForSecondsRealtime (burstDuration);
 
 			if(playersVibrationCount [whichPlayer] == 1)
 				StopVibration (whichPlayer);
@@ -177,7 +162,7 @@ public class VibrationManager : Singleton<VibrationManager>
 			playersVibrationCount [whichPlayer]--;
 
 			if(durationBetweenBurst > 0)
-				yield return new WaitForSeconds (durationBetweenBurst);
+				yield return new WaitForSecondsRealtime (durationBetweenBurst);
 		}
 
 		yield break;

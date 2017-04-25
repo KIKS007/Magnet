@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using DG.Tweening;
 
-public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup, Hold, Shoot, Dash, Wave};
+public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup, Hold, Shoot, Dash, Wave, ButtonClick};
 
 public class ScreenShakeCamera : MonoBehaviour 
 {
