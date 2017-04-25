@@ -67,10 +67,9 @@ public class MenuManager : Singleton <MenuManager>
 	public RectTransform backButtons;
 	public Vector2 backButtonsXPos;
 
-	[Header ("Disconnected Gamepads")]
-	public bool oneGamepadDisconnected = false;
-	public RectTransform[] disconnectedGamepads = new RectTransform[4];
-	public Vector2 disconnectedGamepadsYPos;
+	[Header ("Disconnected Players")]
+	public RectTransform[] unpluggedPlayers = new RectTransform[4];
+	public Vector2 disconnectedPlayersYPos;
 
 	[Header ("End Mode Menu")]
 	public MenuComponent endModeMenu;
@@ -111,7 +110,11 @@ public class MenuManager : Singleton <MenuManager>
 		DOTween.defaultTimeScaleIndependent = true;
 
 		OnMenuChange += BackButtons;
-		GlobalVariables.Instance.OnMenu += ResetGamepadsDisconnected;
+
+		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
+		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
+
+		GlobalVariables.Instance.OnGamepadDisconnected += GamepadDisconnected;
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
@@ -156,7 +159,7 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			CheckNothingSelected ();
 
-			GamepadsDisconnected ();
+			GamepadsChange ();
 
 			CheckMenuInput ();
 		}
@@ -197,7 +200,7 @@ public class MenuManager : Singleton <MenuManager>
 			//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 			for(int i = 0; i < 2; i++)
 			{
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !oneGamepadDisconnected)
+				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
 				{
 					currentMenu.HideMenu ();
 					PauseResumeGame ();
@@ -221,47 +224,35 @@ public class MenuManager : Singleton <MenuManager>
 			SelectPreviousElement (currentMenu);
 	}
 
-	void GamepadsDisconnected ()
+	void GamepadDisconnected ()
 	{
-//		if (disconnectedGamepads [0].parent.gameObject.activeSelf == false)
-//			disconnectedGamepads [0].parent.gameObject.SetActive (true);
-//
-//		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
-//		{
-//			for(int i = 0; i < 4; i++)
-//			{
-//				if (GamepadsManager.Instance.gamepadsUnplugged [i] == true)
-//					oneGamepadDisconnected = true;
-//			}
-//
-//			if(GamepadsManager.Instance.gamepadsUnplugged [0] == false && GamepadsManager.Instance.gamepadsUnplugged [1] == false && GamepadsManager.Instance.gamepadsUnplugged [2] == false && GamepadsManager.Instance.gamepadsUnplugged [3] == false)
-//				oneGamepadDisconnected = false;
-//		}		
-//
-//		if (GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-//		{
-//			for(int i = 0; i < 4; i++)
-//			{
-//				if(GamepadsManager.Instance.gamepadsUnplugged[i] == true && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.y && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
-//					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.y, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());
-//				
-//
-//				if(GamepadsManager.Instance.gamepadsUnplugged[i] == false && disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
-//					disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
-//			}
-//		}
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			PauseResumeGame ();
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			ReturnToMainMenu ();
 	}
 
-	void ResetGamepadsDisconnected ()
+	void GamepadsChange ()
 	{
-		for(int i = 0; i < 4; i++)
-		{
-			if(disconnectedGamepads[i].anchoredPosition.y != disconnectedGamepadsYPos.x && !DOTween.IsTweening("GamepadDisconnected" + i.ToString()))
-			{
-				disconnectedGamepads[i].DOAnchorPosY (disconnectedGamepadsYPos.x, durationContent).SetEase (easeMenu).SetId("GamepadDisconnected" + i.ToString());				
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			return;
 
-				if (GlobalVariables.Instance.PlayersControllerNumber[i] == i + 1)
-					GlobalVariables.Instance.PlayersControllerNumber[i] = -1;
+		foreach(PlayerGamepad p in GlobalVariables.Instance.PlayersGamepadList)
+		{
+			//Unplugged
+			if(!p.GamepadIsPlugged)
+			{
+				unpluggedPlayers [(int)p.PlayerName].gameObject.SetActive (true);
+				unpluggedPlayers [(int)p.PlayerName].DOAnchorPosY (disconnectedPlayersYPos.y, durationContent).SetEase (easeMenu);
+			}
+			//Plugged
+			else
+			{
+				unpluggedPlayers [(int)p.PlayerName].DOAnchorPosY (disconnectedPlayersYPos.x, durationContent).SetEase (easeMenu).OnComplete (()=> 
+				{
+					unpluggedPlayers [(int)p.PlayerName].gameObject.SetActive (false);
+				});
 			}
 		}
 	}

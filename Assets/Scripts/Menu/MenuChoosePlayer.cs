@@ -53,6 +53,17 @@ public class MenuChoosePlayer : MonoBehaviour
 			Leave (0);
 	}
 
+	void Start ()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			if (i < ReInput.controllers.Joysticks.Count)
+				GamepadOn (i, true);
+			else
+				GamepadOff (i);
+		}
+	}
+
 	void OnEnable ()
 	{
 		for(int i = 0; i < 4; i++)
@@ -62,6 +73,8 @@ public class MenuChoosePlayer : MonoBehaviour
 			else
 				GamepadOff (i);
 		}
+
+		CheckCanPlay ();
 	}
 	
 	// Update is called once per frame
@@ -96,9 +109,8 @@ public class MenuChoosePlayer : MonoBehaviour
 		ChangePlayersPosition ();
 		UpdateControllerNumber ();
 		UpdatePlayersControllers ();
-
-		if(transform.GetChild (0).gameObject.activeSelf)
-			CheckCanPlay ();
+		GlobalVariables.Instance.UpdateGamepadList ();
+		CheckCanPlay ();
 
 		if (OnControllerChange != null) 
 			OnControllerChange (); 
@@ -216,18 +228,25 @@ public class MenuChoosePlayer : MonoBehaviour
 		UpdateSettings ();
 	}
 
-	void GamepadOn (int gamepad)
+	void GamepadOn (int gamepad, bool forceJoin = false)
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+			return;
+		
 		controllers [gamepad + 1].GetComponent<Button> ().interactable = true;
 
 		if (hasJoined [0] && gamepad == 3)
 			Leave (0);
-		
-		Join (gamepad + 1);
+
+		if(forceJoin)
+			Join (gamepad + 1);
 	}
 
 	void GamepadOff (int gamepad)
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+			return;
+		
 		Leave (gamepad + 1);
 
 		controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
