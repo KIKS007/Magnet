@@ -59,13 +59,16 @@ public class MovableStar : MovableScript
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			else if(currentVelocity < limitVelocity && gameObject.tag == "Suggestible")
+			else if(currentVelocity < limitVelocity)
 			{
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
+				if(gameObject.tag == "DeadCube" || gameObject.tag == "ThrownMovable")
+				{
+					ToNeutralColor ();
 
-				ToNeutralColor ();
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
+					playerThatThrew = null;
+				}
 			}
 		}
 	}
@@ -86,18 +89,32 @@ public class MovableStar : MovableScript
 
 					if(playerThatThrew != null)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
 				}				
 			}
 		}
 
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(other.collider.tag == "Player" 
+			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
 		{
-			if(tag == "Suggestible")
-			{
-				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
-			}
+			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+
+			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+		}
+	}
+
+	protected override void HitWall (Collision other)
+	{
+		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			/*if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);*/
+
+			if(canPlaySound)
+				StartCoroutine(HitSound ());
+
+			if(currentVelocity > limitVelocity)
+				StartCoroutine (DeadlyTransition ());
 		}
 	}
 
@@ -151,31 +168,19 @@ public class MovableStar : MovableScript
 		cubeColor = CubeColor.Deadly;
 	}
 
-	public override void OnHold ()
+	IEnumerator DeadlyTransition ()
 	{
-		hold = true;
+		ToDeadlyColor (0.15f);
 
-		attracedBy.Clear ();
-		repulsedBy.Clear ();
+		yield return new WaitForSeconds (0.01f);
 
-		StartCoroutine (DeadlyTransition ());
-
-		OnHoldEventVoid ();
+		tag = "DeadCube";
 	}
 
 	public override void OnRelease ()
 	{
+		ToNeutralColor();
+
 		OnReleaseEventVoid ();
-
-		StartCoroutine (DeadlyTransition ());
-	}
-
-	IEnumerator DeadlyTransition ()
-	{
-		ToDeadlyColor ();
-
-		yield return new WaitForSeconds (0.01f);
-
-		tag = "Suggestible";
 	}
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class LeastDeathManager : MonoBehaviour 
 {
@@ -13,6 +15,8 @@ public class LeastDeathManager : MonoBehaviour
 	private int maxDeath = 5;
 	public int[] deathCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
+
+
 
 	[Header ("Cubes Spawn")]
 	public bool spawnCubes = true;
@@ -44,8 +48,10 @@ public class LeastDeathManager : MonoBehaviour
 	{
 		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
 			return;
-		
+
 		deathCount [(int)playerName]++;
+
+		GlobalMethods.Instance.SpawnDeathText (playerName, player, deathCount [(int)playerName]);
 
 		foreach(int death in deathCount)
 			if(death >= maxDeath && !gameEndLoopRunning)

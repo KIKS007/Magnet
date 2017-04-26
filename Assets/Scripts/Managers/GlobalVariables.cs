@@ -65,6 +65,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int NumberOfDisabledPlayers;
 	public int NumberOfAlivePlayers;
 	public int NumberOfDeadPlayers;
+	
+	[Header ("Players Colors")]
+	public Material[] playersColors = new Material[4];
 
 	[Header ("Movables")]
 	public List<GameObject> AllMovables = new List<GameObject> ();

@@ -2,15 +2,23 @@
 using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using UnityEngine.UI;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	[Header ("Layers")]
 	public LayerMask gameplayLayer = (1 << 9) | (1 << 12);
 	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
+	[Header ("Limits")]
 	public Vector2 xLimits;
 	public Vector2 zLimits;
 	public float playerLimitReduction = 1.5f;
+
+	[Header ("DeathCount Text")]
+	public GameObject deathTextPrefab;
+	public Vector2 deathTextPositions;
+	public float deathTextDuration;
 
 	[HideInInspector]
 	public float safeDuration = 1.5f;
@@ -38,6 +46,20 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		xLimits.x = GlobalVariables.Instance.currentModePosition.x - (xLimits.y - GlobalVariables.Instance.currentModePosition.x);
 		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
+	}
+
+	public void SpawnDeathText (PlayerName playerName, GameObject player, int count)
+	{
+		Vector3 position = new Vector3 (player.transform.position.x, deathTextPositions.x, player.transform.position.z);
+
+		GameObject text = Instantiate (deathTextPrefab, position, deathTextPrefab.transform.rotation);
+		//text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
+		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName].color;
+
+		text.transform.GetChild (0).GetComponent<Text> ().text = count + " X";
+
+		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad);
+		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text));
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
