@@ -417,7 +417,7 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		yield return new WaitForSecondsRealtime (delay);
 
-		if (whichMenu.scrollViewButtons)
+		if (whichMenu.scrollViewButtons && whichMenu.menusParent.GetComponent<Image> () != null)
 			whichMenu.menusParent.GetComponent<Image> ().enabled = true;
 	}
 
@@ -665,7 +665,7 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		yield return new WaitForSecondsRealtime (delay);
 
-		if (whichMenu.scrollViewButtons)
+		if (whichMenu.scrollViewButtons && whichMenu.menusParent.GetComponent<Image> () != null)
 			whichMenu.menusParent.GetComponent<Image> ().enabled = false;
 	}
 		

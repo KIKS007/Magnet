@@ -369,9 +369,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if(GameState == GameStateEnum.Menu)
 		{
 			PlayersGamepadList.Clear ();
-			
+
 			for(int i = 0; i < EnabledPlayersList.Count; i++)
 			{
+				if (EnabledPlayersList [i] == null)
+					return;
+
 				PlayersGameplay playerScript = EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
 				
 				if (playerScript.rewiredPlayer != null && playerScript.rewiredPlayer.controllers.joystickCount != 0)

@@ -29,6 +29,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	private float[] playersLogosInitialPos = new float[4];
 	private bool[] hasJoined = new bool[5];
 	private float playerChangeMovement;
+	private bool noInput = false;
 
 	public event EventHandler OnControllerChange; 
 
@@ -66,6 +67,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	void OnEnable ()
 	{
+		noInput = false;
+
 		for(int i = 0; i < 4; i++)
 		{
 			if (i < ReInput.controllers.Joysticks.Count)
@@ -80,7 +83,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true) 
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput) 
 			CheckInput ();
 	}
 
@@ -180,7 +183,13 @@ public class MenuChoosePlayer : MonoBehaviour
 	{ 
 		yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
 
-		if(GlobalVariables.Instance.EnabledPlayersList.Count > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
+		int playersCount = 0;
+
+		for (int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+			if (GlobalVariables.Instance.PlayersControllerNumber [i] != -1)
+				playersCount++;
+
+		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
 			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
@@ -188,7 +197,7 @@ public class MenuChoosePlayer : MonoBehaviour
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
-		if(GlobalVariables.Instance.EnabledPlayersList.Count < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
+		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
 			playButton.GetComponent<Button> ().interactable = false; 
 			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
@@ -205,6 +214,9 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	public void ToggleJoinLeave (int controller)
 	{
+		if (noInput)
+			return;
+
 		if (hasJoined [controller])
 			Leave (controller);
 		else
@@ -250,5 +262,10 @@ public class MenuChoosePlayer : MonoBehaviour
 		Leave (gamepad + 1);
 
 		controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
+	}
+
+	public void NoInput ()
+	{
+		noInput = true;
 	}
 }
