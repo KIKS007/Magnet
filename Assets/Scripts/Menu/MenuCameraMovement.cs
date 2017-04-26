@@ -186,8 +186,6 @@ public class MenuCameraMovement : MonoBehaviour
 			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		}
 
-		Debug.Log ("Menu");
-
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
 
@@ -200,8 +198,6 @@ public class MenuCameraMovement : MonoBehaviour
 	public IEnumerator NewPlayPosition ()
 	{
 		StopPreviousMovement ();
-
-		Debug.Log ("Play");
 
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 

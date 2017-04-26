@@ -49,7 +49,7 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
 	{
-		return;
+		//return;
 
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
@@ -86,7 +86,7 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	void ResetCameraRotation ()
 	{
-//		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 		//transform.DORotate(initialRotation, 0.5f);
 	}
 	
