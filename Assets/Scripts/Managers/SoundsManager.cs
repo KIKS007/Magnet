@@ -113,6 +113,55 @@ public class SoundsManager : Singleton<SoundsManager>
 		//MasterAudio.TriggerRandomPlaylistClip ();
 	}
 
+	void Update ()
+	{
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
+					RandomMusic ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
+					NextMusic ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
+					MusicVolumeUp ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
+					MusicVolumeDown ();
+			}
+		}
+	}
+
+	void RandomMusic ()
+	{
+		MasterAudio.TriggerRandomPlaylistClip ();
+	}
+
+	void NextMusic ()
+	{
+		MasterAudio.TriggerNextPlaylistClip ();
+	}
+
+	void MusicVolumeUp ()
+	{
+		if(MasterAudio.PlaylistMasterVolume < initialPlaylistVolume)
+			MasterAudio.PlaylistMasterVolume += 0.02f;
+		else
+			MasterAudio.PlaylistMasterVolume = initialPlaylistVolume;
+	}
+
+	void MusicVolumeDown ()
+	{
+		if(MasterAudio.PlaylistMasterVolume > 0)
+			MasterAudio.PlaylistMasterVolume -= 0.02f;
+		
+		else
+			MasterAudio.PlaylistMasterVolume = 0;
+
+	}
+
 	public void SetGamePlaylist ()
 	{
 		if(playlistCont.PlaylistName != "Game")
