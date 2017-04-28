@@ -43,7 +43,8 @@ public class MenuCameraMovement : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		//transform.position = startPosition;
+		transform.position = newMenuPosition;
+		StartCoroutine (NewMenuPosition ());
 
 		if(menuLogo != null)
 		{
@@ -198,7 +199,10 @@ public class MenuCameraMovement : MonoBehaviour
 	public IEnumerator NewPlayPosition ()
 	{
 		StopPreviousMovement ();
-		
+
+		if (DOTween.IsTweening ("ScreenShake"))
+			DOTween.Kill ("ScreenShake");
+
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
 		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");

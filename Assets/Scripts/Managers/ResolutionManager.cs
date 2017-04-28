@@ -242,13 +242,13 @@ public class ResolutionManager : MonoBehaviour
     {
 		if(Screen.fullScreen)
 		{
-			Debug.Log ("Windowed");
+//			Debug.Log ("Windowed");
 			PlayerPrefs.SetInt ("Fullscreen", 0);
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
 		}
 		else
 		{
-			Debug.Log ("Full");
+//			Debug.Log ("Full");
 			PlayerPrefs.SetInt ("Fullscreen", 1);
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
 		}

@@ -37,6 +37,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 					yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
 		}
 
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+		{
+			if(SceneManager.GetSceneByBuildIndex (i).isLoaded && SceneManager.GetSceneByBuildIndex (i).name != "Scene Testing" && SceneManager.GetSceneByBuildIndex (i).name != "Menu")
+				yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneByBuildIndex (i).name);
+		}
+
 		//Unload Scene if already loaded
 		if(SceneManager.GetSceneByName(sceneToLoad.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (sceneToLoad.ToString ());
