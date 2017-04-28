@@ -87,7 +87,9 @@ public class ScreenShakeCamera : MonoBehaviour
 	void ResetCameraRotation ()
 	{
 		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
-		//transform.DORotate(initialRotation, 0.5f);
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			transform.DORotate(new Vector3 (90, 0, 0), 1f).SetId("ScreenShake");
 	}
 	
 }

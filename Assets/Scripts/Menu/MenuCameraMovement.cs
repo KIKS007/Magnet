@@ -198,7 +198,7 @@ public class MenuCameraMovement : MonoBehaviour
 	public IEnumerator NewPlayPosition ()
 	{
 		StopPreviousMovement ();
-
+		
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
 		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");

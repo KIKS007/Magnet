@@ -1300,6 +1300,14 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
+	#region Tutorial
+	public void LoadTutorial ()
+	{
+		LoadModeManager.Instance.LoadSceneVoid (WhichMode.Tutorial);
+	}
+
+	#endregion
+
 	#region Events
 	public event EventHandler OnMenuChange;
 

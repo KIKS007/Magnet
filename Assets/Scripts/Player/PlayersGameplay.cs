@@ -148,7 +148,10 @@ public class PlayersGameplay : MonoBehaviour
 		if(GameObject.FindGameObjectWithTag("MovableParent") != null)
 		{
 			movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
-			playerDeadCubeTag = movableParent.GetChild (0).tag;
+			if (movableParent.childCount != 0)
+				playerDeadCubeTag = movableParent.GetChild (0).tag;
+			else
+				Debug.LogWarning ("No Movables!");
 		}
 		
         magnetPoint = transform.GetChild(0).transform;
@@ -592,7 +595,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Dash
-    protected IEnumerator Dash()
+	protected virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
 
@@ -617,7 +620,7 @@ public class PlayersGameplay : MonoBehaviour
         }
     }
 
-    IEnumerator DashEnd()
+	protected virtual IEnumerator DashEnd()
     {
         yield return new WaitForSeconds(dashDuration);
 
@@ -789,6 +792,12 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnHolding != null)
 			OnHolding();
+	}
+
+	protected void OnTauntVoid ()
+	{
+		if (OnTaunt != null)
+			OnTaunt();
 	}
 	#endregion
 }

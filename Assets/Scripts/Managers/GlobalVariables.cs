@@ -14,7 +14,7 @@ public enum ModeSequenceType {Selection, Random, Cocktail};
 
 public enum ModeObjective {LastMan, LeastDeath};
 
-public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Default};
+public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Tutorial, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -147,25 +147,27 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		GetPlayers ();
 		SetModePosition ();
+		GetMovables ();
 
-		lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
-		leastDeathManager = GameObject.FindGameObjectWithTag("LeastDeathManager").GetComponent<LeastDeathManager> ();
-
-		if (modeObjective == ModeObjective.LastMan)
+		if (levelLoaded != WhichMode.Tutorial)
 		{
-			lastManManager.gameObject.SetActive (true);
-			leastDeathManager.gameObject.SetActive (false);
-		}
-		else
-		{
-			leastDeathManager.gameObject.SetActive (true);
-			lastManManager.gameObject.SetActive (false);
+			lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
+			leastDeathManager = GameObject.FindGameObjectWithTag("LeastDeathManager").GetComponent<LeastDeathManager> ();
+			
+			if (modeObjective == ModeObjective.LastMan)
+			{
+				lastManManager.gameObject.SetActive (true);
+				leastDeathManager.gameObject.SetActive (false);
+			}
+			else
+			{
+				leastDeathManager.gameObject.SetActive (true);
+				lastManManager.gameObject.SetActive (false);
+			}
 		}
 
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
-
-		GetMovables ();
 	}
 
 	public void LevelWasUnloaded (GameStateEnum gameState)
