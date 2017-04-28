@@ -1,14 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using GameAnalyticsSDK;
+using System.IO;
+using System.Linq;
 
 public class SoundsManager : Singleton<SoundsManager> 
 {
 	public PlaylistController playlistCont;
+
+	[Header ("Loaded Musics")]
+	public bool playLoadedMusics;
+	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -89,11 +96,18 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	private bool loading = false;
 
+	private FileInfo[] musicsFiles;
+	private List<string> validExtensions = new List<string> { ".ogg", ".wav" };
+	private string loadedMusicsPath = "/Musics";
+	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
+
 	public event EventHandler OnMusicVolumeChange;
 	public event EventHandler OnSoundsVolumeChange;
 
 	void Start ()
 	{
+		LoadMusics ();
+
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
 
@@ -144,6 +158,80 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
+	void LoadMusics ()
+	{
+		if (Application.isEditor)
+			loadedMusicsPath = editorLoadedMusicsPath;
+		else
+			loadedMusicsPath = Application.dataPath + loadedMusicsPath;
+
+		if(!Directory.Exists (loadedMusicsPath))
+		{
+			Directory.CreateDirectory (loadedMusicsPath);
+			Debug.LogWarning ("Musics folder don't exists!");
+			return;
+		}
+
+		loadedMusics.Clear ();
+
+		var info = new DirectoryInfo (loadedMusicsPath);
+
+		musicsFiles = info.GetFiles ()
+			.Where (f => IsValidFileType (f.Name))
+			.ToArray ();
+
+		if(musicsFiles.Length == 0)
+		{
+			Debug.LogWarning ("No (valid) Musics in folder!");
+			return;
+		}
+
+		foreach (var s in musicsFiles)
+			StartCoroutine (LoadFile (s.FullName));
+	}
+	
+	bool IsValidFileType (string fileName)
+	{
+		return validExtensions.Contains (Path.GetExtension (fileName));
+	}
+
+	IEnumerator LoadFile (string path)
+	{
+		WWW www = new WWW ("file://" + path);
+		AudioClip clip = www.audioClip;
+
+		Debug.Log ("loading " + path);
+		yield return www;
+
+		while(!www.isDone)
+			yield return 0;
+
+		if (clip.loadState == AudioDataLoadState.Unloaded)
+			yield break;
+
+		if (www.error != null)
+		{
+			Debug.Log (www.error);
+			yield break;
+		}
+		
+		clip = www.GetAudioClip (false, false);
+		clip.LoadAudioData ();
+
+		if (clip.loadState == AudioDataLoadState.Failed)
+			Debug.LogError ("Unable to load file: " + path);
+		
+		else
+		{
+			Debug.Log ("done loading " + path);
+			clip.name = Path.GetFileName (path);
+
+			loadedMusics.Add (clip);
+
+			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
+		}
+	}
+
 	void RandomMusic ()
 	{
 		MasterAudio.TriggerRandomPlaylistClip ();
@@ -177,9 +265,11 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void SetGamePlaylist ()
 	{
-		if(playlistCont.PlaylistName != "Game")
+		string gamePlaylist = playLoadedMusics ? "Loaded Musics" : "Game";
+
+		if(playlistCont.PlaylistName != gamePlaylist)
 		{
-			MasterAudio.ChangePlaylistByName ("Game", false);
+			MasterAudio.ChangePlaylistByName (gamePlaylist, false);
 			playlistCont.PlayRandomSong ();
 		}
 	}

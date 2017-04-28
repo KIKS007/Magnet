@@ -1998,7 +1998,7 @@ public class Reporter : MonoBehaviour {
 			clear();
 
 		currentScene = Application.loadedLevelName ;
-		Debug.Log( "Scene " + Application.loadedLevelName + " is loaded");
+		//Debug.Log( "Scene " + Application.loadedLevelName + " is loaded");
 	}
 	
 	//save user config
