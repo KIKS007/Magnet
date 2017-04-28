@@ -97,7 +97,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	private bool loading = false;
 
 	private FileInfo[] musicsFiles;
-	private List<string> validExtensions = new List<string> { ".ogg", ".wav" };
+	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
 
@@ -187,7 +187,12 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 
 		foreach (var s in musicsFiles)
-			StartCoroutine (LoadFile (s.FullName));
+		{
+			if(Path.GetExtension (s.Name).Contains (".mp3"))
+				StartCoroutine (LoadMP3File (s.FullName));
+			else
+				StartCoroutine (LoadFile (s.FullName));
+		}
 	}
 	
 	bool IsValidFileType (string fileName)
@@ -200,11 +205,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		WWW www = new WWW ("file://" + path);
 		AudioClip clip = www.audioClip;
 
-		Debug.Log ("loading " + path);
+		//Debug.Log ("loading " + path);
 		yield return www;
-
-		while(!www.isDone)
-			yield return 0;
 
 		if (clip.loadState == AudioDataLoadState.Unloaded)
 			yield break;
@@ -223,7 +225,37 @@ public class SoundsManager : Singleton<SoundsManager>
 		
 		else
 		{
-			Debug.Log ("done loading " + path);
+			//Debug.Log ("done loading " + path);
+			clip.name = Path.GetFileName (path);
+
+			loadedMusics.Add (clip);
+
+			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
+		}
+	}
+
+	IEnumerator LoadMP3File (string path)
+	{
+		WWW www = new WWW ("file://" + path);
+
+		//Debug.Log ("loading " + path);
+		yield return www;
+
+		if (www.error != null)
+		{
+			Debug.Log (www.error);
+			yield break;
+		}
+
+		AudioClip clip = NAudioPlayer.FromMp3Data (www.bytes);
+		clip.LoadAudioData ();
+
+		if (clip.loadState == AudioDataLoadState.Failed)
+			Debug.LogError ("Unable to load file: " + path);
+
+		else
+		{
+			//Debug.Log ("done loading " + path);
 			clip.name = Path.GetFileName (path);
 
 			loadedMusics.Add (clip);
