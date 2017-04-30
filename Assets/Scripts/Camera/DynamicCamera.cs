@@ -69,6 +69,7 @@ public class DynamicCamera : MonoBehaviour
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
 			SetCameraPosition ();
+
 		}
 	}
 

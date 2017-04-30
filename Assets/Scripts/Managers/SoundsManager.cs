@@ -203,7 +203,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	IEnumerator LoadFile (string path)
 	{
 		WWW www = new WWW ("file://" + path);
-		AudioClip clip = www.audioClip;
+		AudioClip clip = www.GetAudioClip();
 
 		//Debug.Log ("loading " + path);
 		yield return www;
