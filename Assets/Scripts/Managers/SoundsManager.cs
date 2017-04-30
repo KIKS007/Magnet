@@ -297,7 +297,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void SetGamePlaylist ()
 	{
-		string gamePlaylist = playLoadedMusics ? "Loaded Musics" : "Game";
+		string gamePlaylist = "Game";
+
+		if(playLoadedMusics && loadedMusics.Count != 0)
+			gamePlaylist = "Loaded Musics";
 
 		if(playlistCont.PlaylistName != gamePlaylist)
 		{

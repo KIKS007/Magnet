@@ -221,4 +221,18 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		return position + GlobalVariables.Instance.currentModePosition;
 	}
+
+	[ContextMenu ("Menu Position")]
+	public void EditorMenuPosition ()
+	{
+		transform.position = newMenuPosition;
+		transform.rotation = Quaternion.Euler (Vector3.zero);
+	}
+
+	[ContextMenu ("Play Position")]
+	public void EditorPlayPosition ()
+	{
+		transform.position = newPlayPosition;
+		transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+	}
 }
