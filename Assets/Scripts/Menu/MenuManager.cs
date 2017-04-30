@@ -305,6 +305,9 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		currentMenu = whichMenu;
 
+		//Select First Under Menu Button
+		StartCoroutine (SelectPreviousElement (whichMenu)); 
+
 		for(int i = 0; i < whichMenu.contentDisplay.Count; i++)
 		{
 			switch (whichMenu.contentDisplay [i].contentType)
@@ -326,9 +329,6 @@ public class MenuManager : Singleton <MenuManager>
 				break;
 			}
 		}
-
-		//Select First Under Menu Button
-		SelectPreviousElement (whichMenu); 
 	}
 
 
@@ -925,7 +925,7 @@ public class MenuManager : Singleton <MenuManager>
 	}
 
 
-	void SelectPreviousElement (MenuComponent whichMenu)
+	IEnumerator SelectPreviousElement (MenuComponent whichMenu)
 	{
 		GameObject selectable = null;
 
@@ -940,10 +940,14 @@ public class MenuManager : Singleton <MenuManager>
 
 		if(selectable != null)
 		{
-			if(selectable.GetComponent<Button> () != null && selectable.GetComponent<Button> ().interactable)
+			Button button = selectable.GetComponent<Button> ();
+
+			yield return new WaitUntil (() => button.interactable == true);
+
+			if(button != null && button.interactable)
 				eventSyst.SetSelectedGameObject (selectable);
 
-			else if(selectable.GetComponent<Button> () == null)
+			else if(button == null)
 				eventSyst.SetSelectedGameObject (selectable);
 		}
 	}
