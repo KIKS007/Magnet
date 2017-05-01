@@ -30,7 +30,11 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoNewPos = new Vector2 (0, 365);
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
-	[Header ("New Movements")]
+	[Header ("Start")]
+	public Vector3 startRotation;
+	public Vector3 newStartPosition;
+
+	[Header ("Movements")]
 	public Vector3 newMenuPosition;
 	public Vector3 newPlayPosition;
 	public float newMovementDuration = 0.8f;
@@ -43,8 +47,10 @@ public class MenuCameraMovement : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		transform.position = newMenuPosition;
-		StartCoroutine (NewMenuPosition ());
+		transform.position = newStartPosition;
+		transform.rotation = Quaternion.Euler (startRotation);
+
+		//StartCoroutine (NewMenuPosition ());
 
 		if(menuLogo != null)
 		{
@@ -177,15 +183,30 @@ public class MenuCameraMovement : MonoBehaviour
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
-	public IEnumerator NewMenuPosition ()
+	public IEnumerator StartPosition ()
 	{
 		StopPreviousMovement ();
 
-		if(startScreenText != null)
+		if(menuLogo != null)
 		{
 			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
 			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		}
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			positionOnPause = transform.position;
+
+		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewMenuPosition ()
+	{
+		StopPreviousMovement ();
+
+		StartCoroutine (ShowLogo ());
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
@@ -202,6 +223,8 @@ public class MenuCameraMovement : MonoBehaviour
 
 		if (DOTween.IsTweening ("ScreenShake"))
 			DOTween.Kill ("ScreenShake");
+
+		StartCoroutine (HideLogo ());
 
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 

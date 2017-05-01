@@ -86,7 +86,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		{
 			randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
 		}
-		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));
+		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene) || randomScene == WhichMode.Tutorial || randomScene == WhichMode.None || randomScene == WhichMode.Default);
 
 		StartCoroutine (LoadScene (randomScene));
 	}
@@ -231,8 +231,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StatsManager.Instance.ResetStats (true);
 	
 		LevelWasUnloaded (GameStateEnum.Menu);
-
-		//yield return cameraMovement.StartCoroutine ("LoadingPosition");
 	}
 
 

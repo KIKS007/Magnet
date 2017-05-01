@@ -144,7 +144,7 @@ public class MenuManager : Singleton <MenuManager>
 		MasterAudio.PlaySound (SoundsManager.Instance.gameStartSound);
 
 		//cameraMovement.StartCoroutine ("StartScreen");
-		cameraMovement.StartCoroutine ("NewMenuPosition");
+		cameraMovement.StartCoroutine ("StartPosition");
 
 		ShowMenu (mainMenuScript);
 		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
@@ -934,22 +934,20 @@ public class MenuManager : Singleton <MenuManager>
 
 		else if(whichMenu.selectable != null)
 			selectable = whichMenu.selectable;
-		
-		if(eventSyst.currentSelectedGameObject != selectable)
-			eventSyst.SetSelectedGameObject (null);
+
+		eventSyst.SetSelectedGameObject (null);
 
 		if(selectable != null)
 		{
 			Button button = selectable.GetComponent<Button> ();
 
-			yield return new WaitUntil (() => button.interactable == true);
+			if(button != null)
+				yield return new WaitUntil (() => button.interactable == true);
 
-			if(button != null && button.interactable)
-				eventSyst.SetSelectedGameObject (selectable);
-
-			else if(button == null)
-				eventSyst.SetSelectedGameObject (selectable);
+			eventSyst.SetSelectedGameObject (selectable);
 		}
+
+		yield return 0;
 	}
 
 	void SetInteractable (RectTransform target, float delayDuration = 0)
@@ -1153,6 +1151,9 @@ public class MenuManager : Singleton <MenuManager>
 		yield return cameraMovement.StartCoroutine ("NewMenuPosition");
 		//yield return cameraMovement.StartCoroutine ("EndModePosition");
 
+
+
+		//Secondary Content
 		if(secondaryContentList != null)
 		{
 			for(int i = 0; i < secondaryContentList.Count; i++)
@@ -1192,8 +1193,7 @@ public class MenuManager : Singleton <MenuManager>
 		for (int i = 0; i < playerScore.Length; i++)
 			playerScore[i].DOScale(1, durationToShow).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 		
-
-		SelectPreviousElement (whichMenu);
+		StartCoroutine (SelectPreviousElement (whichMenu));
 
 		currentMenu = whichMenu;
 	}
@@ -1309,7 +1309,6 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		LoadModeManager.Instance.LoadSceneVoid (WhichMode.Tutorial);
 	}
-
 	#endregion
 
 	#region Events

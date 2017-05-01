@@ -14,7 +14,7 @@ public enum ModeSequenceType {Selection, Random, Cocktail};
 
 public enum ModeObjective {LastMan, LeastDeath};
 
-public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Tutorial, Default};
+public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Star, Tutorial, None, Default};
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -172,6 +172,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void LevelWasUnloaded (GameStateEnum gameState)
 	{
+		CurrentModeLoaded = WhichMode.None;
 		GameState = gameState;
 	}
 
