@@ -43,24 +43,23 @@ public class DynamicCamera : MonoBehaviour
 		targetsList.Clear ();
 
 		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
-			for (int i = 0; i < GlobalVariables.Instance.AlivePlayersList.Count; i++)
-				targetsList.Add (GlobalVariables.Instance.AlivePlayersList [i]);
+			targetsList.AddRange (GlobalVariables.Instance.AlivePlayersList);
 		else
-			for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
-				targetsList.Add (GlobalVariables.Instance.EnabledPlayersList [i]);
+			targetsList.AddRange (GlobalVariables.Instance.EnabledPlayersList);
 
-		for (int i = 0; i < otherTargetsList.Count(); i++)
+		for (int i = 0; i < otherTargetsList.Count; i++)
 			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)
 				targetsList.Add (otherTargetsList [i]);
+		
 
 		if(dynamicEnabled)
 		{
-			if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			{
-				FindLargestDistance ();
-				FindCenterPosition ();
-				FindYPosition ();
-			}
+			if (targetsList.Count == 0)
+				return;
+			
+			FindLargestDistance ();
+			FindCenterPosition ();
+			FindYPosition ();
 		}
 	}
 
@@ -68,8 +67,10 @@ public class DynamicCamera : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && dynamicEnabled)
 		{
+			if (targetsList.Count == 0)
+				return;
+			
 			SetCameraPosition ();
-
 		}
 	}
 
@@ -81,8 +82,12 @@ public class DynamicCamera : MonoBehaviour
 
 			for(int i = 0; i < targetsList.Count (); i++)
 			{
+				if (targetsList [i] == null)
+					return;
+				
 				for(int j = 0; j < targetsList.Count (); j++)
 				{
+
 					if (Vector3.Distance (targetsList [i].transform.position, targetsList [j].transform.position) > distanceTemp)
 						distanceTemp = Vector3.Distance (targetsList [i].transform.position, targetsList [j].transform.position);
 				}				
@@ -108,7 +113,12 @@ public class DynamicCamera : MonoBehaviour
 		Vector3 centerPosTemp = new Vector3 ();
 
 		for (int i = 0; i < targetsList.Count (); i++)
+		{
+			if (targetsList [i] == null)
+				return;
+			
 			centerPosTemp += targetsList [i].transform.position;
+		}
 
 		centerPosTemp = centerPosTemp / targetsList.Count ();
 		centerPosTemp.y = transform.position.y;

@@ -105,6 +105,8 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	IEnumerator Vibration (int whichPlayer, float leftMotor, float rightMotor, float duration)
 	{
+		DOTween.Kill ("Vibration" + whichPlayer);
+
 		playersLeftMotor [whichPlayer] = leftMotor;
 		playersRightMotor [whichPlayer] = rightMotor;
 
@@ -123,6 +125,8 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	IEnumerator Vibration (int whichPlayer, float leftMotor, float rightMotor, float duration, float startDuration, float stopDuration, Ease easeType = Ease.Linear)
 	{
+		DOTween.Kill ("Vibration" + whichPlayer);
+
 		Tween myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, leftMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, rightMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
 
@@ -146,6 +150,8 @@ public class VibrationManager : Singleton<VibrationManager>
 		
 	IEnumerator VibrationBurst (int whichPlayer, int burstNumber, float leftMotor, float rightMotor, float burstDuration, float durationBetweenBurst)
 	{
+		DOTween.Kill ("Vibration" + whichPlayer);
+
 		for (int i = 0; i < burstNumber; i++)
 		{
 			playersLeftMotor [whichPlayer] = leftMotor;
@@ -251,14 +257,14 @@ public class VibrationManager : Singleton<VibrationManager>
 		DOTween.To(()=> playersLeftMotor [0], x=> playersLeftMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
 		DOTween.To(()=> playersRightMotor [0], x=> playersRightMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
 
-		DOTween.To(()=> playersLeftMotor [1], x=> playersLeftMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
-		DOTween.To(()=> playersRightMotor [1], x=> playersRightMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersLeftMotor [1], x=> playersLeftMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 1);
+		DOTween.To(()=> playersRightMotor [1], x=> playersRightMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 1);
 
-		DOTween.To(()=> playersLeftMotor [2], x=> playersLeftMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
-		DOTween.To(()=> playersRightMotor [2], x=> playersRightMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersLeftMotor [2], x=> playersLeftMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 2);
+		DOTween.To(()=> playersRightMotor [2], x=> playersRightMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 2);
 
-		DOTween.To(()=> playersLeftMotor [3], x=> playersLeftMotor [3] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
-		DOTween.To(()=> playersRightMotor [3], x=> playersRightMotor[3] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To(()=> playersLeftMotor [3], x=> playersLeftMotor [3] = x, 0, timeToStopVibration).SetId("Vibration" + 3);
+		DOTween.To(()=> playersRightMotor [3], x=> playersRightMotor[3] = x, 0, timeToStopVibration).SetId("Vibration" + 3);
 
 	}
 

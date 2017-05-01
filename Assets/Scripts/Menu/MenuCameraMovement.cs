@@ -43,10 +43,13 @@ public class MenuCameraMovement : MonoBehaviour
 
 	private bool loading = false;
 	private bool restarting = false;
+	private SlowMotionCamera slowMo;
 
 	// Use this for initialization
 	void Awake () 
 	{
+		slowMo = GetComponent<SlowMotionCamera> ();
+
 		transform.position = newStartPosition;
 		transform.rotation = Quaternion.Euler (startRotation);
 
@@ -206,13 +209,15 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
+		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> StopSlowMotion ());
+
 		StartCoroutine (ShowLogo ());
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
 
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 	}
@@ -229,9 +234,31 @@ public class MenuCameraMovement : MonoBehaviour
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
 		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (new Vector3 (90, 0, 0), newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3 (90f, 0f, 0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewRestartRotation ()
+	{
+		StopPreviousMovement ();
+
+		if (DOTween.IsTweening ("ScreenShake"))
+			DOTween.Kill ("ScreenShake");
+
+		transform.DOMove (newPlayPosition, newMovementDuration * 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+	}
+
+	void StopSlowMotion ()
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			slowMo.StopPauseSlowMotion ();
+		else
+			slowMo.StopEndGameSlowMotion ();
 	}
 
 	void StopPreviousMovement ()

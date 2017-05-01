@@ -81,9 +81,9 @@ public class LastManManager : MonoBehaviour
 
 		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
 		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 1.5f);
 
-			MenuManager.Instance.RestartInstantly ();
+			LoadModeManager.Instance.RestartSceneVoid (true);
 		}
 		else
 		{

@@ -1210,32 +1210,13 @@ public class MenuManager : Singleton <MenuManager>
 		endModecontent = null;
 		endModesecondaryContentList = null;
 
-		yield return cameraMovement.StartCoroutine ("NewMenuPosition");
-		//yield return cameraMovement.StartCoroutine ("MainMenuPosition");
-
 		MasterAudio.PlaySound (SoundsManager.Instance.openMenuSound);
 
-		LoadModeManager.Instance.ReloadSceneVoid ();
+		//LoadModeManager.Instance.ReloadSceneVoid ();
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Menu;
 
 		ShowMenu (mainMenuScript);
-	}
-
-	public void RestartInstantly ()
-	{
-		switch (GlobalVariables.Instance.ModeSequenceType)
-		{
-		case ModeSequenceType.Selection:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		case ModeSequenceType.Random:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		case ModeSequenceType.Cocktail:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		}
 	}
 
 	public void RestartMode ()
@@ -1252,18 +1233,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
 
-		switch (GlobalVariables.Instance.ModeSequenceType)
-		{
-		case ModeSequenceType.Selection:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		case ModeSequenceType.Random:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		case ModeSequenceType.Cocktail:
-			LoadModeManager.Instance.RestartSceneVoid (false);
-			break;
-		}
+		LoadModeManager.Instance.RestartSceneVoid (false);
 	}
 
 	IEnumerator HideEndMode (RectTransform content, List<SecondaryContent> secondaryContentList)

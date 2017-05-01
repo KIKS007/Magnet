@@ -19,18 +19,6 @@ public class ScreenShakeCamera : MonoBehaviour
 	public bool shake;
 	public bool resetShake;
 
-	private Vector3 initialRotation;
-
-	// Use this for initialization
-	void Start () 
-	{
-		//initialRotation = new Vector3 (90, 45, 45);
-		//initialRotation = transform.rotation.eulerAngles;
-
-		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
-		ResetCameraRotation ();
-	}
-
 	// Update is called once per frame
 	void Update () 
 	{
@@ -49,8 +37,6 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
 	{
-		//return;
-
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
 		bool exactType = true;
@@ -89,7 +75,7 @@ public class ScreenShakeCamera : MonoBehaviour
 		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			transform.DORotate(new Vector3 (90, 0, 0), 1f).SetId("ScreenShake");
+			transform.DORotate(new Vector3 (90f, 0f, 0f), 1f, RotateMode.Fast).SetId("ScreenShake");
 	}
 	
 }
