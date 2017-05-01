@@ -24,6 +24,9 @@ public class TutorialManager : MonoBehaviour
 {
 	public TutorialState tutorialState = TutorialState.Movement;
 
+	[Header ("Players")]
+	public List<PlayerTutorialStats> PlayerStats = new List<PlayerTutorialStats> ();
+
 	[Header ("MOVEMENT")]
 	public float movingTime = 6;
 
@@ -56,6 +59,21 @@ public class TutorialManager : MonoBehaviour
 		StartCoroutine (WaitPlaying ());
 	}
 
+	void Update ()
+	{
+		for(int i = 0; i < playersScript.Count; i++)
+		{
+			PlayerStats [i].movingTime = playersScript [i].movingTime;
+			PlayerStats [i].dashCount = playersScript [i].dashCount;
+			PlayerStats [i].dashHitCount = playersScript [i].dashHitCount;
+			PlayerStats [i].attractTime = playersScript [i].attractTime;
+			PlayerStats [i].repelTime = playersScript [i].repelTime;
+			PlayerStats [i].shootsCount = playersScript [i].shootsCount;
+			PlayerStats [i].hitsCount = playersScript [i].hitsCount;
+			PlayerStats [i].deathCount = playersScript [i].deathCount;
+		}
+	}
+
 	IEnumerator WaitPlaying ()
 	{
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
@@ -66,6 +84,7 @@ public class TutorialManager : MonoBehaviour
 		{
 			playersScript.Add (g.GetComponent<PlayersTutorial> ());
 			playersFX.Add (g.GetComponent<PlayersFXAnimations> ());
+			PlayerStats.Add (new PlayerTutorialStats ());
 		}
 
 		StartCoroutine (MovementStep ());
@@ -189,4 +208,28 @@ public class TutorialManager : MonoBehaviour
 		foreach (PlayersFXAnimations f in playersFX)
 			f.WaveFX (true);
 	}
+}
+
+[System.Serializable]
+public class PlayerTutorialStats
+{
+	[Header ("MOVEMENT")]
+	public float movingTime = 0;
+
+	[Header ("DASH")]
+	public int dashCount = 0;
+
+	[Header ("DASH Hit")]
+	public int dashHitCount = 0;
+
+	[Header ("ATTRACT / REPEL")]
+	public float attractTime = 0;
+	public float repelTime = 0;
+
+	[Header ("SHOOTS")]
+	public int shootsCount = 0;
+	public int hitsCount = 0;
+
+	[Header ("DEADLY WALLS")]
+	public int deathCount = 0;
 }

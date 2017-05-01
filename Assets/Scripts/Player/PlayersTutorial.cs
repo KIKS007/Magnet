@@ -34,7 +34,10 @@ public class PlayersTutorial : PlayersGameplay
 		OnDash += () => dashCount++;
 		OnDashHit += () => dashHitCount++;
 		OnShoot += () => shootsCount++;
-		OnDeath += () => deathCount++;
+		OnDeath += () => 
+		{
+			if((tutorialManager.tutorialState & TutorialState.DeadlyWall) == TutorialState.DeadlyWall) deathCount++;
+		};
 
 		base.Start ();
 	}

@@ -111,11 +111,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		StartCoroutine (LoadScene (RandomCocktailScene ()));
 	}
 
-	public void ReloadSceneVoid ()
-	{
-		StartCoroutine (LoadScene (GlobalVariables.Instance.CurrentModeLoaded, GameStateEnum.Menu, true));
-	}
-
 
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (WhichMode sceneToLoad, GameStateEnum gameState = GameStateEnum.Menu, bool resetStats = true)
@@ -165,9 +160,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(!instantly)
 			yield return cameraMovement.StartCoroutine ("NewPlayPosition");
 	}
-
-
-
 
 
 	public void UnLoadSceneVoid ()

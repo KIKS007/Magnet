@@ -17,6 +17,11 @@ public class ArenaVisualizer : MonoBehaviour
 	public float normalizedFactor = 100;
 	public float normalizedMinimumHeight = 0.2f;
 
+	[Header ("Emission")]
+	public bool emissionChange = false;
+	public float minEmission = 0.5f;
+	public float maxEmission = 3f;
+
 	[Header ("Columns")]
 	public Transform[] frontColumns = new Transform[27];
 	public Transform[] backColumns = new Transform[27];
@@ -28,9 +33,19 @@ public class ArenaVisualizer : MonoBehaviour
 	public List<ArenaSettings> allSettings = new List<ArenaSettings> ();
 
 	private bool wrongSettings = false;
+	private Color columnInitialColor;
+	private Color columnDeadlyColor;
+
+	private List<ColumnMaterial> frontMaterials = new List<ColumnMaterial> ();
+	private List<ColumnMaterial> backMaterials = new List<ColumnMaterial> ();
+	private List<ColumnMaterial> rightMaterials = new List<ColumnMaterial> ();
+	private List<ColumnMaterial> leftMaterials = new List<ColumnMaterial> ();
 
 	void Start ()
 	{
+		columnInitialColor = frontColumns [0].GetChild (0).GetComponent<Renderer> ().material.color;
+		columnDeadlyColor = GetComponent<ArenaDeadzones> ().deadlyColor;
+
 		foreach(ArenaSettings arena in allSettings)
 		{
 			if(arena.frontIndex.Length != frontColumns.Length || 
@@ -76,6 +91,47 @@ public class ArenaVisualizer : MonoBehaviour
 			scale.y = currentMinimumHeight;
 			leftColumns[i].localScale = scale;
 		}
+
+		GetMaterials ();
+	}
+
+	void GetMaterials ()
+	{
+		foreach(Transform pivot in frontColumns)
+		{
+			foreach (Transform c in pivot)
+			{
+				frontMaterials.Add (new ColumnMaterial ());
+				frontMaterials [frontMaterials.Count - 1].materials.Add (c.GetComponent<Renderer> ().material);
+			}
+		}
+
+		foreach(Transform pivot in backColumns)
+		{
+			foreach (Transform c in pivot)
+			{
+				backMaterials.Add (new ColumnMaterial ());
+				backMaterials [backMaterials.Count - 1].materials.Add (c.GetComponent<Renderer> ().material);
+			}
+		}
+
+		foreach(Transform pivot in rightColumns)
+		{
+			foreach (Transform c in pivot)
+			{
+				rightMaterials.Add (new ColumnMaterial ());
+				rightMaterials [rightMaterials.Count - 1].materials.Add (c.GetComponent<Renderer> ().material);
+			}
+		}
+
+		foreach(Transform pivot in leftColumns)
+		{
+			foreach (Transform c in pivot)
+			{
+				leftMaterials.Add (new ColumnMaterial ());
+				leftMaterials [leftMaterials.Count - 1].materials.Add (c.GetComponent<Renderer> ().material);
+			}
+		}
 	}
 
 	[ContextMenu ("Rename Columns")]
@@ -113,6 +169,9 @@ public class ArenaVisualizer : MonoBehaviour
 			Vector3 scale = frontColumns[i].localScale;
 			scale.y = NewHeight (currentMinimumHeight, index, currentFactor);
 			frontColumns[i].localScale = scale;
+
+			if(emissionChange)
+				ColumnEmission (frontColumns[i], frontMaterials [i], index);
 		}
 
 		for(int i = 0; i < backColumns.Length; i++)
@@ -122,6 +181,9 @@ public class ArenaVisualizer : MonoBehaviour
 			Vector3 scale = backColumns[i].localScale;
 			scale.y = NewHeight (currentMinimumHeight, index, currentFactor);
 			backColumns[i].localScale = scale;
+
+			if(emissionChange)
+				ColumnEmission (backColumns[i], backMaterials [i], index);
 		}
 
 		for(int i = 0; i < rightColumns.Length; i++)
@@ -131,6 +193,9 @@ public class ArenaVisualizer : MonoBehaviour
 			Vector3 scale = rightColumns[i].localScale;
 			scale.y = NewHeight (currentMinimumHeight, index, currentFactor);
 			rightColumns[i].localScale = scale;
+
+			if(emissionChange)
+				ColumnEmission (rightColumns[i], rightMaterials [i], index);
 		}
 
 		for(int i = 0; i < leftColumns.Length; i++)
@@ -140,6 +205,9 @@ public class ArenaVisualizer : MonoBehaviour
 			Vector3 scale = leftColumns[i].localScale;
 			scale.y = NewHeight (currentMinimumHeight, index, currentFactor);
 			leftColumns[i].localScale = scale;
+
+			if(emissionChange)
+				ColumnEmission (leftColumns[i], leftMaterials [i], index);
 		}
 	}
 
@@ -169,6 +237,40 @@ public class ArenaVisualizer : MonoBehaviour
 				return currentMinimumHeight + AudioSpectrum.Instance.LevelsNormalized[index] * currentFactor;
 		}
 	}
+
+	void ColumnEmission (Transform pivot, ColumnMaterial columnMaterial, int index)
+	{
+		float emissionIntensity = 0;
+
+		switch(levelsType)
+		{
+		case AudioSpectrum.LevelsType.Basic:
+			emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.LevelsNormalized[index] + minEmission;
+			break;
+		case AudioSpectrum.LevelsType.Peak:
+			emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.PeakLevelsNormalized[index] + minEmission;
+			break;
+		case AudioSpectrum.LevelsType.Mean:
+			emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.MeanLevelsNormalized [index] + minEmission;
+			break;
+		}
+
+		foreach(Material m in columnMaterial.materials)
+		{
+			if(pivot.GetChild (0).tag != "DeadZone")
+				m.SetColor ("_EmissionColor", columnInitialColor * emissionIntensity);
+			else
+				m.SetColor ("_EmissionColor", columnDeadlyColor * emissionIntensity);
+		}
+
+//		foreach(Transform c in column)
+//		{
+//			if(c.tag != "DeadZone")
+//				c.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", columnInitialColor * emissionIntensity);
+//			else
+//				c.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", columnDeadlyColor * emissionIntensity);
+//		}
+	}
 }
 
 [Serializable]
@@ -178,4 +280,10 @@ public class ArenaSettings
 	public int[] backIndex = new int[27];
 	public int[] rightIndex = new int[17];
 	public int[] leftIndex = new int[17];
+}
+
+[Serializable]
+public class ColumnMaterial 
+{
+	public List<Material> materials = new List<Material> ();
 }
