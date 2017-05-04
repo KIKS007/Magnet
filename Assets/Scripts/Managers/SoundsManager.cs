@@ -17,6 +17,20 @@ public class SoundsManager : Singleton<SoundsManager>
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
+	[Header ("Low Pass")]
+	public float lowPassTweenDuration;
+	[Range (10, 22000)]
+	public float startScreenLowPass;
+	[Range (10, 22000)]
+	public float pauseLowPass;
+	[Range (10, 22000)]
+	public float gameOverLowPass;
+
+	[Header ("High Pass")]
+	public float highPassTweenDuration;
+	[Range (10, 22000)]
+	public float sloMoHighPass;
+
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
 	public string menuSubmit;
@@ -101,6 +115,14 @@ public class SoundsManager : Singleton<SoundsManager>
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
 
+	private AudioSource[] audioSources = new AudioSource[2];
+	private float initialLowPassFrequency;
+	private AudioLowPassFilter lowPass;
+	private float initialHighPassFrequency;
+	private AudioHighPassFilter highPass;
+
+	private SlowMotionCamera slowMo;
+
 	public event EventHandler OnMusicVolumeChange;
 	public event EventHandler OnSoundsVolumeChange;
 
@@ -108,8 +130,16 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		LoadMusics ();
 
+		lowPass = playlistCont.gameObject.GetComponent<AudioLowPassFilter> ();
+		highPass = playlistCont.gameObject.GetComponent<AudioHighPassFilter> ();
+		initialLowPassFrequency = lowPass.cutoffFrequency;
+		initialHighPassFrequency = highPass.cutoffFrequency;
+		audioSources = playlistCont.GetComponents<AudioSource> ();
+			
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
+
+		slowMo = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ();
 
 		StartCoroutine (MusicVolumeChange ());
 		StartCoroutine (SoundsVolumeChange ());
@@ -122,16 +152,27 @@ public class SoundsManager : Singleton<SoundsManager>
 			toggleEnableSloMoEffect.isOn = false;
 		}
 
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
+
 
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
+		GlobalVariables.Instance.OnMenu += ResetLowPass;
+		GlobalVariables.Instance.OnPlaying += ResetLowPass;
+		GlobalVariables.Instance.OnPause += ()=> LowPass (pauseLowPass);
+		GlobalVariables.Instance.OnEndMode += ()=> LowPass (gameOverLowPass);
+
+		slowMo.OnAllSlowMotionStop += StopSlowMoEffect;
+		slowMo.OnSlowMotionStart += () => HighPass (sloMoHighPass);
+		slowMo.OnSlowMotionStop += ResetHighPass;
+
 		OnMusicVolumeChange += UpdateAudioSettings;
 		OnSoundsVolumeChange += UpdateAudioSettings;
 
 		UpdateAudioSettings ();
+
+		LowPass (startScreenLowPass, 0.5f);
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
@@ -311,6 +352,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void SetMenuPlaylist ()
 	{
+		return;
+
 		if(playlistCont.PlaylistName != "Menu Ambient")
 		{
 			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
@@ -461,6 +504,74 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
+	public void LowPass (float lowPassFrquency, float duration)
+	{
+		LowPassCheck ();
+
+		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, lowPassFrquency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void LowPass (float lowPassFrquency)
+	{
+		LowPassCheck ();
+
+		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, lowPassFrquency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void ResetLowPass ()
+	{
+		LowPassCheck ();
+
+		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, initialLowPassFrequency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void ResetLowPass (float duration)
+	{
+		LowPassCheck ();
+
+		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, initialLowPassFrequency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	void LowPassCheck ()
+	{
+		if (DOTween.IsTweening ("LowPass"))
+			DOTween.Kill ("LowPass");
+
+		foreach(AudioSource a in audioSources)
+		{
+			a.loop = true;
+			a.loop = false;
+		}
+	}
+
+	public void HighPass (float frequency)
+	{
+		if (DOTween.IsTweening ("HighPass"))
+			DOTween.Kill ("HighPass");
+
+		foreach(AudioSource a in audioSources)
+		{
+			a.loop = true;
+			a.loop = false;
+		}
+	
+		DOTween.To (()=> highPass.cutoffFrequency, x => highPass.cutoffFrequency = x, frequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+	}
+
+	public void ResetHighPass ()
+	{
+		if (DOTween.IsTweening ("HighPass"))
+			DOTween.Kill ("HighPass");
+
+		foreach(AudioSource a in audioSources)
+		{
+			a.loop = true;
+			a.loop = false;
+		}
+
+		DOTween.To (()=> highPass.cutoffFrequency, x => highPass.cutoffFrequency = x, initialHighPassFrequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+	}
+		
 	public override void OnDestroy ()
 	{
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
