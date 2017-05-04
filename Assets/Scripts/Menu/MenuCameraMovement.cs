@@ -30,21 +30,42 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoNewPos = new Vector2 (0, 365);
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
+	[Header ("Start")]
+	public Vector3 startRotation;
+	public Vector3 newStartPosition;
+
+	[Header ("Movements")]
+	public Vector3 newMenuPosition;
+	public Vector3 newPlayPosition;
+	public float newMovementDuration = 0.8f;
+
 	private Vector3 positionOnPause = Vector3.zero;
 
 	private bool loading = false;
 	private bool restarting = false;
+	private SlowMotionCamera slowMo;
 
 	// Use this for initialization
 	void Awake () 
 	{
-		transform.position = startPosition;
+		slowMo = GetComponent<SlowMotionCamera> ();
 
-		menuLogo.transform.parent.gameObject.SetActive (true);
-		startScreenText.transform.parent.gameObject.SetActive (true);
+		transform.position = newStartPosition;
+		transform.rotation = Quaternion.Euler (startRotation);
 
-		menuLogo.gameObject.SetActive (true);
-		startScreenText.gameObject.SetActive (true);
+		//StartCoroutine (NewMenuPosition ());
+
+		if(menuLogo != null)
+		{
+			menuLogo.transform.parent.gameObject.SetActive (true);
+			startScreenText.transform.parent.gameObject.SetActive (true);
+
+			menuLogo.gameObject.SetActive (true);
+			startScreenText.gameObject.SetActive (true);
+		}
+		else
+			Debug.LogWarning ("No Menu Logo");
+
 
 		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
@@ -54,9 +75,11 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
-		menuLogo.DOAnchorPos (logoNewPos, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		menuLogo.DOScale (logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(menuLogo != null)
+		{
+			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
+			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		}
 
 		transform.DOMove (ModeRelativePosition(pausePosition), movementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
@@ -149,14 +172,93 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator HideLogo ()
 	{
-		menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(menuLogo != null)
+			menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
 	public IEnumerator ShowLogo ()
 	{
-		menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		if(menuLogo != null)
+			menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+		
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
+	}
+
+	public IEnumerator StartPosition ()
+	{
+		StopPreviousMovement ();
+
+		if(menuLogo != null)
+		{
+			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
+			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		}
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			positionOnPause = transform.position;
+
+		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewMenuPosition ()
+	{
+		StopPreviousMovement ();
+
+		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> StopSlowMotion ());
+
+		StartCoroutine (ShowLogo ());
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			positionOnPause = transform.position;
+
+		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewPlayPosition ()
+	{
+		StopPreviousMovement ();
+
+		if (DOTween.IsTweening ("ScreenShake"))
+			DOTween.Kill ("ScreenShake");
+
+		StartCoroutine (HideLogo ());
+
+		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
+
+		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3 (90f, 0f, 0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+	}
+
+	public IEnumerator NewRestartRotation ()
+	{
+		StopPreviousMovement ();
+
+		if (DOTween.IsTweening ("ScreenShake"))
+			DOTween.Kill ("ScreenShake");
+
+		transform.DOMove (newPlayPosition, newMovementDuration * 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+	}
+
+	void StopSlowMotion ()
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+			slowMo.StopPauseSlowMotion ();
+		else
+			slowMo.StopEndGameSlowMotion ();
 	}
 
 	void StopPreviousMovement ()
@@ -168,5 +270,19 @@ public class MenuCameraMovement : MonoBehaviour
 	Vector3 ModeRelativePosition (Vector3 position)
 	{
 		return position + GlobalVariables.Instance.currentModePosition;
+	}
+
+	[ContextMenu ("Menu Position")]
+	public void EditorMenuPosition ()
+	{
+		transform.position = newMenuPosition;
+		transform.rotation = Quaternion.Euler (Vector3.zero);
+	}
+
+	[ContextMenu ("Play Position")]
+	public void EditorPlayPosition ()
+	{
+		transform.position = newPlayPosition;
+		transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
 	}
 }

@@ -14,6 +14,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 	public Player rewiredPlayer;
 
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -42,9 +43,12 @@ public class MagnetZoneScript : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
+		if (playerScript.rewiredPlayer == null)
+			return;
+	
 		rewiredPlayer = ReInput.players.GetPlayer (playerScript.rewiredPlayer.id);
 
-		if (playerScript.playerState == PlayerState.Startup)
+		if (playerScript.playerState == PlayerState.Startup || playerScript.playerState == PlayerState.Dead || playerScript.playerState == PlayerState.Stunned)
 			return;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 60070d3b9c96fed48aed3ecc9b755b3f
+timeCreated: 1490713067
+licenseType: Pro
+ShaderImporter:
+  defaultTextures:
+  - _T_Stars: {fileID: 2800000, guid: 45c978df9fba408429da1763646ecbda, type: 3}
+  - _T_Space: {fileID: 2800000, guid: 419198f66e0cdb247b69352b367d781e, type: 3}
+  - _T_Planet: {fileID: 2800000, guid: 4d018f70b1f115d4cb1db1d1f29949ab, type: 3}
+  - _T_Alpha01: {fileID: 2800000, guid: c4fc1e1c47f0603408697d57c4ed47f5, type: 3}
+  - _node_317: {fileID: 2800000, guid: 9de02d35c4685bc44aeaed318a44a904, type: 3}
+  - _node_1873: {fileID: 2800000, guid: 7ccd7e575f47c8945823aca21e18eb74, type: 3}
+  - _node_4772: {fileID: 2800000, guid: e4b56100ef536c74da351f290592f5d0, type: 3}
+  - _node_3172: {fileID: 2800000, guid: 45c978df9fba408429da1763646ecbda, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

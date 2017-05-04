@@ -30,12 +30,18 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Dash Available FX")]
 	public ParticleSystem dashAvailableFX;
 
+	[Header ("Player Mesh")]
+	public Transform playerMesh;
+	public float leanSpeed;
+	public float leanLerp = 0.1f;
+	public float leanMaxAngle;
+
+	[Header ("Safe FX")]
+	public float safeDurationBetween = 0.5f;
 
 	private PlayersGameplay playerScript;
 	private PlayersSounds playerSoundsScript;
 	private PlayerName playerName;
-
-	private TrailRenderer trail;
 
 	private int playerNumber = -1;
 
@@ -43,6 +49,12 @@ public class PlayersFXAnimations : MonoBehaviour
 	private Vector3 initialScale;
 
 	private Color playerColor;
+
+	[HideInInspector]
+	public float distance;
+
+	[HideInInspector]
+	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
 
 	void Awake ()
 	{
@@ -54,7 +66,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
-		trail = transform.GetChild (4).GetComponent<TrailRenderer>();
 		playerColor = GetComponent <Renderer> ().material.color;
 
 		playerScript.OnShoot += ShootFX;
@@ -63,6 +74,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnStun += ()=> StartCoroutine (StunFX ());
 		playerScript.OnDash += EnableDashFX;
 		playerScript.OnDeath += RemoveAttractionRepulsionFX;
+		playerScript.OnSafe += () => StartCoroutine (SafeFX ());
 
 		playerName = playerScript.playerName;
 		playerNumber = (int)playerScript.playerName;
@@ -81,8 +93,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		//TrailLength ();
-
 		if(dashAvailableFX.isPlaying)
 		{
 			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];
@@ -96,43 +106,54 @@ public class PlayersFXAnimations : MonoBehaviour
 		}
 
 		if (dashFX != null && playerScript.dashState != DashState.Dashing)
-			DisableDashFX ();		
+			DisableDashFX ();
+
+		LeanMesh ();
 	}
 
-	void TrailLength ()
+	void LeanMesh ()
 	{
-		if(playerScript.playerState != PlayerState.Dead && playerScript.dashState != DashState.Dashing && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if(playerScript.playerRigidbody.velocity.magnitude > 1 && !DOTween.IsTweening("Trail"))
-			{
-				Debug.Log ("High");
+		Vector3 movementDirection = transform.InverseTransformDirection (playerScript.movement);
+		Vector3 newRotation = new Vector3 ();
 
-				DOTween.To(()=> trail.time, x=> trail.time =x, highSpeedtime, trailTweenDuration).SetId("Trail");
-				DOTween.To(()=> trail.startWidth, x=> trail.startWidth =x, highSpeedstartWidth, trailTweenDuration).SetId("Trail");
-
-			}
-			else if (playerScript.playerRigidbody.velocity.magnitude < 1 && !DOTween.IsTweening("Trail"))
-			{
-				Debug.Log ("Low");
-
-				DOTween.To(()=> trail.time, x=> trail.time =x, lowSpeedtime, trailTweenDuration).SetId("Trail");
-				DOTween.To(()=> trail.startWidth, x=> trail.startWidth =x, lowSpeedstartWidth, trailTweenDuration).SetId("Trail");
-			}
-		}
-
-		else if(playerScript.playerState != PlayerState.Dead && playerScript.dashState == DashState.Dashing && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			Debug.Log ("Dash");
-
-			trail.time = dashingTime;
-			trail.startWidth = dashingStartWidth;
-		}
-
+		if (movementDirection.z > 0.5f || movementDirection.z < -0.5f)
+			newRotation.x = movementDirection.z * leanSpeed;
 		else
+			newRotation.x = 0;
+
+		if (movementDirection.x > 0.5f || movementDirection.x < -0.5f)
+			newRotation.z = -movementDirection.x * leanSpeed;
+		else
+			newRotation.z = 0;
+
+		if (playerScript.holdState == HoldState.Holding)
+			newRotation = Vector3.zero;
+
+		playerMesh.localRotation = Quaternion.Lerp (playerMesh.localRotation, Quaternion.Euler (newRotation), leanLerp);
+
+		playerMesh.localEulerAngles = new Vector3 (ClampAngle (playerMesh.localEulerAngles.x, -leanMaxAngle, leanMaxAngle), playerMesh.localEulerAngles.y, ClampAngle (playerMesh.localEulerAngles.z, -leanMaxAngle, leanMaxAngle));
+	}
+
+	float ClampAngle(float angle, float min, float max) 
+	{
+		if(angle < 90 || angle > 270)
 		{
-			trail.time = 0f;
-			trail.startWidth = 0f;
+			if (angle > 180)
+				angle -= 360;
+
+			if (max > 180)
+				max -= 360;
+
+			if (min > 180)
+				min -= 360;
 		}
+
+		angle = Mathf.Clamp(angle, min, max);
+
+		if(angle < 0) 
+			angle += 360;
+
+		return angle;
 	}
 
 	void EnableDashFX ()
@@ -230,15 +251,42 @@ public class PlayersFXAnimations : MonoBehaviour
 			dashAvailableFX.Stop ();
 	}
 
-	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
+	IEnumerator SafeFX ()
+	{
+		while(gameObject.layer == LayerMask.NameToLayer ("Safe"))
+		{
+			for (int i = 0; i < playerMaterials.Length; i++)
+				playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
+			playerSoundsScript.StunOFF ();
+
+			if (gameObject.layer != LayerMask.NameToLayer ("Safe"))
+				break;
+			
+			yield return new WaitForSeconds (safeDurationBetween);
+
+			for (int i = 0; i < playerMaterials.Length; i++)
+				playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+			playerSoundsScript.StunON ();
+
+			yield return new WaitForSeconds (safeDurationBetween);
+		}
+
+		for (int i = 0; i < playerMaterials.Length; i++)
+			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+
+		playerSoundsScript.StunON ();
+	}
+		
 	public IEnumerator AttractionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		ps.startSize = 2 + whichCube.transform.lossyScale.x;
+
+		ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetAttractionParticles (whichCube, fx, ps));
 
@@ -263,7 +311,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			fx.transform.LookAt(lookPos);
 
 			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 
 			ps.startLifetime = lifeTime;
 
@@ -273,7 +321,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			for (int i = 0; i < ps.particleCount; i++)
 			{
 				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+				lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 				particlesList [i].startLifetime = lifeTime;
 			}
 
@@ -289,15 +337,14 @@ public class PlayersFXAnimations : MonoBehaviour
 		attractionRepulsionFX.Add (fx);
 		ParticleSystem ps = fx.GetComponent<ParticleSystem> ();
 		fx.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		ps.startSize = 2 + whichCube.transform.lossyScale.x;
+
+		ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
 		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
 
 		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (whichCube));
 
-		ps.Stop ();
-
-		ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
+		/*ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
 		ps.GetParticles (particlesList);
 
 		for (int i = 0; i < ps.particleCount; i++)
@@ -306,7 +353,9 @@ public class PlayersFXAnimations : MonoBehaviour
 			yield return null;
 		}
 
-		ps.SetParticles (particlesList, particlesList.Length);
+		ps.SetParticles (particlesList, particlesList.Length);*/
+
+		ps.Stop ();
 
 		yield return new WaitWhile(() => ps.IsAlive());
 
@@ -324,8 +373,10 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
 			fx.transform.LookAt(lookPos);
 
+			distance = Vector3.Distance (transform.position, whichCube.transform.position);
+
 			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
 
 			ps.startLifetime = lifeTime;
 
@@ -335,7 +386,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			for (int i = 0; i < ps.particleCount; i++)
 			{
 				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime = 0.12222222222222f * dist - 0.25555555555556f;
+				lifeTime =  0.027491408934708f * dist -0.036082474226804f;
 				particlesList [i].startLifetime = lifeTime;
 			}
 
@@ -373,13 +424,25 @@ public class PlayersFXAnimations : MonoBehaviour
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 	}
 
-	public virtual void WaveFX()
+	public virtual void WaveFX(bool singleWave = false)
 	{
-		int playerNumber = (int)playerName;
-		Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+		int loopsCount = !singleWave ? (int)playerName + 1 : 1;
 
-		GameObject instance = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation) as GameObject;
-		instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+		for(int i = 0; i < loopsCount; i++)
+		{
+			DOVirtual.DelayedCall (GlobalVariables.Instance.delayBetweenWavesFX * i, ()=> 
+			{
+				int playerNumber = (int)playerName;
+				Quaternion rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+
+				Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
+				//instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
+
+				GetComponent<PlayersVibration> ().Wave ();
+			});
+		}
+
+
 	}
 
 	public virtual GameObject DeathParticles (Vector3 position)

@@ -45,7 +45,7 @@ public class MovableStandoff : MovableScript
 
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
-					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
+					if(playerThatThrew != null)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 
 				}				
@@ -62,6 +62,18 @@ public class MovableStandoff : MovableScript
 		}
 	}
 
+	public override void OnHold ()
+	{
+		hold = true;
+
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
+
+		StartCoroutine (DeadlyTransition ());
+
+		OnHoldEventVoid ();
+	}
+
 	public override void OnRelease ()
 	{
 		OnReleaseEventVoid ();
@@ -71,14 +83,7 @@ public class MovableStandoff : MovableScript
 
 	IEnumerator DeadlyTransition ()
 	{
-		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-
-		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, Color.black, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		ToDeadlyColor ();
 
 		yield return new WaitForSeconds (0.01f);
 

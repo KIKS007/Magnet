@@ -12,6 +12,37 @@ public class MovablePlayer : MovableScript
 	[HideInInspector]
 	public bool basicMovable = true;
 
+	protected override void Start ()
+	{
+		
+	}
+
+	protected override void OnEnable ()
+	{
+		hold = false;
+
+		rigidbodyMovable = GetComponent<Rigidbody>();
+		movableRenderer = GetComponent<Renderer> ();
+		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
+		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		deadlyParticle.Stop ();
+		//cubeMeshFilter.mesh = GlobalVariables.Instance.deadCubesMeshFilter;
+		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
+		attracedBy.Clear ();
+		repulsedBy.Clear ();
+	}
+
+	public void CubeColor (string tag)
+	{
+		if (tag == "Suggestible" || tag == "DeadCube")
+			ToDeadlyColor ();
+		else
+			ToNeutralColor ();
+	}
+
 	protected override void Update ()
 	{
 		if(hold == false && rigidbodyMovable != null)
@@ -66,39 +97,12 @@ public class MovablePlayer : MovableScript
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 
+		ToColor();
+
 		OnHoldEventVoid ();
 	}
 
-	public override void OnRelease ()
-	{
-		OnReleaseEventVoid ();
-	}
-
-	public void ToColor (PlayerName playerName)
-	{
-		int whichPlayer = (int)playerName;
-
-		CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
-		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
-
-		if(cubeMaterial.GetColor("_Color") != cubeCorrectColor)
-		{
-			if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-				DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-
-			//Debug.Log ("New Color : " + cubeCorrectColor);
-
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-
-			StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
-		}
-	}
-
-	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
+	protected override IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{
 		yield return new WaitForSeconds (waitTime * 0.5f);		
 

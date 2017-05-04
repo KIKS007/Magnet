@@ -32,3 +32,5 @@ build_info.txt
 # Builds
 *.apk
 *.unitypackage
+
+Assets/Sounds/Loaded Musics/

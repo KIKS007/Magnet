@@ -45,11 +45,6 @@ public class GameAnalyticsManager : Singleton<GameAnalyticsManager>
 		
 
 		GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + "Mouse", mouseKeyboard);
-
-		if(GamepadsManager.Instance.numberOfGamepads == 0 && gamepads == 1)
-			GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":GamepadsPlugged:" + GamepadsManager.Instance.numberOfGamepads, -1f);
-		else
-			GameAnalytics.NewDesignEvent ("Game:" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":GamepadsPlugged:" + GamepadsManager.Instance.numberOfGamepads, gamepads);
 	}
 
 	private float startModeTime;

@@ -10,70 +10,59 @@ public class LastManManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Cubes Spawn")]
+	public bool spawnCubes = true;
 	public float durationBetweenSpawn = 0.1f;
 
-	private bool gameEndLoopRunning = false;
+	protected bool gameEndLoopRunning = false;
 
-	void Start ()
+	protected virtual void OnEnable ()
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
+			return;
+
+		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
 
-	IEnumerator WaitForBeginning ()
+	protected virtual IEnumerator WaitForBeginning ()
 	{
-		List<GameObject> allMovables = new List<GameObject>();
-
-		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
-				allMovables.Add (movable);
-		
-
-		for (int i = 0; i < allMovables.Count; i++)
-			allMovables [i].SetActive (false);
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(allMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray (), durationBetweenSpawn);
+		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
+			return;
+		
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			FindPlayers ();
 	}
 
-	void FindPlayers ()
+	protected virtual void FindPlayers ()
 	{
 		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
+			StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 
 			StartCoroutine (GameEnd ());
 		}
 
 		if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
 		{
-			Debug.Log ("End Game : " + GlobalVariables.Instance.NumberOfAlivePlayers + " - Time : " + Time.time.ToString ());
 			gameEndLoopRunning = true;
+			StatsManager.Instance.Winner(WhichPlayer.Draw);
 
-			StartCoroutine (GameEndDraw ());
+			StartCoroutine (GameEnd ());
 		}
 	}
 
-	IEnumerator GameEnd ()
+	protected virtual IEnumerator GameEnd ()
 	{
-		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-		
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 		
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
@@ -83,51 +72,26 @@ public class LastManManager : MonoBehaviour
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 
-		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
+		if(SceneManager.GetActiveScene().name == "Scene Testing")
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+
+			LoadModeManager.Instance.RestartSceneVoid (false);
+		}
+
+		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
+		{
+			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 1.5f);
+
+			LoadModeManager.Instance.RestartSceneVoid (true);
+		}
+		else
 		{
 			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
 			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
-			if(SceneManager.GetActiveScene().name != "Scene Testing")
-				MenuManager.Instance.endModeMenu.EndMode (whichMode);
+			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
-		else
-		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
-
-			MenuManager.Instance.RestartInstantly ();
-		}
-	}
-
-	IEnumerator GameEndDraw ()
-	{
-		StatsManager.Instance.Winner(WhichPlayer.Draw);
-
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-
-
-		GlobalVariables.Instance.CurrentGamesCount--;
-
-		if(GlobalVariables.Instance.CurrentGamesCount <= 0)
-		{
-			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
-
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
-
-			if(SceneManager.GetActiveScene().name != "Scene Testing")
-				MenuManager.Instance.endModeMenu.EndMode (whichMode);
-		}
-		else
-		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 2);
-
-			MenuManager.Instance.RestartInstantly ();
-		}
-	}
-	
+	}	
 }

@@ -34,7 +34,6 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	void Awake () 
 	{
 		button = GetComponent<Button> ();
-		menuComponentParent = transform.parent.GetComponent<MenuComponent> ();
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 	}
 
@@ -50,6 +49,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnPointerClick( PointerEventData data )
 	{
+		if (MenuManager.Instance.isTweening)
+			return;
+
 		if(button.interactable)
 		{
 			hasBeenSubmit = true;
@@ -69,6 +71,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSubmit( BaseEventData data )
 	{
+		if (MenuManager.Instance.isTweening)
+			return;
+		
 		if(button.interactable)
 		{
 			hasBeenSubmit = true;
@@ -79,7 +84,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 				ShowSecondaryContent ();
 
 			menuComponentParent.Submit (buttonIndex);
-			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+
+			if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
+				menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 			if(menuButtonType == MenuButtonType.StartMode)
 				MenuManager.Instance.MenuLoadMode (whichMode);
@@ -90,7 +97,11 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	public void OnSelect (BaseEventData eventData)
 	{
-		menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+		if (MenuManager.Instance.isTweening)
+			return;
+
+		if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
+			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 		if(showOnSelect)
 			ShowSecondaryContent ();

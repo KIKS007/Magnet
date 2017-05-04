@@ -6,10 +6,8 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-public class BombManager : MonoBehaviour 
+public class BombManager : LastManManager 
 {
-	public WhichMode whichMode;
-
 	[Header ("Bomb Settings")]
 	public GameObject bomb;
 	public int playersNumber;
@@ -23,66 +21,57 @@ public class BombManager : MonoBehaviour
 	public Text timerText;
 	public float timer;
 	public string timerClock;
-	public float timeBeforeEndGame = 1;
 
-	private bool firstSpawn = true;
+	protected bool firstSpawn = true;
+	protected bool lastSeconds = false;
 
-	private bool lastSeconds = false;
+	protected MovableBomb bombScript;
 
-	private MovableBomb bombScript;
+	public int textInitialSize;
+	public Vector3 textLocalPosition;
 
-	private int textInitialSize;
-	private Vector3 textLocalPosition;
+	protected void Awake ()
+	{
+		textInitialSize = timerText.fontSize;
+		textLocalPosition = timerText.transform.parent.transform.localPosition;
+	}
 
 	// Use this for initialization
-	void Start () 
+	protected override void OnEnable () 
 	{
+		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
+			return;
+		
 		bomb.gameObject.SetActive(false);
-		bombScript = bomb.GetComponent<MovableBomb> ();
-		textInitialSize = timerText.fontSize;
-		timerText.fontSize = 0;
-		textLocalPosition = timerText.transform.parent.transform.localPosition;
-		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
-
-		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
 
 		StartCoroutine (Setup ());
+
+		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
 
-	IEnumerator WaitForBeginning ()
+	protected override IEnumerator WaitForBeginning ()
 	{
-		List<GameObject> allMovables = new List<GameObject>();
-
-		if(GameObject.FindGameObjectsWithTag ("Movable").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Movable"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("Suggestible").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("Suggestible"))
-				allMovables.Add (movable);
-
-		if(GameObject.FindGameObjectsWithTag ("DeadCube").Length != 0)
-			foreach (GameObject movable in GameObject.FindGameObjectsWithTag ("DeadCube"))
-				allMovables.Add (movable);
-
-		allMovables.Remove (bomb);
-
-		for (int i = 0; i < allMovables.Count; i++)
-			allMovables [i].SetActive (false);
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if(allMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables.ToArray ());
+		GlobalVariables.Instance.AllMovables.Remove (bomb);
+
+		if(GlobalVariables.Instance.AllMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
-	IEnumerator Setup ()
+	protected virtual IEnumerator Setup ()
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		bombScript = bomb.GetComponent<MovableBomb> ();
+		timerText.fontSize = 0;
+		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+
+		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
 		playersNumber = GlobalVariables.Instance.NumberOfPlayers;
 
@@ -110,15 +99,45 @@ public class BombManager : MonoBehaviour
 
 		StartCoroutine (Timer ());
 	}
-	
+
 	// Update is called once per frame
-	void Update () 
+	protected override void Update () 
 	{
-		if(bomb.activeSelf == true && !lastSeconds && timer < 4)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			lastSeconds = true;
-			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
+			if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
+			{
+				gameEndLoopRunning = true;
+				StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
+				
+				StopAllCoroutines ();
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
+				bombScript.StopAllCoroutines ();
+
+				StartCoroutine (GameEnd ());
+			}
+			
+			if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
+			{
+				gameEndLoopRunning = true;
+				StatsManager.Instance.Winner(WhichPlayer.Draw);
+				
+				StopAllCoroutines ();
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
+				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
+				bombScript.StopAllCoroutines ();
+
+				StartCoroutine (GameEnd ());
+			}
+			
+			if(bomb.activeSelf == true && !lastSeconds && timer < 4)
+			{
+				lastSeconds = true;
+				MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
+			}
 		}
+
 	}
 
 	IEnumerator Timer ()
@@ -192,11 +211,13 @@ public class BombManager : MonoBehaviour
 	{
 		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
 		firstSpawn = false;
+		bombScript.ResetColor ();
 
 		yield return new WaitForSeconds (timeBeforeSpawn);
 
-		bombScript.ResetColor ();
 		bomb.tag = "Movable";
+
+		bomb.transform.rotation = Quaternion.Euler (Vector3.zero);
 
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 		timerText.fontSize = 0;
@@ -204,7 +225,10 @@ public class BombManager : MonoBehaviour
 		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
 		bombPosition.y = 2;
 
-		GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		if(!Physics.CheckSphere(bombPosition, 5f, GlobalMethods.Instance.gameplayLayer))
+			GlobalMethods.Instance.SpawnExistingMovableVoid (bomb, bombPosition);
+		else
+			GlobalMethods.Instance.SpawnExistingMovableRandom (new Vector2(0, 0), new Vector2 (-8, 8), bomb);
 
 		yield return new WaitWhile (()=> bomb.activeSelf == false);
 
@@ -222,26 +246,10 @@ public class BombManager : MonoBehaviour
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
 		{
 			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
-				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());
+				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 			
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersBomb> ().GetBomb (bomb.GetComponent<Collider>());			
+				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 		}
-	}
-		
-	IEnumerator GameEnd ()
-	{
-		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-			
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-
-		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
-
-		if(SceneManager.GetActiveScene().name != "Scene Testing")
-			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 	}
 }

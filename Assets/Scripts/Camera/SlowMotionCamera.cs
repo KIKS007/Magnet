@@ -90,8 +90,8 @@ public class SlowMotionCamera : MonoBehaviour
 
 		bloomInitialIntensity = gameObject.GetComponent<Bloom> ().bloomIntensity;
 
-		GlobalVariables.Instance.OnStartMode += () => slowMoNumber = 0;
-		GlobalVariables.Instance.OnRestartMode += () => slowMoNumber = 0;
+		GlobalVariables.Instance.OnEndMode += () => slowMoNumber = 0;
+		GlobalVariables.Instance.OnMenu += () => slowMoNumber = 0;
 		LoadModeManager.Instance.OnLevelLoaded += () => mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
 	}
 

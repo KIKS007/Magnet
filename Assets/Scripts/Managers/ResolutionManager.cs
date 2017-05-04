@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GameAnalyticsSDK;
 
-public class ResolutionManager : Singleton<ResolutionManager>
+public class ResolutionManager : MonoBehaviour
 {
 	public Vector2 currentScreenRes = new Vector2();
 
@@ -242,13 +242,13 @@ public class ResolutionManager : Singleton<ResolutionManager>
     {
 		if(Screen.fullScreen)
 		{
-			Debug.Log ("Windowed");
+//			Debug.Log ("Windowed");
 			PlayerPrefs.SetInt ("Fullscreen", 0);
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
 		}
 		else
 		{
-			Debug.Log ("Full");
+//			Debug.Log ("Full");
 			PlayerPrefs.SetInt ("Fullscreen", 1);
 			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
 		}

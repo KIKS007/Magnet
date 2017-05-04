@@ -2,11 +2,13 @@
 using System.Collections;
 using DarkTonic.MasterAudio;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class MovableBurden : MovableScript 
 {
 	[Header ("BURDEN")]
 	public bool targetFinder = false;
+	public PlayerName targetPlayerName;
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
 	public float trackSpeedAdded = 0.001f;
@@ -19,18 +21,13 @@ public class MovableBurden : MovableScript
 
 	private List<MovableBurden> otherMovables = new List<MovableBurden>();
 
-	private bool firstStart = true;
-
-	private GameObject[] allMovables = new GameObject[0];
+	private float initialTrackSpeed;
 
 	protected override void Awake ()
 	{
-		allMovables = GameObject.FindGameObjectsWithTag ("DeadCube");
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
+		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
-
-		for (int i = 0; i < transform.childCount; i++)
-			transform.GetChild (i).gameObject.SetActive (false);
 	}
 
 	protected override void OnEnable ()
@@ -45,61 +42,39 @@ public class MovableBurden : MovableScript
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 
-		if (targetFinder && !firstStart)
-			FindTarget ();
-
-		firstStart = false;
+		FindTarget ();
 	}
 
 	void FindTarget ()
 	{
-		List<MovableBurden> otherMovables = new List<MovableBurden>();
-		List<GameObject> playersList = new List<GameObject>(GlobalVariables.Instance.AlivePlayersList);
+		if (GlobalVariables.Instance.Players [(int)targetPlayerName] == null)
+			return;
 
-		int randomPlayer = Random.Range (0, playersList.Count);
-		targetPlayer = playersList [randomPlayer];
-
-		playersList.RemoveAt (randomPlayer);
-
-		for (int i = 0; i < allMovables.Length; i++)
-			if (allMovables [i] != gameObject)
-				otherMovables.Add (allMovables [i].GetComponent<MovableBurden> ());
-
-		for (int i = 0; i < otherMovables.Count; i++)
+		if (GlobalVariables.Instance.Players [(int)targetPlayerName].activeSelf == false)
 		{
-			if(playersList.Count > 0)
-			{
-				randomPlayer = Random.Range (0, playersList.Count);
-				otherMovables [i].targetPlayer = playersList [randomPlayer];
-
-				otherMovables [i].ToColor (otherMovables [i].targetPlayer);
-				otherMovables [i].GetToPlayerVoid ();
-				otherMovables [i].DisplayCube ();
-				otherMovables [i].StartCoroutine ("AddSpeed");
-
-				playersList.RemoveAt (randomPlayer);
-			}
-			else
-			{
-				Destroy (otherMovables [i].gameObject);
-			}
+			gameObject.SetActive (false);
+			return;
 		}
 
-		ToColor (targetPlayer);
-		GetToPlayerVoid ();
-		DisplayCube ();
-		StartCoroutine (AddSpeed ());
-	}
+		targetPlayer = GlobalVariables.Instance.Players [(int)targetPlayerName];
 
-	void DisplayCube ()
-	{
-		for (int i = 0; i < transform.childCount; i++)
-			transform.GetChild (i).gameObject.SetActive (true);
+		StartCoroutine (ColorTransition ());
+		StartCoroutine (AddSpeed ());
+		GetToPlayerVoid ();
 	}
 
 	void GetToPlayerVoid ()
 	{
 		StartCoroutine (GetToPlayerPosition ());
+	}
+
+	IEnumerator ColorTransition ()
+	{
+		ToColor (targetPlayer);
+
+		yield return new WaitForSeconds (1f);
+
+		ToDeadlyColor ();
 	}
 
 	IEnumerator GetToPlayerPosition ()
@@ -150,9 +125,6 @@ public class MovableBurden : MovableScript
 					if (otherMovables [i].targetPlayer == other.gameObject)
 						otherMovables [i].StopTrackingPlayer ();
 			}
-
-
-
 		}
 	}
 
@@ -161,7 +133,6 @@ public class MovableBurden : MovableScript
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
 		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
-		GlobalMethods.Instance.ExplosionFX (targetPlayer, transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	
 	}
@@ -169,5 +140,22 @@ public class MovableBurden : MovableScript
 	public void StopTrackingPlayer ()
 	{
 		StopCoroutine (GetToPlayerPosition ());
+		StopCoroutine (AddSpeed ());
+
+		if (GlobalVariables.Instance.modeObjective == ModeObjective.LeastDeath)
+			StartCoroutine (WaitToTrackAgain ());
+	}
+
+	IEnumerator WaitToTrackAgain ()
+	{
+		rigidbodyMovable.velocity = Vector3.zero;
+
+		yield return new WaitWhile (() => targetPlayer.activeSelf == false);
+
+		yield return new WaitForSeconds (1f);
+
+		trackSpeed = initialTrackSpeed;
+		GetToPlayerVoid ();
+		StartCoroutine (AddSpeed ());
 	}
 }

@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Custom/WaterBlurGaussian" {
     Properties {
 	_blurSizeXY("BlurSizeXY", Range(0,20)) = 0
@@ -53,7 +55,7 @@ v2f vert(data i){
 
     v2f o;
 
-    o.position = mul(UNITY_MATRIX_MVP, i.vertex);
+    o.position = UnityObjectToClipPos(i.vertex);
 
     o.screenPos = o.position;
     
@@ -138,7 +140,7 @@ v2f vert(data i){
 
     v2f o;
 
-    o.position = mul(UNITY_MATRIX_MVP, i.vertex);
+    o.position = UnityObjectToClipPos(i.vertex);
 
     o.screenPos = o.position;
 

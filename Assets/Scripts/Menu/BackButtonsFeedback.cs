@@ -42,22 +42,6 @@ public class BackButtonsFeedback : MonoBehaviour
 
 		if (GetComponent<Image> () != null)
 			initialColor = GetComponent<Image> ().color;
-
-		GetPlayers ();
-	}
-
-	void OnEnable ()
-	{
-		GetPlayers ();
-	}
-
-	void GetPlayers ()
-	{
-		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
-		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
-		gamepad2 = GlobalVariables.Instance.rewiredPlayers [2]; 
-		gamepad3 = GlobalVariables.Instance.rewiredPlayers [3]; 
-		gamepad4 = GlobalVariables.Instance.rewiredPlayers [4];
 	}
 	
 	// Update is called once per frame
@@ -68,7 +52,7 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	void WhichFeedback ()
 	{
-		if(mouseKeyboard.GetButtonDown("UI Cancel"))
+		if(GlobalVariables.Instance.rewiredPlayers [0].GetButtonDown("UI Cancel"))
 		{
 			if (whichButton == WhichButton.Esc || whichButton == WhichButton.RightClick)
 				ButtonPressed ();
@@ -77,7 +61,7 @@ public class BackButtonsFeedback : MonoBehaviour
 				BackText ();
 		}
 
-		if(gamepad1.GetButtonDown("UI Cancel") || gamepad2.GetButtonDown("UI Cancel") || gamepad3.GetButtonDown("UI Cancel") || gamepad4.GetButtonDown("UI Cancel"))
+		if(GlobalVariables.Instance.rewiredPlayers [1].GetButtonDown("UI Cancel"))
 		{
 			if(whichButton == WhichButton.B)
 				ButtonPressed ();

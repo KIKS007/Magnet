@@ -1,14 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using GameAnalyticsSDK;
+using System.IO;
+using System.Linq;
 
 public class SoundsManager : Singleton<SoundsManager> 
 {
 	public PlaylistController playlistCont;
+
+	[Header ("Loaded Musics")]
+	public bool playLoadedMusics;
+	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -89,10 +96,23 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	private bool loading = false;
 
+	private FileInfo[] musicsFiles;
+	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
+	private string loadedMusicsPath = "/Musics";
+	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
+
+	public event EventHandler OnMusicVolumeChange;
+	public event EventHandler OnSoundsVolumeChange;
+
 	void Start ()
 	{
+		LoadMusics ();
+
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
+
+		StartCoroutine (MusicVolumeChange ());
+		StartCoroutine (SoundsVolumeChange ());
 
 		if (PlayerPrefs.HasKey ("SlowMotionEffectEnable") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
@@ -102,22 +122,189 @@ public class SoundsManager : Singleton<SoundsManager>
 			toggleEnableSloMoEffect.isOn = false;
 		}
 
-
 		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
 
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
+		OnMusicVolumeChange += UpdateAudioSettings;
+		OnSoundsVolumeChange += UpdateAudioSettings;
+
+		UpdateAudioSettings ();
+
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
 	}
 
+	void Update ()
+	{
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
+					RandomMusic ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
+					NextMusic ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
+					MusicVolumeUp ();
+
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
+					MusicVolumeDown ();
+			}
+		}
+	}
+
+	void LoadMusics ()
+	{
+		if (Application.isEditor)
+			loadedMusicsPath = editorLoadedMusicsPath;
+		else
+			loadedMusicsPath = Application.dataPath + loadedMusicsPath;
+
+		if(!Directory.Exists (loadedMusicsPath))
+		{
+			Directory.CreateDirectory (loadedMusicsPath);
+			Debug.LogWarning ("Musics folder don't exists!");
+			return;
+		}
+
+		loadedMusics.Clear ();
+
+		var info = new DirectoryInfo (loadedMusicsPath);
+
+		musicsFiles = info.GetFiles ()
+			.Where (f => IsValidFileType (f.Name))
+			.ToArray ();
+
+		if(musicsFiles.Length == 0)
+		{
+			Debug.LogWarning ("No (valid) Musics in folder!");
+			return;
+		}
+
+		foreach (var s in musicsFiles)
+		{
+			if(Path.GetExtension (s.Name).Contains (".mp3"))
+				StartCoroutine (LoadMP3File (s.FullName));
+			else
+				StartCoroutine (LoadFile (s.FullName));
+		}
+	}
+	
+	bool IsValidFileType (string fileName)
+	{
+		return validExtensions.Contains (Path.GetExtension (fileName));
+	}
+
+	IEnumerator LoadFile (string path)
+	{
+		WWW www = new WWW ("file://" + path);
+		AudioClip clip = www.GetAudioClip();
+
+		//Debug.Log ("loading " + path);
+		yield return www;
+
+		if (clip.loadState == AudioDataLoadState.Unloaded)
+			yield break;
+
+		if (www.error != null)
+		{
+			Debug.Log (www.error);
+			yield break;
+		}
+		
+		clip = www.GetAudioClip (false, false);
+		clip.LoadAudioData ();
+
+		if (clip.loadState == AudioDataLoadState.Failed)
+			Debug.LogError ("Unable to load file: " + path);
+		
+		else
+		{
+			//Debug.Log ("done loading " + path);
+			clip.name = Path.GetFileName (path);
+
+			loadedMusics.Add (clip);
+
+			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
+		}
+	}
+
+	IEnumerator LoadMP3File (string path)
+	{
+		WWW www = new WWW ("file://" + path);
+
+		//Debug.Log ("loading " + path);
+		yield return www;
+
+		if (www.error != null)
+		{
+			Debug.Log (www.error);
+			yield break;
+		}
+
+		AudioClip clip = NAudioPlayer.FromMp3Data (www.bytes);
+		clip.LoadAudioData ();
+
+		if (clip.loadState == AudioDataLoadState.Failed)
+			Debug.LogError ("Unable to load file: " + path);
+
+		else
+		{
+			//Debug.Log ("done loading " + path);
+			clip.name = Path.GetFileName (path);
+
+			loadedMusics.Add (clip);
+
+			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
+		}
+	}
+
+	void RandomMusic ()
+	{
+		MasterAudio.TriggerRandomPlaylistClip ();
+	}
+
+	void NextMusic ()
+	{
+		MasterAudio.TriggerNextPlaylistClip ();
+	}
+
+	void MusicVolumeUp ()
+	{
+		if(MasterAudio.PlaylistMasterVolume < initialPlaylistVolume)
+			MasterAudio.PlaylistMasterVolume += 0.02f;
+		else
+			MasterAudio.PlaylistMasterVolume = initialPlaylistVolume;
+
+		UpdateAudioSettings ();
+	}
+
+	void MusicVolumeDown ()
+	{
+		if(MasterAudio.PlaylistMasterVolume > 0)
+			MasterAudio.PlaylistMasterVolume -= 0.02f;
+		
+		else
+			MasterAudio.PlaylistMasterVolume = 0;
+
+		UpdateAudioSettings ();
+	}
+
 	public void SetGamePlaylist ()
 	{
-		if(playlistCont.PlaylistName != "Game")
+		string gamePlaylist = "Game";
+
+		if(playLoadedMusics && loadedMusics.Count != 0)
+			gamePlaylist = "Loaded Musics";
+
+		if(playlistCont.PlaylistName != gamePlaylist)
 		{
-			MasterAudio.ChangePlaylistByName ("Game", false);
+			MasterAudio.ChangePlaylistByName (gamePlaylist, false);
 			playlistCont.PlayRandomSong ();
 		}
 	}
@@ -169,7 +356,24 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		canPlaySoundTest = true;
 	}
-		
+
+	void UpdateAudioSettings ()
+	{
+		if (MasterAudio.MasterVolumeLevel == 0)
+			soundsMuteToggle.isOn = true;
+		else
+			soundsMuteToggle.isOn = false;
+
+		if (MasterAudio.PlaylistMasterVolume == 0)
+			musicMuteToggle.isOn = true;
+		else
+			musicMuteToggle.isOn = false;
+
+		playlistBar.value = MasterAudio.PlaylistMasterVolume * initialPlaylistVolume;
+
+		soundsBar.value = MasterAudio.MasterVolumeLevel * initialPlaylistVolume;
+	}
+
 	public void SetPlaylistVolume ()
 	{
 		if(!loading)
@@ -182,31 +386,33 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void ToggleMuteSounds ()
 	{
-		if(soundsMute == false)
+		if(MasterAudio.MasterVolumeLevel != 0)
 		{
-			soundsMute = true;
-			previousVolumeSounds = soundsBar.value;
-			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, 0, 0.2f);
+			previousVolumeSounds = MasterAudio.MasterVolumeLevel;
+			DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, 0, 0.2f);
 		}
 		else
 		{
-			soundsMute = false;
-			DOTween.To(()=> soundsBar.value, x=> soundsBar.value =x, previousVolumeSounds, 0.2f);
+			if(previousVolumeSounds != 0)
+				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, previousVolumeSounds, 0.2f);
+			else
+				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, initialSoundsVolume, 0.2f);
 		}
 	}
 
 	public void ToggleMuteMusic ()
 	{
-		if(musicMute == false)
+		if(MasterAudio.PlaylistMasterVolume != 0)
 		{
-			musicMute = true;
-			previousVolumePlaylist = playlistBar.value;
-			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, 0, 0.2f);
+			previousVolumePlaylist = MasterAudio.PlaylistMasterVolume;
+			DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, 0, 0.2f);
 		}
 		else
 		{
-			musicMute = false;
-			DOTween.To(()=> playlistBar.value, x=> playlistBar.value =x, previousVolumePlaylist, 0.2f);
+			if(previousVolumePlaylist != 0)
+				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, previousVolumePlaylist, 0.2f);
+			else
+				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, initialPlaylistVolume, 0.2f);
 		}
 	}
 
@@ -351,5 +557,30 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "SoundsMute", soundsMuteTemp);
 		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "MuteMusic", musicMuteTemp);
+	}
+
+
+	IEnumerator MusicVolumeChange ()
+	{
+		if (OnMusicVolumeChange != null)
+			OnMusicVolumeChange ();
+
+		float volume = MasterAudio.PlaylistMasterVolume;
+
+		yield return new WaitUntil (() => volume != MasterAudio.PlaylistMasterVolume);
+
+		StartCoroutine (MusicVolumeChange ());
+	}
+
+	IEnumerator SoundsVolumeChange ()
+	{
+		if (OnSoundsVolumeChange != null)
+			OnSoundsVolumeChange ();
+
+		float volume = MasterAudio.MasterVolumeLevel;
+
+		yield return new WaitUntil (() => volume != MasterAudio.MasterVolumeLevel);
+
+		StartCoroutine (SoundsVolumeChange ());
 	}
 }

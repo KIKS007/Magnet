@@ -21,13 +21,16 @@ public class MovableBounce : MovableScript
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			else if(currentVelocity < limitVelocity && gameObject.tag == "DeadCube")
+			else if(currentVelocity < limitVelocity)
 			{
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
-
-				ToNeutralColor ();
+				if(gameObject.tag == "DeadCube" || gameObject.tag == "ThrownMovable")
+				{
+					ToNeutralColor ();
+					
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
+					playerThatThrew = null;
+				}
 			}
 		}
 	}
@@ -46,9 +49,8 @@ public class MovableBounce : MovableScript
 
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
-					if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
+					if(playerThatThrew != null)
 						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
 				}				
 			}
 		}
@@ -67,30 +69,30 @@ public class MovableBounce : MovableScript
 	{
 		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);
+			/*if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);*/
 
 			if(canPlaySound)
 				StartCoroutine(HitSound ());
 
-			if(tag == "ThrownMovable" && currentVelocity > limitVelocity)
+			if(currentVelocity > limitVelocity)
 				StartCoroutine (DeadlyTransition ());
 		}
 	}
 
 	IEnumerator DeadlyTransition ()
 	{
-		if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-			DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-
-		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, Color.black, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		ToDeadlyColor (0.15f);
 
 		yield return new WaitForSeconds (0.01f);
 
 		tag = "DeadCube";
+	}
+
+	public override void OnRelease ()
+	{
+		ToNeutralColor();
+
+		OnReleaseEventVoid ();
 	}
 }

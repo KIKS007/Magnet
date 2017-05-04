@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using DG.Tweening;
 
-public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup};
+public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup, Hold, Shoot, Dash, Wave, ButtonClick};
 
 public class ScreenShakeCamera : MonoBehaviour 
 {
@@ -18,18 +18,6 @@ public class ScreenShakeCamera : MonoBehaviour
 	public FeedbackType whichScreenShakeTest = FeedbackType.Default;
 	public bool shake;
 	public bool resetShake;
-
-	private Vector3 initialRotation;
-
-	// Use this for initialization
-	void Start () 
-	{
-		initialRotation = new Vector3 (90, 45, 45);
-		//initialRotation = transform.rotation.eulerAngles;
-
-		LoadModeManager.Instance.OnLevelLoaded += ResetCameraRotation;
-		ResetCameraRotation ();
-	}
 
 	// Update is called once per frame
 	void Update () 
@@ -84,8 +72,10 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	void ResetCameraRotation ()
 	{
-//		Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
-		transform.DORotate(initialRotation, 0.5f);
+		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			transform.DORotate(new Vector3 (90f, 0f, 0f), 1f, RotateMode.Fast).SetId("ScreenShake");
 	}
 	
 }

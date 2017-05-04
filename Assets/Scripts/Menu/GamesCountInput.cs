@@ -9,16 +9,43 @@ public class GamesCountInput : MonoBehaviour
 	public GameObject decreaseButton;
 
 	private InputField input;
+	private Vector2 bounds = new Vector2 (1, 99);
+	private Vector2 initialbounds = new Vector2 (1, 99);
+
+	private ModeSequenceType previousModeSequence;
 
 	// Use this for initialization
 	void Start () 
 	{
 		input = GetComponent<InputField> ();
+		previousModeSequence = GlobalVariables.Instance.ModeSequenceType;
 
 		if (GlobalVariables.Instance.GamesCount == 0)
 			GlobalVariables.Instance.GamesCount = 1;
 
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
+
+		GlobalVariables.Instance.OnCocktailModesChange += () =>
+		{
+			if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail)
+				bounds.x = GlobalVariables.Instance.selectedCocktailModes.Count;
+
+			GetValue ();
+		};
+			
+		GlobalVariables.Instance.OnSequenceChange += () => 
+		{
+			bounds = initialbounds;
+
+			if (GlobalVariables.Instance.ModeSequenceType != ModeSequenceType.Cocktail && previousModeSequence == ModeSequenceType.Cocktail)
+			{
+				input.text = "1";
+
+				GetValue ();
+			}
+
+			previousModeSequence = GlobalVariables.Instance.ModeSequenceType;
+		};
 	}
 
 	void OnEnable ()
@@ -28,12 +55,16 @@ public class GamesCountInput : MonoBehaviour
 		input = GetComponent<InputField> ();
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		CheckBounds ();
+		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail)
+			bounds.x = GlobalVariables.Instance.selectedCocktailModes.Count;
+
+		GetValue ();
 	}
 
 	void OnDisable ()
 	{
-		GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+		if(GlobalVariables.Instance)
+			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 	}
 
 	public void GetValue ()
@@ -43,6 +74,12 @@ public class GamesCountInput : MonoBehaviour
 		if (!int.TryParse (input.text, out value) || value == 0)
 		{
 			value = 1;
+			input.text = value.ToString ();
+		}
+
+		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Cocktail && value < GlobalVariables.Instance.selectedCocktailModes.Count)
+		{
+			value = GlobalVariables.Instance.selectedCocktailModes.Count;
 			input.text = value.ToString ();
 		}
 
@@ -69,12 +106,12 @@ public class GamesCountInput : MonoBehaviour
 
 	void CheckBounds ()
 	{
-		if (GlobalVariables.Instance.GamesCount <= 1)
+		if (GlobalVariables.Instance.GamesCount <= bounds.x)
 			decreaseButton.SetActive (false);
 		else
 			decreaseButton.SetActive (true);
 		
-		if (GlobalVariables.Instance.GamesCount >= 99)
+		if (GlobalVariables.Instance.GamesCount >= bounds.y)
 			increaseButton.SetActive (false);
 
 		else

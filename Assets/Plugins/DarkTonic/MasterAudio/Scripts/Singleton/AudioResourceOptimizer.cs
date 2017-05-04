@@ -216,7 +216,7 @@ namespace DarkTonic.MasterAudio {
                     yield break;
                 }
 
-                internetClip = fileRequest.audioClip;
+                internetClip = fileRequest.GetAudioClip();
             }
 
             if (!AudioResourceTargetsByName.ContainsKey(fileUrl)) {

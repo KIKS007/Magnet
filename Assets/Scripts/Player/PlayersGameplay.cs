@@ -106,7 +106,8 @@ public class PlayersGameplay : MonoBehaviour
 
     [HideInInspector]
     public Rigidbody playerRigidbody;
-    protected Vector3 movement;
+	[HideInInspector]
+	public Vector3 movement;
 
     protected int triggerMask;
     protected float camRayLength = 200f;
@@ -141,17 +142,16 @@ public class PlayersGameplay : MonoBehaviour
 		GlobalVariables.Instance.OnStartMode += StartModeTime;
 		GlobalVariables.Instance.OnRestartMode += StartModeTime;
 
-        GetControllerNumber();
-
-        Controller();
-
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
 
 		if(GameObject.FindGameObjectWithTag("MovableParent") != null)
 		{
 			movableParent = GameObject.FindGameObjectWithTag("MovableParent").transform;
-			playerDeadCubeTag = movableParent.GetChild (0).tag;
+			if (movableParent.childCount != 0)
+				playerDeadCubeTag = movableParent.GetChild (0).tag;
+			else
+				Debug.LogWarning ("No Movables!");
 		}
 		
         magnetPoint = transform.GetChild(0).transform;
@@ -188,6 +188,9 @@ public class PlayersGameplay : MonoBehaviour
     {
         StartCoroutine(WaitTillPlayerEnabled());
 
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			StartCoroutine (Startup ());
+
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
         
@@ -199,6 +202,10 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (controllerNumber == 0)
 			GlobalVariables.Instance.SetPlayerMouseCursor ();
+
+		if(gameObject.layer == LayerMask.NameToLayer ("Safe"))
+		if (OnSafe != null)
+			OnSafe();
     }
 
 	protected IEnumerator Startup ()
@@ -207,6 +214,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
+		if (controllerNumber == -1)
+			yield break;
+		
 		switch (GlobalVariables.Instance.Startup)
 		{
 		case StartupType.Delayed:
@@ -214,14 +224,7 @@ public class PlayersGameplay : MonoBehaviour
 			break;
 		case StartupType.Wave:
 			yield return new WaitForSeconds (0.25f);
-
-			for(int i = 0; i < (int)playerName + 1; i++)
-			{
-				DOVirtual.DelayedCall (GlobalVariables.Instance.delayBetweenWavesFX * i, ()=> {
-					playerFX.WaveFX ();
-					GetComponent<PlayersVibration> ().Wave ();
-				});
-			}
+			playerFX.WaveFX ();
 			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
 			break;
 		}
@@ -233,10 +236,7 @@ public class PlayersGameplay : MonoBehaviour
 	protected IEnumerator WaitTillPlayerEnabled()
 	{
 		yield return new WaitUntil(() => gameObject.activeSelf == true);
-
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing && controllerNumber != -1)
-			StartCoroutine (Startup ());
-		
+				
 		StartCoroutine(OnPlayerStateChange());
 		StartCoroutine(OnDashAvailableEvent());
 	}
@@ -246,6 +246,9 @@ public class PlayersGameplay : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+		if (rewiredPlayer == null)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
 			//Movement Vector
@@ -263,10 +266,18 @@ public class PlayersGameplay : MonoBehaviour
 			if (holdState == HoldState.Holding && rewiredPlayer.GetButtonUp("Attract"))
 				Shoot();
 
-
 			//Dash
 			if (rewiredPlayer.GetButtonDown("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
 				StartCoroutine(Dash());
+
+			//Taunt
+			if (rewiredPlayer.GetButtonDown ("Taunt") && playerState != PlayerState.Stunned)
+			{
+				playerFX.WaveFX (true);
+
+				if (OnTaunt != null)
+					OnTaunt();
+			}
 
 			//Stunned Rotation
             if (playerState == PlayerState.Stunned)
@@ -296,6 +307,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+		if (rewiredPlayer == null)
+			return;
+		
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
 			//Movement
@@ -339,36 +353,17 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Rewired Controller
-    public void GetControllerNumber()
+    public void SetupController()
     {
 		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
-    }
 
-    public void Controller()
-    {
         if (controllerNumber == -1)
         {
             gameObject.SetActive(false);
         }
 
         if (controllerNumber != -1)
-		{
 			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
-
-			if (GamepadsManager.Instance.gamepadIdControl)
-			{
-				rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
-
-				if(controllerNumber > 0)
-				{
-					for(int i = 0; i < GamepadsManager.Instance.gamepadsList.Count; i++)
-					{
-						if(GamepadsManager.Instance.gamepadsList[i].GamepadId == controllerNumber)
-							rewiredPlayer.controllers.AddController(GamepadsManager.Instance.gamepadsList[i].GamepadController, true);
-					}
-				}
-			}
-		}
     }
 	#endregion
 
@@ -440,6 +435,7 @@ public class PlayersGameplay : MonoBehaviour
 
         holdMovableTransform = movable.GetComponent<Transform>();
 		holdMovableTransform.SetParent (transform);
+//		holdMovableTransform.SetParent (playerFX.playerMesh);
 
 
         for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
@@ -467,7 +463,7 @@ public class PlayersGameplay : MonoBehaviour
 		Vector3 v3 = magnetPoint.localPosition;
 		v3.x = 0f;
 		v3.y = (scaleTemp.y /2 + 0.1f) - 1;
-		v3.z = 0.5f * scaleTemp.z + 0.8f;
+		v3.z = 0.5f * scaleTemp.z + 1.2f;
 		magnetPoint.localPosition = v3;
 	}
 	#endregion
@@ -477,7 +473,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
-		if(playerState == PlayerState.Startup)
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone")
@@ -498,7 +494,7 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
-		if(playerState == PlayerState.Startup)
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone")
@@ -563,14 +559,17 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual IEnumerator Stun(bool cubeHit)
     {
+		playerState = PlayerState.Stunned;
+
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
+			holdState = HoldState.CannotHold;
+
 			yield return new WaitWhile(() => gettingMovable == true);
 			
 			Shoot();
 		}
 
-		playerState = PlayerState.Stunned;
 		holdState = HoldState.CannotHold;
 
 		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
@@ -590,12 +589,13 @@ public class PlayersGameplay : MonoBehaviour
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
 
-		holdState = HoldState.CanHold;
+		if(holdState == HoldState.CannotHold)
+			holdState = HoldState.CanHold;
     }
 	#endregion
 
 	#region Dash
-    protected IEnumerator Dash()
+	protected virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
 
@@ -620,7 +620,7 @@ public class PlayersGameplay : MonoBehaviour
         }
     }
 
-    IEnumerator DashEnd()
+	protected virtual IEnumerator DashEnd()
     {
         yield return new WaitForSeconds(dashDuration);
 
@@ -662,6 +662,7 @@ public class PlayersGameplay : MonoBehaviour
 			yield return new WaitWhile(() => gettingMovable == true);
 
 			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+			holdMovableTransform.tag = "Movable";
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
 			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
@@ -672,14 +673,19 @@ public class PlayersGameplay : MonoBehaviour
 
 		gameObject.SetActive(false);
 
-		if(playerDeadCube)
-			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
+		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
+		{
+			if(playerDeadCube)
+				GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
+		}
+		else
+			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
 	}
 		
     protected virtual void OnDestroy()
     {
         if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
-            VibrationManager.Instance.StopVibration(controllerNumber);
+			VibrationManager.Instance.StopVibration(controllerNumber);
     }
 
     protected virtual void OnDisable()
@@ -690,8 +696,8 @@ public class PlayersGameplay : MonoBehaviour
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
 
-		if (controllerNumber == 0 && GlobalVariables.Instance != null)
-			GlobalVariables.Instance.HideMouseCursor (true);
+		if (controllerNumber == 0 && GlobalVariables.Instance != null && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			GlobalVariables.Instance.SetMouseVisibility (true);
 
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());
@@ -712,6 +718,8 @@ public class PlayersGameplay : MonoBehaviour
 	public event EventHandler OnDash;
 	public event EventHandler OnDashAvailable;
 	public event EventHandler OnDeath;
+	public event EventHandler OnTaunt;
+	public event EventHandler OnSafe;
 
 	public event EventHandler OnPlayerstateChange;
 
@@ -784,6 +792,12 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnHolding != null)
 			OnHolding();
+	}
+
+	protected void OnTauntVoid ()
+	{
+		if (OnTaunt != null)
+			OnTaunt();
 	}
 	#endregion
 }

@@ -6,7 +6,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 
-public enum CubeColor {Neutral, Blue, Pink, Green, Yellow};
+public enum CubeColor {Neutral, Blue, Pink, Green, Yellow, Deadly};
 
 public class MovableScript : MonoBehaviour 
 {
@@ -35,8 +35,9 @@ public class MovableScript : MonoBehaviour
 
 	protected bool canPlaySound = true;
 
-	protected float toColorDuration = 0.5f;
-	protected float toNeutralDuration = 1.5f;
+	protected const float toColorDuration = 0.5f;
+	protected const float toNeutralDuration = 1.5f;
+	protected const float toDeadlyDuration = 1f;
 
 	protected Rigidbody rigidbodyMovable;
 
@@ -49,6 +50,9 @@ public class MovableScript : MonoBehaviour
 	protected SlowMotionTriggerScript slowMoTrigger;
 
 	protected GameObject mainCamera;
+
+	protected ParticleSystem deadlyParticle;
+	protected ParticleSystem deadlyParticle2;
 
 	[HideInInspector]
 	public Transform player;
@@ -73,7 +77,7 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void Start () 
 	{
-		
+		//ToNeutralColor ();
 	}
 
 	protected virtual void OnEnable ()
@@ -84,11 +88,13 @@ public class MovableScript : MonoBehaviour
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
-			
-		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
+		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
 
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		deadlyParticle.Stop ();
+		deadlyParticle2.Stop ();
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
@@ -112,6 +118,9 @@ public class MovableScript : MonoBehaviour
 			
 			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
 			{
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
 				slowMoTrigger.triggerEnabled = false;
 				gameObject.tag = "Movable";
 				playerThatThrew = null;
@@ -138,52 +147,99 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Color
-	public virtual void ToColor (GameObject otherPlayer = null)
+	public virtual void ToColor (GameObject otherPlayer = null, float overrideDuration = toColorDuration)
 	{
-		int whichPlayer = 0;
+		int whichPlayer = otherPlayer != null ? (int)otherPlayer.GetComponent<PlayersGameplay> ().playerName : (int)player.GetComponent<PlayersGameplay> ().playerName;
 
-		if(otherPlayer != null)
-			whichPlayer = (int)otherPlayer.GetComponent<PlayersGameplay> ().playerName;
-		else
-			whichPlayer = (int)player.GetComponent<PlayersGameplay> ().playerName;
+		CubeColor whichColor = (CubeColor)whichPlayer + 1;
+
+		if (DOTween.IsTweening ("CubeColorTween" + gameObject.GetInstanceID ()))
+			DOTween.Kill ("CubeColorTween" + gameObject.GetInstanceID ());
 		
-		CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
-		Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
+		DisableAllColor (overrideDuration);
 
-		if(cubeMaterial.GetColor("_Color") != cubeCorrectColor)
+		if(deadlyParticle == null)
+			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+		
+		if(deadlyParticle2 == null)
+			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+		deadlyParticle.Stop ();
+		deadlyParticle2.Stop ();
+
+		switch(whichColor)
 		{
-			if (DOTween.IsTweening ("CubeNeutralTween" + gameObject.GetInstanceID ()))
-				DOTween.Kill ("CubeNeutralTween" + gameObject.GetInstanceID ());
-
-			//Debug.Log ("New Color : " + cubeCorrectColor);
-
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
-
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, cubeCorrectColor, toColorDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 1, toColorDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeColorTween" + gameObject.GetInstanceID ());
-
-			StartCoroutine (WaitToChangeColorEnum (cubeColorTest, toColorDuration));
+		case CubeColor.Blue:
+			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Pink:
+			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Green:
+			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
+		case CubeColor.Yellow:
+			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			break;
 		}
+
+		StartCoroutine (WaitToChangeColorEnum (whichColor, overrideDuration));
 	}
 
-	public virtual void ToNeutralColor ()
+	public virtual void ToNeutralColor (float overrideDuration = toNeutralDuration)
 	{
 		if(!hold)
 		{
-			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
-			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
+			if(deadlyParticle == null)
+				deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 
-			//Debug.Log ("Neutral Color");
+			if(deadlyParticle2 == null)
+				deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
-			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).SetId("CubeNeutralTween" + gameObject.GetInstanceID ());
+			deadlyParticle.Stop ();
+			deadlyParticle2.Stop ();
 
-			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, toNeutralDuration));
+			DisableAllColor (overrideDuration);
+
+			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, overrideDuration));
 		}
 	}
 
-	IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
+	public virtual void ToDeadlyColor (float overrideDuration = toColorDuration)
+	{
+		DisableAllColor (overrideDuration);
+
+		if(deadlyParticle == null)
+			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
+
+		if(deadlyParticle2 == null)
+			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
+
+		deadlyParticle.Play ();
+		deadlyParticle2.Play ();
+
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+
+		cubeColor = CubeColor.Deadly;
+	}
+
+	public virtual void DisableAllColor (float duration)
+	{
+		if (DOTween.IsTweening ("CubeColorTween" + gameObject.GetInstanceID ()))
+			DOTween.Kill ("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		cubeMaterial.DOFloat (0f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		cubeMaterial.DOFloat (0f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		cubeMaterial.DOFloat (0f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		cubeMaterial.DOFloat (0f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		
+		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+	}
+
+	protected virtual IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{
 		yield return new WaitForSeconds (waitTime * 0.5f);		
 
@@ -204,7 +260,7 @@ public class MovableScript : MonoBehaviour
 			if(other.gameObject.tag == "Movable")
 				HitOtherMovable (other);	
 			
-			if(other.gameObject.layer == 16)
+			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
 				HitWall (other);			
 		}
 	}
@@ -221,7 +277,7 @@ public class MovableScript : MonoBehaviour
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
-				if(playerThatThrew != null && other.gameObject.name != playerThatThrew.name)
+				if(playerThatThrew != null)
 					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
 			}
 		}
@@ -245,8 +301,8 @@ public class MovableScript : MonoBehaviour
 	{
 		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);
+			/*if(currentVelocity > (limitVelocity * 0.5f))
+				InstantiateImpactFX (other.contacts [0]);*/
 
 			if(canPlaySound)
 				StartCoroutine(HitSound ());

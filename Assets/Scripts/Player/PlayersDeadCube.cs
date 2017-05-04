@@ -39,6 +39,7 @@ public class PlayersDeadCube : MonoBehaviour
 	private Vector3 backwardMovePos;
 
 	private float halfScale;
+	private ParticleSystem[] reincarnationFXs = new ParticleSystem[0];
 
 	// Use this for initialization
 	void Start () 
@@ -51,7 +52,14 @@ public class PlayersDeadCube : MonoBehaviour
 		halfScale = transform.lossyScale.x * 0.5f;
 
 		Controller ();
-		movableScript.ToColor (playerName);
+		SetReincarnationFX ();
+		//movableScript.ToColor (playerName);
+	}
+
+	void SetReincarnationFX ()
+	{
+		GameObject FX = Instantiate (GlobalVariables.Instance.reincarnationFX [(int)playerName], transform.position, transform.rotation, transform) as GameObject;
+		reincarnationFXs = FX.transform.GetComponentsInChildren<ParticleSystem> ();
 	}
 
 	public void Controller()
@@ -80,6 +88,18 @@ public class PlayersDeadCube : MonoBehaviour
 		if (!hold && rigidBody != null && dashState == DashState.CanDash && rewiredPlayer.GetButtonDown ("Dash"))
 			StartCoroutine (Dash ());
 			
+		//Taunt
+		if (rewiredPlayer.GetButtonDown ("Taunt"))
+		{
+			foreach(ParticleSystem particle in reincarnationFXs)
+			{
+				if (particle.isPlaying)
+					particle.Stop ();
+				else
+					particle.Play ();
+			}
+		}
+
 
 		if (!hold && rigidBody != null)
 			currentVelocity = rigidBody.velocity.magnitude;

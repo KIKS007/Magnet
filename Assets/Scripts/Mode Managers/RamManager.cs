@@ -22,7 +22,7 @@ public class RamManager : MonoBehaviour
 
 		yield return new WaitForSeconds (durationBetweenSpawn);
 
-		GlobalMethods.Instance.SpawnNewMovableRandomVoid (cubesPrefabs [Random.Range (0, cubesPrefabs.Length)]);
+		GlobalMethods.Instance.SpawnNewMovableRandomVoid (cubesPrefabs [Random.Range (0, cubesPrefabs.Length)], 0, 0.5f, 5);
 
 		StartCoroutine (SpawnCube ());
 	}

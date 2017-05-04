@@ -2,18 +2,32 @@
 using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using UnityEngine.UI;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
+	[Header ("Layers")]
 	public LayerMask gameplayLayer = (1 << 9) | (1 << 12);
 	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
+	[Header ("Limits")]
 	public Vector2 xLimits;
 	public Vector2 zLimits;
+	public float playerLimitReduction = 1.5f;
 
-	private float checkSphereRadius = 5f;
+	[Header ("DeathCount Text")]
+	public GameObject deathTextPrefab;
+	public Vector2 deathTextPositions;
+	public float deathTextDuration;
 
-	private float cubeYPosition = 3f;
+	[HideInInspector]
+	public float safeDuration = 1.5f;
+
+	private int maxWhileLoop = 300;
+
+	private const float checkSphereRadius = 4;
+
+	private const float cubeYPosition = 3f;
 
 	private const float defaultScaleDuration = 0.8f;
 
@@ -34,14 +48,29 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
 	}
 
-	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0)
+	public void SpawnDeathText (PlayerName playerName, GameObject player, int count)
 	{
-		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn));
+		Vector3 position = new Vector3 (player.transform.position.x, deathTextPositions.x, player.transform.position.z);
+
+		GameObject text = Instantiate (deathTextPrefab, position, deathTextPrefab.transform.rotation);
+		//text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
+		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName].color;
+
+		text.transform.GetChild (0).GetComponent<Text> ().text = count + " X";
+
+		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad);
+		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text));
 	}
 
-	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0)
+	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
+	{
+		StartCoroutine (SpawnExistingPlayerRandom (player, timeBeforeSpawn, waveAtSpawn));
+	}
+
+	IEnumerator SpawnExistingPlayerRandom (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
 	{
 		Vector3 newPos = new Vector3();
+		int loopCount = 0;
 
 		player.SetActive (false);
 
@@ -49,19 +78,28 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), player.transform.position.y, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
+			newPos = new Vector3 (Random.Range(xLimits.x + playerLimitReduction, xLimits.y - playerLimitReduction), player.transform.position.y, Random.Range(zLimits.x + playerLimitReduction, zLimits.y - playerLimitReduction));
 			yield return null;	
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
+		player.layer = LayerMask.NameToLayer ("Safe");
 		player.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		player.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
+		DOVirtual.DelayedCall (safeDuration, ()=> 
+		{
+			player.layer = LayerMask.NameToLayer ("Player");
+		});
 
 		player.transform.position = newPos;
-		SpawnParticles (player);
+		//SpawnParticles (player);
 
 		player.SetActive (true);
+
+		if(waveAtSpawn)
+			player.GetComponent<PlayersFXAnimations> ().WaveFX (true);
 	}
 
 	void SpawnParticles (GameObject player)
@@ -81,6 +119,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
+		int loopCount = 0;
 
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
@@ -88,15 +127,18 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			do
 			{
-				newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+				loopCount++;
+				newPos = new Vector3 (Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 				yield return null;	
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));			
-			
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);			
+
+			newPos.y = cubeYPosition;
 			GameObject deadCube = Instantiate (GlobalVariables.Instance.deadCubesPrefabs [randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs [randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
 			
 			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
 			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
+			deadCube.GetComponent<MovablePlayer> ().CubeColor (tag);
 			
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;
@@ -130,6 +172,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string[] allTags = new string[allMovables.Length];
+		int loopCount = 0;
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
@@ -150,11 +193,14 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			do
 			{
-				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+				loopCount++;
+				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
+
+			newPos.y = cubeYPosition;
 
 			if(allMovables[i] != null)
 			{
@@ -190,23 +236,48 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
 		movable.tag = "Untagged";
+		int loopCount = 0;
 
 		do
 		{
-			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+
+		newPos.y = cubeYPosition;
 
 		EnableGameObject (movable, newPos);
 		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 
-	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
+	public void SpawnExistingMovableRandom (Vector2 xLimits, Vector2 zLimits, GameObject movable, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration));
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+		movable.tag = "Untagged";
+		int loopCount = 0;
+
+		do
+		{
+			loopCount++;
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
+		}
+		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+
+		newPos.y = cubeYPosition;
+
+		EnableGameObject (movable, newPos);
+		ScaleGameObect (movable, tagTemp, movableScale, scaleDuration);
 	}
 
-	IEnumerator SpawnNewMovableRandom (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration)
+	public void SpawnNewMovableRandomVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius)
+	{
+		StartCoroutine (SpawnNewMovableRandom (movable, delay, scaleDuration, checkSphere));
+	}
+
+	IEnumerator SpawnNewMovableRandom (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius)
 	{
 		if (movable == null)
 			movable = GlobalVariables.Instance.cubesPrefabs [Random.Range (0, GlobalVariables.Instance.cubesPrefabs.Length)];
@@ -214,6 +285,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		Vector3 movableScale = movable.transform.lossyScale;
 		Vector3 newPos = new Vector3 ();
 		string tagTemp = movable.tag;
+		int loopCount = 0;
 
 		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
 		clone.gameObject.SetActive(false);
@@ -222,10 +294,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		do
 		{
-			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), cubeYPosition, Random.Range(zLimits.x, zLimits.y));
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
 		}
-		while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
+		while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer) && loopCount < maxWhileLoop);
 
+		newPos.y = cubeYPosition;
 		clone.tag = "Untagged";
 
 		EnableGameObject (clone, newPos);
@@ -236,15 +310,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	{
 		target.transform.position = position;
 
-		target.transform.localScale = Vector3.zero;
 		target.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		target.GetComponent<Rigidbody> ().angularVelocity = Vector3.zero;
 
 		target.gameObject.SetActive(true);
 	}
 
-	void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
+	public void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
 	{
+		target.transform.localScale = Vector3.zero;
 		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
 		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
 

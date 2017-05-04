@@ -20,6 +20,9 @@ public class SlowMotionTriggerScript : MonoBehaviour
 	{
 		if(triggerEnabled && (1<<other.gameObject.layer & playerLayerMask) != 0)
 		{
+			if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+				return;
+
 			playerThatThrew = transform.parent.GetComponent<MovableScript>().playerThatThrew;
 			
 			if(triggerEnabled && other.tag == "Player" && other.gameObject != playerThatThrew)

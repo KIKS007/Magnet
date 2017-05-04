@@ -8,6 +8,7 @@ using UnityEngine;
 //using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 [System.Serializable]
@@ -266,7 +267,11 @@ public class Reporter : MonoBehaviour {
 	void Awake()
 	{
 		if( !Initialized )
+		{
 			Initialize();
+			
+			SceneManager.sceneLoaded += (arg0, arg1) => OnLevelLoaded ();
+		}
 	}
 	
 	void OnEnable()
@@ -1987,13 +1992,13 @@ public class Reporter : MonoBehaviour {
 	}
 	
 	//new scene is loaded
-	void OnLevelWasLoaded()
+	void OnLevelLoaded()
 	{
 		if( clearOnNewSceneLoaded )
 			clear();
 
 		currentScene = Application.loadedLevelName ;
-		Debug.Log( "Scene " + Application.loadedLevelName + " is loaded");
+		//Debug.Log( "Scene " + Application.loadedLevelName + " is loaded");
 	}
 	
 	//save user config
