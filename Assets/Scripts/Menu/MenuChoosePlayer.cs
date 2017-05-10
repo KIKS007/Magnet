@@ -56,6 +56,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	void Start ()
 	{
+		noInput = false;
+	
 		for(int i = 0; i < 4; i++)
 		{
 			if (i < ReInput.controllers.Joysticks.Count)
@@ -83,7 +85,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput) 
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput)
 			CheckInput ();
 	}
 

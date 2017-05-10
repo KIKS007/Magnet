@@ -1,0 +1,1 @@
+public enum AIComponents{PlayersManikin,PlayersTraining,PlayersRam,PlayersTutorial,AIDash,AIAttack};
