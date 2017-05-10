@@ -476,7 +476,7 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
-		if(other.gameObject.tag == "DeadZone")
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				Death(DeathFX.All, other.contacts[0].point);
 
@@ -497,7 +497,7 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
-		if(other.gameObject.tag == "DeadZone")
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				Death(DeathFX.All, other.contacts[0].point);
 

@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using GameAnalyticsSDK;
 using System.IO;
 using System.Linq;
+using UnityEngine.Audio;
 
 public class SoundsManager : Singleton<SoundsManager> 
 {
@@ -30,6 +31,10 @@ public class SoundsManager : Singleton<SoundsManager>
 	public float highPassTweenDuration;
 	[Range (10, 22000)]
 	public float sloMoHighPass;
+
+	[Header ("Distortion")]
+	[Range (0, 1)]
+	public float distortion = 0.08f;
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -115,7 +120,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
 
-	private AudioSource[] audioSources = new AudioSource[2];
 	private float initialLowPassFrequency;
 	private AudioLowPassFilter lowPass;
 	private float initialHighPassFrequency;
@@ -134,7 +138,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		highPass = playlistCont.gameObject.GetComponent<AudioHighPassFilter> ();
 		initialLowPassFrequency = lowPass.cutoffFrequency;
 		initialHighPassFrequency = highPass.cutoffFrequency;
-		audioSources = playlistCont.GetComponents<AudioSource> ();
 			
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
@@ -152,13 +155,11 @@ public class SoundsManager : Singleton<SoundsManager>
 			toggleEnableSloMoEffect.isOn = false;
 		}
 
-
-
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
-		GlobalVariables.Instance.OnMenu += ResetLowPass;
+		GlobalVariables.Instance.OnMenu += ()=> { if(!MenuManager.Instance.startScreen) ResetLowPass(); };
 		GlobalVariables.Instance.OnPlaying += ResetLowPass;
 		GlobalVariables.Instance.OnPause += ()=> LowPass (pauseLowPass);
 		GlobalVariables.Instance.OnEndMode += ()=> LowPass (gameOverLowPass);
@@ -180,22 +181,19 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void Update ()
 	{
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+		for(int i = 0; i < 2; i++)
 		{
-			for(int i = 0; i < 2; i++)
-			{
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
-					RandomMusic ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
-					NextMusic ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
-					MusicVolumeUp ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
-					MusicVolumeDown ();
-			}
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
+				RandomMusic ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
+				NextMusic ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
+				MusicVolumeUp ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
+				MusicVolumeDown ();
 		}
 	}
 
@@ -506,56 +504,35 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void LowPass (float lowPassFrquency, float duration)
 	{
-		LowPassCheck ();
-
-		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, lowPassFrquency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void LowPass (float lowPassFrquency)
 	{
-		LowPassCheck ();
-
-		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, lowPassFrquency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void ResetLowPass ()
 	{
-		LowPassCheck ();
-
-		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, initialLowPassFrequency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", initialLowPassFrequency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void ResetLowPass (float duration)
 	{
-		LowPassCheck ();
-
-		DOTween.To (()=> lowPass.cutoffFrequency, x => lowPass.cutoffFrequency = x, initialLowPassFrequency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
-	}
-
-	void LowPassCheck ()
-	{
-		if (DOTween.IsTweening ("LowPass"))
-			DOTween.Kill ("LowPass");
-
-		foreach(AudioSource a in audioSources)
-		{
-			a.loop = true;
-			a.loop = false;
-		}
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", initialLowPassFrequency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void HighPass (float frequency)
 	{
 		if (DOTween.IsTweening ("HighPass"))
 			DOTween.Kill ("HighPass");
-
-		foreach(AudioSource a in audioSources)
-		{
-			a.loop = true;
-			a.loop = false;
-		}
 	
-		DOTween.To (()=> highPass.cutoffFrequency, x => highPass.cutoffFrequency = x, frequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", frequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 	}
 
 	public void ResetHighPass ()
@@ -563,13 +540,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		if (DOTween.IsTweening ("HighPass"))
 			DOTween.Kill ("HighPass");
 
-		foreach(AudioSource a in audioSources)
-		{
-			a.loop = true;
-			a.loop = false;
-		}
-
-		DOTween.To (()=> highPass.cutoffFrequency, x => highPass.cutoffFrequency = x, initialHighPassFrequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", initialHighPassFrequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 	}
 		
 	public override void OnDestroy ()
