@@ -6,29 +6,28 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-
 [CustomEditor(typeof(AIEditor))]
-public class AIComponentsEditor : Editor {
-
+public class AIComponentsEditor : Editor 
+{
 	public bool isCompiling = false;
 
 	private List<string> names = new List<string>();
 
 	// Update is called once per frame
-	void OnEnable (){
+	void OnEnable ()
+	{
 		#if UNITY_EDITOR
 		names.Clear ();
-		MonoScript[] scripts = (MonoScript[])Object.FindObjectsOfTypeIncludingAssets( typeof( MonoScript ) );
-
-		List<MonoScript> result = new List<MonoScript>();
+		MonoScript[] scripts = (MonoScript[])Object.FindObjectsOfType( typeof( MonoScript ) );
 
 		foreach( MonoScript m in scripts )
 		{
-			if(m != null){
-				if(m.GetClass () != null){
-					if (m.GetClass ().IsSubclassOf (typeof(PlayersGameplay))){
+			if(m != null)
+			{
+				if(m.GetClass () != null)
+				{
+					if (m.GetClass ().IsSubclassOf (typeof(PlayersGameplay)))
 						names.Add (m.name);
-					}
 				}
 
 			}

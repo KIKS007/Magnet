@@ -353,7 +353,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Rewired Controller
-    public void SetupController()
+	public virtual void SetupController()
     {
 		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
 
