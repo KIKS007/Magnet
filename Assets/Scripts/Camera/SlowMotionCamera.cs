@@ -147,8 +147,6 @@ public class SlowMotionCamera : MonoBehaviour
 			break;
 		}
 
-		SoundsManager.Instance.StartSlowMoEffect (slowFactorTemp);
-
 		if (OnSlowMotionStart != null)
 			OnSlowMotionStart ();
 
