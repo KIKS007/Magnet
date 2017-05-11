@@ -18,7 +18,7 @@ public class AIComponentsEditor : Editor
 	{
 		#if UNITY_EDITOR
 		names.Clear ();
-		MonoScript[] scripts = (MonoScript[])Object.FindObjectsOfType( typeof( MonoScript ) );
+		MonoScript[] scripts = (MonoScript[])Object.FindObjectsOfTypeIncludingAssets( typeof( MonoScript ) );
 
 		foreach( MonoScript m in scripts )
 		{
@@ -26,14 +26,14 @@ public class AIComponentsEditor : Editor
 			{
 				if(m.GetClass () != null)
 				{
-					if (m.GetClass ().IsSubclassOf (typeof(PlayersGameplay)))
+					if (m.GetClass ().IsSubclassOf (typeof(AIComponent)))
 						names.Add (m.name);
 				}
 
 			}
 		}
 
-		File.WriteAllText ("Assets/SCRIPTS/AIComponents.cs", "public enum AIComponents{"+string.Join(",", names.ToArray ())+"};");
+		File.WriteAllText ("Assets/SCRIPTS/AI/Other/AIComponentsEnum.cs", "public enum AIComponents{"+string.Join(",", names.ToArray ())+"};");
 		#endif
 	}
 }

@@ -120,11 +120,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
 
-	private float initialLowPassFrequency;
-	private AudioLowPassFilter lowPass;
-	private float initialHighPassFrequency;
-	private AudioHighPassFilter highPass;
-
 	private SlowMotionCamera slowMo;
 
 	public event EventHandler OnMusicVolumeChange;
@@ -134,11 +129,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		LoadMusics ();
 
-		lowPass = playlistCont.gameObject.GetComponent<AudioLowPassFilter> ();
-		highPass = playlistCont.gameObject.GetComponent<AudioHighPassFilter> ();
-		initialLowPassFrequency = lowPass.cutoffFrequency;
-		initialHighPassFrequency = highPass.cutoffFrequency;
-			
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
 
@@ -399,6 +389,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void UpdateAudioSettings ()
 	{
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
+			return;
+		
 		if (MasterAudio.MasterVolumeLevel == 0)
 			soundsMuteToggle.isOn = true;
 		else
@@ -488,13 +481,13 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void ResetLowPass ()
 	{
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", initialLowPassFrequency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void ResetLowPass (float duration)
 	{
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", initialLowPassFrequency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
@@ -509,7 +502,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void ResetHighPass ()
 	{
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", initialHighPassFrequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", 10f, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 	}
 		

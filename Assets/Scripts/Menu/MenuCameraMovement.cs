@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class MenuCameraMovement : MonoBehaviour 
 {
@@ -50,8 +51,16 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		slowMo = GetComponent<SlowMotionCamera> ();
 
-		transform.position = newStartPosition;
-		transform.rotation = Quaternion.Euler (startRotation);
+		if(SceneManager.GetActiveScene ().name != "Scene Testing")
+		{
+			transform.position = newStartPosition;
+			transform.rotation = Quaternion.Euler (startRotation);
+		}
+		else
+		{
+			transform.position = playPosition;
+			transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+		}
 
 		//StartCoroutine (NewMenuPosition ());
 

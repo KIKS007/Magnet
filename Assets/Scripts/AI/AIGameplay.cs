@@ -1,13 +1,50 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
+public enum AILevel { Easy, Normal , Hard};
 
 public class AIGameplay : PlayersGameplay 
 {
+	[Header ("AI")]
+	public AILevel aiLevel;
+	public List<GameObject> closerPlayers = new List<GameObject> ();
+	public List<GameObject> closerCubes = new List<GameObject> ();
+
+	protected override IEnumerator Startup ()
+	{
+		playerState = PlayerState.Startup;
+
+		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+		switch (GlobalVariables.Instance.Startup)
+		{
+		case StartupType.Delayed:
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration);
+			break;
+		case StartupType.Wave:
+			yield return new WaitForSeconds (0.25f);
+			playerFX.WaveFX ();
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
+			break;
+		}
+
+		GlobalVariables.Instance.Startup = StartupType.Done;
+		playerState = PlayerState.None;
+	}
+
+	protected override void OnEnable ()
+	{
+		closerPlayers.Clear ();
+		closerCubes.Clear ();
+
+		base.OnEnable ();
+	}
+
 	protected override void Update ()
 	{
-		if (rewiredPlayer == null)
-			return;
+		FindCloserElements ();
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
@@ -22,26 +59,29 @@ public class AIGameplay : PlayersGameplay
 			if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
 				playerState = PlayerState.None;
 
-			//Attraction - Repulsion State
-			if (playerState == PlayerState.None)
-			{
-				if (rewiredPlayer.GetButton("Attract"))
-					playerState = PlayerState.Attracting;
-
-				if (rewiredPlayer.GetButton("Repulse"))
-					playerState = PlayerState.Repulsing;
-			}
-
 			//On Attracted - On Repulsed Events
 			OnAttractedOnRepulsed();
 		}
 	}
 
-	protected override void FixedUpdate ()
+	void FindCloserElements ()
 	{
-		if (rewiredPlayer == null)
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
 
+		closerPlayers.Clear ();
+		closerPlayers.AddRange (GlobalVariables.Instance.AlivePlayersList);
+
+		closerPlayers = closerPlayers.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+
+		closerCubes.Clear ();
+		closerCubes.AddRange (GlobalVariables.Instance.AllMovables);
+
+		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+	}
+
+	protected override void FixedUpdate ()
+	{
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Movement
@@ -100,12 +140,29 @@ public class AIGameplay : PlayersGameplay
 			base.Shoot ();
 	}
 
-	protected override IEnumerator Dash ()
+	public override IEnumerator Dash ()
 	{
-		if (rewiredPlayer.GetButtonDown ("Dash") && dashState == DashState.CanDash && movement != Vector3.zero)
-			return base.Dash ();
-		else
-			return null;
+		dashState = DashState.Dashing;
+
+		OnDashVoid ();
+
+		movement.Normalize ();
+
+		float dashSpeedTemp = dashSpeed;
+		float futureTime = Time.time + dashDuration;
+		float start = futureTime - Time.time;
+
+		StartCoroutine(DashEnd());
+
+		while (Time.time <= futureTime)
+		{
+			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
+			playerRigidbody.velocity = movement * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1 / Time.timeScale;
+
+			yield return new WaitForFixedUpdate();
+		}
+
+		movement = Vector3.zero;
 	}
 
 	protected override IEnumerator DeathCoroutine ()
@@ -133,5 +190,46 @@ public class AIGameplay : PlayersGameplay
 
 		if(GlobalVariables.Instance.modeObjective == ModeObjective.LeastDeath)
 			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
+	}
+
+	protected override void OnCollisionStay (Collision other)
+	{
+		if(playerState == PlayerState.Startup)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable")
+		if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		{
+			playersHit.Add(other.gameObject);
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+
+		}
+	}
+
+	protected override void OnCollisionEnter (Collision other)
+	{
+		if(playerState == PlayerState.Startup)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		{
+			playersHit.Add(other.gameObject);
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+		}
 	}
 }

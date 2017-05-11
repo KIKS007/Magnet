@@ -184,7 +184,7 @@ public class PlayersGameplay : MonoBehaviour
         startModeTime = Time.unscaledTime;
     }
 
-    protected void OnEnable()
+    protected virtual void OnEnable()
     {
         StartCoroutine(WaitTillPlayerEnabled());
 
@@ -208,7 +208,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnSafe();
     }
 
-	protected IEnumerator Startup ()
+	protected virtual IEnumerator Startup ()
 	{
 		playerState = PlayerState.Startup;
 
@@ -469,7 +469,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Collisions
-    private List<GameObject> playersHit = new List<GameObject>();
+	protected List<GameObject> playersHit = new List<GameObject>();
 
     protected virtual void OnCollisionStay(Collision other)
     {
@@ -595,7 +595,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Dash
-	protected virtual IEnumerator Dash()
+	public virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
 
@@ -620,7 +620,7 @@ public class PlayersGameplay : MonoBehaviour
         }
     }
 
-	protected virtual IEnumerator DashEnd()
+	public virtual IEnumerator DashEnd()
     {
         yield return new WaitForSeconds(dashDuration);
 
@@ -798,6 +798,12 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnTaunt != null)
 			OnTaunt();
+	}
+
+	protected void OnDashVoid()
+	{
+		if (OnDash != null)
+			OnDash();
 	}
 	#endregion
 }
