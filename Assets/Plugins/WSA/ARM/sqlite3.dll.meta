@@ -1,13 +1,12 @@
 fileFormatVersion: 2
 guid: 30177d4e124608d4cb92d0a4fd4cad84
-timeCreated: 1473775214
-licenseType: Pro
+timeCreated: 1477602128
+licenseType: Store
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
   executionOrder: {}
   isPreloaded: 0
-  isOverridable: 0
   platformData:
     Any:
       enabled: 0
@@ -20,7 +19,7 @@ PluginImporter:
       enabled: 1
       settings:
         CPU: ARM
-        SDK: AnySDK
+        SDK: UWP
   userData: 
   assetBundleName: 
   assetBundleVariant: 
