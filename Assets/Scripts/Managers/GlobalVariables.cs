@@ -284,13 +284,19 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		{
 			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
 
-			for(int i = 0; i < ReInput.controllers.joystickCount; i++)
+			if(ReInput.controllers.joystickCount != 0)
 			{
-				if (i == 3)
-					break;
-
-				GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
+				for(int i = 0; i < ReInput.controllers.joystickCount; i++)
+				{
+					if (i == 3)
+						break;
+					
+					GlobalVariables.Instance.PlayersControllerNumber [i + 1] = i + 1;
+				}
 			}
+			else
+				GlobalVariables.Instance.PlayersControllerNumber [1] = 1;
+
 		}
 	}
 

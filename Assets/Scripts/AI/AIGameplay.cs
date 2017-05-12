@@ -8,9 +8,11 @@ public enum AILevel { Easy, Normal , Hard};
 public class AIGameplay : PlayersGameplay 
 {
 	[Header ("AI")]
+	public LayerMask playerLayer = 1 << 12;
 	public AILevel aiLevel;
 	public List<GameObject> closerPlayers = new List<GameObject> ();
 	public List<GameObject> closerCubes = new List<GameObject> ();
+	public List<GameObject> dangerousCubes = new List<GameObject> ();
 
 	protected override IEnumerator Startup ()
 	{
@@ -46,6 +48,8 @@ public class AIGameplay : PlayersGameplay
 	{
 		FindCloserElements ();
 
+		FindDangerousCubes ();
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Stunned Rotation
@@ -78,6 +82,28 @@ public class AIGameplay : PlayersGameplay
 		closerCubes.AddRange (GlobalVariables.Instance.AllMovables);
 
 		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+	}
+
+	void FindDangerousCubes ()
+	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+
+		dangerousCubes.Clear ();
+
+		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
+		{
+			if(cube.tag == "ThrownMovable" || cube.tag == "DeadCube")
+			{
+				RaycastHit hitInfo;
+
+				if(Physics.Raycast (cube.transform.position, cube.GetComponent<Rigidbody> ().velocity, out hitInfo, 2000f, playerLayer))
+				{
+					if(hitInfo.collider.gameObject == gameObject)
+						dangerousCubes.Add (hitInfo.collider.gameObject);
+				}
+			}
+		}
 	}
 
 	protected override void FixedUpdate ()

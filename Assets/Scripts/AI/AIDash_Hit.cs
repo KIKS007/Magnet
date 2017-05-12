@@ -8,6 +8,9 @@ public class AIDash_Hit : AIComponent
 	[Range (0, 100)]
 	public float [] dashLevels = new float[3];
 
+	[Header ("Random")]
+	public Vector2 randomBounds = new Vector2 (0.5f, 1);
+
 	protected override void OnEnable ()
 	{
 		base.OnEnable ();
@@ -25,7 +28,13 @@ public class AIDash_Hit : AIComponent
 
 		AIScript.movement = (AIScript.closerPlayers [0].transform.position - transform.position).normalized;
 
-		AIScript.movement += new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f)) * 0.5f;
+		Vector3 random = new Vector3 ();
+		random.x = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (randomBounds.x, randomBounds.y);
+		random.z = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (randomBounds.x, randomBounds.y);
+	
+		AIScript.movement += random;
+
+		AIScript.movement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
 	}
