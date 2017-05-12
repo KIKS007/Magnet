@@ -1,1 +1,1 @@
-public enum AIComponents{AIDash_Dodge};
+public enum AIComponents{AIDash_Hit,AIDash_Counter,AIDash_Dodge};

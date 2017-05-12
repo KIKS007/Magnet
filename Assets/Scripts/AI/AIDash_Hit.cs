@@ -6,16 +6,16 @@ public class AIDash_Hit : AIComponent
 {
 	[Header ("Levels")]
 	[Range (0, 100)]
-	public float [] dashLevels = new float[3];
+	public float [] hitLevels = new float[3] { 100, 100, 100 };
 
 	[Header ("Random")]
-	public Vector2 randomBounds = new Vector2 (0.5f, 1);
+	public Vector2 randomBounds = new Vector2 (0.1f, 0.5f);
 
 	protected override void OnEnable ()
 	{
 		base.OnEnable ();
 
-		if (Random.Range (0, 100) > dashLevels [(int)AIScript.aiLevel])
+		if (Random.Range (0, 100) > hitLevels [(int)AIScript.aiLevel])
 			return;
 
 		if (AIScript.closerPlayers.Count == 0)

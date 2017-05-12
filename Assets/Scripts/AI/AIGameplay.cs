@@ -14,6 +14,15 @@ public class AIGameplay : PlayersGameplay
 	public List<GameObject> closerCubes = new List<GameObject> ();
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
 
+	private Animator aiAnimator;
+
+	protected override void Start ()
+	{
+		base.Start ();
+
+		aiAnimator = GetComponent<Animator> ();
+	}
+
 	protected override IEnumerator Startup ()
 	{
 		playerState = PlayerState.Startup;
@@ -49,6 +58,8 @@ public class AIGameplay : PlayersGameplay
 		FindCloserElements ();
 
 		FindDangerousCubes ();
+
+		SetAnimatorParameters ();
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
@@ -100,10 +111,29 @@ public class AIGameplay : PlayersGameplay
 				if(Physics.Raycast (cube.transform.position, cube.GetComponent<Rigidbody> ().velocity, out hitInfo, 2000f, playerLayer))
 				{
 					if(hitInfo.collider.gameObject == gameObject)
-						dangerousCubes.Add (hitInfo.collider.gameObject);
+						dangerousCubes.Add (cube);
 				}
 			}
 		}
+	}
+
+	void SetAnimatorParameters ()
+	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
+		aiAnimator.SetBool ("canDash", dashState == DashState.CanDash);
+		aiAnimator.SetBool ("isDashing", dashState == DashState.Dashing);
+
+		aiAnimator.SetBool ("isStunned", playerState == PlayerState.Stunned);
+
+		aiAnimator.SetBool ("canHold", holdState == HoldState.CanHold);
+		aiAnimator.SetBool ("isHolding", holdState == HoldState.Holding);
+
+		aiAnimator.SetInteger ("dangerousCubes", dangerousCubes.Count);
+
+		aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
+		aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
 	}
 
 	protected override void FixedUpdate ()
