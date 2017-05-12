@@ -13,8 +13,15 @@ public class AIGameplay : PlayersGameplay
 	public List<GameObject> closerPlayers = new List<GameObject> ();
 	public List<GameObject> closerCubes = new List<GameObject> ();
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
+	public List<GameObject> objectives = new List<GameObject> ();
+	public Transform currentMovementTarget;
+	public bool isAimingPlayer;
+	public bool isAimingCube;
+	public bool isAttracting;
+	public bool isRepelling;
 
-	private Animator aiAnimator;
+	[HideInInspector]
+	public Animator aiAnimator;
 
 	protected override void Start ()
 	{
@@ -134,6 +141,18 @@ public class AIGameplay : PlayersGameplay
 
 		aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
 		aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
+
+		aiAnimator.SetFloat ("distanceFromCenter", Vector3.Distance (Vector3.zero, transform.position));
+
+		if(currentMovementTarget != null)
+			aiAnimator.SetFloat ("distanceFromMovementTarget", Vector3.Distance (currentMovementTarget.position, transform.position));
+		else
+			aiAnimator.SetFloat ("distanceFromMovementTarget", Vector3.Distance (Vector3.zero, transform.position));
+
+		if(objectives.Count != 0)
+			aiAnimator.SetFloat ("distanceFromObjective", Vector3.Distance (objectives [0].transform.position, transform.position));
+		else
+			aiAnimator.SetFloat ("distanceFromObjective", 0);
 	}
 
 	protected override void FixedUpdate ()

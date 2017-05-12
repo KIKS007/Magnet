@@ -1,1 +1,1 @@
-public enum AIComponents{AIDash_Hit,AIDash_Counter,AIDash_Dodge};
+public enum AIComponents{AIDash_Hit,AIDash_Counter,AIDash_Dodge,AIMovement_Temporize,AIMovement_Towards,AIMovement_TowardsCenter,AIMovement_TowardsCube,AIMovement_TowardsPlayer};
