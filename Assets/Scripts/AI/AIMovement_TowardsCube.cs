@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class AIMovement_TowardsCube : AIMovement_Towards 
 {
+	private AIAimCube AIAimCube;
+
+	protected override void Awake ()
+	{
+		AIAimCube = GetComponent<AIAimCube> ();
+
+		base.Awake ();
+	}
+
 	protected override void OnEnable ()
 	{
 		if (!AIScript.movementLayerEnabled)
@@ -13,7 +22,10 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 
 		if (AIScript.closerCubes.Count == 0)
 			return;
-				
-		AIScript.currentMovementTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
+			
+		if(AIAimCube.target != null)
+			AIScript.currentMovementTarget = target = AIAimCube.target;
+		else
+			AIScript.currentMovementTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
 	}
 }

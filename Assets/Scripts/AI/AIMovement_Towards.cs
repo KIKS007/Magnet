@@ -16,7 +16,7 @@ public class AIMovement_Towards : AIComponent
 
 		if(target == null)
 		{
-			if (Vector3.Distance (transform.position, Vector3.zero) > 5f)
+			if (Vector3.Distance (transform.position, Vector3.zero) > 2f)
 				AIScript.movement = (Vector3.zero - transform.position).normalized;
 			else
 			{
@@ -27,7 +27,7 @@ public class AIMovement_Towards : AIComponent
 		}
 		else
 		{
-			if(Vector3.Distance (transform.position, target.position) > 5f)
+			if(Vector3.Distance (transform.position, target.position) > 2f)
 				AIScript.movement = (target.position - transform.position).normalized;
 			else
 			{

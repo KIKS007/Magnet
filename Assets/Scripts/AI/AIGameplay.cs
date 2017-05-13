@@ -110,6 +110,9 @@ public class AIGameplay : PlayersGameplay
 		closerCubes.AddRange (GlobalVariables.Instance.AllMovables);
 
 		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+
+		if(holdMovableTransform != null && closerCubes.Contains (holdMovableTransform.gameObject))
+			closerCubes.Remove (holdMovableTransform.gameObject);
 	}
 
 	void FindDangerousCubes ()
@@ -316,5 +319,13 @@ public class AIGameplay : PlayersGameplay
 			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
 			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
 		}
+	}
+
+	public override void OnHoldMovable (GameObject movable)
+	{
+		base.OnHoldMovable (movable);
+
+		if(closerCubes.Contains (holdMovableTransform.gameObject))
+			closerCubes.Remove (holdMovableTransform.gameObject);
 	}
 }

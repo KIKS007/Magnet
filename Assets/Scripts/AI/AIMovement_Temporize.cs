@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class AIMovement_Temporize : AIComponent 
 {
-	private LayerMask walls = 1 << 8 | 1 << 9;
+	private LayerMask walls = 1 << 8;
 
 	private int sign;
 

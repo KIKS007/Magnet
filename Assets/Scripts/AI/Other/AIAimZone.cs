@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIAimeZone : MonoBehaviour 
+public class AIAimZone : MonoBehaviour 
 {
 	public LayerMask raycastLayer;
 
@@ -13,6 +13,8 @@ public class AIAimeZone : MonoBehaviour
 	void Awake () 
 	{
 		AIScript = transform.GetComponentInParent <AIGameplay> ();
+
+		LoadModeManager.Instance.OnLevelLoaded += () => AIScript.objectives.Clear ();
 
 		AIScript.OnHold += () => 
 		{
@@ -51,6 +53,9 @@ public class AIAimeZone : MonoBehaviour
 		AIScript.isAimingPlayer = false;
 		AIScript.isAimingCube = false;
 
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
 		if (AIScript.objectives.Count == 0)
 			return;
 
