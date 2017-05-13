@@ -8,6 +8,9 @@ public class AIMovement_Away : AIComponent
 
 	protected override void OnEnable ()
 	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
 		base.OnEnable ();
 
 		if (AIScript.closerPlayers.Count == 0)

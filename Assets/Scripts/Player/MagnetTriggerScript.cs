@@ -8,17 +8,17 @@ public class MagnetTriggerScript : MonoBehaviour
 	[HideInInspector]
 	public Transform magnetPoint;
 
-	private PlayersGameplay playerScript;
+	protected PlayersGameplay playerScript;
 
-	private Player rewiredPlayer;
+	protected Player rewiredPlayer;
 
 	// Use this for initialization
-	void Start () 
+	protected virtual void Start () 
 	{
 		playerScript = gameObject.transform.parent.GetComponent<PlayersGameplay> ();
 	}
 
-	void OnTriggerStay (Collider other)
+	protected virtual void OnTriggerStay (Collider other)
 	{
 		if (playerScript.rewiredPlayer == null)
 			return;
@@ -35,7 +35,7 @@ public class MagnetTriggerScript : MonoBehaviour
 		}
 	}
 
-	public void GetMovable (Collider other)
+	public virtual void GetMovable (Collider other)
 	{
 		playerScript.OnHoldMovable (other.gameObject);
 	}

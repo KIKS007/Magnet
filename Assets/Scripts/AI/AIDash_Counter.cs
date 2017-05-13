@@ -15,6 +15,9 @@ public class AIDash_Counter : AIComponent
 	{
 		base.OnEnable ();
 
+		if (!AIScript.dashLayerEnabled)
+			return;
+
 		if (Random.Range (0, 100) > counterLevels [(int)AIScript.aiLevel])
 			return;
 
@@ -42,6 +45,9 @@ public class AIDash_Counter : AIComponent
 
 	void Update ()
 	{
+		if (!AIScript.dashLayerEnabled)
+			return;
+
 //		if(AIScript.playerState == PlayerState.Stunned)
 //		{
 //			if (AIScript.dashState != DashState.CanDash)

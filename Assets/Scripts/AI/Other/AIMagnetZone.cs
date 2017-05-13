@@ -33,7 +33,7 @@ public class AIMagnetZone : MagnetZoneScript
 		if (playerScript.playerState == PlayerState.Startup || playerScript.playerState == PlayerState.Dead || playerScript.playerState == PlayerState.Stunned)
 			return;
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerScript.holdState == HoldState.CanHold)
 		{
 			if(other.tag == "Movable" || other.tag == "Suggestible")
 			{
@@ -45,10 +45,10 @@ public class AIMagnetZone : MagnetZoneScript
 					{
 						Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
 
-						if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
+						if (AIScript.isAttracting && !AIScript.isRepelling)
 							Attract (other);
 
-						if (rewiredPlayer.GetButton ("Repulse") && !rewiredPlayer.GetButton ("Attract"))
+						if (AIScript.isRepelling && !AIScript.isAttracting)
 							Repulse (other);						
 					}
 				}

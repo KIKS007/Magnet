@@ -4,8 +4,23 @@ using UnityEngine;
 
 public class AIAttract : AIComponent
 {
-	// Update is called once per frame
-	void Update () {
+	protected override void OnEnable ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
 		
+		base.OnEnable ();
+		
+		AIScript.isAttracting = true;
+	}
+
+	protected override void OnDisable ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
+		
+		base.OnDisable ();
+		
+		AIScript.isAttracting = false;
 	}
 }

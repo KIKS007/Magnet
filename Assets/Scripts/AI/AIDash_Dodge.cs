@@ -13,8 +13,11 @@ public class AIDash_Dodge : AIComponent
 
 	protected override void OnEnable ()
 	{
+		if (!AIScript.dashLayerEnabled)
+			return;
+		
 		base.OnEnable ();
-
+		
 		if (Random.Range (0, 100) > dodgeLevels [(int)AIScript.aiLevel])
 			return;
 
@@ -44,6 +47,9 @@ public class AIDash_Dodge : AIComponent
 
 	void Update ()
 	{
+		if (!AIScript.dashLayerEnabled)
+			return;
+		
 		if(AIScript.dangerousCubes.Count != 0)
 		{
 			if (AIScript.dashState != DashState.CanDash)

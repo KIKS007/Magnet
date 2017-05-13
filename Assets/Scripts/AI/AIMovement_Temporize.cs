@@ -13,6 +13,9 @@ public class AIMovement_Temporize : AIComponent
 
 	protected override void OnEnable ()
 	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
 		base.OnEnable ();
 
 		sign = (int)Mathf.Sign (Random.Range (-1f, 1f));
@@ -22,6 +25,9 @@ public class AIMovement_Temporize : AIComponent
 
 	void Update ()
 	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
 		if (AIScript.dashState == DashState.Dashing || AIScript.playerState == PlayerState.Stunned)
 			return;
 

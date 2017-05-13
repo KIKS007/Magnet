@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class AIRepel : AIComponent
 {
-
-	// Use this for initialization
-	void Start () {
+	protected override void OnEnable ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
 		
+		base.OnEnable ();
+		
+		AIScript.isRepelling = true;
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	protected override void OnDisable ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
 		
+		base.OnDisable ();
+		
+		AIScript.isRepelling = false;
 	}
 }

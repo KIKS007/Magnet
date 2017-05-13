@@ -13,6 +13,9 @@ public class AIDash_Hit : AIComponent
 
 	protected override void OnEnable ()
 	{
+		if (!AIScript.dashLayerEnabled)
+			return;
+		
 		base.OnEnable ();
 
 		if (Random.Range (0, 100) > hitLevels [(int)AIScript.aiLevel])

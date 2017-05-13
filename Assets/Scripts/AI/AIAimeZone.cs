@@ -13,17 +13,34 @@ public class AIAimeZone : MonoBehaviour
 	void Awake () 
 	{
 		AIScript = transform.GetComponentInParent <AIGameplay> ();
+
+		AIScript.OnHold += () => 
+		{
+			if(AIScript.objectives.Contains (AIScript.holdMovableTransform.gameObject))
+			{
+				AIScript.objectives.Remove (AIScript.holdMovableTransform.gameObject);
+				Refresh ();
+			}
+		};
 	}
 
 	void OnTriggerEnter(Collider collider){
-		if(collider.tag == "Player" || collider.tag == "Movable"){
+		if(collider.tag == "Player" || collider.tag == "Movable")
+		{
+			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
+				return;
+			
 			AIScript.objectives.Add (collider.gameObject);
 			Refresh ();
 		}
 	}
 
 	void OnTriggerExit(Collider collider){
-		if(collider.tag == "Player" || collider.tag == "Movable"){
+		if(collider.tag == "Player" || collider.tag == "Movable")
+		{
+			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
+				return;
+			
 			AIScript.objectives.Remove (collider.gameObject);
 			Refresh ();
 		}

@@ -8,6 +8,9 @@ public class AIMovement_Towards : AIComponent
 
 	void Update ()
 	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
 		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
 			return;
 

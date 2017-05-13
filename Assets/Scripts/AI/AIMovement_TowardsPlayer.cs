@@ -6,6 +6,9 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 {
 	protected override void OnEnable ()
 	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
 		base.OnEnable ();
 
 		if (AIScript.closerPlayers.Count == 0)

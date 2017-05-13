@@ -303,7 +303,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	IEnumerator SetAttractionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
 	{
-		while(ps.IsAlive())
+		while(ps != null && ps.IsAlive())
 		{
 			fx.transform.position = whichCube.transform.position;
 

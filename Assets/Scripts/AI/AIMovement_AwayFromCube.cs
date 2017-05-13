@@ -5,13 +5,4 @@ using UnityEngine;
 public class AIMovement_AwayFromCube : AIMovement_Away
 {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

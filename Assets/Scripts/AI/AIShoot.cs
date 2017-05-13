@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class AIShoot : AIComponent
 {
-
-	// Use this for initialization
-	void Start () {
+	protected override void OnEnable ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
+			
+		base.OnEnable ();
 		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		AIScript.Shoot ();
 	}
 }

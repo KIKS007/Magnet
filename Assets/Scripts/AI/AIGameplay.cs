@@ -8,17 +8,27 @@ public enum AILevel { Easy, Normal , Hard};
 public class AIGameplay : PlayersGameplay 
 {
 	[Header ("AI")]
-	public LayerMask playerLayer = 1 << 12;
 	public AILevel aiLevel;
+	public LayerMask playerLayer = 1 << 12;
+
+	[Header ("AI Targets")]
 	public List<GameObject> closerPlayers = new List<GameObject> ();
 	public List<GameObject> closerCubes = new List<GameObject> ();
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
 	public List<GameObject> objectives = new List<GameObject> ();
 	public Transform currentMovementTarget;
+
+	[Header ("AI States")]
 	public bool isAimingPlayer;
 	public bool isAimingCube;
 	public bool isAttracting;
 	public bool isRepelling;
+
+	[Header ("AI Debug")]
+	public bool dashLayerEnabled = true;
+	public bool movementLayerEnabled = true;
+	public bool shootLayerEnabled = true;
+	public bool aimLayerEnabled = true;
 
 	[HideInInspector]
 	public Animator aiAnimator;
@@ -75,10 +85,10 @@ public class AIGameplay : PlayersGameplay
 				transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
 
 			//Reset Attraction - Repulsion State
-			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
+			if (playerState == PlayerState.Attracting && !isAttracting)
 				playerState = PlayerState.None;
 
-			if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
+			if (playerState == PlayerState.Repulsing && !isRepelling)
 				playerState = PlayerState.None;
 
 			//On Attracted - On Repulsed Events
@@ -149,10 +159,10 @@ public class AIGameplay : PlayersGameplay
 		else
 			aiAnimator.SetFloat ("distanceFromMovementTarget", Vector3.Distance (Vector3.zero, transform.position));
 
-		if(objectives.Count != 0)
+		if(objectives.Count != 0 && objectives [0] != null)
 			aiAnimator.SetFloat ("distanceFromObjective", Vector3.Distance (objectives [0].transform.position, transform.position));
 		else
-			aiAnimator.SetFloat ("distanceFromObjective", 0);
+			aiAnimator.SetFloat ("distanceFromObjective", -1f);
 	}
 
 	protected override void FixedUpdate ()
