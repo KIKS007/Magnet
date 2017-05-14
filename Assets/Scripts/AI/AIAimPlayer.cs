@@ -25,6 +25,16 @@ public class AIAimPlayer : AIAim
 
 	void SetTarget ()
 	{
+		if (AIScript.playerTarget != null)
+		{
+			target = AIScript.playerTarget;
+			return;
+		}
+		else
+		{
+			
+		}
+
 		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Player")
 		{
 			target = AIScript.currentMovementTarget;

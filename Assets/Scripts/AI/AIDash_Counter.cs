@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AIDash_Counter : AIComponent 
 {
-	[Header ("Levels")]
+	[Header ("Chances")]
 	[Range (0, 100)]
-	public float [] counterLevels = new float[3] { 100, 100, 100 };
+	public float [] counterChances = new float[3] { 100, 100, 100 };
 
 	[Header ("Random")]
-	public Vector2 randomBounds = new Vector2 (0.1f, 0.5f);
+	public AIRandomAngle[] randomAngles = new AIRandomAngle[3];
 
 	protected override void OnEnable ()
 	{
@@ -18,7 +18,7 @@ public class AIDash_Counter : AIComponent
 		if (!AIScript.dashLayerEnabled)
 			return;
 
-		if (Random.Range (0, 100) > counterLevels [(int)AIScript.aiLevel])
+		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
 			return;
 
 		if (AIScript.playerState != PlayerState.Stunned)
@@ -30,13 +30,8 @@ public class AIDash_Counter : AIComponent
 		AIScript.dashState = DashState.Dashing;
 
 		Vector3 direction = Vector3.zero - transform.position;
-		direction.Normalize ();
 
-		Vector3 random = new Vector3 ();
-		random.x = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-		random.z = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-
-		AIScript.movement = direction + random;
+		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
 
 		direction.Normalize ();
 

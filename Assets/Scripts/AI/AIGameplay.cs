@@ -11,12 +11,17 @@ public class AIGameplay : PlayersGameplay
 	public AILevel aiLevel;
 	public LayerMask playerLayer = 1 << 12;
 
-	[Header ("AI Targets")]
+	[Header ("AI Elements")]
 	public List<GameObject> closerPlayers = new List<GameObject> ();
 	public List<GameObject> closerCubes = new List<GameObject> ();
+	public List<GameObject> thrownDangerousCubes = new List<GameObject> ();
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
 	public List<GameObject> objectives = new List<GameObject> ();
 	public Transform currentMovementTarget;
+
+	[Header ("AI Target")]
+	public Transform cubeTarget;
+	public Transform playerTarget;
 
 	[Header ("AI States")]
 	public bool isAimingPlayer;
@@ -120,19 +125,30 @@ public class AIGameplay : PlayersGameplay
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
 
+		thrownDangerousCubes.Clear ();
 		dangerousCubes.Clear ();
 
 		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
 		{
-			if(cube.tag == "ThrownMovable" || cube.tag == "DeadCube")
+			if(cube.tag == "ThrownMovable")
 			{
 				RaycastHit hitInfo;
 
-				if(Physics.Raycast (cube.transform.position, cube.GetComponent<Rigidbody> ().velocity, out hitInfo, 2000f, playerLayer))
+				if(cube.GetComponent<Rigidbody> ().velocity.magnitude > 50)
 				{
-					if(hitInfo.collider.gameObject == gameObject)
-						dangerousCubes.Add (cube);
+					if(Physics.Raycast (cube.transform.position, cube.GetComponent<Rigidbody> ().velocity, out hitInfo, 2000f, playerLayer))
+					{
+						if(hitInfo.collider.gameObject == gameObject)
+							thrownDangerousCubes.Add (cube);
+					}
 				}
+			}
+
+			else if(cube.tag == "DeadCube")
+			{
+				dangerousCubes.Add (cube);
+
+				dangerousCubes = dangerousCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
 			}
 		}
 	}
@@ -150,7 +166,10 @@ public class AIGameplay : PlayersGameplay
 		aiAnimator.SetBool ("canHold", holdState == HoldState.CanHold);
 		aiAnimator.SetBool ("isHolding", holdState == HoldState.Holding);
 
-		aiAnimator.SetInteger ("dangerousCubes", dangerousCubes.Count);
+		aiAnimator.SetBool ("hasPlayerTarget", playerTarget != null);
+		aiAnimator.SetBool ("hasCubeTarget", cubeTarget != null);
+
+		aiAnimator.SetInteger ("dangerousCubes", thrownDangerousCubes.Count);
 
 		aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
 		aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
@@ -166,6 +185,21 @@ public class AIGameplay : PlayersGameplay
 			aiAnimator.SetFloat ("distanceFromObjective", Vector3.Distance (objectives [0].transform.position, transform.position));
 		else
 			aiAnimator.SetFloat ("distanceFromObjective", -1f);
+
+		if(dangerousCubes.Count != 0)
+			aiAnimator.SetFloat ("closerDangerousCubeDistance", Vector3.Distance (dangerousCubes [0].transform.position, transform.position));
+		else
+			aiAnimator.SetFloat ("closerDangerousCubeDistance", -1f);
+
+		if(playerTarget != null)
+			aiAnimator.SetFloat ("playerTargetDistance", Vector3.Distance (playerTarget.position, transform.position));
+		else
+			aiAnimator.SetFloat ("playerTargetDistance", -1f);
+
+		if(cubeTarget != null)
+			aiAnimator.SetFloat ("cubeTargetDistance", Vector3.Distance (cubeTarget.position, transform.position));
+		else
+			aiAnimator.SetFloat ("cubeTargetDistance", -1f);
 	}
 
 	protected override void FixedUpdate ()
@@ -328,4 +362,13 @@ public class AIGameplay : PlayersGameplay
 		if(closerCubes.Contains (holdMovableTransform.gameObject))
 			closerCubes.Remove (holdMovableTransform.gameObject);
 	}
+}
+
+[System.Serializable]
+public class AIRandomAngle
+{
+	[Range (0, 45)]
+	public float randomAngleMin;
+	[Range (0, 45)]
+	public float randomAngleMax;
 }

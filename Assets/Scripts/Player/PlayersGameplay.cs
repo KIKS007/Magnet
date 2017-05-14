@@ -370,8 +370,6 @@ public class PlayersGameplay : MonoBehaviour
 	#region Cubes Methods
     public virtual void Shoot()
     {
-		Debug.Log ("Shoot");
-
 		holdState = HoldState.CanHold;
 		playerState = PlayerState.None;
 
@@ -424,8 +422,6 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void OnHoldMovable(GameObject movable)
     {
-		Debug.Log ("Get Movable");
-
 		gettingMovable = true;
         
 		holdState = HoldState.Holding;
@@ -458,8 +454,6 @@ public class PlayersGameplay : MonoBehaviour
             OnHold();
 
 		gettingMovable = false;
-
-		Debug.Log ("Get Movable Done");
     }
 
 	protected void SetMagnetPointPosition (GameObject movable)
@@ -567,13 +561,9 @@ public class PlayersGameplay : MonoBehaviour
     {
 		playerState = PlayerState.Stunned;
 
-		Debug.Log ("Stunned");
-
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
 			holdState = HoldState.CannotHold;
-
-			Debug.Log ("Shoot Stunned");
 
 			yield return new WaitWhile(() => gettingMovable == true);
 			
