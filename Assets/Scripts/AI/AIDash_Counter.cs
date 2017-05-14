@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class AIDash_Counter : AIComponent 
 {
@@ -10,6 +11,9 @@ public class AIDash_Counter : AIComponent
 
 	[Header ("Random")]
 	public AIRandomAngle[] randomAngles = new AIRandomAngle[3];
+
+	[Header ("Delay")]
+	public Vector2 randomDelay = new Vector2 (0.05f, 0.5f);
 
 	protected override void OnEnable ()
 	{
@@ -35,7 +39,7 @@ public class AIDash_Counter : AIComponent
 
 		direction.Normalize ();
 
-		AIScript.StartCoroutine ("Dash");
+		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash"));
 	}
 
 	void Update ()
