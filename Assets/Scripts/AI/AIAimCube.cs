@@ -25,21 +25,31 @@ public class AIAimCube : AIAim
 
 	void SetTarget ()
 	{
-		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Movable")
+		if (AIScript.cubeTarget != null)
 		{
-			target = AIScript.currentMovementTarget;
+			target = AIScript.cubeTarget;
 			return;
 		}
-
-		if(target == null  && AIScript.closerCubes.Count > 0)
+		else
 		{
-			if(AIScript.closerCubes.Count > 1)
-				target = AIScript.closerCubes [Random.Range (0, 4)].transform;
-			else
-				target = AIScript.closerCubes [0].transform;
 
-			StartCoroutine (ChangeTarget (target));
 		}
+
+//		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Movable")
+//		{
+//			target = AIScript.currentMovementTarget;
+//			return;
+//		}
+//
+//		if(target == null  && AIScript.closerCubes.Count > 0)
+//		{
+//			if(AIScript.closerCubes.Count > 1)
+//				target = AIScript.closerCubes [Random.Range (0, 4)].transform;
+//			else
+//				target = AIScript.closerCubes [0].transform;
+//
+//			StartCoroutine (ChangeTarget (target));
+//		}
 	}
 
 	IEnumerator ChangeTarget (Transform previousTarget)

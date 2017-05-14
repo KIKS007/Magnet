@@ -25,6 +25,8 @@ public class AIMovement_Temporize : AIComponent
 
 	void Update ()
 	{
+		//return;
+
 		if (!AIScript.movementLayerEnabled)
 			return;
 		

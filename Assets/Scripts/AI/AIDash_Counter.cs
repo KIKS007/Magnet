@@ -35,9 +35,9 @@ public class AIDash_Counter : AIComponent
 
 		Vector3 direction = Vector3.zero - transform.position;
 
+		AIScript.movement = direction.normalized;
+			
 		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
-
-		direction.Normalize ();
 
 		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash"));
 	}

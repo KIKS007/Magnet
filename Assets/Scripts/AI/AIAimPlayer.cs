@@ -35,21 +35,21 @@ public class AIAimPlayer : AIAim
 			
 		}
 
-		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Player")
-		{
-			target = AIScript.currentMovementTarget;
-			return;
-		}
-
-		if(target == null && AIScript.closerPlayers.Count > 0)
-		{
-			if(AIScript.closerPlayers.Count > 1)
-				target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
-			else
-				target = AIScript.closerPlayers [0].transform;
-
-			StartCoroutine (ChangeTarget (target));
-		}
+//		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Player")
+//		{
+//			target = AIScript.currentMovementTarget;
+//			return;
+//		}
+//
+//		if(target == null && AIScript.closerPlayers.Count > 0)
+//		{
+//			if(AIScript.closerPlayers.Count > 1)
+//				target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
+//			else
+//				target = AIScript.closerPlayers [0].transform;
+//
+//			StartCoroutine (ChangeTarget (target));
+//		}
 	}
 
 	IEnumerator ChangeTarget (Transform previousTarget)

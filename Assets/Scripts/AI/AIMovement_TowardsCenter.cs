@@ -11,6 +11,6 @@ public class AIMovement_TowardsCenter : AIMovement_Towards
 		
 		base.OnEnable ();
 
-		AIScript.currentMovementTarget = null;
+		target = null;
 	}
 }

@@ -17,7 +17,6 @@ public class AIGameplay : PlayersGameplay
 	public List<GameObject> thrownDangerousCubes = new List<GameObject> ();
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
 	public List<GameObject> objectives = new List<GameObject> ();
-	public Transform currentMovementTarget;
 
 	[Header ("AI Target")]
 	public Transform cubeTarget;
@@ -69,6 +68,8 @@ public class AIGameplay : PlayersGameplay
 
 	protected override void OnEnable ()
 	{
+		movement = Vector3.zero;
+
 		closerPlayers.Clear ();
 		closerCubes.Clear ();
 
@@ -112,7 +113,10 @@ public class AIGameplay : PlayersGameplay
 		closerPlayers = closerPlayers.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
 
 		closerCubes.Clear ();
-		closerCubes.AddRange (GlobalVariables.Instance.AllMovables);
+
+		foreach (GameObject g in GlobalVariables.Instance.AllMovables)
+			if (g.tag != "DeadCube")
+				closerCubes.Add (g);
 
 		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
 
@@ -169,22 +173,15 @@ public class AIGameplay : PlayersGameplay
 		aiAnimator.SetBool ("hasPlayerTarget", playerTarget != null);
 		aiAnimator.SetBool ("hasCubeTarget", cubeTarget != null);
 
-		aiAnimator.SetInteger ("dangerousCubes", thrownDangerousCubes.Count);
+		aiAnimator.SetInteger ("thrownDangerousCubes", thrownDangerousCubes.Count);
+
+		aiAnimator.SetInteger ("attractedCubes", cubesAttracted.Count);
+		aiAnimator.SetInteger ("repulsedCubes", cubesRepulsed.Count);
 
 		aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
 		aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
 
 		aiAnimator.SetFloat ("distanceFromCenter", Vector3.Distance (Vector3.zero, transform.position));
-
-		if(currentMovementTarget != null)
-			aiAnimator.SetFloat ("distanceFromMovementTarget", Vector3.Distance (currentMovementTarget.position, transform.position));
-		else
-			aiAnimator.SetFloat ("distanceFromMovementTarget", Vector3.Distance (Vector3.zero, transform.position));
-
-		if(objectives.Count != 0 && objectives [0] != null)
-			aiAnimator.SetFloat ("distanceFromObjective", Vector3.Distance (objectives [0].transform.position, transform.position));
-		else
-			aiAnimator.SetFloat ("distanceFromObjective", -1f);
 
 		if(dangerousCubes.Count != 0)
 			aiAnimator.SetFloat ("closerDangerousCubeDistance", Vector3.Distance (dangerousCubes [0].transform.position, transform.position));
@@ -254,12 +251,6 @@ public class AIGameplay : PlayersGameplay
 		{
 			gameObject.SetActive(false);
 		}
-	}
-
-	public override void Shoot ()
-	{
-		if(holdState == HoldState.Holding)
-			base.Shoot ();
 	}
 
 	public override IEnumerator Dash ()

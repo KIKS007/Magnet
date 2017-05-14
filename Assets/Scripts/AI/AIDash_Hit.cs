@@ -22,6 +22,7 @@ public class AIDash_Hit : AIComponent
 		
 		base.OnEnable ();
 
+
 		if (Random.Range (0, 100) > hitChances [(int)AIScript.aiLevel])
 			return;
 

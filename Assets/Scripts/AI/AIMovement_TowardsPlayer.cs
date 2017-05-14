@@ -30,6 +30,17 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 		AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
 	}
 
+	protected override void Update ()
+	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
+		if(target == null)
+			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
+
+		base.Update ();
+	}
+
 	protected override void OnDisable ()
 	{
 		AIScript.playerTarget = null;

@@ -397,6 +397,9 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void Attraction(GameObject movable)
 	{
+		if (movable.tag == "HoldMovable")
+			cubesAttracted.Remove (movable);
+
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
@@ -410,6 +413,9 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void Repulsion(GameObject movable)
     {
+		if (movable.tag == "HoldMovable")
+			cubesAttracted.Remove (movable);
+		
 		playerState = PlayerState.Repulsing;
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;

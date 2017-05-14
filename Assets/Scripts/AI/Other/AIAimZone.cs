@@ -26,27 +26,29 @@ public class AIAimZone : MonoBehaviour
 		};
 	}
 
-	void OnTriggerEnter(Collider collider){
+	void OnTriggerStay (Collider collider){
 		if(collider.tag == "Player" || collider.tag == "Movable")
 		{
 			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
 				return;
-			
+
+			AIScript.objectives.Clear ();
+
 			AIScript.objectives.Add (collider.gameObject);
 			Refresh ();
 		}
 	}
 
-	void OnTriggerExit(Collider collider){
-		if(collider.tag == "Player" || collider.tag == "Movable")
-		{
-			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
-				return;
-			
-			AIScript.objectives.Remove (collider.gameObject);
-			Refresh ();
-		}
-	}
+//	void OnTriggerExit(Collider collider){
+//		if(collider.tag == "Player" || collider.tag == "Movable")
+//		{
+//			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
+//				return;
+//			
+//			AIScript.objectives.Remove (collider.gameObject);
+//			Refresh ();
+//		}
+//	}
 
 	void Refresh()
 	{

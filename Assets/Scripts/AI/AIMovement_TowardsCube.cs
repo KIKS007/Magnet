@@ -31,6 +31,17 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 		AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
 	}
 
+	protected override void Update ()
+	{
+		if (!AIScript.movementLayerEnabled)
+			return;
+		
+		if(target == null)
+			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
+
+		base.Update ();
+	}
+
 	protected override void OnDisable ()
 	{
 		AIScript.cubeTarget = null;

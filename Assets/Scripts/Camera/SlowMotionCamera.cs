@@ -19,6 +19,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public event EventHandler OnEndGameSlowMotionStop;
 
 	public Ease easetype;
+	public bool slowMoEnabled = true;
 
 	[Header ("SlowMotion InGame")]
 	//the factor used to slow down time
@@ -83,7 +84,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	void Awake ()
 	{
-		Time.timeScale = 1f;
+		if (slowMoEnabled)
+			Time.timeScale = 1f;
+
 		initialTimeScale = Time.timeScale;
 		initialFixedDelta = Time.fixedDeltaTime;
 		initialMaximumDelta = Time.maximumDeltaTime;
@@ -121,6 +124,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StartSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+		
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
 		DOTween.Kill ("StopSlowMotion");
 
@@ -180,6 +186,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StopSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+
 		//Debug.Log("Undo Slomo !");
 
 		if (OnSlowMotionStop != null)
@@ -213,6 +222,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StartPauseSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
 		DOTween.Kill ("StopSlowMotion");
 
@@ -244,6 +256,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StopPauseSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+
 		//Debug.Log("Undo Slomo !");
 
 		if (OnPauseSlowMotionStop != null)
@@ -274,6 +289,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StartEndGameSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+
 		StopAllCoroutines ();
 		DOTween.Kill ("StopSlowMotion");
 
@@ -328,6 +346,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void StopEndGameSlowMotion ()
 	{
+		if (!slowMoEnabled)
+			return;
+
 		//Debug.Log("Undo Slomo !");
 
 		if (OnEndGameSlowMotionStop != null)
@@ -391,6 +412,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	void UnityVignetting (bool enable)
 	{
+		if (!slowMoEnabled)
+			return;
+		
 		if(enable)
 		{
 			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, vignettingIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
@@ -407,6 +431,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	void RGBSplit (bool enable)
 	{
+		if (!slowMoEnabled)
+			return;
+		
 		if(enable)
 			DOTween.To(()=> gameObject.GetComponent<RGBSplit>().Amount, x=> gameObject.GetComponent<RGBSplit>().Amount =x, rgbAmount, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 
@@ -417,6 +444,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	void LensDistorsionBlur (bool enable)
 	{
+		if (!slowMoEnabled)
+			return;
+		
 		if(enable)
 		{
 			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Distortion, x=> gameObject.GetComponent<LensDistortionBlur>().Distortion =x, distortion, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
@@ -434,6 +464,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	void ContrastVignette (bool enable)
 	{
+		if (!slowMoEnabled)
+			return;
+		
 		if(enable)
 			DOTween.To(()=> gameObject.GetComponent<ContrastVignette>().Darkness, x=> gameObject.GetComponent<ContrastVignette>().Darkness =x, darkness, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
 
@@ -443,6 +476,9 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public void ContrastVignette (Vector3 worldPosition)
 	{
+		if (!slowMoEnabled)
+			return;
+
 		if(focusVignetteEnabled)
 		{
 			Vector2 viewportPosition = GetComponent<Camera> ().WorldToViewportPoint (worldPosition);
