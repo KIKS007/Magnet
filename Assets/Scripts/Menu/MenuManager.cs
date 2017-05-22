@@ -222,7 +222,7 @@ public class MenuManager : Singleton <MenuManager>
 	void CheckNothingSelected ()
 	{
 		if(eventSyst.currentSelectedGameObject == null && currentMenu != null && !isTweening)
-			SelectPreviousElement (currentMenu);
+			StartCoroutine (SelectPreviousElement (currentMenu));
 	}
 
 	void GamepadDisconnected ()
@@ -1038,7 +1038,7 @@ public class MenuManager : Singleton <MenuManager>
 			cameraMovement.StartCoroutine ("NewMenuPosition");
 			//cameraMovement.StartCoroutine ("PausePosition");
 
-			yield return new WaitForSecondsRealtime(cameraMovement.movementDuration - 0.5f);
+			yield return new WaitForSecondsRealtime(cameraMovement.newMovementDuration - 0.5f);
 
 			ShowMenu (mainMenuScript);
 		}
@@ -1102,7 +1102,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		LoadModeManager.Instance.LoadRandomScene ();
 
-		yield return new WaitForSecondsRealtime (cameraMovement.loadingMovementDuration * 2);
+		yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 2);
 
 		yield return new WaitForSecondsRealtime(durationToHide);
 
@@ -1123,7 +1123,7 @@ public class MenuManager : Singleton <MenuManager>
 
 		LoadModeManager.Instance.LoadRandomCocktailScene ();
 
-		yield return new WaitForSecondsRealtime (cameraMovement.loadingMovementDuration * 2);
+		yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 2);
 
 		yield return new WaitForSecondsRealtime(durationToHide);
 

@@ -137,7 +137,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(instantly)
 		{
 			cameraMovement.StartCoroutine ("NewRestartRotation");
-			yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 0.5f);
+			yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 0.15f);
 		}
 
 		switch(GlobalVariables.Instance.ModeSequenceType)
