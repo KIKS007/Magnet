@@ -15,10 +15,13 @@ public class SoundsManager : Singleton<SoundsManager>
 	public PlaylistController playlistCont;
 
 	[Header ("Loaded Musics")]
+	public bool loadingMusics = false;
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
 	[Header ("Low Pass")]
+	public bool lowPassEnabled = true;
+	public Toggle lowPassToggle;
 	public float lowPassTweenDuration;
 	[Range (10, 22000)]
 	public float startScreenLowPass;
@@ -28,13 +31,11 @@ public class SoundsManager : Singleton<SoundsManager>
 	public float gameOverLowPass;
 
 	[Header ("High Pass")]
+	public bool highPassEnabled = true;
+	public Toggle highPassToggle;
 	public float highPassTweenDuration;
 	[Range (10, 22000)]
 	public float sloMoHighPass;
-
-	[Header ("Distortion")]
-	[Range (0, 1)]
-	public float distortion = 0.08f;
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -98,12 +99,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	[SoundGroupAttribute]
 	public string soundsVolumeTest;
 
-	[Header ("Slow Mo Effect")]
-	public bool slowMoEffectMusicEnabled = false;
-	public Toggle toggleEnableSloMoEffect;
-	public GameObject playListSource;
-	public float timeScaleRatio = 1;
-	public float slowMotweenDuration;
 
 	private float initialSoundsVolume;
 	private float initialPlaylistVolume;
@@ -119,6 +114,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
+	private MasterAudio.Playlist loadedMusicsPlaylist;
 
 	private SlowMotionCamera slowMo;
 
@@ -127,6 +123,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void Start ()
 	{
+		loadedMusicsPlaylist = MasterAudio.GrabPlaylist ("Loaded Musics", false);
+
 		LoadMusics ();
 
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
@@ -139,11 +137,6 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		if (PlayerPrefs.HasKey ("SlowMotionEffectEnable") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
-
-		else if(SceneManager.GetActiveScene().name != "Scene Testing")
-		{
-			toggleEnableSloMoEffect.isOn = false;
-		}
 
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
@@ -186,8 +179,17 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
-	void LoadMusics ()
+	public void LoadMusics ()
 	{
+		StartCoroutine (LoadMusicsCoroutine ());
+	}
+
+	IEnumerator LoadMusicsCoroutine ()
+	{
+		loadingMusics = true;
+
+		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
+
 		if (Application.isEditor)
 			loadedMusicsPath = editorLoadedMusicsPath;
 		else
@@ -197,7 +199,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		{
 			Directory.CreateDirectory (loadedMusicsPath);
 			Debug.LogWarning ("Musics folder don't exists!");
-			return;
 		}
 
 		loadedMusics.Clear ();
@@ -211,16 +212,30 @@ public class SoundsManager : Singleton<SoundsManager>
 		if(musicsFiles.Length == 0)
 		{
 			Debug.LogWarning ("No (valid) Musics in folder!");
-			return;
+			yield break;
 		}
 
-		foreach (var s in musicsFiles)
+		for(int i = 0; i < musicsFiles.Length; i++)
 		{
-			if(Path.GetExtension (s.Name).Contains (".mp3"))
-				StartCoroutine (LoadMP3File (s.FullName));
+			if(i != musicsFiles.Length - 1)
+			{
+				if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
+					StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
+				else
+					StartCoroutine (LoadFile (musicsFiles[i].FullName));
+			}
 			else
-				StartCoroutine (LoadFile (s.FullName));
+			{
+				if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
+					yield return StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
+				else
+					yield return StartCoroutine (LoadFile (musicsFiles[i].FullName));
+			}
 		}
+
+		loadingMusics = false;
+
+		Debug.Log ("Loading Musics Done");
 	}
 	
 	bool IsValidFileType (string fileName)
@@ -449,61 +464,69 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
-	public void ToggleSlowMoEffect ()
+	public void ToggleLowPass ()
 	{
-		if(slowMoEffectMusicEnabled == true)
+		if(lowPassEnabled == true)
 		{
-			slowMoEffectMusicEnabled = false;
+			lowPassEnabled = false;
+			ResetLowPass ();
 		}
 		else
 		{
-			slowMoEffectMusicEnabled = true;
+			lowPassEnabled = true;
+		}
+	}
+
+	public void ToggleHighPass ()
+	{
+		if(highPassEnabled == true)
+		{
+			lowPassEnabled = false;
+			ResetLowPass ();
+		}
+		else
+		{
+			highPassEnabled = true;
 		}
 	}
 
 	public void LowPass (float lowPassFrquency, float duration)
 	{
-		if (!slowMoEffectMusicEnabled)
+		if (!lowPassEnabled)
 			return;
 
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void LowPass (float lowPassFrquency)
 	{
-		if (!slowMoEffectMusicEnabled)
+		if (!lowPassEnabled)
 			return;
 
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void ResetLowPass ()
 	{
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void ResetLowPass (float duration)
 	{
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
 	}
 
 	public void HighPass (float frequency)
 	{
-		if (!slowMoEffectMusicEnabled)
+		if (!highPassEnabled)
 			return;
 
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", frequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", distortion, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 	}
 
 	public void ResetHighPass ()
 	{
 		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", 10f, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
-		playlistCont.mixerChannel.audioMixer.DOSetFloat ("Distortion", 0, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
 	}
 		
 	public override void OnDestroy ()
@@ -520,7 +543,8 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		Debug.Log ("Data Saved");
 
-		PlayerPrefs.SetInt ("SlowMotionEffectEnable", slowMoEffectMusicEnabled ? 1 : 0);
+		PlayerPrefs.SetInt ("LowPassEnabled", lowPassEnabled ? 1 : 0);
+		PlayerPrefs.SetInt ("HighPassEnabled", highPassEnabled ? 1 : 0);
 
 		if(soundsMute)
 		{
@@ -550,16 +574,28 @@ public class SoundsManager : Singleton<SoundsManager>
 		Debug.Log ("Data Loaded");
 		loading = true;
 
-		if(PlayerPrefs.GetInt ("SlowMotionEffectEnable") == 1)
+		if(PlayerPrefs.GetInt ("LowPassEnabled") == 1)
 		{
-			slowMoEffectMusicEnabled = true;
-			toggleEnableSloMoEffect.isOn = true;
+			lowPassEnabled = true;
+			lowPassToggle.isOn = true;
 		}
 		else
 		{
-			slowMoEffectMusicEnabled = false;
-			toggleEnableSloMoEffect.isOn = false;
+			lowPassEnabled = false;
+			lowPassToggle.isOn = false;
 		}
+
+		if(PlayerPrefs.GetInt ("HighPassEnabled") == 1)
+		{
+			highPassEnabled = true;
+			highPassToggle.isOn = true;
+		}
+		else
+		{
+			highPassEnabled = false;
+			highPassToggle.isOn = false;
+		}
+
 
 		if(PlayerPrefs.GetInt ("SoundsMute") == 1)
 		{
