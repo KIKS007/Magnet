@@ -75,9 +75,10 @@ public class SlowMotionCamera : MonoBehaviour
 	[HideInInspector]
 	public float initialMaximumDelta;
 
+	[HideInInspector]
 	public int slowMoNumber = 0;
 
-	private float bloomInitialIntensity;
+	public float bloomInitialIntensity;
 
 	[HideInInspector]
 	public MirrorReflection mirrorScript;

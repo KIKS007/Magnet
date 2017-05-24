@@ -36,8 +36,6 @@ public class MenuChoosePlayer : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		Debug.Log ("iii");
-
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId);
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
 
@@ -158,7 +156,7 @@ public class MenuChoosePlayer : MonoBehaviour
 					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = -1;
 		}
 
-		Debug.Log (ReInput.controllers.GetControllerCount (ControllerType.Joystick));
+		//Debug.Log (ReInput.controllers.GetControllerCount (ControllerType.Joystick));
 
 		//Allow to play Alone and choose any character 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 

@@ -5,6 +5,7 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public enum GameStateEnum {Menu, Playing, Paused, EndMode, Loading };
 
@@ -18,6 +19,13 @@ public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Sta
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
+	[PropertyOrder (-1)]
+	[Button] 
+	void DeletePlayersPrefs ()
+	{
+		PlayerPrefs.DeleteAll ();
+	}
+
 	[Header ("Game State")]
 	public GameStateEnum GameState = GameStateEnum.Menu;
 	public bool FirstGameLaunch = true;

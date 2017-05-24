@@ -541,7 +541,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void SavePlayerPrefs ()
 	{
-		Debug.Log ("Data Saved");
+//		Debug.Log ("Data Saved");
 
 		PlayerPrefs.SetInt ("LowPassEnabled", lowPassEnabled ? 1 : 0);
 		PlayerPrefs.SetInt ("HighPassEnabled", highPassEnabled ? 1 : 0);
@@ -571,7 +571,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void LoadPlayersPrefs ()
 	{
-		Debug.Log ("Data Loaded");
+//		Debug.Log ("Data Loaded");
 		loading = true;
 
 		if(PlayerPrefs.GetInt ("LowPassEnabled") == 1)

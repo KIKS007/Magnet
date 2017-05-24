@@ -16,7 +16,6 @@ public class MenuCameraMovement : MonoBehaviour
 
 	[Header ("Bobbing")]
 	public Vector3 bobbingLookTarget;
-	public float bobbingSpeed;
 
 	[Header ("Logo Movements")]
 	public RectTransform menuLogo;

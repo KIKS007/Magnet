@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class ScrollbarValue : MonoBehaviour 
 {
@@ -17,13 +18,13 @@ public class ScrollbarValue : MonoBehaviour
 		if(transform.GetComponentInParent <Scrollbar> ())
 		{
 			scrollbar = transform.GetComponentInParent <Scrollbar> ();
-			scrollbar.onValueChanged.AddListener((float arg0) => text.text = arg0.ToString ());
+			scrollbar.onValueChanged.AddListener((float arg0) => ValueChange(arg0));
 			text.text = scrollbar.value.ToString ();
 		}
 		else if(transform.GetComponentInParent <Slider> ())
 		{
 			slider = transform.GetComponentInParent <Slider> ();
-			slider.onValueChanged.AddListener((float arg0) => text.text = arg0.ToString ());
+			slider.onValueChanged.AddListener((float arg0) => ValueChange(arg0));
 			text.text = slider.value.ToString ();
 		}
 
@@ -31,7 +32,12 @@ public class ScrollbarValue : MonoBehaviour
 
 	void ValueChange (float arg)
 	{
-//		int count = BitConverter.GetBytes(decimal.GetBits(argument)[3])[2];
+		int count = BitConverter.GetBytes(decimal.GetBits((decimal)arg)[3])[2];
+
+		if (count == 0)
+			text.text = arg.ToString ();
+		else
+			text.text = arg.ToString ("F");
 	}
 
 }

@@ -186,7 +186,7 @@ public class ResolutionManager : MonoBehaviour
 
 	void SetResolution (Vector2 res)
 	{
-		Debug.Log ("New Resolution : " + (int)res.x + " x " + (int)res.y);
+		//Debug.Log ("New Resolution : " + (int)res.x + " x " + (int)res.y);
 
 		currentScreenRes = res;
 		Screen.SetResolution ((int)res.x, (int)res.y, fullScreen);
@@ -199,6 +199,8 @@ public class ResolutionManager : MonoBehaviour
 
 	public void ToggleFullscreen()
 	{
+		Debug.Log ("Toggle Full");
+
 		fullScreen = !fullScreen;
 		Screen.SetResolution ((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
 
@@ -207,6 +209,8 @@ public class ResolutionManager : MonoBehaviour
 
 	public void ToggleVsync ()
 	{
+		Debug.Log ("Toggle Sync");
+
 		if (QualitySettings.vSyncCount == 0)
 			QualitySettings.vSyncCount = 1;
 		else
@@ -217,13 +221,15 @@ public class ResolutionManager : MonoBehaviour
 
 	public void Reset ()
 	{
-		if (!fullScreen)
-			ToggleFullscreen ();
+		fullScreen = true;
+		fullscreenToggle.isOn = true;
 
-		if (QualitySettings.vSyncCount == 0)
-			ToggleVsync ();
+		QualitySettings.vSyncCount = 1;
+		vsyncToggle.isOn = true;
 
 		FindResolution ();
+
+		SelectToggle ();
 	}
 
 	IEnumerator CheckFullScreenChange (bool fullscreen)
