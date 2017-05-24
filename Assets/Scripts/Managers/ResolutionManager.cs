@@ -215,6 +215,17 @@ public class ResolutionManager : MonoBehaviour
 		PlayerPrefs.SetInt ("Vsync", QualitySettings.vSyncCount);
 	}
 
+	public void Reset ()
+	{
+		if (!fullScreen)
+			ToggleFullscreen ();
+
+		if (QualitySettings.vSyncCount == 0)
+			ToggleVsync ();
+
+		FindResolution ();
+	}
+
 	IEnumerator CheckFullScreenChange (bool fullscreen)
 	{
 		yield return new WaitUntil (()=> Screen.fullScreen != fullscreen);
