@@ -14,7 +14,15 @@ public class SoundsManager : Singleton<SoundsManager>
 {
 	public PlaylistController playlistCont;
 
+	[Header ("Songs Titles")]
+	public GameObject songTitlePrefab;
+	public GameObject songTitleContentParent;
+	public GameObject loadedSongTitleContentParent;
+	public float initialYPos = -36f;
+	public float gapHeight = 110f;
+
 	[Header ("Loaded Musics")]
+	public Text loadButtonText;
 	public bool loadingMusics = false;
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
@@ -114,7 +122,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
-	private MasterAudio.Playlist loadedMusicsPlaylist;
+	private List<string> loadingMusicsList = new List<string> ();
 
 	private SlowMotionCamera slowMo;
 
@@ -123,8 +131,6 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void Start ()
 	{
-		loadedMusicsPlaylist = MasterAudio.GrabPlaylist ("Loaded Musics", false);
-
 		LoadMusics ();
 
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
@@ -143,7 +149,10 @@ public class SoundsManager : Singleton<SoundsManager>
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
 		GlobalVariables.Instance.OnMenu += ()=> { if(!MenuManager.Instance.startScreen) ResetLowPass(); };
+
 		GlobalVariables.Instance.OnPlaying += ResetLowPass;
+		GlobalVariables.Instance.OnPlaying += ResetHighPass;
+
 		GlobalVariables.Instance.OnPause += ()=> LowPass (pauseLowPass);
 		GlobalVariables.Instance.OnEndMode += ()=> LowPass (gameOverLowPass);
 
@@ -156,6 +165,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		UpdateAudioSettings ();
 
 		LowPass (startScreenLowPass, 0.5f);
+
+		CreateMusicsSongTitle ();
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
@@ -188,6 +199,8 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		loadingMusics = true;
 
+		loadButtonText.text = "Loading...";
+
 		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
 
 		if (Application.isEditor)
@@ -217,25 +230,23 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		for(int i = 0; i < musicsFiles.Length; i++)
 		{
-			if(i != musicsFiles.Length - 1)
-			{
-				if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
-					StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
-				else
-					StartCoroutine (LoadFile (musicsFiles[i].FullName));
-			}
+			loadingMusicsList.Add (musicsFiles[i].FullName);
+
+			if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
+				StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
 			else
-			{
-				if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
-					yield return StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
-				else
-					yield return StartCoroutine (LoadFile (musicsFiles[i].FullName));
-			}
+				StartCoroutine (LoadFile (musicsFiles[i].FullName));
 		}
+
+		yield return new WaitUntil (() => loadingMusicsList.Count == 0);
 
 		loadingMusics = false;
 
-		Debug.Log ("Loading Musics Done");
+		loadButtonText.text = "Load";
+
+		SetGamePlaylist ();
+
+		CreateLoadedMusicsSongTitle ();
 	}
 	
 	bool IsValidFileType (string fileName)
@@ -275,6 +286,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
 		}
+
+		loadingMusicsList.Remove (path);
 	}
 
 	IEnumerator LoadMP3File (string path)
@@ -305,6 +318,69 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
 		}
+
+		loadingMusicsList.Remove (path);
+	}
+
+	void CreateMusicsSongTitle ()
+	{
+		foreach (Transform t in songTitleContentParent.transform)
+			Destroy (t.gameObject, 0.05f);
+
+		for(int i = 0; i < MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count; i++)
+		{
+			Vector3 pos = songTitlePrefab.GetComponent<RectTransform> ().anchoredPosition3D;
+			pos.y = -gapHeight * i + initialYPos;
+			pos.z = 0;
+			
+			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, songTitleContentParent.transform);
+			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
+
+			songTitle.GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = 
+				((int) (MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length / 60)).ToString ("D")
+				+ ":" + 
+				((int)(MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
+		}
+
+		songTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (songTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count * gapHeight);
+	}
+
+	void CreateLoadedMusicsSongTitle ()
+	{
+		foreach (Transform t in loadedSongTitleContentParent.transform)
+			Destroy (t.gameObject, 0.05f);
+
+		for(int i = 0; i < MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count; i++)
+		{
+			Vector3 pos = songTitlePrefab.GetComponent<RectTransform> ().anchoredPosition3D;
+			pos.y = -gapHeight * i + initialYPos;
+			pos.z = 0;
+
+			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, loadedSongTitleContentParent.transform);
+			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
+
+			songTitle.GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = 
+				((int) (MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length / 60)).ToString ("D")
+				+ ":" + 
+				((int)(MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
+		}
+
+		loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count * gapHeight);
+	}
+
+	public void PlayPlaylist (string playlist)
+	{
+		if(playlist == "Game")
+			playLoadedMusics = false;
+
+		else if(playlist == "Loaded Musics")
+			playLoadedMusics = true;
+
+		SetGamePlaylist ();
 	}
 
 	void RandomMusic ()
@@ -347,19 +423,19 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		if(playlistCont.PlaylistName != gamePlaylist)
 		{
-			MasterAudio.ChangePlaylistByName (gamePlaylist, false);
+			if(playlistCont.PlaylistState == PlaylistController.PlaylistStates.Stopped)
+				MasterAudio.StartPlaylist (gamePlaylist);
+			else
+				MasterAudio.ChangePlaylistByName (gamePlaylist, false);
+
 			playlistCont.PlayRandomSong ();
 		}
 	}
 
 	public void SetMenuPlaylist ()
 	{
-		return;
-
-		if(playlistCont.PlaylistName != "Menu Ambient")
-		{
-			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
-		}
+//		if(playlistCont.PlaylistName != "Menu Ambient")
+//			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
 	}
 
 	public void MenuSubmit ()

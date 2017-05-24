@@ -84,8 +84,8 @@ public class GraphicsQualityManager : MonoBehaviour
 
 	void LoadData ()
 	{
-		if(PlayerPrefs.HasKey("QualityLevel"))
-			Debug.Log ("Graphics Data Loaded");
+//		if(PlayerPrefs.HasKey("QualityLevel"))
+//			Debug.Log ("Graphics Data Loaded");
 
 		if(PlayerPrefs.HasKey("QualityLevel"))
 		{
@@ -167,7 +167,7 @@ public class GraphicsQualityManager : MonoBehaviour
 
 	void SaveData ()
 	{
-		Debug.Log ("Graphics Data Saved");
+//		Debug.Log ("Graphics Data Saved");
 
 		PlayerPrefs.SetInt ("AmbientOcclusion", ambiantOcclusionToggle.isOn == true ? 1 : 0);
 		PlayerPrefs.SetInt ("Blur", blurToggle.isOn == true ? 1 : 0);
