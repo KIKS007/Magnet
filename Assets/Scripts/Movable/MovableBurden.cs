@@ -7,7 +7,6 @@ using DG.Tweening;
 public class MovableBurden : MovableScript 
 {
 	[Header ("BURDEN")]
-	public bool targetFinder = false;
 	public PlayerName targetPlayerName;
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
@@ -88,7 +87,9 @@ public class MovableBurden : MovableScript
 			direction.Normalize ();
 			
 			rigidbodyMovable.AddForce(direction * trackSpeed, ForceMode.Impulse);
-			
+
+			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -96,6 +97,8 @@ public class MovableBurden : MovableScript
 	IEnumerator AddSpeed ()
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
+
+		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeed += trackSpeedAdded;
 
@@ -149,6 +152,8 @@ public class MovableBurden : MovableScript
 	IEnumerator WaitToTrackAgain ()
 	{
 		rigidbodyMovable.velocity = Vector3.zero;
+
+		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		yield return new WaitWhile (() => targetPlayer.activeSelf == false);
 
