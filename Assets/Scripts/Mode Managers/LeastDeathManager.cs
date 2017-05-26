@@ -12,7 +12,7 @@ public class LeastDeathManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Death Count")]
-	public int[] deathCount = new int[4];
+	public int[] livesCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
 
 	[Header ("Cubes Spawn")]
@@ -26,9 +26,6 @@ public class LeastDeathManager : MonoBehaviour
 		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
 			return;
 
-		for(int i = 0; i < deathCount.Length; i++)
-			deathCount[i] = 0;
-
 		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
@@ -37,6 +34,11 @@ public class LeastDeathManager : MonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
+		livesCount = new int[GlobalVariables.Instance.NumberOfAlivePlayers];
+
+		for (int i = 0; i < livesCount.Length; i++)
+			livesCount [i] = GlobalVariables.Instance.LivesCount;
+		
 		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
@@ -46,19 +48,45 @@ public class LeastDeathManager : MonoBehaviour
 		if (GlobalVariables.Instance.modeObjective != ModeObjective.LeastDeath)
 			return;
 
-		deathCount [(int)playerName]++;
+		livesCount [(int)playerName]--;
 
-		GlobalMethods.Instance.SpawnDeathText (playerName, player, deathCount [(int)playerName]);
+		//Check Game End
+		int playersCount = 0;
+		int lastPlayer = 0;
 
-		foreach(int death in deathCount)
-			if(death >= GlobalVariables.Instance.LivesCount && !gameEndLoopRunning)
+		for (int i = 0; i < livesCount.Length; i++)
+		{
+			if (livesCount [i] != 0)
 			{
-				gameEndLoopRunning = true;
-				StartCoroutine (GameEnd ());	
+				playersCount++;
+				lastPlayer = i;
 			}
 
-		if(!gameEndLoopRunning)
+		}
+
+		if(playersCount == 1 && gameEndLoopRunning == false)
+		{
+			gameEndLoopRunning = true;
+			StatsManager.Instance.Winner(GlobalVariables.Instance.Players [lastPlayer].GetComponent<PlayersGameplay> ().playerName);
+
+			StartCoroutine (GameEnd ());
+		}
+
+		if(playersCount == 0 && gameEndLoopRunning == false)
+		{
+			gameEndLoopRunning = true;
+			StatsManager.Instance.Winner(WhichPlayer.Draw);
+
+			StartCoroutine (GameEnd ());
+		}
+
+		//Spawn Play if has lives left
+		if(livesCount [(int)playerName] != 0 && !gameEndLoopRunning)
+		{
+			GlobalMethods.Instance.SpawnDeathText (playerName, player, livesCount [(int)playerName]);
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
+		}
+		
 	}
 
 	protected virtual IEnumerator GameEnd ()
@@ -68,8 +96,6 @@ public class LeastDeathManager : MonoBehaviour
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-
-		StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 

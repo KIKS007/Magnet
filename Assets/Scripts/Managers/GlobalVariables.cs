@@ -213,6 +213,38 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			OnModeObjectiveChange ();
 	}
 
+	public void LivesCountChange (int lives)
+	{
+		LivesCount = lives;
+
+		if(lives == 1)
+		{
+			if (modeObjective != ModeObjective.LastMan && OnModeObjectiveChange != null)
+				OnModeObjectiveChange ();
+
+			modeObjective = ModeObjective.LastMan;
+
+			if(lastManManager != null)
+			{
+				lastManManager.gameObject.SetActive (true);
+				leastDeathManager.gameObject.SetActive (false);
+			}
+		}
+		else
+		{
+			if (modeObjective != ModeObjective.LeastDeath && OnModeObjectiveChange != null)
+				OnModeObjectiveChange ();
+
+			modeObjective = ModeObjective.LeastDeath;
+		
+			if(lastManManager != null)
+			{
+				leastDeathManager.gameObject.SetActive (true);
+				lastManManager.gameObject.SetActive (false);
+			}
+		}
+	}
+
 	void GetMovables ()
 	{
 		AllMovables.Clear ();

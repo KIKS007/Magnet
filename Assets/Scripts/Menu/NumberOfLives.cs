@@ -21,9 +21,25 @@ public class NumberOfLives : MonoBehaviour
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 	}
 
+	public void GetValue ()
+	{
+		int value = 0;
+
+		if (!int.TryParse (input.text, out value) || value == 0)
+		{
+			value = 1;
+			input.text = value.ToString ();
+		}
+
+		GlobalVariables.Instance.LivesCountChange (value);
+
+		CheckBounds ();
+	}
+
 	public void Increase ()
 	{
-		GlobalVariables.Instance.LivesCount++;
+		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount + 1);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
 		CheckBounds ();
@@ -31,7 +47,8 @@ public class NumberOfLives : MonoBehaviour
 
 	public void Decrease ()
 	{
-		GlobalVariables.Instance.LivesCount--;
+		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount - 1);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
 		CheckBounds ();

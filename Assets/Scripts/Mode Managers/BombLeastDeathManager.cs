@@ -47,9 +47,6 @@ public class BombLeastDeathManager : LeastDeathManager
 
 		StartCoroutine (Setup ());
 
-		for(int i = 0; i < deathCount.Length; i++)
-			deathCount[i] = 0;
-
 		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
@@ -59,6 +56,11 @@ public class BombLeastDeathManager : LeastDeathManager
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		GlobalVariables.Instance.AllMovables.Remove (bomb);
+
+		livesCount = new int[GlobalVariables.Instance.NumberOfAlivePlayers];
+
+		for (int i = 0; i < livesCount.Length; i++)
+			livesCount [i] = GlobalVariables.Instance.LivesCount;
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
@@ -177,6 +179,9 @@ public class BombLeastDeathManager : LeastDeathManager
 
 		yield return new WaitForSeconds (0.5f);
 
+		if (gameEndLoopRunning)
+			yield break;
+
 		timerText.transform.parent.SetParent (bomb.transform);
 		timerText.transform.parent.transform.localPosition = textLocalPosition;
 		timerText.transform.parent.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
@@ -185,6 +190,9 @@ public class BombLeastDeathManager : LeastDeathManager
 		DOTween.To(()=> timerText.fontSize, x=> timerText.fontSize =x, textInitialSize, 0.2f);
 
 		yield return new WaitForSeconds (1f);
+
+		if (gameEndLoopRunning)
+			yield break;
 
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
 		{

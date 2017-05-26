@@ -23,6 +23,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	[Header ("Loaded Musics")]
 	public Text loadButtonText;
+	public GameObject canTakeTime;
 	public bool loadingMusics = false;
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
@@ -133,6 +134,8 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		LoadMusics ();
 
+		canTakeTime.SetActive (false);
+
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
 
@@ -200,6 +203,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		loadingMusics = true;
 
 		loadButtonText.text = "Loading...";
+		canTakeTime.SetActive (true);
 
 		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
 
@@ -244,6 +248,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		loadingMusics = false;
 
 		loadButtonText.text = "Load";
+		canTakeTime.SetActive (false);
 
 		SetGamePlaylist ();
 
