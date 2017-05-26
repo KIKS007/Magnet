@@ -1,18 +1,35 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using DG.Tweening;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.OdinInspector;
 
-public enum MenuButtonType {Basic, StartMode};
+public enum MenuButtonType {Basic, StartMode, Static};
 
 public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitHandler, ISelectHandler, IDeselectHandler
 {
 	public MenuButtonType menuButtonType = MenuButtonType.Basic;
 
+	[ShowIfAttribute ("StartMode")]
 	[Header ("Start Mode")]
 	public WhichMode whichMode;
+
+	bool StartMode ()
+	{
+		return menuButtonType != MenuButtonType.Basic;
+	}
+
+	[ShowIfAttribute ("StaticButton")]
+	[Header ("Show Menu")]
+	public MenuComponent whichMenu;
+
+	bool StaticButton ()
+	{
+		return menuButtonType == MenuButtonType.Static;
+	}
 
 	[Header ("Secondary Content")]
 	public bool showOnSelect = true;
@@ -39,6 +56,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	void OnEnable ()
 	{
+		if (menuComponentParent == null)
+			menuComponentParent = transform.GetComponentInParent<MenuComponent> ();
+
 		hasBeenSubmit = false;
 		for(int i = 0; i < secondaryContentList.Count; i++)
 		{
@@ -56,13 +76,17 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		{
 			hasBeenSubmit = true;
 
-			menuComponentParent.Submit (buttonIndex);
+			if(menuButtonType != MenuButtonType.Static)
+				menuComponentParent.Submit (buttonIndex);
+			else
+				menuComponentParent.Submit (whichMenu);
+
 			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
 			if(showOnSubmit)
 				ShowSecondaryContent ();
 
-			if(menuButtonType == MenuButtonType.StartMode)
+			if(menuButtonType != MenuButtonType.Basic)
 				MenuManager.Instance.MenuLoadMode (whichMode);
 
 			hasBeenSubmit = false;
@@ -88,7 +112,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 			if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
 				menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
-			if(menuButtonType == MenuButtonType.StartMode)
+			if(menuButtonType != MenuButtonType.Basic)
 				MenuManager.Instance.MenuLoadMode (whichMode);
 
 			hasBeenSubmit = false;

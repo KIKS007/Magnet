@@ -279,6 +279,11 @@ public class MenuManager : Singleton <MenuManager>
 		StartCoroutine (SubmitMenuCoroutine (whichMenu, submitButton));
 	}
 
+	public void SubmitMenu (MenuComponent whichMenu)
+	{
+		StartCoroutine (SubmitMenuCoroutine (whichMenu));
+	}
+
 	IEnumerator SubmitMenuCoroutine (MenuComponent whichMenu, int submitButton)
 	{
 		menuTweening = true;
@@ -288,6 +293,27 @@ public class MenuManager : Singleton <MenuManager>
 		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.MenuPos | WhichOverrideSettings.ButtonPos | WhichOverrideSettings.ContentPos);
 
 		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript, MenuAnimationType.UnderSubmit, submitButton));
+
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.All);
+
+		yield return StartCoroutine (ShowMenuCoroutine (whichMenu, MenuAnimationType.Submit));
+
+		ResetOverrideSettings (WhichOverrideSettings.All);
+
+		menuTweening = false;
+	}
+
+	IEnumerator SubmitMenuCoroutine (MenuComponent whichMenu)
+	{
+		menuTweening = true;
+		PlaySubmitSound ();
+
+		CheckOverrideSettings (whichMenu, WhichOverrideSettings.HeaderPos);
+		CheckOverrideSettings (whichMenu.aboveMenuScript, WhichOverrideSettings.MenuPos | WhichOverrideSettings.ButtonPos | WhichOverrideSettings.ContentPos);
+
+		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript));
 
 		ResetOverrideSettings (WhichOverrideSettings.All);
 
@@ -366,6 +392,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//Remove Current Header From List
+		if(headerButtonsList.Count > 0)
 		headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
 
 		ShowPreviousHeader (whichMenu, cancelButton, delay);

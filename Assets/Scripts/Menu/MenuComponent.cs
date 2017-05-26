@@ -355,6 +355,14 @@ public class MenuComponent : MonoBehaviour
 		MenuManager.Instance.SubmitMenu (this, buttonIndex);
 	}
 
+	public void Submit (MenuComponent target)
+	{
+		if (aboveMenuScript != null)
+			aboveMenuScript.OnUnderMenuSubmit ();
+
+		MenuManager.Instance.SubmitMenu (target);
+	}
+
 	public void Cancel ()
 	{
 		if(menuComponentType == MenuComponentType.BasicMenu)
