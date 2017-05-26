@@ -145,8 +145,7 @@ public class MovableBurden : MovableScript
 		StopCoroutine (GetToPlayerPosition ());
 		StopCoroutine (AddSpeed ());
 
-		if (GlobalVariables.Instance.modeObjective == ModeObjective.LeastDeath)
-			StartCoroutine (WaitToTrackAgain ());
+		StartCoroutine (WaitToTrackAgain ());
 	}
 
 	IEnumerator WaitToTrackAgain ()

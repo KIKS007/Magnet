@@ -37,13 +37,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<WhichMode> lastPlayedModes = new List<WhichMode>();
 	public List<WhichMode> selectedCocktailModes = new List<WhichMode>();
 	public List<WhichMode> currentCocktailModes = new List<WhichMode>();
-
-	[Header ("Mode Objective")]
-	public ModeObjective modeObjective = ModeObjective.LastMan;
-	[HideInInspector]
 	public LastManManager lastManManager;
-	[HideInInspector]
-	public LeastDeathManager leastDeathManager;
 
 	[Header ("Mode Sequence")]
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
@@ -159,21 +153,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GetMovables ();
 
 		if (levelLoaded != WhichMode.Tutorial)
-		{
 			lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
-			leastDeathManager = GameObject.FindGameObjectWithTag("LeastDeathManager").GetComponent<LeastDeathManager> ();
-			
-			if (modeObjective == ModeObjective.LastMan)
-			{
-				lastManManager.gameObject.SetActive (true);
-				leastDeathManager.gameObject.SetActive (false);
-			}
-			else
-			{
-				leastDeathManager.gameObject.SetActive (true);
-				lastManManager.gameObject.SetActive (false);
-			}
-		}
 
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
@@ -185,64 +165,20 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GameState = gameState;
 	}
 
-	public void ModeObjectiveChange (Toggle toggle)
-	{
-		if(toggle.isOn)
-			modeObjective = ModeObjective.LeastDeath;
-		else
-			modeObjective = ModeObjective.LastMan;
-			
-		if (modeObjective == ModeObjective.LastMan)
-		{
-			if(lastManManager != null)
-			{
-				lastManManager.gameObject.SetActive (true);
-				leastDeathManager.gameObject.SetActive (false);
-			}
-		}
-		else
-		{
-			if(lastManManager != null)
-			{
-				leastDeathManager.gameObject.SetActive (true);
-				lastManManager.gameObject.SetActive (false);
-			}
-		}
-
-		if (OnModeObjectiveChange != null)
-			OnModeObjectiveChange ();
-	}
-
 	public void LivesCountChange (int lives)
 	{
 		LivesCount = lives;
 
-		if(lives == 1)
-		{
-			if (modeObjective != ModeObjective.LastMan && OnModeObjectiveChange != null)
-				OnModeObjectiveChange ();
+//		foreach (GameObject g in Players)
+//			g.GetComponent<PlayersGameplay> ().livesCount = 0;
+//
+//		foreach (GameObject g in EnabledPlayersList)
+//			g.GetComponent<PlayersGameplay> ().livesCount = LivesCount;
+//
+//		ListPlayers ();
 
-			modeObjective = ModeObjective.LastMan;
-
-			if(lastManManager != null)
-			{
-				lastManManager.gameObject.SetActive (true);
-				leastDeathManager.gameObject.SetActive (false);
-			}
-		}
-		else
-		{
-			if (modeObjective != ModeObjective.LeastDeath && OnModeObjectiveChange != null)
-				OnModeObjectiveChange ();
-
-			modeObjective = ModeObjective.LeastDeath;
-		
-			if(lastManManager != null)
-			{
-				leastDeathManager.gameObject.SetActive (true);
-				lastManManager.gameObject.SetActive (false);
-			}
-		}
+		if (OnLivesCountChange != null)
+			OnLivesCountChange ();
 	}
 
 	void GetMovables ()
@@ -362,9 +298,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		//ALIVE PLAYERS
 		AlivePlayersList.Clear ();
 
-		for (int i = 0; i < Players.Length; i++)
+		for(int i = 0; i < Players.Length; i++)
 		{
-			if (Players [i] != null && Players [i].activeSelf == true)
+			if (Players [i] != null && Players [i].GetComponent<PlayersGameplay> ().livesCount != 0)
 				AlivePlayersList.Add (Players [i]);
 		}
 
@@ -479,7 +415,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnMenu;
 
 	public event EventHandler OnStartupDone;
-	public event EventHandler OnModeObjectiveChange;
+	public event EventHandler OnLivesCountChange;
 	public event EventHandler OnCocktailModesChange;
 	public event EventHandler OnSequenceChange;
 

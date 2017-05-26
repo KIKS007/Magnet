@@ -1,21 +1,21 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 public class BombManager : LastManManager 
 {
 	[Header ("Bomb Settings")]
 	public GameObject bomb;
-	public int playersNumber;
-	public int firstBombTimer = 300;
-	public int secondBombTimer = 300;
-	public int thirdBombTimer = 300;
 	public float timeBeforeFirstSpawn = 1;
 	public float timeBetweenSpawn = 2;
+
+	[Header ("Timer Settings")]
+	public float currentTimer;
+	public Vector2 timerLimits = new Vector2 (20, 5);
+	public int eachBombReducedTime = 1;
 
 	[Header ("Timer")]
 	public Text timerText;
@@ -39,13 +39,8 @@ public class BombManager : LastManManager
 	// Use this for initialization
 	protected override void OnEnable () 
 	{
-		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
-			return;
-		
 		bomb.gameObject.SetActive(false);
-
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Clear ();
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (bomb);
+		bombScript = bomb.GetComponent<MovableBomb> ();
 
 		StartCoroutine (Setup ());
 
@@ -59,11 +54,16 @@ public class BombManager : LastManManager
 
 		GlobalVariables.Instance.AllMovables.Remove (bomb);
 
+		livesCount = new int[GlobalVariables.Instance.NumberOfAlivePlayers];
+
+		for (int i = 0; i < livesCount.Length; i++)
+			livesCount [i] = GlobalVariables.Instance.LivesCount;
+
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
-	protected virtual IEnumerator Setup ()
+	protected IEnumerator Setup ()
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
@@ -73,20 +73,8 @@ public class BombManager : LastManManager
 
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 
-		playersNumber = GlobalVariables.Instance.NumberOfPlayers;
-
-		switch(playersNumber)
-		{
-		case 4:
-			timer = firstBombTimer;
-			break;
-		case 3:
-			timer = secondBombTimer;
-			break;
-		case 2:
-			timer = thirdBombTimer;
-			break;
-		}
+		timer = timerLimits.x;
+		currentTimer = timerLimits.x;
 
 		string seconds = Mathf.Floor(timer % 60).ToString("00");
 		timerClock = seconds;
@@ -101,43 +89,13 @@ public class BombManager : LastManManager
 	}
 
 	// Update is called once per frame
-	protected override void Update () 
+	protected void Update () 
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && bomb.activeSelf == true && !lastSeconds && timer < 4)
 		{
-			if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
-			{
-				gameEndLoopRunning = true;
-				StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-				
-				StopAllCoroutines ();
-				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
-				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
-				bombScript.StopAllCoroutines ();
-
-				StartCoroutine (GameEnd ());
-			}
-			
-			if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
-			{
-				gameEndLoopRunning = true;
-				StatsManager.Instance.Winner(WhichPlayer.Draw);
-				
-				StopAllCoroutines ();
-				MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
-				MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
-				bombScript.StopAllCoroutines ();
-
-				StartCoroutine (GameEnd ());
-			}
-			
-			if(bomb.activeSelf == true && !lastSeconds && timer < 4)
-			{
-				lastSeconds = true;
-				MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
-			}
+			lastSeconds = true;
+			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.lastSecondsSound, bomb.transform);
 		}
-
 	}
 
 	IEnumerator Timer ()
@@ -152,7 +110,6 @@ public class BombManager : LastManManager
 			timerClock = seconds;
 
 			timerText.text = timerClock;
-		
 
 			StartCoroutine (Timer ());
 		}
@@ -160,42 +117,27 @@ public class BombManager : LastManManager
 		else
 		{
 			timerText.text = "00";
-			
+
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeTrackingSound, bomb.transform);
 			bombScript.StartCoroutine ("Explode");
-	
 
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
 
-			playersNumber--;
+			if (gameEndLoopRunning)
+				yield break;
 
-			switch(playersNumber)
-			{
-			case 4:
-				timer = firstBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			currentTimer -= eachBombReducedTime;
 
-				StartCoroutine (Timer ());
-				break;
-			case 3:
-				timer = secondBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			if(currentTimer < timerLimits.y)
+				currentTimer = timerLimits.y;
 
-				StartCoroutine (Timer ());
-				break;
-			case 2:
-				timer = thirdBombTimer;
-				StartCoroutine (SpawnBomb ());
-				yield return new WaitWhile (() => bombScript.playerHolding == null);
+			timer = currentTimer;
 
-				StartCoroutine (Timer ());
-				break;
-			case 1:
-				StartCoroutine(GameEnd ());
-				break;
-			}
+			StartCoroutine (SpawnBomb ());
+
+			yield return new WaitWhile (() => bombScript.playerHolding == null);
+
+			StartCoroutine (Timer ());
 
 			string seconds = Mathf.Floor(timer % 60).ToString("00");
 			timerClock = seconds;
@@ -234,6 +176,9 @@ public class BombManager : LastManManager
 
 		yield return new WaitForSeconds (0.5f);
 
+		if (gameEndLoopRunning)
+			yield break;
+
 		timerText.transform.parent.SetParent (bomb.transform);
 		timerText.transform.parent.transform.localPosition = textLocalPosition;
 		timerText.transform.parent.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
@@ -243,13 +188,23 @@ public class BombManager : LastManManager
 
 		yield return new WaitForSeconds (1f);
 
+		if (gameEndLoopRunning)
+			yield break;
+
 		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
 		{
 			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
 				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
-			
+
 			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
+				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
 		}
+	}
+
+	protected override IEnumerator GameEnd ()
+	{
+		StopCoroutine (Timer ());
+
+		return base.GameEnd ();
 	}
 }

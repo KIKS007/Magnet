@@ -27,11 +27,13 @@ public class MovableDeadCube : MovableScript
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
+
+		ToDeadlyColor (0.01f);
 	}
 
 	protected override void Start ()
 	{
-		ToDeadlyColor ();
+		ToDeadlyColor (0.01f);
 	}
 
 	protected override void Update ()

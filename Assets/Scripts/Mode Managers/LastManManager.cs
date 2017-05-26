@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.SceneManagement;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class LastManManager : MonoBehaviour 
 {
@@ -9,17 +11,21 @@ public class LastManManager : MonoBehaviour
 	public WhichMode whichMode;
 	public float timeBeforeEndGame = 2;
 
+	[Header ("Death Count")]
+	public int[] livesCount = new int[4];
+	public float timeBeforePlayerRespawn = 2;
+
 	[Header ("Cubes Spawn")]
 	public bool spawnCubes = true;
 	public float durationBetweenSpawn = 0.1f;
 
+	[Header ("Dead Cube")]
+	public bool playerDeadCube = true;
+
 	protected bool gameEndLoopRunning = false;
 
-	protected virtual void OnEnable ()
+	protected virtual void OnEnable () 
 	{
-		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
-			return;
-
 		StopCoroutine (WaitForBeginning ());
 		StartCoroutine (WaitForBeginning ());
 	}
@@ -28,47 +34,76 @@ public class LastManManager : MonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
+
+		livesCount = new int[GlobalVariables.Instance.NumberOfPlayers];
+
+		for (int i = 0; i < livesCount.Length; i++)
+			livesCount [i] = GlobalVariables.Instance.LivesCount;
+		
 		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
 
-	// Update is called once per frame
-	protected virtual void Update () 
+	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
 	{
-		if (GlobalVariables.Instance.modeObjective != ModeObjective.LastMan)
-			return;
+		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
+
+		livesCount [(int)playerName]--;
+
+		playerScript.livesCount--;
 		
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			FindPlayers ();
-	}
+		GlobalVariables.Instance.ListPlayers ();
 
-	protected virtual void FindPlayers ()
-	{
-		if(GlobalVariables.Instance.NumberOfAlivePlayers == 1 && gameEndLoopRunning == false)
+		//Check Game End
+		int playersCount = 0;
+		int lastPlayer = 0;
+
+		for (int i = 0; i < livesCount.Length; i++)
 		{
-			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(GlobalVariables.Instance.AlivePlayersList [0].GetComponent<PlayersGameplay> ().playerName);
-
-			StartCoroutine (GameEnd ());
+			if (livesCount [i] != 0)
+			{
+				playersCount++;
+				lastPlayer = i;
+			}
 		}
 
-		if(GlobalVariables.Instance.NumberOfAlivePlayers == 0 && gameEndLoopRunning == false)
+		if(playersCount == 1 && gameEndLoopRunning == false)
+		{
+			gameEndLoopRunning = true;
+			StatsManager.Instance.Winner(GlobalVariables.Instance.Players [lastPlayer].GetComponent<PlayersGameplay> ().playerName);
+
+			StartCoroutine (GameEnd ());
+			return;
+		}
+
+		if(playersCount == 0 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
 			StatsManager.Instance.Winner(WhichPlayer.Draw);
 
 			StartCoroutine (GameEnd ());
+			return;
 		}
+
+		//Spawn Play if has lives left
+		if(playerScript.livesCount != 0 && !gameEndLoopRunning)
+		{
+			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
+			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
+		}
+		else if(playerDeadCube && !gameEndLoopRunning)
+			playerScript.SpawnDeadCube ();
 	}
 
 	protected virtual IEnumerator GameEnd ()
 	{
 		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
-		
+
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
-		
 
 		GlobalVariables.Instance.CurrentGamesCount--;
 
@@ -93,5 +128,5 @@ public class LastManManager : MonoBehaviour
 
 			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 		}
-	}	
+	}
 }

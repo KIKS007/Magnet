@@ -301,8 +301,7 @@ public class AIGameplay : PlayersGameplay
 
 		gameObject.SetActive(false);
 
-		if(GlobalVariables.Instance.modeObjective == ModeObjective.LeastDeath)
-			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
+		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
 	}
 
 	protected override void OnCollisionStay (Collision other)

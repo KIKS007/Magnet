@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
 public class NumberOfLives : MonoBehaviour 
 {
@@ -17,8 +18,12 @@ public class NumberOfLives : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		LoadData ();
+		
 		input = GetComponent<InputField> ();
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
+
+		CheckBounds ();
 	}
 
 	public void GetValue ()
@@ -66,5 +71,30 @@ public class NumberOfLives : MonoBehaviour
 
 		else
 			increaseButton.SetActive (true);
+	}
+
+	void SaveData ()
+	{
+		int value = 0;
+
+		if (!int.TryParse (input.text, out value) || value == 0)
+		{
+			value = 1;
+			input.text = value.ToString ();
+		}
+
+		PlayerPrefs.SetInt ("LivesCount", value);
+	}
+
+	void LoadData ()
+	{
+		if(PlayerPrefs.HasKey ("LivesCount"))
+			GlobalVariables.Instance.LivesCount = PlayerPrefs.GetInt ("LivesCount");
+	}
+
+	void OnDestroy ()
+	{
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			SaveData ();
 	}
 }

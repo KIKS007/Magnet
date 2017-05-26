@@ -52,6 +52,7 @@ public class PlayersGameplay : MonoBehaviour
 {
 	#region Variables
     [Header("States")]
+	public int livesCount = 0;
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;
@@ -87,9 +88,6 @@ public class PlayersGameplay : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
 	public AnimationCurve dashEase;
-
-	[Header ("Dead Cube")]
-	public bool playerDeadCube = true;
 
 	protected string playerDeadCubeTag;
 
@@ -360,10 +358,16 @@ public class PlayersGameplay : MonoBehaviour
         if (controllerNumber == -1)
         {
             gameObject.SetActive(false);
+			livesCount = 0;
         }
 
         if (controllerNumber != -1)
+		{
+			livesCount = GlobalVariables.Instance.LivesCount;
 			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
+		}
+
+		GlobalVariables.Instance.ListPlayers ();
     }
 	#endregion
 
@@ -679,13 +683,12 @@ public class PlayersGameplay : MonoBehaviour
 
 		gameObject.SetActive(false);
 
-		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
-		{
-			if(playerDeadCube)
-				GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
-		}
-		else
-			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
+		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+	}
+
+	public void SpawnDeadCube ()
+	{
+		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
 	}
 		
     protected virtual void OnDestroy()
