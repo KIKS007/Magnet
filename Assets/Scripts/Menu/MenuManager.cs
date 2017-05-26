@@ -374,14 +374,11 @@ public class MenuManager : Singleton <MenuManager>
 			if(whichMenu.secondaryContents [i].content.anchoredPosition != whichMenu.secondaryContents [i].onScreenPos)
 				whichMenu.secondaryContents [i].content.anchoredPosition = whichMenu.secondaryContents [i].offScreenPos;
 			
-			if (whichMenu.secondaryContents [i].showOnSubmit)
-			{
-				if (whichMenu.secondaryContents [i].delay > waitDelay)
-					waitDelay = whichMenu.secondaryContents [i].delay;
-				
-				Enable (whichMenu.secondaryContents [i].content);
-				whichMenu.secondaryContents [i].content.DOAnchorPos (whichMenu.secondaryContents [i].onScreenPos, animationDuration).SetDelay (whichMenu.secondaryContents [i].delay).SetEase (easeMenu).SetId ("Menu");
-			}
+			if (whichMenu.secondaryContents [i].delay > waitDelay)
+				waitDelay = whichMenu.secondaryContents [i].delay;
+			
+			Enable (whichMenu.secondaryContents [i].content);
+			whichMenu.secondaryContents [i].content.DOAnchorPos (whichMenu.secondaryContents [i].onScreenPos, animationDuration).SetDelay (whichMenu.secondaryContents [i].delay).SetEase (easeMenu).SetId ("Menu");
 		}	
 
 		yield break;
