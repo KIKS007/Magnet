@@ -80,6 +80,7 @@ public class MenuManager : Singleton <MenuManager>
 	private GameObject mainCamera;
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
+	private bool isWaitingToSelect = false;
 
 	[HideInInspector]
 	public bool startScreen = true;
@@ -201,7 +202,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	void CheckNothingSelected ()
 	{
-		if(eventSyst.currentSelectedGameObject == null && currentMenu != null && !isTweening)
+		if(eventSyst.currentSelectedGameObject == null && currentMenu != null && !isTweening && !isWaitingToSelect)
 			StartCoroutine (SelectPreviousElement (currentMenu));
 	}
 
@@ -259,8 +260,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator SubmitMenuCoroutine (MenuComponent whichMenu, int submitButton)
 	{
-		float time = Time.time;
-
 		menuTweening = true;
 		PlaySubmitSound ();
 
@@ -271,8 +270,6 @@ public class MenuManager : Singleton <MenuManager>
 		menuTweening = false;
 
 		yield return new WaitWhile (() => DOTween.IsTweening ("Menu"));
-
-		Debug.Log ("Show : " + (Time.time - time).ToString ());
 	}
 
 	//Hide Previous Menu and Show Target Menu
@@ -309,20 +306,19 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		int delay = 0;
 
-
 		//Show Under Menus Buttons
 		for(int i = whichMenu.underMenusButtons.Count - 1; i >= 0; i--)
 		{
 			float duration = animationDuration - ButtonsDelay (delay);
 
 			//If Canceling
-			if(cancelButton != -1 && i != cancelButton)
-				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition;
+			if(i != cancelButton || cancelButton == -1)
+				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ());
 
 			Enable (whichMenu.underMenusButtons [i]);
 			SetInteractable (whichMenu.underMenusButtons [i], duration + ButtonsDelay (delay));
 			
-			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()) - whichMenu.menusParent.anchoredPosition, duration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()), duration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 			delay++;
 		}
@@ -395,7 +391,7 @@ public class MenuManager : Singleton <MenuManager>
 	#region Cancel Methods
 	public void HideMenu (MenuComponent whichMenu)
 	{
-		StartCoroutine (HideMenuCoroutine (whichMenu));
+		StartCoroutine (HideMenuCoroutine (whichMenu, -1, true));
 	}
 
 	public void CancelMenu (MenuComponent whichMenu, int cancelButton)
@@ -407,8 +403,6 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		menuTweening = true;
 
-		float time = Time.time;
-
 		PlayReturnSound ();
 
 		yield return StartCoroutine (HideMenuCoroutine (whichMenu));
@@ -418,19 +412,14 @@ public class MenuManager : Singleton <MenuManager>
 		menuTweening = false;
 
 		yield return new WaitWhile (() => DOTween.IsTweening ("Menu"));
-
-		Debug.Log ("Hide : " + (Time.time - time).ToString ());
 	}
 
 
-	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1)
+	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1, bool hideOnly = false)
 	{
-		StartCoroutine (HideUnderMenus (whichMenu, submitButton));
+		StartCoroutine (HideUnderMenus (whichMenu, submitButton, hideOnly));
 		StartCoroutine (HideMainContent (whichMenu));
 		StartCoroutine (HideSecondaryContent (whichMenu));
-
-		if (submitButton != -1 && headerButtonsList.Count > 0)
-			HidePreviousHeader (0);
 
 		yield return new WaitForSecondsRealtime (animationDuration);
 
@@ -438,7 +427,7 @@ public class MenuManager : Singleton <MenuManager>
 	}
 
 
-	IEnumerator HideUnderMenus (MenuComponent whichMenu, int submitButton = -1)
+	IEnumerator HideUnderMenus (MenuComponent whichMenu, int submitButton = -1, bool hideOnly = false)
 	{
 		int delay = 0;
 
@@ -455,13 +444,12 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
+		if(submitButton != -1 || hideOnly)
+			HidePreviousHeader (delay);
+
 		//If Submiting
 		if(submitButton != -1)
-		{
-			HidePreviousHeader (delay);
-			
 			PlaceCurrentHeader (whichMenu, submitButton, delay);
-		}
 
 		yield break;
 	}
@@ -579,6 +567,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator SelectPreviousElement (MenuComponent whichMenu)
 	{
+		isWaitingToSelect = true;
+
 		GameObject selectable = null;
 
 		if (whichMenu.previousSelected != null && selectPreviousElement)
@@ -598,6 +588,8 @@ public class MenuManager : Singleton <MenuManager>
 
 			eventSyst.SetSelectedGameObject (selectable);
 		}
+
+		isWaitingToSelect = false;
 
 		yield return 0;
 	}
