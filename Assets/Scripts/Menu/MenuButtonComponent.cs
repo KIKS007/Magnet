@@ -149,7 +149,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 			secondaryContentList [i].content.gameObject.SetActive (true);
 
-			secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, MenuManager.Instance.durationToShow).SetDelay (secondaryContentList [i].delay).SetEase (MenuManager.Instance.easeMenu).SetId ("MenuButton");
+			secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].onScreenPos, MenuManager.Instance.animationDuration).SetDelay (secondaryContentList [i].delay).SetEase (MenuManager.Instance.easeMenu).SetId ("MenuButton");
 		}	
 	}
 
@@ -160,9 +160,9 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 		for(int i = 0; i < secondaryContentList.Count; i++)
 		{
-			StartCoroutine (DisableContent (MenuManager.Instance.durationToHide * 0.6f, secondaryContentList [i].content.gameObject));
+			StartCoroutine (DisableContent (MenuManager.Instance.animationDuration * 0.6f, secondaryContentList [i].content.gameObject));
 
-			secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, MenuManager.Instance.durationToHide * 0.6f).SetDelay (secondaryContentList [i].delay).SetEase (MenuManager.Instance.easeMenu).SetId ("MenuButton");
+			secondaryContentList [i].content.DOAnchorPos (secondaryContentList [i].offScreenPos, MenuManager.Instance.animationDuration * 0.6f).SetDelay (secondaryContentList [i].delay).SetEase (MenuManager.Instance.easeMenu).SetId ("MenuButton");
 		}
 
 		hasBeenSubmit = false;

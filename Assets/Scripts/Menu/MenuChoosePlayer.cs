@@ -198,13 +198,13 @@ public class MenuChoosePlayer : MonoBehaviour
 			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
 			playButton.GetComponent<Button> ().Select (); 
-			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
 		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
 			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
 		} 
 	} 
 

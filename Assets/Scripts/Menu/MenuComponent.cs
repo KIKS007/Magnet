@@ -521,10 +521,7 @@ public class MenuComponent : MonoBehaviour
 
 			for(int i = 0; i < underButtons.Count; i++)
 			{
-				if(overrideButtonPos)
-					underButtons [i].anchoredPosition = new Vector2 (buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
-				else
-					underButtons [i].anchoredPosition = new Vector2 (menuManager.buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
+				underButtons [i].anchoredPosition = new Vector2 (buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
 
 				underButtons [i].gameObject.SetActive (true);
 			}
