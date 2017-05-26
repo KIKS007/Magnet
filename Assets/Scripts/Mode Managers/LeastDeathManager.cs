@@ -12,11 +12,8 @@ public class LeastDeathManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Death Count")]
-	private int maxDeath = 5;
 	public int[] deathCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
-
-
 
 	[Header ("Cubes Spawn")]
 	public bool spawnCubes = true;
@@ -54,7 +51,7 @@ public class LeastDeathManager : MonoBehaviour
 		GlobalMethods.Instance.SpawnDeathText (playerName, player, deathCount [(int)playerName]);
 
 		foreach(int death in deathCount)
-			if(death >= maxDeath && !gameEndLoopRunning)
+			if(death >= GlobalVariables.Instance.LivesCount && !gameEndLoopRunning)
 			{
 				gameEndLoopRunning = true;
 				StartCoroutine (GameEnd ());	

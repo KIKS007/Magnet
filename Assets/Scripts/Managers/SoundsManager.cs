@@ -225,6 +225,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		if(musicsFiles.Length == 0)
 		{
 			Debug.LogWarning ("No (valid) Musics in folder!");
+			SetGamePlaylist ();
 			yield break;
 		}
 

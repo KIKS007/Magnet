@@ -49,6 +49,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
 	public int GamesCount = 1;
 	public int CurrentGamesCount = 1;
+	public int LivesCount = 5;
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
