@@ -27,7 +27,6 @@ public class MenuComponent : MonoBehaviour
 
 	[HideInInspector]
 	public RectTransform menuButton;
-	[HideInInspector]
 	public MenuComponent aboveMenuScript;
 	[HideInInspector]
 	public List<RectTransform> underMenus;
@@ -51,6 +50,8 @@ public class MenuComponent : MonoBehaviour
 		{
 			if(transform.parent.parent.GetComponent<MenuComponent> () != null)
 				aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();
+			else
+				aboveMenuScript = transform.GetComponentInParent <MenuComponent> ();
 		}
 
 		//CLEAR ALL

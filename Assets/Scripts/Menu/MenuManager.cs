@@ -299,6 +299,9 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		currentMenu = whichMenu;
 
+		if (!whichMenu.gameObject.activeSelf)
+			whichMenu.gameObject.SetActive (true);
+		
 		//Select First Under Menu Button
 		StartCoroutine (SelectPreviousElement (whichMenu)); 
 
@@ -428,6 +431,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1)
 	{
+		if (!whichMenu.gameObject.activeSelf)
+			whichMenu.gameObject.SetActive (true);
+		
 		StartCoroutine (HideUnderMenus (whichMenu, submitButton));
 		StartCoroutine (HideMainContent (whichMenu));
 		StartCoroutine (HideSecondaryContent (whichMenu));
@@ -459,7 +465,7 @@ public class MenuManager : Singleton <MenuManager>
 			HidePreviousHeader (delay);
 
 		//If Submiting
-		if(menuAnimationType == MenuAnimationType.Submit)
+		if(menuAnimationType == MenuAnimationType.Submit && submitButton != -1)
 			PlaceCurrentHeader (whichMenu, submitButton, delay);
 
 		yield break;

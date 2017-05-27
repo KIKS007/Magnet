@@ -32,9 +32,6 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	}
 
 	[Header ("Secondary Content")]
-	public bool showOnSelect = true;
-	public bool showOnSubmit = false;
-	public bool hideOnDeselect = true;
 	public List<SecondaryContent> secondaryContentList;
 
 	[HideInInspector]
@@ -56,10 +53,17 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 	void OnEnable ()
 	{
+		Setup ();
+	}
+
+	void Setup ()
+	{
 		if (menuComponentParent == null)
 			menuComponentParent = transform.GetComponentInParent<MenuComponent> ();
 
 		hasBeenSubmit = false;
+
+		//Setup Secondary Content
 		for(int i = 0; i < secondaryContentList.Count; i++)
 		{
 			secondaryContentList [i].content.anchoredPosition = secondaryContentList [i].offScreenPos;
@@ -72,51 +76,49 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		if (MenuManager.Instance.isTweening)
 			return;
 
-		if(button.interactable)
-		{
-			hasBeenSubmit = true;
+		if (!button.interactable)
+			return;
 
-			if(menuButtonType != MenuButtonType.Static)
-				menuComponentParent.Submit (buttonIndex);
-			else
-				menuComponentParent.Submit (whichMenu);
-
-			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
-
-			if(showOnSubmit)
-				ShowSecondaryContent ();
-
-			if(menuButtonType != MenuButtonType.Basic)
-				MenuManager.Instance.MenuLoadMode (whichMode);
-
-			hasBeenSubmit = false;
-		}
+		hasBeenSubmit = true;
+		
+		if(menuButtonType != MenuButtonType.Static)
+			menuComponentParent.Submit (buttonIndex);
+		else
+			menuComponentParent.Submit (whichMenu);
+		
+		menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+		
+		ShowSecondaryContent ();
+		
+		if(menuButtonType != MenuButtonType.Basic)
+			MenuManager.Instance.MenuLoadMode (whichMode);
+		
+		hasBeenSubmit = false;
 	}
 
 	public void OnSubmit( BaseEventData data )
 	{
 		if (MenuManager.Instance.isTweening)
 			return;
+
+		if (!button.interactable)
+			return;
+
+		hasBeenSubmit = true;
 		
-		if(button.interactable)
-		{
-			hasBeenSubmit = true;
-
-			eventSyst.SetSelectedGameObject (null);
-
-			if(showOnSubmit)
-				ShowSecondaryContent ();
-
-			menuComponentParent.Submit (buttonIndex);
-
-			if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
-				menuComponentParent.aboveMenuScript.previousSelected = gameObject;
-
-			if(menuButtonType != MenuButtonType.Basic)
-				MenuManager.Instance.MenuLoadMode (whichMode);
-
-			hasBeenSubmit = false;
-		}
+		eventSyst.SetSelectedGameObject (null);
+		
+		ShowSecondaryContent ();
+		
+		menuComponentParent.Submit (buttonIndex);
+		
+		if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
+			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+		
+		if(menuButtonType != MenuButtonType.Basic)
+			MenuManager.Instance.MenuLoadMode (whichMode);
+		
+		hasBeenSubmit = false;
 	}
 
 	public void OnSelect (BaseEventData eventData)
@@ -124,17 +126,18 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		if (MenuManager.Instance.isTweening)
 			return;
 
+		if (!button.interactable)
+			return;
+		
 		if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
 			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
 
-		if(showOnSelect)
-			ShowSecondaryContent ();
+		ShowSecondaryContent ();
 	}
 
 	public void OnDeselect (BaseEventData eventData)
 	{
-		if(hideOnDeselect)
-			HideSecondaryContent ();
+		HideSecondaryContent ();
 	}
 
 	void ShowSecondaryContent ()
