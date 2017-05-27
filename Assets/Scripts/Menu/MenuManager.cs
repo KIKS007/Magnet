@@ -344,6 +344,9 @@ public class MenuManager : Singleton <MenuManager>
 			ShowPreviousHeader (whichMenu, delay);
 		}
 
+		if(menuAnimationType == MenuAnimationType.Submit)
+			PlaceCurrentHeader (whichMenu, delay);
+		
 		yield break;
 	}
 
@@ -354,7 +357,7 @@ public class MenuManager : Singleton <MenuManager>
 			return;
 		
 		Enable (whichMenu.menuButton);
-		SetInteractable (whichMenu.menuButton, animationDuration);
+		SetNonInteractable (whichMenu.menuButton);
 		
 		if(hidePreviousHeaderButton && whichMenu.menuButton != null)
 			whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
@@ -464,6 +467,9 @@ public class MenuManager : Singleton <MenuManager>
 		if(menuAnimationType == MenuAnimationType.Submit || menuAnimationType == MenuAnimationType.Hide)
 			HidePreviousHeader (delay);
 
+		else if(!whichMenu.aboveMenuScript.underMenusButtons.Contains (whichMenu.menuButton))
+			HidePreviousHeader (delay);
+
 		//If Submiting
 		if(menuAnimationType == MenuAnimationType.Submit && submitButton != -1)
 			PlaceCurrentHeader (whichMenu, submitButton, delay);
@@ -493,7 +499,7 @@ public class MenuManager : Singleton <MenuManager>
 		Enable (whichMenu.underMenusButtons [submitButton]);
 		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
 
-		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, animationDuration)
+		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
 			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
@@ -502,17 +508,22 @@ public class MenuManager : Singleton <MenuManager>
 
 	Tween PlaceCurrentHeader (MenuComponent whichMenu, int delay)
 	{
-		//Place Submit Button as Header
-		Enable (whichMenu.aboveMenuScript.menuButton);
-		SetNonInteractable (whichMenu.aboveMenuScript.menuButton);
+		if (whichMenu.menuButton.anchoredPosition.x == menuOnScreenX)
+			return null;
 
-		return whichMenu.aboveMenuScript.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, animationDuration)
+		whichMenu.menuButton.anchoredPosition = new Vector2 (menuOffScreenX, MenuHeaderButtonPosition ());
+
+		//Place Submit Button as Header
+		Enable (whichMenu.menuButton);
+		SetNonInteractable (whichMenu.menuButton);
+
+		return whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
-			.OnComplete (()=> headerButtonsList.Add (whichMenu.aboveMenuScript.menuButton))
+			.OnComplete (()=> headerButtonsList.Add (whichMenu.menuButton))
 			.SetId ("Menu");
 	}
-		
+
 	IEnumerator HideMainContent (MenuComponent whichMenu)
 	{
 		whichMenu.mainContent.DOAnchorPos (offScreenContent, animationDuration).SetEase (easeMenu).SetId ("Menu").OnComplete (()=> Disable(whichMenu.mainContent));

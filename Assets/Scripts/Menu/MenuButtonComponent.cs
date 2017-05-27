@@ -86,8 +86,11 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		else
 			menuComponentParent.Submit (whichMenu);
 		
-		menuComponentParent.aboveMenuScript.previousSelected = gameObject;
-		
+		if(menuButtonType != MenuButtonType.Static)
+			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+		else
+			menuComponentParent.previousSelected = gameObject;
+
 		ShowSecondaryContent ();
 		
 		if(menuButtonType != MenuButtonType.Basic)
@@ -110,11 +113,16 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		
 		ShowSecondaryContent ();
 		
-		menuComponentParent.Submit (buttonIndex);
-		
-		if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
+		if(menuButtonType != MenuButtonType.Static)
+			menuComponentParent.Submit (buttonIndex);
+		else
+			menuComponentParent.Submit (whichMenu);
+
+		if(menuButtonType != MenuButtonType.Static)
 			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
-		
+		else
+			menuComponentParent.previousSelected = gameObject;
+
 		if(menuButtonType != MenuButtonType.Basic)
 			MenuManager.Instance.MenuLoadMode (whichMode);
 		
@@ -129,8 +137,10 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		if (!button.interactable)
 			return;
 		
-		if(menuComponentParent.menuComponentType == MenuComponentType.BasicMenu)
+		if(menuButtonType != MenuButtonType.Static)
 			menuComponentParent.aboveMenuScript.previousSelected = gameObject;
+		else
+			menuComponentParent.previousSelected = gameObject;
 
 		ShowSecondaryContent ();
 	}
