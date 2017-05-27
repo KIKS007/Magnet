@@ -16,13 +16,8 @@ public class MenuManager : Singleton <MenuManager>
 	[Header ("Infos")]
 	public bool isTweening;
 	public bool menuTweening;
-
-	public GameObject mainMenu;
 	public MenuComponent currentMenu = null;
-
-	private MenuComponent mainMenuScript;
-	[HideInInspector]
-	public Ease easeMenu = Ease.OutQuad;
+	public MenuAnimationType menuAnimationType = MenuAnimationType.None;
 
 	[Header ("Animations Duration")]
 	public float animationDuration = 0.15f;
@@ -43,7 +38,8 @@ public class MenuManager : Singleton <MenuManager>
 	public float menuHeaderY = 540;
 	public List<RectTransform> headerButtonsList;
 
-	[Header ("MainMenu Buttons Positions")]
+	[Header ("Main Menu")]
+	public GameObject mainMenu;
 	public float mainMenuFirstButtonY = 100;
 
 	[Header ("Buttons Positions")]
@@ -72,6 +68,10 @@ public class MenuManager : Singleton <MenuManager>
 	public RectTransform[] playerScore = new RectTransform[4];
 	public RectTransform panelBackground;
 	public float delayBetweenStats = 0.01f ;
+
+	[HideInInspector]
+	public Ease easeMenu = Ease.OutQuad;
+	private MenuComponent mainMenuScript;
 
 	private RectTransform endModecontent;
 	private List<SecondaryContent> endModesecondaryContentList;
@@ -241,20 +241,26 @@ public class MenuManager : Singleton <MenuManager>
 	#endregion
 
 	#region Submit Methods
-	public enum MenuAnimationType { Show, Hide, Cancel, Submit, UnderSubmit, UnderCancel };
+	public enum MenuAnimationType { Show, Hide, Cancel, Submit, None };
 
 	public void ShowMenu (MenuComponent whichMenu)
 	{
+		menuAnimationType = MenuAnimationType.Show;
+
 		StartCoroutine (ShowMenuCoroutine (whichMenu));
 	}
 
 	public void SubmitMenu (MenuComponent whichMenu, int submitButton)
 	{
+		menuAnimationType = MenuAnimationType.Submit;
+
 		StartCoroutine (SubmitMenuCoroutine (whichMenu, submitButton));
 	}
 
 	public void SubmitMenu (MenuComponent whichMenu)
 	{
+		menuAnimationType = MenuAnimationType.Submit;
+
 		StartCoroutine (SubmitMenuCoroutine (whichMenu));
 	}
 
@@ -270,6 +276,8 @@ public class MenuManager : Singleton <MenuManager>
 		menuTweening = false;
 
 		yield return new WaitWhile (() => DOTween.IsTweening ("Menu"));
+
+		menuAnimationType = MenuAnimationType.None;
 	}
 
 	//Hide Previous Menu and Show Target Menu
@@ -324,7 +332,7 @@ public class MenuManager : Singleton <MenuManager>
 		}
 
 		//If Canceling
-		if(cancelButton != -1)
+		if(menuAnimationType == MenuAnimationType.Cancel || menuAnimationType == MenuAnimationType.Show)
 		{
 			//Remove Current Header From List
 			if(headerButtonsList.Count > 0)
@@ -388,11 +396,15 @@ public class MenuManager : Singleton <MenuManager>
 	#region Cancel Methods
 	public void HideMenu (MenuComponent whichMenu)
 	{
-		StartCoroutine (HideMenuCoroutine (whichMenu, -1, true));
+		menuAnimationType = MenuAnimationType.Hide;
+
+		StartCoroutine (HideMenuCoroutine (whichMenu, -1));
 	}
 
 	public void CancelMenu (MenuComponent whichMenu, int cancelButton)
 	{
+		menuAnimationType = MenuAnimationType.Cancel;
+
 		StartCoroutine (CancelMenuCoroutine (whichMenu, cancelButton));
 	}
 
@@ -409,12 +421,14 @@ public class MenuManager : Singleton <MenuManager>
 		menuTweening = false;
 
 		yield return new WaitWhile (() => DOTween.IsTweening ("Menu"));
+
+		menuAnimationType = MenuAnimationType.None;
 	}
 
 
-	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1, bool hideOnly = false)
+	IEnumerator HideMenuCoroutine (MenuComponent whichMenu, int submitButton = -1)
 	{
-		StartCoroutine (HideUnderMenus (whichMenu, submitButton, hideOnly));
+		StartCoroutine (HideUnderMenus (whichMenu, submitButton));
 		StartCoroutine (HideMainContent (whichMenu));
 		StartCoroutine (HideSecondaryContent (whichMenu));
 
@@ -424,14 +438,14 @@ public class MenuManager : Singleton <MenuManager>
 	}
 
 
-	IEnumerator HideUnderMenus (MenuComponent whichMenu, int submitButton = -1, bool hideOnly = false)
+	IEnumerator HideUnderMenus (MenuComponent whichMenu, int submitButton = -1)
 	{
 		int delay = 0;
 
 		//Under Menus Buttons
 		for(int i = whichMenu.underMenusButtons.Count - 1; i >= 0; i--)
 		{
-			if(i != submitButton)
+			if(menuAnimationType != MenuAnimationType.Submit || i != submitButton)
 			{
 				Disable (whichMenu.underMenusButtons [i], animationDuration + ButtonsDelay (delay));
 				SetNonInteractable (whichMenu.underMenusButtons [i]);
@@ -441,11 +455,11 @@ public class MenuManager : Singleton <MenuManager>
 			}
 		}
 
-		if(submitButton != -1 || hideOnly)
+		if(menuAnimationType == MenuAnimationType.Submit || menuAnimationType == MenuAnimationType.Hide)
 			HidePreviousHeader (delay);
 
 		//If Submiting
-		if(submitButton != -1)
+		if(menuAnimationType == MenuAnimationType.Submit)
 			PlaceCurrentHeader (whichMenu, submitButton, delay);
 
 		yield break;
@@ -477,6 +491,19 @@ public class MenuManager : Singleton <MenuManager>
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
 			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
+			.SetId ("Menu");
+	}
+
+	Tween PlaceCurrentHeader (MenuComponent whichMenu, int delay)
+	{
+		//Place Submit Button as Header
+		Enable (whichMenu.aboveMenuScript.menuButton);
+		SetNonInteractable (whichMenu.aboveMenuScript.menuButton);
+
+		return whichMenu.aboveMenuScript.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()) - whichMenu.menusParent.anchoredPosition, animationDuration)
+			.SetDelay (ButtonsDelay (delay))
+			.SetEase (easeMenu)
+			.OnComplete (()=> headerButtonsList.Add (whichMenu.aboveMenuScript.menuButton))
 			.SetId ("Menu");
 	}
 		

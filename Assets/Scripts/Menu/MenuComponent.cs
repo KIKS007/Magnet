@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
+using NUnit.Framework;
 
 public enum MenuComponentType { BasicMenu, MainMenu, EndModeMenu, RootMenu };
 
@@ -255,11 +256,13 @@ public class MenuComponent : MonoBehaviour
 
 	}
 
+	[ButtonGroupAttribute ("Group B")]	
 	public void ShowMenu ()
 	{
 		MenuManager.Instance.ShowMenu (this);
 	}
 
+	[ButtonGroupAttribute ("Group B")]	
 	public void HideMenu ()
 	{
 		MenuManager.Instance.HideMenu (this);
