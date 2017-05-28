@@ -15,6 +15,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	public PlaylistController playlistCont;
 
 	[Header ("Songs Titles")]
+	public Text currentSong;
 	public GameObject songTitlePrefab;
 	public GameObject songTitleContentParent;
 	public GameObject loadedSongTitleContentParent;
@@ -164,6 +165,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		OnMusicVolumeChange += UpdateAudioSettings;
 		OnSoundsVolumeChange += UpdateAudioSettings;
+
+		playlistCont.SongChanged += (newSongName) => currentSong.text = newSongName;
 
 		UpdateAudioSettings ();
 
@@ -342,9 +345,11 @@ public class SoundsManager : Singleton<SoundsManager>
 			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, songTitleContentParent.transform);
 			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
 
-			songTitle.GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
-			songTitle.transform.GetChild (0).GetComponent<Text> ().text = (i + 1).ToString () + ".";
-			songTitle.transform.GetChild (1).GetComponent<Text> ().text = 
+			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayGameSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
+
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
 				((int) (MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length / 60)).ToString ("D")
 				+ ":" + 
 				((int)(MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
@@ -367,9 +372,11 @@ public class SoundsManager : Singleton<SoundsManager>
 			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, loadedSongTitleContentParent.transform);
 			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
 
-			songTitle.GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
-			songTitle.transform.GetChild (0).GetComponent<Text> ().text = (i + 1).ToString () + ".";
-			songTitle.transform.GetChild (1).GetComponent<Text> ().text = 
+			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayLoadedSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
+
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
 				((int) (MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length / 60)).ToString ("D")
 				+ ":" + 
 				((int)(MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
@@ -387,6 +394,20 @@ public class SoundsManager : Singleton<SoundsManager>
 			playLoadedMusics = true;
 
 		SetGamePlaylist ();
+	}
+
+	public void PlayGameSong (string song)
+	{
+		PlayPlaylist ("Game");
+
+		playlistCont.TriggerPlaylistClip (song);
+	}
+
+	public void PlayLoadedSong (string song)
+	{
+		PlayPlaylist ("Loaded Musics");
+
+		playlistCont.TriggerPlaylistClip (song);
 	}
 
 	void RandomMusic ()

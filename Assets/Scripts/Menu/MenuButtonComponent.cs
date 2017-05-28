@@ -7,20 +7,16 @@ using DG.Tweening;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector;
 
-public enum MenuButtonType {Basic, StartMode, Static};
+public enum MenuButtonType {Basic, Static};
 
 public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitHandler, ISelectHandler, IDeselectHandler
 {
 	public MenuButtonType menuButtonType = MenuButtonType.Basic;
+	public bool startMode = false;
 
-	[ShowIfAttribute ("StartMode")]
+	[ShowIfAttribute ("startMode")]
 	[Header ("Start Mode")]
 	public WhichMode whichMode;
-
-	bool StartMode ()
-	{
-		return menuButtonType != MenuButtonType.Basic;
-	}
 
 	[ShowIfAttribute ("StaticButton")]
 	[Header ("Show Menu")]
@@ -93,7 +89,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 
 		ShowSecondaryContent ();
 		
-		if(menuButtonType != MenuButtonType.Basic)
+		if(startMode)
 			MenuManager.Instance.MenuLoadMode (whichMode);
 		
 		hasBeenSubmit = false;
@@ -123,7 +119,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		else
 			menuComponentParent.previousSelected = gameObject;
 
-		if(menuButtonType != MenuButtonType.Basic)
+		if(startMode)
 			MenuManager.Instance.MenuLoadMode (whichMode);
 		
 		hasBeenSubmit = false;
