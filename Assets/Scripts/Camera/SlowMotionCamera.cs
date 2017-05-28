@@ -127,7 +127,10 @@ public class SlowMotionCamera : MonoBehaviour
 	{
 		if (!slowMoEnabled)
 			return;
-		
+
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+
 		StopCoroutine (SlowMotionDuration (slowMoNumber));
 		DOTween.Kill ("StopSlowMotion");
 
@@ -188,6 +191,9 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StopSlowMotion ()
 	{
 		if (!slowMoEnabled)
+			return;
+
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
 
 		//Debug.Log("Undo Slomo !");

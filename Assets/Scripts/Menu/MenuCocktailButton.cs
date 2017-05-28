@@ -14,6 +14,9 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	private Sprite initialSprite;
 	private Sprite pressedSprite;
 
+	private Color initialColor;
+	private Color initialHighlightedColor;
+
 	private static List<MenuCocktailButton> allButtons = new List<MenuCocktailButton> ();
 
 	// Use this for initialization
@@ -25,6 +28,8 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 		buttonComponent = GetComponent<Button> ();
 		initialSprite = imageComponent.sprite;
 		pressedSprite = buttonComponent.spriteState.pressedSprite;
+		initialColor = buttonComponent.colors.normalColor;
+		initialHighlightedColor = buttonComponent.colors.highlightedColor;
 
 		SpriteState spriteState = buttonComponent.spriteState;
 		spriteState.pressedSprite = null;
@@ -40,6 +45,11 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 		imageComponent.sprite = pressedSprite;
 
+		ColorBlock tempColor = buttonComponent.colors;
+		tempColor.normalColor = buttonComponent.colors.pressedColor;
+		tempColor.highlightedColor = buttonComponent.colors.pressedColor;
+		buttonComponent.colors = tempColor;
+
 		if (!GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Add (mode);
 	}
@@ -49,6 +59,11 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 		activate = false;
 
 		imageComponent.sprite = initialSprite;
+
+		ColorBlock tempColor = buttonComponent.colors;
+		tempColor.normalColor = initialColor;
+		tempColor.highlightedColor = initialHighlightedColor;
+		buttonComponent.colors = tempColor;
 
 		if (GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Remove (mode);
