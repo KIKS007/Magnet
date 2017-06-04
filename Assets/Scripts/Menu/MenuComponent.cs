@@ -125,6 +125,13 @@ public class MenuComponent : MonoBehaviour
 
 	void EnableUnderMenus ()
 	{
+		foreach (Transform t in transform)
+		{
+			if(t.name != "MainContent" && t.name != "Menus" && t.gameObject != menuButton)
+				t.gameObject.SetActive (true);
+			
+		}
+
 		for (int i = 0; i < underMenus.Count; i++)
 			underMenus [i].gameObject.SetActive (true);
 	}

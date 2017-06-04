@@ -4,18 +4,23 @@ using DG.Tweening;
 
 public class DemoCamera : MonoBehaviour 
 {
+	[Header ("Inputs")]
 	public KeyCode keyToActivate;
-
-	public float rotationSpeed = 1;
-	public Vector3 startPosition;
 	public KeyCode keySloMo;
 	public KeyCode keyCubesSpawn;
+
+	[Header ("Rotation")]
+	public float positionLerp = 0.1f;
+	public PlayerName playerTarget;
+	public float rotationSpeed = 1;
+	public Vector3 startPosition;
 
 	private Transform target;
 	private GameObject parent;
 
 	private bool sloMo = false;
 	private bool demoEnabled = false;
+	private Vector3 startPositionTemp;
 
 	// Use this for initialization
 	void Start () 
@@ -25,12 +30,25 @@ public class DemoCamera : MonoBehaviour
 
 	void StartDemo ()
 	{
-		target = GlobalVariables.Instance.Players[0].GetComponent<Transform> ();
+		if (parent != null)
+		{
+			transform.SetParent (null);
 
+			Destroy (parent);
+		}
+
+		if(GlobalVariables.Instance.Players [(int)playerTarget] != null)
+			target = GlobalVariables.Instance.Players[(int)playerTarget].GetComponent<Transform> ();
+		else
+			target = GlobalVariables.Instance.Players[0].GetComponent<Transform> ();
+			
 		parent = new GameObject ();
 		parent.transform.position = target.position;
+
 		transform.SetParent (parent.transform);
-		transform.position = startPosition;
+		transform.position = target.position + startPosition;
+
+		startPositionTemp = startPosition;
 	}
 	
 	// Update is called once per frame
@@ -66,8 +84,25 @@ public class DemoCamera : MonoBehaviour
 			demoEnabled = false;
 		}
 
+		if(demoEnabled && startPosition != startPositionTemp)
+		{
+			startPositionTemp = startPosition;
+			transform.position = target.position + startPosition;
+		}
+
 		if (Input.GetKeyDown (keyCubesSpawn))
 			StartCoroutine (SpawnCubes ());
+	}
+
+	void FixedUpdate ()
+	{
+		if(demoEnabled)
+		{
+			parent.transform.position = Vector3.Lerp (parent.transform.position, target.position, positionLerp);
+
+			transform.LookAt (target);
+			parent.transform.Rotate(Vector3.up * rotationSpeed);
+		}
 	}
 
 	IEnumerator SpawnCubes ()
@@ -118,14 +153,5 @@ public class DemoCamera : MonoBehaviour
 		yield return tween.WaitForCompletion ();
 	}
 
-	void FixedUpdate ()
-	{
-		if(demoEnabled)
-		{
-			parent.transform.position = target.position;
-			
-			transform.LookAt (target);
-			parent.transform.Rotate(Vector3.up * rotationSpeed);
-		}
-	}
+
 }
