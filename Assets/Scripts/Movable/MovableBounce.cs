@@ -23,7 +23,7 @@ public class MovableBounce : MovableScript
 
 			else if(currentVelocity < limitVelocity)
 			{
-				if(gameObject.tag == "DeadCube" || gameObject.tag == "ThrownMovable")
+				if(gameObject.tag == "DeadCube")
 				{
 					ToNeutralColor ();
 					
@@ -84,7 +84,7 @@ public class MovableBounce : MovableScript
 	{
 		ToDeadlyColor (0.15f);
 
-		yield return new WaitForSeconds (0.01f);
+		yield return new WaitForSecondsRealtime (0);
 
 		tag = "DeadCube";
 	}

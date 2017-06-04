@@ -6,24 +6,24 @@ public class MagnetZoneScript : MonoBehaviour
 {
 	public float rayLength;
 
-	private Transform player;
-	private PlayersGameplay playerScript;
-	private PlayersFXAnimations fxAnimationsScript;
+	protected Transform player;
+	protected PlayersGameplay playerScript;
+	protected PlayersFXAnimations fxAnimationsScript;
 
-	private RaycastHit objectHit;
+	protected RaycastHit objectHit;
 
 	public Player rewiredPlayer;
 
 
 	// Use this for initialization
-	void Start () 
+	protected virtual void Start () 
 	{
 		player = gameObject.transform.parent;
 		playerScript = player.GetComponent<PlayersGameplay> ();
 		fxAnimationsScript = player.GetComponent<PlayersFXAnimations> ();
 	}
 
-	void Update ()
+	protected virtual void Update ()
 	{
 		if(rewiredPlayer != null)
 		{
@@ -41,7 +41,7 @@ public class MagnetZoneScript : MonoBehaviour
 		}
 	}
 
-	void OnTriggerStay (Collider other)
+	protected virtual void OnTriggerStay (Collider other)
 	{
 		if (playerScript.rewiredPlayer == null)
 			return;
@@ -74,7 +74,7 @@ public class MagnetZoneScript : MonoBehaviour
 		}
 	}
 
-	void Attract (Collider other)
+	protected virtual void Attract (Collider other)
 	{
 		if (!other.GetComponent<MovableScript> ().attracedBy.Contains (player.gameObject))
 			other.GetComponent<MovableScript> ().attracedBy.Add (player.gameObject);
@@ -86,7 +86,7 @@ public class MagnetZoneScript : MonoBehaviour
 		}
 	}
 
-	void Repulse (Collider other)
+	protected virtual void Repulse (Collider other)
 	{
 		if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (player.gameObject))
 			other.GetComponent<MovableScript> ().repulsedBy.Add (player.gameObject);
@@ -98,7 +98,7 @@ public class MagnetZoneScript : MonoBehaviour
 		}
 	}
 
-	void OnTriggerExit (Collider other)
+	protected virtual void OnTriggerExit (Collider other)
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{

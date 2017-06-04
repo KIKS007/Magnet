@@ -224,6 +224,8 @@ public class MovableBomb : MovableScript
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
 				rigidbodyMovable.AddForce(direction * trackSpeedTemp, ForceMode.Impulse);
 
+				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
 				yield return new WaitForFixedUpdate();
 			}
 			else
@@ -239,6 +241,8 @@ public class MovableBomb : MovableScript
 	IEnumerator AddSpeed ()
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
+
+		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeedTemp += trackSpeedAdded;
 

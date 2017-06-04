@@ -27,8 +27,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Game First Scene Loaded
 	IEnumerator FirstLoadedScene (WhichMode sceneToLoad)
 	{
-		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
-
 		//Unload All other Scenes than Menu
 		if(SceneManager.GetActiveScene ().name != "Scene Testing")
 		{
@@ -115,8 +113,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	//Menu Load Scene to choose mode
 	IEnumerator LoadScene (WhichMode sceneToLoad, GameStateEnum gameState = GameStateEnum.Menu, bool resetStats = true)
 	{
-		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
-
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
@@ -141,7 +137,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(instantly)
 		{
 			cameraMovement.StartCoroutine ("NewRestartRotation");
-			yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 0.5f);
+			yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 0.15f);
 		}
 
 		switch(GlobalVariables.Instance.ModeSequenceType)
@@ -169,8 +165,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	IEnumerator UnLoadScene ()
 	{
-		GlobalVariables.Instance.GameState = GameStateEnum.Loading;
-
 		if (SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 

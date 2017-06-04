@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
+using NUnit.Framework;
 
 public enum MenuComponentType { BasicMenu, MainMenu, EndModeMenu, RootMenu };
 
@@ -11,13 +13,6 @@ public enum MenuContentType { Menus, Buttons, MainContent, SecondaryContent };
 public class MenuComponent : MonoBehaviour 
 {
 	public MenuComponentType menuComponentType;
-	[HideInInspector]
-	public bool scrollViewButtons = false;
-	[HideInInspector]
-	public bool scrollViewContent = false;
-
-	[Header ("Content Order")]
-	public List<MenuContent> contentDisplay = new List<MenuContent> ();
 
 	[Header ("Secondary Content")]
 	public List<SecondaryContent> secondaryContents;
@@ -30,85 +25,24 @@ public class MenuComponent : MonoBehaviour
 	[Header ("End Mode Content List")]
 	public RectTransform[] endModeContents = new RectTransform[0];
 
-	[Header ("Override Headers Properties")]
-	public bool overrideHeaderPos = false;
-	public float menuHeaderY = 540;
-	public float menuFirstButtonY = 278;
-	public float buttonFirstButtonY = 278;
-
-	[Header ("Override Positions Properties")]
-	public bool overrideMenuPos = false;
-	public float menuOffScreenX = -2000;
-	public float menuOnScreenX = -650;
-
-	public bool overrideButtonPos = false;
-	public float buttonOffScreenX = -2000;
-	public float buttonOnScreenX = -650;
-
-	public bool overrideContentPos = false;
-	public Vector2 offScreenContent = new Vector2 (-2000, 0);
-	public Vector2 onScreenContent = new Vector2 (0, 0);
-
-	[Header ("Override Display Properties")]
-	public bool overrideButtonsDisplay = false;
-	public bool showButtonsOnSubmit = true;
-	public bool hideButtonsOnCancel = true;
-	public bool hideButtonsOnUnderSubmit = true;
-
-	public bool overrideContentDisplay = false;
-	public bool showContentOnSubmit = true;
-	public bool hideContentOnCancel = true;
-	public bool hideContentOnUnderSubmit = true;
-
-	public RectTransform menuButton;
 	[HideInInspector]
+	public RectTransform menuButton;
 	public MenuComponent aboveMenuScript;
 	[HideInInspector]
 	public List<RectTransform> underMenus;
 	[HideInInspector]
 	public List<RectTransform> underMenusButtons;
 	[HideInInspector]
-	public List<RectTransform> underButtons;
-	[HideInInspector]
 	public RectTransform mainContent;
-
-	[HideInInspector]
-	public List<Vector2> underMenusButtonsPositions;
-	[HideInInspector]
-	public List<Vector2> underButtonsPositions;
-
 	[HideInInspector]
 	public RectTransform menusParent;
-	[HideInInspector]
-	public RectTransform buttonsParent;
 
 	void Awake ()
 	{
-		ResetButton ();
-
 		SetupMenu ();
-
-		if (menuComponentType == MenuComponentType.EndModeMenu)
-			EnableSecondaryContentParent ();
 	}
 
-	void ResetButton ()
-	{
-		if(menuComponentType == MenuComponentType.BasicMenu)
-		{
-			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
-			{
-				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
-				
-				if (transform.parent.GetComponent<MenuScrollView> () != null)
-				{
-					menuButton.SetParent (transform);
-					menuButton.SetSiblingIndex (0);
-				}
-			}
-		}
-	}
-
+	#region Setup
 	public void SetupMenu ()
 	{
 		//GET ABOVE MENU
@@ -116,12 +50,13 @@ public class MenuComponent : MonoBehaviour
 		{
 			if(transform.parent.parent.GetComponent<MenuComponent> () != null)
 				aboveMenuScript = transform.parent.parent.GetComponent<MenuComponent> ();
+			else
+				aboveMenuScript = transform.GetComponentInParent <MenuComponent> ();
 		}
 
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();
-		underButtons.Clear ();
 
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
@@ -136,9 +71,6 @@ public class MenuComponent : MonoBehaviour
 			menusParent = transform.Find ("Menus").GetComponent<RectTransform> ();
 			menusParent.gameObject.SetActive (true);
 
-			if (menusParent.GetComponent<MenuScrollView> () != null)
-				scrollViewButtons = true;
-
 			for(int i = 0; i < menusParent.childCount; i++)
 				underMenus.Add (menusParent.GetChild (i).GetComponent<RectTransform> ());
 		}
@@ -148,7 +80,7 @@ public class MenuComponent : MonoBehaviour
 		{
 			if (underMenus [i].transform.childCount == 0)
 				underMenus [i].transform.GetComponent<MenuComponent> ().SetupMenu ();
-			
+
 			underMenusButtons.Add (underMenus [i].transform.GetChild (0).GetComponent<RectTransform> ());
 		}
 
@@ -156,27 +88,11 @@ public class MenuComponent : MonoBehaviour
 		for (int i = 0; i < underMenusButtons.Count; i++)
 			underMenusButtons [i].GetComponent<MenuButtonComponent> ().buttonIndex = i;
 
-		//UNDER BUTTONS
-		if(transform.Find ("Buttons") != null)
-		{
-			buttonsParent = transform.Find ("Buttons").GetComponent<RectTransform> ();
-			buttonsParent.gameObject.SetActive (true);
-
-			if (buttonsParent.GetComponent<MenuScrollView> () != null)
-				scrollViewButtons = true;
-
-			for(int i = 0; i < buttonsParent.childCount; i++)
-				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
-		}
-
 		//CONTENT
 		if(transform.Find ("MainContent") != null)
 		{
 			mainContent = transform.Find ("MainContent").GetComponent<RectTransform> ();
 			mainContent.gameObject.SetActive (true);
-
-			if (mainContent.GetComponent<MenuScrollView> () != null)
-				scrollViewContent = true;
 		}
 
 		//SECONDARY CONTENT
@@ -203,14 +119,9 @@ public class MenuComponent : MonoBehaviour
 		EnableUnderMenus ();
 
 		SetupButtonsNavigation (underMenusButtons);
-		SetupButtonsNavigation (underButtons);
 
 		EnableSecondaryContentParent ();
-
-		if (contentDisplay.Count == 0)
-			SetupContentDisplay ();
 	}
-
 
 	void EnableUnderMenus ()
 	{
@@ -231,14 +142,10 @@ public class MenuComponent : MonoBehaviour
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
 			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, menuButton.anchoredPosition.y);
-		
+
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
 			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
-
-		//UNDER BUTTONS
-		for (int i = 0; i < underButtons.Count; i++)
-			underButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
 
 		//CONTENT
 		if(mainContent != null)
@@ -260,10 +167,6 @@ public class MenuComponent : MonoBehaviour
 		for (int i = 0; i < underMenusButtons.Count; i++)
 			underMenusButtons[i].gameObject.SetActive (false);
 
-		//UNDER BUTTONS
-		for (int i = 0; i < underButtons.Count; i++)
-			underButtons[i].gameObject.SetActive (false);
-		
 		//CONTENT
 		if(mainContent != null)
 			mainContent.gameObject.SetActive (false);
@@ -273,7 +176,7 @@ public class MenuComponent : MonoBehaviour
 			for (int i = 0; i < secondaryContents.Count; i++)
 				secondaryContents [i].content.gameObject.SetActive (false);
 	}
-		
+
 	void SetupButtonsNavigation (List<RectTransform> buttonsList)
 	{
 		if (buttonsList.Count == 0)
@@ -292,7 +195,7 @@ public class MenuComponent : MonoBehaviour
 			{
 				Navigation nav = buttonsList [i].GetComponent<Button> ().navigation;
 				nav.mode = Navigation.Mode.Explicit;
-				
+
 				if(i == 0)
 				{
 					nav.selectOnUp = buttonsList [buttonsList.Count - 1].GetComponent<Button> ();
@@ -308,77 +211,29 @@ public class MenuComponent : MonoBehaviour
 					nav.selectOnUp = buttonsList [i - 1].GetComponent<Button> ();
 					nav.selectOnDown = buttonsList [i + 1].GetComponent<Button> ();
 				}
-				
+
 				buttonsList [i].GetComponent<Button> ().navigation = nav;
 			}
 		}
 	}
-
-	void SetupContentDisplay ()
-	{
-		//UNDER MENUS
-		if(underMenusButtons.Count > 0)
-		{
-			contentDisplay.Add (new MenuContent ());
-			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.Menus;
-		}
-
-		//UNDER BUTTONS
-		if(underButtons.Count > 0)
-		{
-			contentDisplay.Add (new MenuContent ());
-			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.Buttons;
-		}
-
-		//CONTENT
-		if(mainContent != null)
-		{
-			contentDisplay.Add (new MenuContent ());
-			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.MainContent;
-		}
-
-		//SECONDARY CONTENT
-		if(secondaryContents.Count > 0)
-		{
-			contentDisplay.Add (new MenuContent ());
-			contentDisplay [contentDisplay.Count - 1].contentType = MenuContentType.SecondaryContent;
-		}
-	}
-
+	#endregion
 
 	//Menu Manager Call Methods
 	public void Submit (int buttonIndex)
 	{
-		if (aboveMenuScript != null)
-			aboveMenuScript.OnUnderMenuSubmit ();
-
 		MenuManager.Instance.SubmitMenu (this, buttonIndex);
+	}
+
+	public void Submit (MenuComponent target)
+	{
+		MenuManager.Instance.SubmitMenu (target);
 	}
 
 	public void Cancel ()
 	{
 		if(menuComponentType == MenuComponentType.BasicMenu)
 			MenuManager.Instance.CancelMenu (this, menuButton.GetComponent<MenuButtonComponent> ().buttonIndex);
-
-		SetButtonsPositions ();
 	}
-
-	public void ShowMenu ()
-	{
-		MenuManager.Instance.ShowMenu (this);
-	}
-
-	public void HideMenu ()
-	{
-		MenuManager.Instance.HideMenu (this);
-
-		if(menuButton != null && menuButton.parent != transform)
-		{
-			menuButton.SetParent (transform);
-			menuButton.SetAsFirstSibling ();
-		}
-	}
-
 
 	public void EndMode (WhichMode whichMode)
 	{
@@ -402,30 +257,26 @@ public class MenuComponent : MonoBehaviour
 
 	}
 
-
-	public void OnUnderMenuSubmit ()
+	[ButtonGroupAttribute ("Group B")]	
+	public void ShowMenu ()
 	{
-		SetButtonsPositions ();
+		MenuManager.Instance.ShowMenu (this);
 	}
 
-	void SetButtonsPositions ()
+	[ButtonGroupAttribute ("Group B")]	
+	public void HideMenu ()
 	{
-		if (scrollViewButtons)
+		MenuManager.Instance.HideMenu (this);
+
+		if(menuButton != null && menuButton.parent != transform)
 		{
-			underMenusButtonsPositions.Clear ();
-			underButtonsPositions.Clear ();
-
-			for (int i = 0; i < underMenusButtons.Count; i++)
-				underMenusButtonsPositions.Add (underMenusButtons [i].anchoredPosition);
-
-			for (int i = 0; i < underButtons.Count; i++)
-				underButtonsPositions.Add (underButtons [i].anchoredPosition);
+			menuButton.SetParent (transform);
+			menuButton.SetAsFirstSibling ();
 		}
 	}
 
-
 	#region Editor Methods
-	[ContextMenu ("Show Menu")]
+	[ButtonGroupAttribute ("Group A")]
 	public void ShowMenuEditor ()
 	{
 		MenuManager menuManager = FindObjectOfType<MenuManager> ();
@@ -444,7 +295,6 @@ public class MenuComponent : MonoBehaviour
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();
-		underButtons.Clear ();
 
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
@@ -458,10 +308,7 @@ public class MenuComponent : MonoBehaviour
 				menuButton.SetSiblingIndex (0);
 			}
 
-			if(overrideHeaderPos)
-				menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuHeaderY);
-			else
-				menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuManager.menuHeaderY);
+			menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuManager.menuHeaderY);
 		}
 
 		//UNDER MENUS
@@ -470,9 +317,6 @@ public class MenuComponent : MonoBehaviour
 			menusParent = transform.Find ("Menus").GetComponent<RectTransform> ();
 			menusParent.gameObject.SetActive (true);
 
-			if (menusParent.GetComponent<MenuScrollView> () != null)
-				scrollViewButtons = true;
-			
 			for(int i = 0; i < menusParent.childCount; i++)
 			{
 				underMenus.Add (menusParent.GetChild (i).GetComponent<RectTransform> ());
@@ -486,41 +330,9 @@ public class MenuComponent : MonoBehaviour
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
 		{
-			if (overrideMenuPos)
-				underMenusButtons [i].anchoredPosition = new Vector2 (menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
-			else
-				underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
+			underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
 
 			underMenusButtons [i].gameObject.SetActive (true);
-		}
-
-		//UNDER BUTTONS
-		if(transform.Find ("Buttons") != null)
-		{
-			buttonsParent = transform.Find ("Buttons").GetComponent<RectTransform> ();
-			buttonsParent.gameObject.SetActive (true);
-
-			if (buttonsParent.GetComponent<MenuScrollView> () != null)
-				scrollViewButtons = true;
-
-			for(int i = 0; i < buttonsParent.childCount; i++)
-			{
-				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
-
-				if(buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> () != null)
-					buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
-			}
-
-			for(int i = 0; i < underButtons.Count; i++)
-			{
-				if(overrideButtonPos)
-					underButtons [i].anchoredPosition = new Vector2 (buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
-				else
-					underButtons [i].anchoredPosition = new Vector2 (menuManager.buttonOnScreenX, menuManager.ButtonYPos (i) + menuManager.GapAfterHeaderButton ());
-
-				underButtons [i].gameObject.SetActive (true);
-			}
-
 		}
 
 		//CONTENT
@@ -529,13 +341,7 @@ public class MenuComponent : MonoBehaviour
 			mainContent = transform.Find ("MainContent").GetComponent<RectTransform> ();
 			mainContent.gameObject.SetActive (true);
 
-			if (mainContent.GetComponent<MenuScrollView> () != null)
-				scrollViewContent = true;
-
-			if (overrideContentPos)
-				mainContent.anchoredPosition = onScreenContent;
-			else
-				mainContent.anchoredPosition = menuManager.onScreenContent;
+			mainContent.anchoredPosition = menuManager.onScreenContent;
 		}
 
 		//SECONDARY CONTENT
@@ -564,7 +370,7 @@ public class MenuComponent : MonoBehaviour
 		EnableSecondaryContentParent ();
 	}
 
-	[ContextMenu ("Hide Menu")]
+	[ButtonGroupAttribute ("Group A")]
 	public void HideMenuEditor ()
 	{
 		gameObject.SetActive (false);
@@ -580,7 +386,6 @@ public class MenuComponent : MonoBehaviour
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();
-		underButtons.Clear ();
 
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
@@ -588,7 +393,7 @@ public class MenuComponent : MonoBehaviour
 			if (transform.childCount == 0 || transform.childCount > 0 && transform.GetChild (0).GetComponent<MenuButtonComponent> () == null)
 			{
 				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
-				
+
 				if (transform.parent.GetComponent<MenuScrollView> () != null)
 				{
 					menuButton.SetParent (transform);
@@ -619,23 +424,6 @@ public class MenuComponent : MonoBehaviour
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
 			underMenusButtons [i].gameObject.SetActive (false);
-		
-
-		//UNDER BUTTONS
-		if(transform.Find ("Buttons") != null)
-		{
-			buttonsParent = transform.Find ("Buttons").GetComponent<RectTransform> ();
-			buttonsParent.gameObject.SetActive (false);
-
-			for(int i = 0; i < buttonsParent.childCount; i++)
-			{
-				underButtons.Add (buttonsParent.GetChild (i).GetComponent<RectTransform> ());
-				buttonsParent.GetChild (i).GetComponent<MenuButtonComponent> ().menuComponentParent = this;
-			}
-
-			for(int i = 0; i < underButtons.Count; i++)
-				underButtons [i].gameObject.SetActive (false);
-		}
 
 		//CONTENT
 		if(transform.Find ("MainContent") != null)
@@ -666,11 +454,9 @@ public class MenuComponent : MonoBehaviour
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();
-		underButtons.Clear ();
 		aboveMenuScript = null;
 		menuButton = null;
 		menusParent = null;
-		buttonsParent = null;
 		mainContent = null;
 	}
 	#endregion
@@ -683,9 +469,6 @@ public class SecondaryContent
 	public Vector2 onScreenPos;
 	public Vector2 offScreenPos;
 	public float delay = 0;
-	public bool showOnSubmit = true;
-	public bool hideOnCancel = true;
-	public bool hideOnUnderSubmit = true;
 }
 
 [Serializable]

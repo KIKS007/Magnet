@@ -56,6 +56,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	void Start ()
 	{
+		noInput = false;
+	
 		for(int i = 0; i < 4; i++)
 		{
 			if (i < ReInput.controllers.Joysticks.Count)
@@ -83,7 +85,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput) 
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput)
 			CheckInput ();
 	}
 
@@ -154,6 +156,8 @@ public class MenuChoosePlayer : MonoBehaviour
 					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = -1;
 		}
 
+		//Debug.Log (ReInput.controllers.GetControllerCount (ControllerType.Joystick));
+
 		//Allow to play Alone and choose any character 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 
 			GlobalVariables.Instance.PlayersControllerNumber[1] = 1; 
@@ -194,13 +198,13 @@ public class MenuChoosePlayer : MonoBehaviour
 			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
 			playButton.GetComponent<Button> ().Select (); 
-			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
 		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
 			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.durationContent).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
 		} 
 	} 
 

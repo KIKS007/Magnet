@@ -16,6 +16,13 @@ public class MovablePlague : MovableScript
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 
+	protected override void Start ()
+	{
+		base.Start ();
+
+		ToNeutralColor ();
+	}
+
 	protected override void Update ()
 	{
 		if(hold == false && rigidbodyMovable != null)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
 public class GamesCountInput : MonoBehaviour 
 {
@@ -22,6 +24,8 @@ public class GamesCountInput : MonoBehaviour
 
 		if (GlobalVariables.Instance.GamesCount == 0)
 			GlobalVariables.Instance.GamesCount = 1;
+
+		LoadData ();
 
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
@@ -46,6 +50,8 @@ public class GamesCountInput : MonoBehaviour
 
 			previousModeSequence = GlobalVariables.Instance.ModeSequenceType;
 		};
+
+		CheckBounds ();
 	}
 
 	void OnEnable ()
@@ -116,5 +122,30 @@ public class GamesCountInput : MonoBehaviour
 
 		else
 			increaseButton.SetActive (true);
+	}
+
+	void SaveData ()
+	{
+		int value = 0;
+
+		if (!int.TryParse (input.text, out value) || value == 0)
+		{
+			value = 1;
+			input.text = value.ToString ();
+		}
+
+		PlayerPrefs.SetInt ("GamesCount", value);
+	}
+
+	void LoadData ()
+	{
+		if(PlayerPrefs.HasKey ("GamesCount"))
+			GlobalVariables.Instance.GamesCount = PlayerPrefs.GetInt ("GamesCount");
+	}
+
+	void OnDestroy ()
+	{
+		if(SceneManager.GetActiveScene().name != "Scene Testing")
+			SaveData ();
 	}
 }

@@ -52,6 +52,7 @@ public class PlayersGameplay : MonoBehaviour
 {
 	#region Variables
     [Header("States")]
+	public int livesCount = 0;
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;
@@ -87,9 +88,6 @@ public class PlayersGameplay : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
 	public AnimationCurve dashEase;
-
-	[Header ("Dead Cube")]
-	public bool playerDeadCube = true;
 
 	protected string playerDeadCubeTag;
 
@@ -184,7 +182,7 @@ public class PlayersGameplay : MonoBehaviour
         startModeTime = Time.unscaledTime;
     }
 
-    protected void OnEnable()
+    protected virtual void OnEnable()
     {
         StartCoroutine(WaitTillPlayerEnabled());
 
@@ -208,7 +206,7 @@ public class PlayersGameplay : MonoBehaviour
 			OnSafe();
     }
 
-	protected IEnumerator Startup ()
+	protected virtual IEnumerator Startup ()
 	{
 		playerState = PlayerState.Startup;
 
@@ -353,17 +351,23 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Rewired Controller
-    public void SetupController()
+	public virtual void SetupController()
     {
 		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
 
         if (controllerNumber == -1)
         {
             gameObject.SetActive(false);
+			livesCount = 0;
         }
 
         if (controllerNumber != -1)
+		{
+			livesCount = GlobalVariables.Instance.LivesCount;
 			rewiredPlayer = ReInput.players.GetPlayer(controllerNumber);
+		}
+
+		GlobalVariables.Instance.ListPlayers ();
     }
 	#endregion
 
@@ -397,6 +401,9 @@ public class PlayersGameplay : MonoBehaviour
 
 	public virtual void Attraction(GameObject movable)
 	{
+		if (movable.tag == "HoldMovable")
+			cubesAttracted.Remove (movable);
+
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
@@ -410,6 +417,9 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void Repulsion(GameObject movable)
     {
+		if (movable.tag == "HoldMovable")
+			cubesAttracted.Remove (movable);
+		
 		playerState = PlayerState.Repulsing;
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
@@ -469,14 +479,14 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Collisions
-    private List<GameObject> playersHit = new List<GameObject>();
+	protected List<GameObject> playersHit = new List<GameObject>();
 
     protected virtual void OnCollisionStay(Collision other)
     {
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
-		if(other.gameObject.tag == "DeadZone")
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				Death(DeathFX.All, other.contacts[0].point);
 
@@ -497,7 +507,7 @@ public class PlayersGameplay : MonoBehaviour
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
-		if(other.gameObject.tag == "DeadZone")
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				Death(DeathFX.All, other.contacts[0].point);
 
@@ -595,7 +605,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Dash
-	protected virtual IEnumerator Dash()
+	public virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
 
@@ -620,7 +630,7 @@ public class PlayersGameplay : MonoBehaviour
         }
     }
 
-	protected virtual IEnumerator DashEnd()
+	public virtual IEnumerator DashEnd()
     {
         yield return new WaitForSeconds(dashDuration);
 
@@ -673,13 +683,12 @@ public class PlayersGameplay : MonoBehaviour
 
 		gameObject.SetActive(false);
 
-		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
-		{
-			if(playerDeadCube)
-				GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
-		}
-		else
-			GlobalVariables.Instance.leastDeathManager.PlayerDeath (playerName, gameObject);
+		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+	}
+
+	public void SpawnDeadCube ()
+	{
+		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
 	}
 		
     protected virtual void OnDestroy()
@@ -798,6 +807,12 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnTaunt != null)
 			OnTaunt();
+	}
+
+	protected void OnDashVoid()
+	{
+		if (OnDash != null)
+			OnDash();
 	}
 	#endregion
 }

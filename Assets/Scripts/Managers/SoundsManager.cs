@@ -8,14 +8,44 @@ using UnityEngine.SceneManagement;
 using GameAnalyticsSDK;
 using System.IO;
 using System.Linq;
+using UnityEngine.Audio;
 
 public class SoundsManager : Singleton<SoundsManager> 
 {
 	public PlaylistController playlistCont;
 
+	[Header ("Songs Titles")]
+	public Text currentSong;
+	public GameObject songTitlePrefab;
+	public GameObject songTitleContentParent;
+	public GameObject loadedSongTitleContentParent;
+	public float initialYPos = -36f;
+	public float gapHeight = 110f;
+
 	[Header ("Loaded Musics")]
+	public Text loadButtonText;
+	public GameObject canTakeTime;
+	public bool loadingMusics = false;
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
+
+	[Header ("Low Pass")]
+	public bool lowPassEnabled = true;
+	public Toggle lowPassToggle;
+	public float lowPassTweenDuration;
+	[Range (10, 22000)]
+	public float startScreenLowPass;
+	[Range (10, 22000)]
+	public float pauseLowPass;
+	[Range (10, 22000)]
+	public float gameOverLowPass;
+
+	[Header ("High Pass")]
+	public bool highPassEnabled = true;
+	public Toggle highPassToggle;
+	public float highPassTweenDuration;
+	[Range (10, 22000)]
+	public float sloMoHighPass;
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -79,12 +109,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	[SoundGroupAttribute]
 	public string soundsVolumeTest;
 
-	[Header ("Slow Mo Effect")]
-	public bool slowMoEffectMusicEnabled = false;
-	public Toggle toggleEnableSloMoEffect;
-	public GameObject playListSource;
-	public float timeScaleRatio = 1;
-	public float slowMotweenDuration;
 
 	private float initialSoundsVolume;
 	private float initialPlaylistVolume;
@@ -100,6 +124,9 @@ public class SoundsManager : Singleton<SoundsManager>
 	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
 	private string loadedMusicsPath = "/Musics";
 	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
+	private List<string> loadingMusicsList = new List<string> ();
+
+	private SlowMotionCamera slowMo;
 
 	public event EventHandler OnMusicVolumeChange;
 	public event EventHandler OnSoundsVolumeChange;
@@ -108,8 +135,12 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		LoadMusics ();
 
+		canTakeTime.SetActive (false);
+
 		initialSoundsVolume = MasterAudio.MasterVolumeLevel;
 		initialPlaylistVolume = MasterAudio.PlaylistMasterVolume;
+
+		slowMo = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ();
 
 		StartCoroutine (MusicVolumeChange ());
 		StartCoroutine (SoundsVolumeChange ());
@@ -117,21 +148,31 @@ public class SoundsManager : Singleton<SoundsManager>
 		if (PlayerPrefs.HasKey ("SlowMotionEffectEnable") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
 
-		else if(SceneManager.GetActiveScene().name != "Scene Testing")
-		{
-			toggleEnableSloMoEffect.isOn = false;
-		}
-
-		GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ().OnAllSlowMotionStop += StopSlowMoEffect;
-
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
+		GlobalVariables.Instance.OnMenu += ()=> { if(!MenuManager.Instance.startScreen) ResetLowPass(); };
+
+		GlobalVariables.Instance.OnPlaying += ResetLowPass;
+		GlobalVariables.Instance.OnPlaying += ResetHighPass;
+
+		GlobalVariables.Instance.OnPause += ()=> LowPass (pauseLowPass);
+		GlobalVariables.Instance.OnEndMode += ()=> LowPass (gameOverLowPass);
+
+		slowMo.OnSlowMotionStart += () => HighPass (sloMoHighPass);
+		slowMo.OnSlowMotionStop += ResetHighPass;
+
 		OnMusicVolumeChange += UpdateAudioSettings;
 		OnSoundsVolumeChange += UpdateAudioSettings;
 
+		playlistCont.SongChanged += (newSongName) => currentSong.text = newSongName;
+
 		UpdateAudioSettings ();
+
+		LowPass (startScreenLowPass, 0.5f);
+
+		CreateMusicsSongTitle ();
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
@@ -139,27 +180,36 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void Update ()
 	{
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+		for(int i = 0; i < 2; i++)
 		{
-			for(int i = 0; i < 2; i++)
-			{
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
-					RandomMusic ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
-					NextMusic ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
-					MusicVolumeUp ();
-
-				if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
-					MusicVolumeDown ();
-			}
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Random Music"))
+				RandomMusic ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("Next Music"))
+				NextMusic ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Up"))
+				MusicVolumeUp ();
+			
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButton ("Volume Down"))
+				MusicVolumeDown ();
 		}
 	}
 
-	void LoadMusics ()
+	public void LoadMusics ()
 	{
+		StartCoroutine (LoadMusicsCoroutine ());
+	}
+
+	IEnumerator LoadMusicsCoroutine ()
+	{
+		loadingMusics = true;
+
+		loadButtonText.text = "Loading...";
+		canTakeTime.SetActive (true);
+
+		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
+
 		if (Application.isEditor)
 			loadedMusicsPath = editorLoadedMusicsPath;
 		else
@@ -169,7 +219,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		{
 			Directory.CreateDirectory (loadedMusicsPath);
 			Debug.LogWarning ("Musics folder don't exists!");
-			return;
 		}
 
 		loadedMusics.Clear ();
@@ -183,16 +232,30 @@ public class SoundsManager : Singleton<SoundsManager>
 		if(musicsFiles.Length == 0)
 		{
 			Debug.LogWarning ("No (valid) Musics in folder!");
-			return;
+			SetGamePlaylist ();
+			yield break;
 		}
 
-		foreach (var s in musicsFiles)
+		for(int i = 0; i < musicsFiles.Length; i++)
 		{
-			if(Path.GetExtension (s.Name).Contains (".mp3"))
-				StartCoroutine (LoadMP3File (s.FullName));
+			loadingMusicsList.Add (musicsFiles[i].FullName);
+
+			if(Path.GetExtension (musicsFiles[i].Name).Contains (".mp3"))
+				StartCoroutine (LoadMP3File (musicsFiles[i].FullName));
 			else
-				StartCoroutine (LoadFile (s.FullName));
+				StartCoroutine (LoadFile (musicsFiles[i].FullName));
 		}
+
+		yield return new WaitUntil (() => loadingMusicsList.Count == 0);
+
+		loadingMusics = false;
+
+		loadButtonText.text = "Load";
+		canTakeTime.SetActive (false);
+
+		SetGamePlaylist ();
+
+		CreateLoadedMusicsSongTitle ();
 	}
 	
 	bool IsValidFileType (string fileName)
@@ -232,6 +295,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
 		}
+
+		loadingMusicsList.Remove (path);
 	}
 
 	IEnumerator LoadMP3File (string path)
@@ -262,6 +327,87 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			MasterAudio.AddSongToPlaylist ("Loaded Musics", clip);
 		}
+
+		loadingMusicsList.Remove (path);
+	}
+
+	void CreateMusicsSongTitle ()
+	{
+		foreach (Transform t in songTitleContentParent.transform)
+			Destroy (t.gameObject, 0.05f);
+
+		for(int i = 0; i < MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count; i++)
+		{
+			Vector3 pos = songTitlePrefab.GetComponent<RectTransform> ().anchoredPosition3D;
+			pos.y = -gapHeight * i + initialYPos;
+			pos.z = 0;
+			
+			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, songTitleContentParent.transform);
+			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
+
+			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayGameSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
+
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
+				((int) (MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length / 60)).ToString ("D")
+				+ ":" + 
+				((int)(MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
+		}
+
+		songTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (songTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count * gapHeight);
+	}
+
+	void CreateLoadedMusicsSongTitle ()
+	{
+		foreach (Transform t in loadedSongTitleContentParent.transform)
+			Destroy (t.gameObject, 0.05f);
+
+		for(int i = 0; i < MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count; i++)
+		{
+			Vector3 pos = songTitlePrefab.GetComponent<RectTransform> ().anchoredPosition3D;
+			pos.y = -gapHeight * i + initialYPos;
+			pos.z = 0;
+
+			GameObject songTitle = Instantiate (songTitlePrefab, songTitlePrefab.transform.position, songTitlePrefab.transform.rotation, loadedSongTitleContentParent.transform);
+			songTitle.GetComponent<RectTransform> ().anchoredPosition3D = pos;
+
+			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayLoadedSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
+
+			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
+			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
+			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
+				((int) (MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length / 60)).ToString ("D")
+				+ ":" + 
+				((int)(MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
+		}
+
+		loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count * gapHeight);
+	}
+
+	public void PlayPlaylist (string playlist)
+	{
+		if(playlist == "Game")
+			playLoadedMusics = false;
+
+		else if(playlist == "Loaded Musics")
+			playLoadedMusics = true;
+
+		SetGamePlaylist ();
+	}
+
+	public void PlayGameSong (string song)
+	{
+		PlayPlaylist ("Game");
+
+		playlistCont.TriggerPlaylistClip (song);
+	}
+
+	public void PlayLoadedSong (string song)
+	{
+		PlayPlaylist ("Loaded Musics");
+
+		playlistCont.TriggerPlaylistClip (song);
 	}
 
 	void RandomMusic ()
@@ -304,17 +450,19 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		if(playlistCont.PlaylistName != gamePlaylist)
 		{
-			MasterAudio.ChangePlaylistByName (gamePlaylist, false);
+			if(playlistCont.PlaylistState == PlaylistController.PlaylistStates.Stopped)
+				MasterAudio.StartPlaylist (gamePlaylist);
+			else
+				MasterAudio.ChangePlaylistByName (gamePlaylist, false);
+
 			playlistCont.PlayRandomSong ();
 		}
 	}
 
 	public void SetMenuPlaylist ()
 	{
-		if(playlistCont.PlaylistName != "Menu Ambient")
-		{
-			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
-		}
+//		if(playlistCont.PlaylistName != "Menu Ambient")
+//			MasterAudio.ChangePlaylistByName ("Menu Ambient", true);
 	}
 
 	public void MenuSubmit ()
@@ -359,6 +507,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void UpdateAudioSettings ()
 	{
+		if (SceneManager.GetActiveScene ().name == "Scene Testing")
+			return;
+		
 		if (MasterAudio.MasterVolumeLevel == 0)
 			soundsMuteToggle.isOn = true;
 		else
@@ -416,51 +567,71 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
-	public void StartSlowMoEffect (float whichSlowFactor)
+	public void ToggleLowPass ()
 	{
-		if(slowMoEffectMusicEnabled) 
+		if(lowPassEnabled == true)
 		{
-			AudioSource[] audioSourceComponents = playListSource.GetComponents<AudioSource> ();
-			AudioSource playlistAudioSource = new AudioSource ();
-
-			for (int i = 0; i < audioSourceComponents.Length; i++) {
-				if (audioSourceComponents [i].volume != 0)
-					playlistAudioSource = audioSourceComponents [i];
-			}
-
-			if(playlistAudioSource != null)
-				playlistAudioSource.DOPitch ((playlistAudioSource.pitch / whichSlowFactor) * timeScaleRatio, slowMotweenDuration).SetEase (Ease.OutQuad);
-		}
-	}
-
-	public void StopSlowMoEffect ()
-	{
-		if(slowMoEffectMusicEnabled) 
-		{
-			AudioSource[] audioSourceComponents = playListSource.GetComponents<AudioSource> ();
-			AudioSource playlistAudioSource = new AudioSource ();
-
-			for (int i = 0; i < audioSourceComponents.Length; i++) {
-				if (audioSourceComponents [i].volume != 0)
-					playlistAudioSource = audioSourceComponents [i];
-			}
-
-			playlistAudioSource.DOPitch (1, slowMotweenDuration).SetEase (Ease.OutQuad);
-		}
-	}
-
-	public void ToggleSlowMoEffect ()
-	{
-		if(slowMoEffectMusicEnabled == true)
-		{
-			slowMoEffectMusicEnabled = false;
+			lowPassEnabled = false;
+			ResetLowPass ();
 		}
 		else
 		{
-			slowMoEffectMusicEnabled = true;
+			lowPassEnabled = true;
 		}
 	}
 
+	public void ToggleHighPass ()
+	{
+		if(highPassEnabled == true)
+		{
+			lowPassEnabled = false;
+			ResetLowPass ();
+		}
+		else
+		{
+			highPassEnabled = true;
+		}
+	}
+
+	public void LowPass (float lowPassFrquency, float duration)
+	{
+		if (!lowPassEnabled)
+			return;
+
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void LowPass (float lowPassFrquency)
+	{
+		if (!lowPassEnabled)
+			return;
+
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", lowPassFrquency, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void ResetLowPass ()
+	{
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, lowPassTweenDuration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void ResetLowPass (float duration)
+	{
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("LowPass", 22000f, duration).SetEase (Ease.OutQuad).SetId ("LowPass");
+	}
+
+	public void HighPass (float frequency)
+	{
+		if (!highPassEnabled)
+			return;
+
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", frequency, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+	}
+
+	public void ResetHighPass ()
+	{
+		playlistCont.mixerChannel.audioMixer.DOSetFloat ("HighPass", 10f, highPassTweenDuration).SetEase (Ease.OutQuad).SetId ("HighPass");
+	}
+		
 	public override void OnDestroy ()
 	{
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
@@ -473,9 +644,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void SavePlayerPrefs ()
 	{
-		Debug.Log ("Data Saved");
+//		Debug.Log ("Data Saved");
 
-		PlayerPrefs.SetInt ("SlowMotionEffectEnable", slowMoEffectMusicEnabled ? 1 : 0);
+		PlayerPrefs.SetInt ("LowPassEnabled", lowPassEnabled ? 1 : 0);
+		PlayerPrefs.SetInt ("HighPassEnabled", highPassEnabled ? 1 : 0);
 
 		if(soundsMute)
 		{
@@ -502,19 +674,31 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void LoadPlayersPrefs ()
 	{
-		Debug.Log ("Data Loaded");
+//		Debug.Log ("Data Loaded");
 		loading = true;
 
-		if(PlayerPrefs.GetInt ("SlowMotionEffectEnable") == 1)
+		if(PlayerPrefs.GetInt ("LowPassEnabled") == 1)
 		{
-			slowMoEffectMusicEnabled = true;
-			toggleEnableSloMoEffect.isOn = true;
+			lowPassEnabled = true;
+			lowPassToggle.isOn = true;
 		}
 		else
 		{
-			slowMoEffectMusicEnabled = false;
-			toggleEnableSloMoEffect.isOn = false;
+			lowPassEnabled = false;
+			lowPassToggle.isOn = false;
 		}
+
+		if(PlayerPrefs.GetInt ("HighPassEnabled") == 1)
+		{
+			highPassEnabled = true;
+			highPassToggle.isOn = true;
+		}
+		else
+		{
+			highPassEnabled = false;
+			highPassToggle.isOn = false;
+		}
+
 
 		if(PlayerPrefs.GetInt ("SoundsMute") == 1)
 		{

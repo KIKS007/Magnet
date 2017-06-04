@@ -42,10 +42,8 @@ public class DynamicCamera : MonoBehaviour
 	{
 		targetsList.Clear ();
 
-		if(GlobalVariables.Instance.modeObjective == ModeObjective.LastMan)
-			targetsList.AddRange (GlobalVariables.Instance.AlivePlayersList);
-		else
-			targetsList.AddRange (GlobalVariables.Instance.EnabledPlayersList);
+		targetsList.AddRange (GlobalVariables.Instance.AlivePlayersList);
+//		targetsList.AddRange (GlobalVariables.Instance.EnabledPlayersList);
 
 		for (int i = 0; i < otherTargetsList.Count; i++)
 			if(otherTargetsList[i] != null && otherTargetsList[i].activeSelf == true)

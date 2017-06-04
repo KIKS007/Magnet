@@ -7,268 +7,240 @@ using GameAnalyticsSDK;
 
 public class ResolutionManager : MonoBehaviour
 {
+	[Header("Fullscreen")]
+	public bool fullScreen = true;
+
+	[Header("Scroll View")]
+	public GameObject resolutionContentParent;
+	public ToggleGroup resolutionsToggleGroup;
+	public float initialYPos = -36f;
+	public float gapHeight = 110f;
+
+	[Header("Resolutions")]
+	public Text currentResText;
+	public GameObject resolutionLinePrefab;
+	public List<Vector2> allScreenRes;
+
+	[Header("Ratio")]
+	public List<Vector2> allRatios;
+
+	[Header("4:3")]
+	public List<Vector2> screenRes1;
+	[Header("5:4")]
+	public List<Vector2> screenRes2;
+	[Header("16:10")]
+	public List<Vector2> screenRes3;
+	[Header("16:09")]
+	public List<Vector2> screenRes4;
+
+	[Header("Settings")]
 	public Vector2 currentScreenRes = new Vector2();
 
-    // Fixed aspect ratio parameters
-    static public bool FixedAspectRatio = true;
-    static public float TargetAspectRatio = 16f / 9f;
+	[Header("Toggles")]
+	public Toggle fullscreenToggle;
+	public Toggle vsyncToggle;
 
-    // List of horizontal resolutions to include
-    private int[] resolutions = new int[] {1024, 1152, 1280, 1366, 1600, 1920};
-
-    public Resolution DisplayResolution;
-	public List<Vector2> ScreenResolutions;
-
-	public Toggle[] resToggles = new Toggle[6];
-	public Toggle windowedToggle;
-
-	private int screenResIndex;
+	public List<GameObject> allToggles = new List<GameObject> ();
 
     void Start()
     {
-		InitResolutions();
+		Setup();
 
 		StartCoroutine (CheckFullScreenChange (Screen.fullScreen));
 
-		//Setup();
+		CreateResolutionLines();
 
-		if(!PlayerPrefs.HasKey ("ScreenResIndex"))
-		{
-			if (Screen.resolutions.Length > 1)
-				FindCorrectResolution ();
-			else
-				SetupEditorResolution ();
-		}
-		else
-		{
-			screenResIndex = PlayerPrefs.GetInt ("ScreenResIndex");
+		if (!PlayerPrefs.HasKey ("ScreenWidth"))
+			FindResolution ();
 
-			if(PlayerPrefs.GetInt ("Fullscreen") == 1)
-			{
-				windowedToggle.isOn = false;
-				SetResolution (screenResIndex, true);
-			}
-			else
-			{
-				windowedToggle.isOn = true;
-				SetResolution (screenResIndex, false);
-			}
-		}
-
-		SetCurrentRes ();
-
-		SetCorrectToggle ();
-
-		//printResolution ();
+		SelectToggle ();
     }
 		
-	void InitResolutions()
-	{
-		float screenAspect = TargetAspectRatio;
-
-		ScreenResolutions = new List<Vector2>();
-
-		foreach (int w in resolutions)
-		{
-			ScreenResolutions.Add(new Vector2(w, Mathf.Round(w / screenAspect)));
-		}
-
-		ScreenResolutions = ScreenResolutions.OrderBy(resolution => resolution.x).ToList();
-	}
-
 	void Setup()
 	{
-		if(Screen.resolutions.Length > 1)
+		if (PlayerPrefs.HasKey ("Fullscreen"))
 		{
-			DisplayResolution = Screen.resolutions[Screen.resolutions.Length - 1];
-
-			SetResolution (5, true);
-
-			FindCorrectResolution ();
+			fullScreen = PlayerPrefs.GetInt ("Fullscreen") == 1 ? true : false;
+			fullscreenToggle.isOn = fullScreen;
 		}
-		else
+
+		if (PlayerPrefs.HasKey ("Vsync"))
 		{
-			DisplayResolution.width = 1920;
-			DisplayResolution.height = 1080;
+			QualitySettings.vSyncCount = PlayerPrefs.GetInt ("Vsync");
+			vsyncToggle.isOn = PlayerPrefs.GetInt ("Vsync") == 0 ? false : true;
+		}
 
-			screenResIndex = 5;
-			PlayerPrefs.SetInt ("ScreenResIndex", 5);
+		if (PlayerPrefs.HasKey ("ScreenWidth"))
+			SetResolution (new Vector2(PlayerPrefs.GetInt ("ScreenWidth"), PlayerPrefs.GetInt ("ScreenHeight")));
 
-			if(PlayerPrefs.HasKey ("Fullscreen") && PlayerPrefs.GetInt ("Fullscreen") == 0)
+		if (PlayerPrefs.HasKey ("ScreenWidth"))
+			Debug.Log ("Resolution Loaded : " + currentScreenRes.x + "x" + currentScreenRes.y);
+
+	}
+
+	void FindResolution ()
+	{
+		bool resolutionFound = false;
+		Vector2 currentResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+
+		foreach(Vector2 v in allScreenRes)
+		{
+			if(Mathf.Approximately (currentResolution.x, v.x) && Mathf.Approximately (currentResolution.y, v.y))
 			{
-				SetResolution (5, false);
-				PlayerPrefs.SetInt ("Fullscreen", 0);
+				currentScreenRes = v;
+				SetResolution (v);
+				resolutionFound = true;
+				break;
 			}
+		}
 
-			else
+		if(!resolutionFound)
+		{
+			currentScreenRes = new Vector2 (1920, 1080);
+			SetResolution (currentScreenRes);
+		}
+
+		Debug.Log (Screen.currentResolution);
+		Debug.Log ("Res found : " + currentScreenRes.x + "x" + currentScreenRes.y);
+
+//		foreach (Resolution r in Screen.resolutions)
+//			Debug.Log (r.width + " x " + r.height);
+	}
+
+	void SelectToggle ()
+	{
+		foreach(GameObject g in allToggles)
+		{
+			Text res = g.transform.GetChild (1).GetComponent<Text> ();
+
+			if(res.text == currentScreenRes.x + "x" + currentScreenRes.y)
 			{
-				SetResolution (5, true);
-				PlayerPrefs.SetInt ("Fullscreen", 1);
+				g.GetComponent<Toggle> ().isOn = true;
+				break;
 			}
 		}	
 	}
 
-	void SetupEditorResolution ()
+	void CreateResolutionLines ()
 	{
-		DisplayResolution.width = 1920;
-		DisplayResolution.height = 1080;
+		allScreenRes.AddRange (screenRes1);
+		allScreenRes.AddRange (screenRes2);
+		allScreenRes.AddRange (screenRes3);
+		allScreenRes.AddRange (screenRes4);
 
-		screenResIndex = 5;
-		PlayerPrefs.SetInt ("ScreenResIndex", 5);
+		allToggles.Clear ();
 
-		if(PlayerPrefs.HasKey ("Fullscreen") && PlayerPrefs.GetInt ("Fullscreen") == 0)
+		List<Vector2> allResTemp = new List<Vector2> (allScreenRes);
+		int resCount = 0;
+
+		resolutionContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (resolutionContentParent.GetComponent<RectTransform> ().sizeDelta.x, 50 + gapHeight * allScreenRes.Count);
+
+		while(allResTemp.Count != 0)
 		{
-			SetResolution (5, false);
-			PlayerPrefs.SetInt ("Fullscreen", 0);
-		}
+			Vector2 smallestRes = allResTemp [0];
 
-		else
-		{
-			SetResolution (5, true);
-			PlayerPrefs.SetInt ("Fullscreen", 1);
+			foreach(Vector2 v in allResTemp)
+			{
+				if (v.y < smallestRes.y)
+					smallestRes = v;
+			}
+
+			allResTemp.Remove (smallestRes);
+
+			Vector3 pos = Vector3.zero;
+			pos.y = -gapHeight * resCount + initialYPos;
+			pos.z = 0;
+
+			GameObject resLine = Instantiate (resolutionLinePrefab, resolutionLinePrefab.transform.position, resolutionLinePrefab.transform.rotation, resolutionContentParent.transform) as GameObject;
+
+			allToggles.Add (resLine);
+
+			resLine.GetComponent<Toggle> ().group = resolutionsToggleGroup;
+
+			resLine.GetComponent<Toggle> ().onValueChanged.AddListener ( (bool arg0) => { if(arg0) SetResolution (new Vector2 (smallestRes.x, smallestRes.y)); } );
+
+			resLine.GetComponent<RectTransform> ().anchoredPosition3D = pos;
+			resLine.transform.GetChild (1).GetComponent<Text> ().text = smallestRes.x + "x" + smallestRes.y;
+			resLine.transform.GetChild (2).GetComponent<Text> ().text = FindRatio (smallestRes);
+
+			resCount++;
 		}
 	}
 
-	void FindCorrectResolution ()
+	string FindRatio (Vector2 resolution)
 	{
-		DisplayResolution = Screen.resolutions[Screen.resolutions.Length - 1];
-		screenResIndex = ScreenResolutions.Count - 1;
-		//SetResolution (5, true);
+		float testedRatio = resolution.x / resolution.y;
+		string ratioText = "";
 
-		bool exactRes = false;
-		float screenResDifference = 5000;
-
-		for (int i = 0; i < ScreenResolutions.Count; i++)
+		foreach(Vector2 ratio in allRatios)
 		{
-			if(DisplayResolution.width == ScreenResolutions[i].x)
+			if(Mathf.Abs (testedRatio - (ratio.x / ratio.y)) < 0.01f)
 			{
-				screenResIndex = i;
-
-				exactRes = true;
-				Debug.Log ("Exact Res with " + ScreenResolutions[i].x + " width");
+				ratioText = ratio.x + ":" + ratio.y;
 				break;
 			}
-
-			if (Mathf.Abs(DisplayResolution.width - ScreenResolutions[i].x) < screenResDifference)
-			{
-				screenResDifference = Mathf.Abs (DisplayResolution.width - ScreenResolutions [i].x);
-				screenResIndex = i;
-			}
 		}
 
-		if(!exactRes)
-			Debug.Log("Closest Res with " + ScreenResolutions[screenResIndex].x + " width");
-
-		GameAnalytics.NewDesignEvent ("Menu:" + "Resolution:" + ScreenResolutions[screenResIndex].x.ToString());
-		Debug.Log("Menu:" + "Resolution:" + ScreenResolutions[screenResIndex].x.ToString());
-
-
-		if(PlayerPrefs.HasKey ("Fullscreen") && PlayerPrefs.GetInt ("Fullscreen") == 1)
-			SetResolution (screenResIndex, false);
-
-		else
-			SetResolution (screenResIndex, true);
+		return ratioText;
 	}
 
-	void SetCurrentRes ()
+	void SetResolution (Vector2 res)
 	{
-		currentScreenRes = new Vector2 (ScreenResolutions [screenResIndex].x, ScreenResolutions [screenResIndex].y);
-		PlayerPrefs.SetInt ("ScreenResIndex", screenResIndex);
+		//Debug.Log ("New Resolution : " + (int)res.x + " x " + (int)res.y);
+
+		currentScreenRes = res;
+		Screen.SetResolution ((int)res.x, (int)res.y, fullScreen);
+
+		currentResText.text = (int)res.x + " x " + (int)res.y;
+
+		PlayerPrefs.SetInt ("ScreenWidth", (int)res.x);
+		PlayerPrefs.SetInt ("ScreenHeight", (int)res.y);
 	}
 
-    void printResolution()
-    {
-		Debug.Log("Screen res: " + DisplayResolution.width + "x" + DisplayResolution.height);
-		Debug.Log ("Current res: " + ScreenResolutions[screenResIndex].x + "x" + ScreenResolutions[screenResIndex].y);
-    }
-
-	void SetCorrectToggle ()
+	public void ToggleFullscreen()
 	{
-		for(int i = 0; i < resToggles.Length; i++)
-		{
-			resToggles [i].isOn = false;
-		}
-			
-		resToggles [screenResIndex].isOn = true;
+		Debug.Log ("Toggle Full");
+
+		fullScreen = !fullScreen;
+		Screen.SetResolution ((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
+
+		PlayerPrefs.SetInt ("Fullscreen", fullScreen ? 1 : 0);
 	}
 
-	void SetResolution(int index, bool fullScreen)
-    {
-        Vector2 r = new Vector2();
-     
-        screenResIndex = index;
-        r = ScreenResolutions[screenResIndex];
-
-		PlayerPrefs.SetInt ("ScreenResIndex", screenResIndex);
-
-       // Debug.Log("Setting resolution to " + (int)r.x + "x" + (int)r.y);
-
-		Screen.SetResolution((int)r.x, (int)r.y, fullScreen);
-
-		if(fullScreen)
-			PlayerPrefs.SetInt ("Fullscreen", 1);
-		else
-			PlayerPrefs.SetInt ("Fullscreen", 0);
-
-		SetCurrentRes ();
-    }
-
-	public void SetResolution(int index)
+	public void ToggleVsync ()
 	{
-		Vector2 r = new Vector2();
+		Debug.Log ("Toggle Sync");
 
-		screenResIndex = index;
-		r = ScreenResolutions[screenResIndex];
-
-		PlayerPrefs.SetInt ("ScreenResIndex", screenResIndex);
-
-		// Debug.Log("Setting resolution to " + (int)r.x + "x" + (int)r.y);
-
-		if(PlayerPrefs.GetInt ("Fullscreen") == 1)
-		{
-			Screen.SetResolution((int)r.x, (int)r.y, true);
-			PlayerPrefs.SetInt ("Fullscreen", 1);
-		}
+		if (QualitySettings.vSyncCount == 0)
+			QualitySettings.vSyncCount = 1;
 		else
-		{
-			Screen.SetResolution((int)r.x, (int)r.y, false);
-			PlayerPrefs.SetInt ("Fullscreen", 0);
-		}
+			QualitySettings.vSyncCount = 0;
 
-		SetCurrentRes ();
+		PlayerPrefs.SetInt ("Vsync", QualitySettings.vSyncCount);
 	}
 
-    public void ToggleFullscreen()
-    {
-		if(Screen.fullScreen)
-		{
-//			Debug.Log ("Windowed");
-			PlayerPrefs.SetInt ("Fullscreen", 0);
-			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, false);
-		}
-		else
-		{
-//			Debug.Log ("Full");
-			PlayerPrefs.SetInt ("Fullscreen", 1);
-			Screen.SetResolution((int)ScreenResolutions[screenResIndex].x, (int)ScreenResolutions[screenResIndex].y, true);
-		}
-    }
+	public void Reset ()
+	{
+		fullScreen = true;
+		fullscreenToggle.isOn = true;
+
+		QualitySettings.vSyncCount = 1;
+		vsyncToggle.isOn = true;
+
+		FindResolution ();
+
+		SelectToggle ();
+	}
 
 	IEnumerator CheckFullScreenChange (bool fullscreen)
 	{
 		yield return new WaitUntil (()=> Screen.fullScreen != fullscreen);
 
 		if(Screen.fullScreen == true && PlayerPrefs.GetInt ("Fullscreen") == 0)
-		{
-			SetResolution (screenResIndex, true);
-			windowedToggle.isOn = false;
-		}
+			fullscreenToggle.isOn = false;
 
 		if(Screen.fullScreen == false && PlayerPrefs.GetInt ("Fullscreen") == 1)
-		{
-			SetResolution (screenResIndex, false);
-			windowedToggle.isOn = true;
-		}
+			fullscreenToggle.isOn = true;
 
 		StartCoroutine (CheckFullScreenChange (Screen.fullScreen));
 	}
