@@ -184,6 +184,53 @@ public class PlayersTutorial : PlayersGameplay
 		}
 	}
 
+	protected override void OnCollisionStay(Collision other)
+	{
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable")
+		if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		{
+			if ((tutorialManager.tutorialState & TutorialState.DashHit) != TutorialState.DashHit)
+				return;
+			
+			playersHit.Add(other.gameObject);
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+
+		}
+	}
+
+	protected override void OnCollisionEnter(Collision other)
+	{
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		{
+			if ((tutorialManager.tutorialState & TutorialState.DashHit) != TutorialState.DashHit)
+				return;
+
+			playersHit.Add(other.gameObject);
+			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+
+			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
+			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+		}
+	}
+
 	public override void OnHoldMovable (GameObject movable)
 	{
 		if((tutorialManager.tutorialState & TutorialState.Shoot) == TutorialState.Shoot)
@@ -214,6 +261,8 @@ public class PlayersTutorial : PlayersGameplay
 
 		gameObject.SetActive(false);
 
-		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
+		FindObjectOfType<TutorialManager> () .PlayerDeath (playerName, gameObject);
+
+//		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
 	}
 }

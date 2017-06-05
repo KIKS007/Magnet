@@ -36,6 +36,11 @@ public class ArenaDeadzones : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		Setup ();
+	}
+
+	public void Setup ()
+	{
 		int settingsIndex = currentSettings;
 
 		switch (randomType)

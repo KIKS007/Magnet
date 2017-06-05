@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 [Flags]
 public enum TutorialState 
@@ -22,6 +23,32 @@ public enum TutorialState
 
 public class TutorialManager : MonoBehaviour 
 {
+	[PropertyOrder (-1)]
+	[ButtonAttribute] 
+	void NextStep ()
+	{
+		StopAllCoroutines ();
+
+		switch (tutorialState)
+		{
+		case TutorialState.Movement:
+			StartCoroutine (DashStep ());
+			break;
+		case TutorialState.DashStep:
+			StartCoroutine (DashHitStep ());
+			break;
+		case TutorialState.DashHitStep:
+			StartCoroutine (AttractRepelStep ());
+			break;
+		case TutorialState.AttractRepelStep:
+			StartCoroutine (ShootStep ());
+			break;
+		case TutorialState.ShootStep:
+			StartCoroutine (DeadlyWallStep ());
+			break;
+		}
+	}
+
 	public TutorialState tutorialState = TutorialState.Movement;
 
 	[Header ("Players")]
@@ -37,6 +64,7 @@ public class TutorialManager : MonoBehaviour
 	public int dashHitCount = 3;
 
 	[Header ("ATTRACT / REPEL")]
+	public float durationBetweenSpawn = 0.1f;
 	public float attractTime = 4;
 	public float repelTime = 3;
 
@@ -45,7 +73,12 @@ public class TutorialManager : MonoBehaviour
 	public int hitsCount = 4;
 
 	[Header ("DEADLY WALLS")]
-	public int deathCount = 1;
+	public ArenaDeadzones arena;
+	public int livesCount = 4;
+
+	[Header ("DEAD CUBES")]
+	public float timeBeforePlayerRespawn = 2;
+	public bool oneDeadCube = false;
 
 	private List<PlayersTutorial> playersScript = new List<PlayersTutorial> ();
 	private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations> ();
@@ -86,6 +119,9 @@ public class TutorialManager : MonoBehaviour
 			playersFX.Add (g.GetComponent<PlayersFXAnimations> ());
 			PlayerStats.Add (new PlayerTutorialStats ());
 		}
+
+		foreach (PlayersTutorial p in playersScript)
+			p.livesCount = livesCount;
 
 		StartCoroutine (MovementStep ());
 	}
@@ -154,6 +190,9 @@ public class TutorialManager : MonoBehaviour
 	{
 		tutorialState |= TutorialState.AttractRepel;
 
+		if(GlobalVariables.Instance.AllMovables.Count > 0)
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+
 		zoomCamera.Zoom (FeedbackType.Startup);
 		Waves ();
 
@@ -194,19 +233,46 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator DeadlyWallStep ()
 	{
+		arena.enabled = true;
+		arena.Setup ();
+
 		tutorialState |= TutorialState.DeadlyWall;
 
 		zoomCamera.Zoom (FeedbackType.Startup);
 		Waves ();
 
 		yield return 0;
-
 	}
 
 	void Waves ()
 	{
 		foreach (PlayersFXAnimations f in playersFX)
 			f.WaveFX (true);
+	}
+
+	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
+	{
+		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
+
+		playerScript.livesCount--;
+
+		GlobalVariables.Instance.ListPlayers ();
+
+		//Spawn Play if has lives left
+		if(playerScript.livesCount != 0)
+		{
+			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
+			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
+		}
+		else 
+		{
+			playerScript.SpawnDeadCube ();
+
+			if(!oneDeadCube)
+			{
+				oneDeadCube = true;
+			}
+		}
 	}
 }
 

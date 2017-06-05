@@ -749,19 +749,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void StartMode ()
 	{
-		switch (GlobalVariables.Instance.ModeSequenceType)
-		{
-		case ModeSequenceType.Selection:
-			StartCoroutine (StartModeCoroutine ());
-			break;
-		case ModeSequenceType.Random:
-			StartCoroutine (StartRandomModeCoroutine ());
-			break;
-		case ModeSequenceType.Cocktail:
-			StartCoroutine (StartRandomCocktailModeCoroutine ());
-			break;
-		}
-
+		StartCoroutine (StartModeCoroutine ());
 	}
 
 	IEnumerator StartModeCoroutine ()
@@ -776,46 +764,6 @@ public class MenuManager : Singleton <MenuManager>
 
 		yield return cameraMovement.StartCoroutine ("NewPlayPosition");
 //		yield return cameraMovement.StartCoroutine ("PlayPosition");
-
-		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-	}
-
-	IEnumerator StartRandomModeCoroutine ()
-	{
-		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
-		currentMenu.HideMenu ();
-
-		LoadModeManager.Instance.LoadRandomScene ();
-
-		yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 2);
-
-		yield return new WaitForSecondsRealtime(animationDuration);
-
-		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
-
-		yield return cameraMovement.StartCoroutine ("NewPlayPosition");
-		//yield return cameraMovement.StartCoroutine ("PlayPosition");
-
-		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
-	}
-
-	IEnumerator StartRandomCocktailModeCoroutine ()
-	{
-		mainCamera.GetComponent<SlowMotionCamera> ().StopPauseSlowMotion ();
-		currentMenu.HideMenu ();
-
-		GlobalVariables.Instance.currentCocktailModes.AddRange (GlobalVariables.Instance.selectedCocktailModes);
-
-		LoadModeManager.Instance.LoadRandomCocktailScene ();
-
-		yield return new WaitForSecondsRealtime (cameraMovement.newMovementDuration * 2);
-
-		yield return new WaitForSecondsRealtime(animationDuration);
-
-		MasterAudio.PlaySound (SoundsManager.Instance.closeMenuSound);
-
-		yield return cameraMovement.StartCoroutine ("NewPlayPosition");
-		//yield return cameraMovement.StartCoroutine ("PlayPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
 	}
