@@ -500,7 +500,7 @@ public class StatsFeedback : MonoBehaviour
 		string number = stats.winsInARowNumber.ToString ();
 		string secondText;
 
-		switch (stats.mostWinsInARow)
+		switch (stats.mostWinsInARowPlayer)
 		{
 		case WhichPlayer.Player1:
 			textComponent.text = "Player 1";

@@ -306,6 +306,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		NumberOfAlivePlayers = AlivePlayersList.Count;
 		NumberOfDeadPlayers = 4 - NumberOfAlivePlayers;
+
+		if (OnPlayerListed != null)
+			OnPlayerListed ();
 	}
 
 	void UpdatePlayedModes ()
@@ -405,6 +408,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	}
 
 	public event EventHandler OnGamepadDisconnected;
+
+	public event EventHandler OnPlayerListed;
 
 	public event EventHandler OnEndMode;
 	public event EventHandler OnStartMode;
