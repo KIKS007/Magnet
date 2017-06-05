@@ -48,7 +48,7 @@ public class MenuChoosePlayer : MonoBehaviour
 		for (int i = 1; i < controllers.Length; i++)
 			Leave (i);
 
-		if (ReInput.controllers.Joysticks.Count == 0)
+		if (ReInput.controllers.Joysticks.Count < 2)
 			Join (0);
 		else
 			Leave (0);

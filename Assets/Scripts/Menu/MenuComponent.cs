@@ -63,6 +63,7 @@ public class MenuComponent : MonoBehaviour
 		{
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.GetComponent<MenuButtonComponent> ().menuComponentParent = this;
+			menuButton.GetComponent<Button> ().interactable = false;
 		}
 
 		//UNDER MENUS

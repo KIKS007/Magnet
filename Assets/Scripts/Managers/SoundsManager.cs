@@ -694,7 +694,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void SavePlayerPrefs ()
 	{
-		Debug.Log ("Audio Data Saved");
+//		Debug.Log ("Audio Data Saved");
 
 		PlayerPrefs.SetInt ("LowPassEnabled", lowPassEnabled ? 1 : 0);
 		PlayerPrefs.SetInt ("HighPassEnabled", highPassEnabled ? 1 : 0);
@@ -737,7 +737,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void LoadPlayersPrefs ()
 	{
-		Debug.Log ("Audio Data Loaded");
+//		Debug.Log ("Audio Data Loaded");
 
 		loading = true;
 
@@ -763,10 +763,6 @@ public class SoundsManager : Singleton<SoundsManager>
 			highPassToggle.isOn = false;
 		}
 
-
-		Debug.Log ("Master :" + PlayerPrefs.GetFloat("MasterVolume"));
-		Debug.Log ("Sounds :" + PlayerPrefs.GetFloat("SoundsVolume"));
-		Debug.Log ("Music :" + PlayerPrefs.GetFloat("MusicVolume"));
 
 		previousMasterVolume = PlayerPrefs.GetFloat("PreviousVolumePlaylist");
 		masterBar.value = PlayerPrefs.GetFloat("MasterVolume");

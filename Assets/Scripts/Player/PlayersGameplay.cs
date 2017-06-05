@@ -120,6 +120,8 @@ public class PlayersGameplay : MonoBehaviour
     protected bool hasAttracted;
     protected bool hasRepulsed;
 
+	protected float stunnedRotationTemp;
+
     protected float startModeTime;
 
 	protected PlayersFXAnimations playerFX;
@@ -279,7 +281,7 @@ public class PlayersGameplay : MonoBehaviour
 
 			//Stunned Rotation
             if (playerState == PlayerState.Stunned)
-                transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
+				transform.Rotate(0, stunnedRotationTemp * Time.deltaTime, 0, Space.World);
 
 			//Reset Attraction - Repulsion State
 			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
@@ -570,6 +572,10 @@ public class PlayersGameplay : MonoBehaviour
     protected virtual IEnumerator Stun(bool cubeHit)
     {
 		playerState = PlayerState.Stunned;
+
+		stunnedRotationTemp = stunnedRotation;
+
+		DOTween.To (()=> stunnedRotationTemp, x=> stunnedRotationTemp = x, stunnedRotationTemp * 0.3f, stunnedDuration * 0.5f).SetEase (Ease.OutQuint).SetDelay (stunnedDuration * 0.5f);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{

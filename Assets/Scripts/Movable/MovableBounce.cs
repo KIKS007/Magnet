@@ -31,6 +31,15 @@ public class MovableBounce : MovableScript
 					gameObject.tag = "Movable";
 					playerThatThrew = null;
 				}
+
+				else if(gameObject.tag == "ThrownMovable")
+				{
+					ToNeutralColor ();
+
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
+					playerThatThrew = null;
+				}
 			}
 		}
 	}
@@ -69,6 +78,9 @@ public class MovableBounce : MovableScript
 	{
 		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			if (tag != "ThrownMovable")
+				return;
+
 			/*if(currentVelocity > (limitVelocity * 0.5f))
 				InstantiateImpactFX (other.contacts [0]);*/
 
