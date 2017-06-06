@@ -122,7 +122,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected float stunnedRotationTemp;
 
-    protected float startModeTime;
+	[HideInInspector]
+	public float startModeTime;
 
 	protected PlayersFXAnimations playerFX;
 
@@ -670,6 +671,8 @@ public class PlayersGameplay : MonoBehaviour
 		playerState = PlayerState.Dead;
 
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
+		StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] = (int)(Time.unscaledTime - startModeTime);
+
 		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
 		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
 

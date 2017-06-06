@@ -7,18 +7,32 @@ using Sirenix.OdinInspector;
 using System.Linq;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow};
+public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration};
 
 public class StatsManager : SerializedMonoBehaviour
 {
+	[PropertyOrder (-1)]
+	[Button("Update Stats")] 
+	void UpdateStatsButton ()
+	{
+		UpdateStats ();
+	}
+
 	[Header ("Player Stats")]
 	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
 
 	[Header ("Total Stats")]
+	public List<WhichStat> totalExcludeStats = new List<WhichStat> ();
 	public Dictionary<string, int> totalStats = new Dictionary<string, int> ();
 
 	[Header ("Most Stats")]
-	public Dictionary<string, MostStats> mostStats = new Dictionary<string, MostStats> ();
+	public Dictionary<string, Stats> mostStats = new Dictionary<string, Stats> ();
+
+	[Header ("Least Stats")]
+	public Dictionary<string, Stats> leastStats = new Dictionary<string, Stats> ();
+
+	[Header ("Reset Exclude Stats")]
+	public List<WhichStat> resetExcludeStats = new List<WhichStat> ();
 
 	[Header ("Winner")]
 	public WhichPlayer winnerName = WhichPlayer.None;
@@ -49,8 +63,8 @@ public class StatsManager : SerializedMonoBehaviour
 		GlobalVariables.Instance.OnStartMode += SetupStats;
 		GlobalVariables.Instance.OnStartMode += ()=> StartCoroutine (StartTimer ());
 
-		GlobalVariables.Instance.OnEndMode += UpdateMostStats;
-		GlobalVariables.Instance.OnPause += UpdateMostStats;
+		GlobalVariables.Instance.OnEndMode += UpdateStats;
+		GlobalVariables.Instance.OnPause += UpdateStats;
 
 		GlobalVariables.Instance.OnMenu += ()=> ResetStats(true);
 
@@ -79,24 +93,36 @@ public class StatsManager : SerializedMonoBehaviour
 		totalStats.Clear ();
 
 		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
-			totalStats.Add ( ((WhichStat)i).ToString (), 0);
+			if(!totalExcludeStats.Contains ( (WhichStat)i ))
+				totalStats.Add ( ((WhichStat)i).ToString (), 0);
 
 		//Most Stats
 		mostStats.Clear ();
 
 		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
 		{
-			mostStats.Add ( ((WhichStat)i).ToString (), new MostStats ());
+			mostStats.Add ( ((WhichStat)i).ToString (), new Stats ());
 			mostStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
+		}
+
+		//Least Stats
+		leastStats.Clear ();
+
+		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
+		{
+			leastStats.Add ( ((WhichStat)i).ToString (), new Stats ());
+			leastStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
 		}
 	}
 
-	void UpdateMostStats ()
+	void UpdateStats ()
 	{
-		foreach(KeyValuePair<string, MostStats> d in mostStats)
+		//Most Values
+		foreach(KeyValuePair<string, Stats> d in mostStats)
 		{
 			int mostValue = -5;
 			WhichPlayer player = WhichPlayer.None;
+			bool severalMost = false;
 
 			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 			{
@@ -105,12 +131,45 @@ public class StatsManager : SerializedMonoBehaviour
 					mostValue = p.Value.playersStats [d.Key];
 					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
 				}
+				else if(p.Value.playersStats [d.Key] == mostValue)
+					severalMost = true;
 			}
 
-			if(mostValue != 0)
+			if(mostValue != 0 && !severalMost)
 			{
 				d.Value.value = mostValue;
 				d.Value.whichPlayer = player;
+			}
+		}
+
+		//Least Values
+		foreach(KeyValuePair<string, Stats> d in leastStats)
+		{
+			int leastValue = playersStats [PlayerName.Player1.ToString ()].playersStats [d.Key];
+			WhichPlayer player = WhichPlayer.Player1;
+			bool severalLeast = false;
+
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+			{
+				if(p.Value.playersStats [d.Key] < leastValue)
+				{
+					leastValue = p.Value.playersStats [d.Key];
+					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
+				}
+
+				else if(p.Value.playersStats [d.Key] == leastValue && p.Key != PlayerName.Player1.ToString ())
+					severalLeast = true;
+			}
+
+			if(!severalLeast)
+			{
+				d.Value.value = leastValue;
+				d.Value.whichPlayer = player;
+			}
+			else
+			{
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
 			}
 		}
 	}
@@ -154,19 +213,23 @@ public class StatsManager : SerializedMonoBehaviour
 
 		AimPrecision ();
 
-		UpdateMostStats ();
+		UpdateStats ();
 	}
 
 	public void Winner (WhichPlayer whichPlayerWon)
 	{
 		winnerName = whichPlayerWon;
 		WinsInARow (whichPlayerWon);
-		UpdateMostStats ();
 
 		playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
-		totalStats [WhichStat.Wins.ToString ()]++;
-		totalStats [WhichStat.WinsInARow.ToString ()] = mostStats [WhichStat.WinsInARow.ToString ()].value;
+		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+		{
+			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
+				p.Value.playersStats [WhichStat.LifeDuration.ToString ()] = (int)timerDuration;
+		}
+
+		UpdateStats ();
 
 		switch (whichPlayerWon)
 		{
@@ -195,12 +258,16 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		winnerName = (WhichPlayer)(int)playerName;
 		WinsInARow ((WhichPlayer)(int)playerName);
-		UpdateMostStats ();
 
 		playersStats [ playerName.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
-		totalStats [WhichStat.Wins.ToString ()]++;
-		totalStats [WhichStat.WinsInARow.ToString ()] = mostStats [WhichStat.WinsInARow.ToString ()].value;
+		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+		{
+			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
+				p.Value.playersStats [WhichStat.LifeDuration.ToString ()] = (int)timerDuration;
+		}
+
+		UpdateStats ();
 
 		switch (playerName)
 		{
@@ -248,12 +315,6 @@ public class StatsManager : SerializedMonoBehaviour
 					if(p.Key != whichPlayerWon.ToString ())
 						p.Value.playersStats ["WinsInARow"] = 0;
 				}
-
-//				for(int i = 0; i < playerStatsList.Count; i++)
-//				{
-//					if (playerStatsList [i].whichPlayer != whichPlayerWon)
-//						playerStatsList [i].winsInARow = 0;
-//				}
 
 				if (playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"] == 0)
 					playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"] = 2;
@@ -311,24 +372,38 @@ public class StatsManager : SerializedMonoBehaviour
 			{
 				foreach(var key in p.Value.playersStats.Keys.ToList ())
 				{
-					if (key != WhichStat.Wins.ToString () && key != WhichStat.WinsInARow.ToString ())
-						p.Value.playersStats [key] = 0;
+					if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), p.Key)))
+						continue;
+					
+					p.Value.playersStats [key] = 0;
 				}
 			}
 
 			//Total Stats
 			foreach(var key in totalStats.Keys.ToList ())
 			{
-				if (key != WhichStat.Wins.ToString () && key != WhichStat.WinsInARow.ToString ())
-					totalStats [key] = 0;
+				if(resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), key)))
+					continue;
+
+				totalStats [key] = 0;
 			}
 			
 			//Most Stats
-			foreach(KeyValuePair<string, MostStats> d in mostStats)
+			foreach(KeyValuePair<string, Stats> d in mostStats)
 			{
-				if (d.Key == WhichStat.Wins.ToString () || d.Key == WhichStat.Wins.ToString ())
+				if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), d.Key)))
 					continue;
 				
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
+			}
+
+			//Least Stats
+			foreach(KeyValuePair<string, Stats> d in leastStats)
+			{
+				if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), d.Key)))
+					continue;
+
 				d.Value.value = 0;
 				d.Value.whichPlayer = WhichPlayer.None;
 			}
@@ -371,7 +446,7 @@ public class PlayerStats
 }
 
 [Serializable]
-public class MostStats
+public class Stats
 {
 	public WhichPlayer whichPlayer;
 	public int value = 0;
