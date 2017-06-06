@@ -105,7 +105,7 @@ public class PlayersTutorial : PlayersGameplay
 
 
 		//////
-		hitsCount = StatsManager.Instance.playerStatsList [(int)playerName].frags;
+		hitsCount = StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.Frags.ToString ()];;
 
 		if(playerState != PlayerState.Dead && playerState != PlayerState.Stunned && playerState != PlayerState.Startup)
 		{

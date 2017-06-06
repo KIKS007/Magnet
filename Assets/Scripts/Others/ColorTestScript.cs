@@ -23,7 +23,7 @@ public class ColorTestScript : MonoBehaviour
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 
 		cubeMaterial.SetFloat ("_Lerp", 0);
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.playersColor[4]);
 	}
 	
 	// Update is called once per frame
@@ -47,7 +47,7 @@ public class ColorTestScript : MonoBehaviour
 
 			int whichPlayer = (int)player;
 			CubeColor cubeColorTest = (CubeColor)whichPlayer + 1;
-			Color cubeCorrectColor = (GlobalVariables.Instance.cubePlayersColor[whichPlayer]);
+			Color cubeCorrectColor = (GlobalVariables.Instance.playersColor[whichPlayer]);
 
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -63,7 +63,7 @@ public class ColorTestScript : MonoBehaviour
 			Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 			float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
+			DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.playersColor[4], toNeutralDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp)).SetId("CubeNeutralTween");
 			DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, toNeutralDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp)).OnComplete(()=> cubeColor = CubeColor.Neutral);
 		}
 

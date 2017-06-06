@@ -707,7 +707,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		else
 		{
 			PlayerPrefs.SetInt ("SoundsMute", 0);
-			PlayerPrefs.SetFloat ("SoundsVolume", (float)MasterAudio.MasterVolumeLevel);
+			PlayerPrefs.SetFloat ("SoundsVolume", (float)soundsBar.value * masterVolume);
 		}
 
 		if(musicMute)
@@ -720,7 +720,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		{
 			PlayerPrefs.SetInt ("MusicMute", 0);
 
-			PlayerPrefs.SetFloat ("MusicVolume", (float)MasterAudio.PlaylistMasterVolume);
+			PlayerPrefs.SetFloat ("MusicVolume", (float)playlistBar.value * masterVolume);
 		}
 
 		if(masterMute)

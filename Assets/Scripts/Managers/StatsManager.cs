@@ -12,28 +12,16 @@ public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins, WinsI
 public class StatsManager : SerializedMonoBehaviour
 {
 	[Header ("Player Stats")]
-	public Dictionary<string, PlayerStat> playersStats = new Dictionary<string, PlayerStat> ();
+	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
 
 	[Header ("Total Stats")]
 	public Dictionary<string, int> totalStats = new Dictionary<string, int> ();
 
 	[Header ("Most Stats")]
-	public Dictionary<string, MostStat> mostStats = new Dictionary<string, MostStat> ();
-
-	[Header ("Total")]
-	public int totalFrags = 0;
-	public int totalHits = 0;
-	public int totalDeath = 0;
-	public int totalDash = 0;
-	public int totalShots = 0;
-
-	[Header ("Players")]
-	public List<PlayerStats> playerStatsList = new List<PlayerStats> ();
-
-	[Header ("Player With Most")]
-	public List<MostStats> mostStatsList = new List<MostStats> ();
+	public Dictionary<string, MostStats> mostStats = new Dictionary<string, MostStats> ();
 
 	[Header ("Winner")]
+	public WhichPlayer winnerName = WhichPlayer.None;
 	public string winner;
 
 	[Header ("Wins In A Row")]
@@ -59,12 +47,14 @@ public class StatsManager : SerializedMonoBehaviour
 	void Start ()
 	{
 		GlobalVariables.Instance.OnStartMode += SetupStats;
+		GlobalVariables.Instance.OnStartMode += ()=> StartCoroutine (StartTimer ());
+
+		GlobalVariables.Instance.OnEndMode += UpdateMostStats;
+		GlobalVariables.Instance.OnPause += UpdateMostStats;
+
+		GlobalVariables.Instance.OnMenu += ()=> ResetStats(true);
 
 		SetupStats ();
-
-		SetupLists ();
-
-		StartCoroutine (StartTimer ());
 	}
 
 	void SetupStats ()
@@ -79,7 +69,7 @@ public class StatsManager : SerializedMonoBehaviour
 			if (!GlobalVariables.Instance.EnabledPlayersList.Contains (g))
 				continue;
 
-			playersStats.Add ( playerScript.playerName.ToString (), new PlayerStat () );
+			playersStats.Add ( playerScript.playerName.ToString (), new PlayerStats () );
 			
 			for(int i = 0; i < Enum.GetValues (typeof (WhichStat)).Cast<int> ().Max () + 1; i++)
 				playersStats [ playerScript.playerName.ToString () ].playersStats.Add (((WhichStat)i).ToString (), 0);
@@ -96,19 +86,19 @@ public class StatsManager : SerializedMonoBehaviour
 
 		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
 		{
-			mostStats.Add ( ((WhichStat)i).ToString (), new MostStat ());
+			mostStats.Add ( ((WhichStat)i).ToString (), new MostStats ());
 			mostStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
 		}
 	}
 
 	void UpdateMostStats ()
 	{
-		foreach(KeyValuePair<string, MostStat> d in mostStats)
+		foreach(KeyValuePair<string, MostStats> d in mostStats)
 		{
 			int mostValue = -5;
 			WhichPlayer player = WhichPlayer.None;
 
-			foreach(KeyValuePair<string, PlayerStat> p in playersStats)
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 			{
 				if(p.Value.playersStats [d.Key] > mostValue)
 				{
@@ -125,44 +115,22 @@ public class StatsManager : SerializedMonoBehaviour
 		}
 	}
 
-
-
-	void SetupLists ()
-	{
-		for (int i = 0; i < 4; i++)
-			playerStatsList.Add (new PlayerStats ());
-
-		playerStatsList[0].whichPlayer = WhichPlayer.Player1;
-		playerStatsList[1].whichPlayer = WhichPlayer.Player2;
-		playerStatsList[2].whichPlayer = WhichPlayer.Player3;
-		playerStatsList[3].whichPlayer = WhichPlayer.Player4;
-
-		for (int i = 0; i < 7; i++)
-		{
-			mostStatsList.Add (new MostStats ());
-			mostStatsList [i].whichStat = (WhichStat)i;
-			mostStatsList [i].whichPlayer = WhichPlayer.None;
-		}
-	}
-
 	public void GetPlayersEvents ()
 	{
-		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnDash += ()=> UpdateMostStats ();
-
 		foreach(GameObject g in GlobalVariables.Instance.Players)
 		{
 			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
 
 			playerScript.OnDash += () => 
 			{
-				playersStats [playerScript.playerName.ToString ()].playersStats ["Dash"]++;
-				totalStats ["Dash"]++;
+				playersStats [playerScript.playerName.ToString ()].playersStats [WhichStat.Dash.ToString ()]++;
+				totalStats [WhichStat.Dash.ToString ()]++;
 			};
 
 			playerScript.OnShoot += () =>
 			{
-				playersStats [playerScript.playerName.ToString ()].playersStats ["Shots"]++;
-				totalStats ["Shots"]++;
+				playersStats [playerScript.playerName.ToString ()].playersStats [WhichStat.Shots.ToString ()]++;
+				totalStats [WhichStat.Shots.ToString ()]++;
 
 				AimPrecision ();
 			};
@@ -170,19 +138,19 @@ public class StatsManager : SerializedMonoBehaviour
 
 			playerScript.OnDeath += () => 
 			{
-				playersStats [ playerScript.playerName.ToString () ].playersStats ["Death"]++;
-				totalStats ["Death"]++;
+				playersStats [ playerScript.playerName.ToString () ].playersStats [WhichStat.Death.ToString ()]++;
+				totalStats [WhichStat.Death.ToString ()]++;
 			};
 		}
 	}
 
 	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)
 	{
-		playersStats [ playerThatThrew.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats ["Frags"]++;
-		playersStats [ playerHit.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats ["Hits"]++;
+		playersStats [ playerThatThrew.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.Frags.ToString ()]++;
+		playersStats [ playerHit.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.Hits.ToString ()]++;
 
-		totalFrags++;
-		totalHits++;
+		totalStats [WhichStat.Frags.ToString ()]++;
+		totalStats [WhichStat.Hits.ToString ()]++;
 
 		AimPrecision ();
 
@@ -191,8 +159,14 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public void Winner (WhichPlayer whichPlayerWon)
 	{
-		playersStats [ whichPlayerWon.ToString () ].playersStats ["Wins"]++;
+		winnerName = whichPlayerWon;
 		WinsInARow (whichPlayerWon);
+		UpdateMostStats ();
+
+		playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
+
+		totalStats [WhichStat.Wins.ToString ()]++;
+		totalStats [WhichStat.WinsInARow.ToString ()] = mostStats [WhichStat.WinsInARow.ToString ()].value;
 
 		switch (whichPlayerWon)
 		{
@@ -219,8 +193,14 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public void Winner (PlayerName playerName)
 	{
-		playersStats [ playerName.ToString () ].playersStats ["Wins"]++;
+		winnerName = (WhichPlayer)(int)playerName;
 		WinsInARow ((WhichPlayer)(int)playerName);
+		UpdateMostStats ();
+
+		playersStats [ playerName.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
+
+		totalStats [WhichStat.Wins.ToString ()]++;
+		totalStats [WhichStat.WinsInARow.ToString ()] = mostStats [WhichStat.WinsInARow.ToString ()].value;
 
 		switch (playerName)
 		{
@@ -246,8 +226,8 @@ public class StatsManager : SerializedMonoBehaviour
 		{
 			previousWinner = WhichPlayer.None;
 
-			foreach(KeyValuePair<string, PlayerStat> p in playersStats)
-				p.Value.playersStats ["WinsInARow"] = 0;
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+				p.Value.playersStats [WhichStat.WinsInARow.ToString ()] = 0;
 
 			mostWinsInARowPlayer = whichPlayerWon;
 			winsInARowNumber = 0;
@@ -258,12 +238,12 @@ public class StatsManager : SerializedMonoBehaviour
 			{
 				previousWinner = whichPlayerWon;
 
-				playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"] = 1;
+				playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.WinsInARow.ToString ()] = 1;
 			}
 			
 			else if(previousWinner == whichPlayerWon)
 			{
-				foreach(KeyValuePair<string, PlayerStat> p in playersStats)
+				foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 				{
 					if(p.Key != whichPlayerWon.ToString ())
 						p.Value.playersStats ["WinsInARow"] = 0;
@@ -286,7 +266,7 @@ public class StatsManager : SerializedMonoBehaviour
 			{
 				previousWinner = whichPlayerWon;
 				
-				foreach(KeyValuePair<string, PlayerStat> p in playersStats)
+				foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 				{
 					if(p.Key != whichPlayerWon.ToString ())
 						p.Value.playersStats ["WinsInARow"] = 0;
@@ -296,126 +276,63 @@ public class StatsManager : SerializedMonoBehaviour
 			}
 			
 			mostWinsInARowPlayer = whichPlayerWon;
-			winsInARowNumber = playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"];			
+			winsInARowNumber = playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.WinsInARow.ToString ()];			
 		}
 	}
 
 	public void AimPrecision ()
 	{
-		foreach(KeyValuePair<string, PlayerStat> p in playersStats)
+		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 		{
-			if (p.Value.playersStats ["Shots"] == 0)
+			if (p.Value.playersStats [WhichStat.Shots.ToString ()] == 0)
 				continue;
 
-			float temp = (float)(p.Value.playersStats ["Frags"] / p.Value.playersStats ["Shots"] * 100f);
-			p.Value.playersStats ["AimAccuracy"] = (int) temp;
+			float temp = (float)p.Value.playersStats [WhichStat.Frags.ToString ()] / (float)p.Value.playersStats [WhichStat.Shots.ToString ()] * 100f;
+
+			p.Value.playersStats [WhichStat.AimAccuracy.ToString ()] = (int) Mathf.Round (temp);
 		}
 	}
 
-	public void MostStatsUpdate  ()
+	public void ResetStats (bool resetAll = false)
 	{
-		int frags = 0;
-		int hits = 0;
-		int deaths = 0;
-		int dashs = 0;
-		int shots = 0;
-		int accuracy = 0;
-		int wins = 0;
-
-		for(int i = 0; i < playerStatsList.Count; i++)
-		{
-			if (playerStatsList [i].frags > frags)
-			{
-				frags = playerStatsList [i].frags;
-
-				mostStatsList [0].statNumber = playerStatsList [i].frags;
-				mostStatsList [0].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].hits > hits)
-			{
-				hits = playerStatsList [i].hits;
-
-				mostStatsList [1].statNumber = playerStatsList [i].hits;
-				mostStatsList [1].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].death > deaths)
-			{
-				deaths = playerStatsList [i].death;
-
-				mostStatsList [2].statNumber = playerStatsList [i].death;
-				mostStatsList [2].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].dash > dashs)
-			{
-				dashs = playerStatsList [i].dash;
-
-				mostStatsList [3].statNumber = playerStatsList [i].dash;
-				mostStatsList [3].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].shots > shots)
-			{
-				shots = playerStatsList [i].shots;
-
-				mostStatsList [4].statNumber = playerStatsList [i].shots;
-				mostStatsList [4].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].aimAccuracy > accuracy)
-			{
-				accuracy = playerStatsList [i].aimAccuracy;
-
-				mostStatsList [5].statNumber = playerStatsList [i].aimAccuracy;
-				mostStatsList [5].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].wins > wins)
-			{
-				wins = playerStatsList [i].wins;
-
-				mostStatsList [6].statNumber = playerStatsList [i].wins;
-				mostStatsList [6].whichPlayer = (WhichPlayer)i;
-			}
-		}
-	}
-
-	public void ResetStats (bool resetWins = false)
-	{
-		for(int i = 0; i < playerStatsList.Count; i++)
-		{
-			playerStatsList [i].frags = 0;
-			playerStatsList [i].hits = 0;
-			playerStatsList [i].death = 0;
-			playerStatsList [i].dash = 0;
-			playerStatsList [i].shots = 0;
-
-			playerStatsList [i].aimAccuracy = 0;
-
-			if(resetWins)
-			{
-				playerStatsList [i].wins = 0;
-				playerStatsList [i].winsInARow = 0;
-				previousWinner = WhichPlayer.None;
-			}
-		}
-
-		totalFrags = 0;
-		totalHits = 0;
-		totalDeath = 0;
-		totalDash = 0;
-		totalShots = 0;
-
 		timerDuration = 0;
+		winnerName = WhichPlayer.None;
+		winner = "";
 
-		for(int i = 0; i < mostStatsList.Count; i++)
+		if(resetAll)
 		{
-			mostStatsList [i].statNumber = 0;
-			mostStatsList [i].whichPlayer = WhichPlayer.None;
+			SetupStats ();
+			previousWinner = WhichPlayer.None;
 		}
+		else
+		{
+			//Players
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+			{
+				foreach(var key in p.Value.playersStats.Keys.ToList ())
+				{
+					if (key != WhichStat.Wins.ToString () && key != WhichStat.WinsInARow.ToString ())
+						p.Value.playersStats [key] = 0;
+				}
+			}
 
+			//Total Stats
+			foreach(var key in totalStats.Keys.ToList ())
+			{
+				if (key != WhichStat.Wins.ToString () && key != WhichStat.WinsInARow.ToString ())
+					totalStats [key] = 0;
+			}
+			
+			//Most Stats
+			foreach(KeyValuePair<string, MostStats> d in mostStats)
+			{
+				if (d.Key == WhichStat.Wins.ToString () || d.Key == WhichStat.Wins.ToString ())
+					continue;
+				
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
+			}
+		}
 	}
 
 	IEnumerator StartTimer ()
@@ -432,7 +349,10 @@ public class StatsManager : SerializedMonoBehaviour
 		yield return new WaitForSecondsRealtime (1);
 
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
-	
+
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			yield break;
+
 		timerDuration += 1;
 
 		string minutes = Mathf.Floor(timerDuration / 60).ToString("0");
@@ -445,48 +365,15 @@ public class StatsManager : SerializedMonoBehaviour
 }
 
 [Serializable]
-public class PlayerStats 
-{
-	public WhichPlayer whichPlayer;
-
-	public int frags = 0;
-	public int hits = 0;
-	public int death = 0;
-	public int dash = 0;
-	public int shots = 0;
-
-	[Range (0, 100)]
-	public int aimAccuracy = 0;
-
-	public int wins = 0;
-
-	public int winsInARow = 0;
-}
-
-[Serializable]
-public class PlayerStat
+public class PlayerStats
 {
 	public Dictionary<string, int> playersStats = new Dictionary<string, int> ();
 }
 
 [Serializable]
-public class MostStat
+public class MostStats
 {
 	public WhichPlayer whichPlayer;
 	public int value = 0;
 }
-
-[Serializable]
-public class MostStats 
-{
-	public WhichStat whichStat;
-	public int statNumber = 0;
-	public WhichPlayer whichPlayer;
-}
-
-[Serializable]
-public class HitByWhichPlayer
-{
-	public WhichPlayer hitBy;
-	public int hitsCount = 0;
-}
+	

@@ -80,7 +80,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Cubes")]
 	public GameObject[] cubesPrefabs = new GameObject[3];
-	public Color[] cubePlayersColor = new Color[5];
+	public Color[] playersColor = new Color[5];
 	public Mesh[] cubesStripes = new Mesh[4];
 
 	[Header ("Players Dead Cubes")]

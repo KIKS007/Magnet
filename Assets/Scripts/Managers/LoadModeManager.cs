@@ -45,7 +45,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(SceneManager.GetSceneByName(sceneToLoad.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (sceneToLoad.ToString ());
 
-		StatsManager.Instance.ResetStats (true);
 
 		if(SceneManager.GetActiveScene ().name != "Scene Testing")
 		{
@@ -119,12 +118,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		DestroyParticules ();
 		StopSlowMotion ();
 
-		if(resetStats)
-			StatsManager.Instance.ResetStats (true);
-
 		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
 		LevelWasLoaded (sceneToLoad, gameState);
+
+		if(resetStats)
+			StatsManager.Instance.ResetStats ();
 	}
 		
 	public void RestartSceneVoid (bool instantly = false)
@@ -170,9 +169,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		DestroyParticules ();
 		StopSlowMotion ();
-		StatsManager.Instance.ResetStats (true);
-	
+
 		LevelWasUnloaded (GameStateEnum.Menu);
+	
+		StatsManager.Instance.ResetStats ();
 	}
 
 

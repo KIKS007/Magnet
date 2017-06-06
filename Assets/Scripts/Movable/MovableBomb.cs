@@ -37,7 +37,7 @@ public class MovableBomb : MovableScript
 		if(playerHolding == null)
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
-			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
+			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.playersColor[4]);
 		}
 
 		attracedBy.Clear ();

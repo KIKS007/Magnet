@@ -260,7 +260,7 @@ public class MenuComponent : MonoBehaviour
 		if(!foundContent)
 		{
 			Debug.LogWarning ("Missing Stats Content");
-			MenuManager.Instance.ShowEndMode (endModeContents [0], secondaryContents, this);
+			MenuManager.Instance.ShowEndMode (null, secondaryContents, this);
 		}
 
 	}

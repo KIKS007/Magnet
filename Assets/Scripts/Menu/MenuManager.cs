@@ -784,8 +784,6 @@ public class MenuManager : Singleton <MenuManager>
 		yield return cameraMovement.StartCoroutine ("NewMenuPosition");
 		//yield return cameraMovement.StartCoroutine ("EndModePosition");
 
-
-
 		//Secondary Content
 		if(secondaryContentList != null)
 		{
@@ -803,10 +801,13 @@ public class MenuManager : Singleton <MenuManager>
 
 		panelBackground.sizeDelta = modifiedPanelSize;
 
-		Enable (content);
-
-		for (int i = 0; i < content.transform.childCount; i++)
-			content.transform.GetChild (i).GetComponent<RectTransform> ().localScale = Vector3.zero;
+		if(content != null)
+		{
+			Enable (content);
+			
+			for (int i = 0; i < content.transform.childCount; i++)
+				content.transform.GetChild (i).GetComponent<RectTransform> ().localScale = Vector3.zero;
+		}
 
 		playerScore [0].transform.parent.gameObject.SetActive (true);
 
@@ -820,8 +821,9 @@ public class MenuManager : Singleton <MenuManager>
 
 		panelBackground.DOSizeDelta (initialPanelSize, animationDuration).SetEase (easeMenu).SetId ("Menu");
 
-		for (int i = 0; i < content.transform.childCount; i++)
-			content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(1, animationDuration).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
+		if(content != null)
+			for (int i = 0; i < content.transform.childCount; i++)
+				content.transform.GetChild (i).GetComponent<RectTransform> ().DOScale(1, animationDuration).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
 
 		for (int i = 0; i < playerScore.Length; i++)
 			playerScore[i].DOScale(1, animationDuration).SetDelay(delayBetweenStats * i).SetEase (easeMenu).SetId ("Menu");
