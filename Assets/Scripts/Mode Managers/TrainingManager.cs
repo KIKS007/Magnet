@@ -68,6 +68,9 @@ public class TrainingManager : MonoBehaviour
 		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
 
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
-			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		{
+			MenuManager.Instance.ShowEndMode ();
+//			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+		}
 	}	
 }

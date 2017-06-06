@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using NUnit.Framework;
 
-public enum MenuComponentType { BasicMenu, MainMenu, EndModeMenu, RootMenu };
+public enum MenuComponentType { BasicMenu, MainMenu, RootMenu };
 
 public enum MenuContentType { Menus, Buttons, MainContent, SecondaryContent };
 
@@ -21,9 +21,6 @@ public class MenuComponent : MonoBehaviour
 	public GameObject selectable;
 	[HideInInspector]
 	public GameObject previousSelected;
-
-	[Header ("End Mode Content List")]
-	public RectTransform[] endModeContents = new RectTransform[0];
 
 	[HideInInspector]
 	public RectTransform menuButton;
@@ -243,28 +240,6 @@ public class MenuComponent : MonoBehaviour
 			MenuManager.Instance.CancelMenu (this, menuButton.GetComponent<MenuButtonComponent> ().buttonIndex);
 	}
 
-	public void EndMode (WhichMode whichMode)
-	{
-		bool foundContent = false;
-
-		for(int i = 0; i < endModeContents.Length; i++)
-		{
-			if(endModeContents [i].name == whichMode.ToString ())
-			{
-				MenuManager.Instance.ShowEndMode (endModeContents [i], secondaryContents, this);
-				foundContent = true;
-				break;
-			}
-		}
-
-		if(!foundContent)
-		{
-			Debug.LogWarning ("Missing Stats Content");
-			MenuManager.Instance.ShowEndMode (null, secondaryContents, this);
-		}
-
-	}
-
 	[ButtonGroupAttribute ("Group B")]	
 	public void ShowMenu ()
 	{
@@ -297,6 +272,7 @@ public class MenuComponent : MonoBehaviour
 		}
 
 		gameObject.SetActive (true);
+		if(aboveMenuScript != null)
 		aboveMenuScript.gameObject.SetActive (true);
 		transform.parent.gameObject.SetActive (true);
 

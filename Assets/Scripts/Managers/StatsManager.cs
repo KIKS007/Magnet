@@ -43,8 +43,11 @@ public class StatsManager : SerializedMonoBehaviour
 	public int winsInARowNumber = 0;
 
 	[Header ("Game Duration")]
-	public string gameDuration;
+	public string allRoundsDuration;
+	public string roundDuration;
+
 	private float timerDuration;
+	private float allRoundsDurationValue;
 
 	private WhichPlayer previousWinner = WhichPlayer.None;
 
@@ -223,6 +226,8 @@ public class StatsManager : SerializedMonoBehaviour
 
 		playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
+		SetAllRoundsDuration ();
+
 		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 		{
 			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
@@ -261,6 +266,8 @@ public class StatsManager : SerializedMonoBehaviour
 
 		playersStats [ playerName.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
+		SetAllRoundsDuration ();
+
 		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 		{
 			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
@@ -285,6 +292,16 @@ public class StatsManager : SerializedMonoBehaviour
 			break;
 		}
 
+	}
+
+	void SetAllRoundsDuration ()
+	{
+		allRoundsDurationValue += timerDuration;
+
+		string minutes = Mathf.Floor(allRoundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(allRoundsDurationValue % 60).ToString("00");
+
+		allRoundsDuration = minutes + ":" + seconds;
 	}
 
 	void WinsInARow (WhichPlayer whichPlayerWon)
@@ -358,12 +375,15 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		timerDuration = 0;
 		winnerName = WhichPlayer.None;
+		roundDuration = "";
 		winner = "";
 
 		if(resetAll)
 		{
 			SetupStats ();
 			previousWinner = WhichPlayer.None;
+			allRoundsDurationValue = 0;
+			allRoundsDuration = "";
 		}
 		else
 		{
@@ -372,7 +392,7 @@ public class StatsManager : SerializedMonoBehaviour
 			{
 				foreach(var key in p.Value.playersStats.Keys.ToList ())
 				{
-					if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), p.Key)))
+					if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), key)))
 						continue;
 					
 					p.Value.playersStats [key] = 0;
@@ -430,10 +450,10 @@ public class StatsManager : SerializedMonoBehaviour
 
 		timerDuration += 1;
 
-		string minutes = Mathf.Floor(timerDuration / 60).ToString("0");
+		string minutes = Mathf.Floor(timerDuration / 60).ToString("00");
 		string seconds = Mathf.Floor(timerDuration % 60).ToString("00");
 
-		gameDuration = minutes + ":" + seconds;
+		roundDuration = minutes + ":" + seconds;
 
 		StartCoroutine (Timer ());
 	}

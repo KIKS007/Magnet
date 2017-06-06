@@ -2,18 +2,19 @@
 using System.Collections;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
+using System;
 
-[ExecuteInEditMode]
 public class StatsFeedback : MonoBehaviour 
 {
-	public enum WhichStatType {Player, Most, Total, Winner, GameDuration};
+	public enum WhichStatType {Player, Most, Least, Total, Winner, RoundDuration, AllRoundDuration};
 
 	public WhichStatType whichStatType;
+
 	[ShowIfAttribute("ClassicStat")]
 	public WhichStat whichStat;
 	bool ClassicStat()
 	{
-		if (whichStatType != WhichStatType.Winner && whichStatType != WhichStatType.GameDuration)
+		if (whichStatType != WhichStatType.Winner && whichStatType != WhichStatType.RoundDuration && whichStatType != WhichStatType.AllRoundDuration)
 			return true;
 		else
 			return false;
@@ -29,6 +30,12 @@ public class StatsFeedback : MonoBehaviour
 			return false;
 	}
 		
+	[Header ("Text")]
+	public bool changeColor = true;
+	public bool otherText = false;
+	[ShowIfAttribute("otherText")]
+	public Text textComponent;
+
 	[ShowIfAttribute("PlayerText")]
 	public Text playerText;
 	bool PlayerText ()
@@ -39,23 +46,42 @@ public class StatsFeedback : MonoBehaviour
 			return false;
 	}
 
-	private StatsManager stats;
-	private Text textComponent;
+	[Header ("Show Conditions")]
+	public bool disableParent = false;
+	public bool showIfDifferent;
+	[ShowIfAttribute("showIfDifferent")]
+	public string differentValue;
 
-	// Use this for initialization
-	void Start () 
-	{
-		stats = StatsManager.Instance;
-		textComponent = GetComponent<Text> ();
+	public bool showIfHigher;
+	[ShowIfAttribute("showIfHigher")]
+	public int higherValue;
 
-		UpdateText ();
-	}
+	public bool showIfLower;
+	[ShowIfAttribute("showIfLower")]
+	public int lowerValue;
+
+	private int value;
+	private string valueText;
+
+	private string initialString = "xxx";
 
 	void OnEnable ()
 	{
-		textComponent = GetComponent<Text> ();
+		if (StatsManager.Instance == null)
+			return;
+
+		if(textComponent == null)
+			textComponent = GetComponent<Text> ();
+
+		initialString = textComponent.text;
 
 		UpdateText ();	
+	}
+
+	void OnDisable ()
+	{
+		if(initialString != "xxx")
+			textComponent.text = initialString;
 	}
 
 	void UpdateText ()
@@ -68,28 +94,53 @@ public class StatsFeedback : MonoBehaviour
 		case WhichStatType.Most:
 			MostStats ();
 			break;
+		case WhichStatType.Least:
+			LeastStats ();
+			break;
 		case WhichStatType.Total:
 			TotalStats ();
 			break;
 		case WhichStatType.Winner:
 			Winner ();
 			break;
-		case WhichStatType.GameDuration:
-			GameDuration ();
+		case WhichStatType.RoundDuration:
+			RoundDuration ();
+			break;
+		case WhichStatType.AllRoundDuration:
+			AllRoundsDuration ();
 			break;
 		}
 
 		if(textComponent.text == "")
 			textComponent.text = "0";
+
+		CheckVisibility ();
+	}
+
+	void ModifyText (Text textComponent, string value)
+	{
+		Debug.Log ("Bite");
+
+		if (textComponent = this.textComponent)
+			valueText = value;
+
+		if(textComponent.text.Contains ("$"))
+			textComponent.text = textComponent.text.Replace ("$", value);
+		else
+			textComponent.text = value;
 	}
 
 	void PlayerStats ()
 	{
-		if (StatsManager.Instance.playersStats.Count == 0 || StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats.Count == 0)
+		if (StatsManager.Instance.playersStats.Count == 0 || !StatsManager.Instance.playersStats.ContainsKey (whichPlayer.ToString ()) || StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats.Count == 0)
 			return;
 
-		textComponent.color = GlobalVariables.Instance.playersColor [(int)whichPlayer];
-		textComponent.text = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ();
+		value = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()];
+
+		if(changeColor)
+			textComponent.color = GlobalVariables.Instance.playersColor [(int)whichPlayer];
+
+		ModifyText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
 	}
 
 	void MostStats ()
@@ -100,11 +151,41 @@ public class StatsFeedback : MonoBehaviour
 		if (StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer == WhichPlayer.None)
 			return;
 
-		textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
-		playerText.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
+		if(changeColor)
+			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
 
-		textComponent.text = StatsManager.Instance.mostStats [whichStat.ToString ()].value.ToString ();
-		playerText.text = StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer.ToString ();
+		if(playerText != null && changeColor)
+			playerText.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
+
+
+		value = StatsManager.Instance.mostStats [whichStat.ToString ()].value;
+
+		ModifyText (textComponent, StatsManager.Instance.mostStats [whichStat.ToString ()].value.ToString ());
+
+		if(playerText != null)
+			playerText.text = StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer.ToString ();
+	}
+
+	void LeastStats ()
+	{	
+		if (StatsManager.Instance.leastStats.Count == 0)
+			return;
+
+		if (StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer == WhichPlayer.None)
+			return;
+
+		if(changeColor)
+			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
+
+		if(playerText != null && changeColor)
+			playerText.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
+
+		value = StatsManager.Instance.leastStats [whichStat.ToString ()].value;
+
+		ModifyText (textComponent, StatsManager.Instance.leastStats [whichStat.ToString ()].value.ToString ());
+
+		if (playerText != null)
+			playerText.text = StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer.ToString ();
 	}
 
 	void TotalStats ()
@@ -112,17 +193,54 @@ public class StatsFeedback : MonoBehaviour
 		if (StatsManager.Instance.totalStats.Count == 0)
 			return;
 
-		textComponent.text = StatsManager.Instance.totalStats [whichStat.ToString ()].ToString ();
+		value = StatsManager.Instance.totalStats [whichStat.ToString ()];
+
+		ModifyText (textComponent, StatsManager.Instance.totalStats [whichStat.ToString ()].ToString ());
 	}
 
 	void Winner ()
 	{
-		textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.winnerName];
-		textComponent.text = StatsManager.Instance.winner;
+		if(changeColor)
+			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.winnerName];
+
+		ModifyText (textComponent, StatsManager.Instance.winner);
 	}
 
-	void GameDuration ()
+	void RoundDuration ()
 	{
-		textComponent.text = StatsManager.Instance.gameDuration;
+		ModifyText (textComponent, StatsManager.Instance.roundDuration);
+	}
+
+	void AllRoundsDuration ()
+	{
+		ModifyText (textComponent, StatsManager.Instance.allRoundsDuration);
+	}
+
+	void CheckVisibility ()
+	{
+		if(showIfDifferent)
+		{
+			if (valueText == differentValue)
+				textComponent.enabled = false;
+			else
+				textComponent.enabled = true;
+		}
+
+		if(showIfHigher)
+		{
+			if (value <= higherValue)
+				textComponent.enabled = false;
+			else
+				textComponent.enabled = true;
+		}
+
+		if(showIfLower)
+		{
+			if (value >= lowerValue)
+				textComponent.enabled = false;
+			else
+				textComponent.enabled = true;
+
+		}
 	}
 }
