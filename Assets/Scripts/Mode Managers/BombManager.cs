@@ -54,10 +54,8 @@ public class BombManager : LastManManager
 
 		GlobalVariables.Instance.AllMovables.Remove (bomb);
 
-		livesCount = new int[GlobalVariables.Instance.NumberOfAlivePlayers];
-
-		for (int i = 0; i < livesCount.Length; i++)
-			livesCount [i] = GlobalVariables.Instance.LivesCount;
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);

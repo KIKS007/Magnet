@@ -119,8 +119,6 @@ public class StatsFeedback : MonoBehaviour
 
 	void ModifyText (Text textComponent, string value)
 	{
-		Debug.Log ("Bite");
-
 		if (textComponent = this.textComponent)
 			valueText = value;
 

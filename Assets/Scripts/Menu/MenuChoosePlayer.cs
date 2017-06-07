@@ -99,7 +99,7 @@ public class MenuChoosePlayer : MonoBehaviour
 					Leave (i);
 				else
 				{
-					if (hasJoined [0] && i == 3)
+					if (hasJoined [0] && i == 4)
 						Leave (0);
 					
 					Join (i);

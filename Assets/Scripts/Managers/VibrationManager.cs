@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 public class VibrationManager : Singleton<VibrationManager> 
 {
+	public bool vibrationEnabled = true;
 	public List<VibrationSettings> vibrationList = new List<VibrationSettings>();
 
 	[Header ("Vibration Debug")]
@@ -44,6 +45,9 @@ public class VibrationManager : Singleton<VibrationManager>
 	{
 		for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		{
+			if (!vibrationEnabled)
+				return;
+
 			if (GlobalVariables.Instance.rewiredPlayers [i] == null)
 				continue;
 
@@ -60,6 +64,9 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	public void Vibrate (int whichPlayer, FeedbackType whichVibration)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		float leftMotorForce = 0;
 		float rightMotorForce = 0;
 		float vibrationDuration = 0;
@@ -90,16 +97,25 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	public void Vibrate (int whichPlayer, float leftMotor, float rightMotor, float duration)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (Vibration (whichPlayer, leftMotor, rightMotor, duration));
 	}
 
 	public void Vibrate (int whichPlayer, float leftMotor, float rightMotor, float duration, float startDuration, float stopDuration, Ease easeType = Ease.Linear)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (Vibration (whichPlayer, leftMotor, rightMotor, duration, startDuration, stopDuration, easeType));
 	}
 
 	public void VibrateBurst (int whichPlayer, int burstNumber, float leftMotor, float rightMotor, float burstDuration, float durationBetweenBurst)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (VibrationBurst (whichPlayer, burstNumber, leftMotor, rightMotor, burstDuration, durationBetweenBurst));
 	}
 

@@ -154,7 +154,10 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		yield return new WaitWhile (() => targetPlayer.activeSelf == false);
+		yield return new WaitWhile (() => targetPlayer == null || targetPlayer.activeSelf);
+
+		if (targetPlayer == null)
+			yield break;
 
 		yield return new WaitForSeconds (1f);
 

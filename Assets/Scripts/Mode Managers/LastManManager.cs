@@ -12,7 +12,6 @@ public class LastManManager : MonoBehaviour
 	public float timeBeforeEndGame = 2;
 
 	[Header ("Death Count")]
-	public int[] livesCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
 
 	[Header ("Cubes Spawn")]
@@ -37,11 +36,6 @@ public class LastManManager : MonoBehaviour
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
-		livesCount = new int[GlobalVariables.Instance.NumberOfPlayers];
-
-		for (int i = 0; i < livesCount.Length; i++)
-			livesCount [i] = GlobalVariables.Instance.LivesCount;
-		
 		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
 	}
@@ -50,29 +44,25 @@ public class LastManManager : MonoBehaviour
 	{
 		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
 
-		livesCount [(int)playerName]--;
-
 		playerScript.livesCount--;
 		
 		GlobalVariables.Instance.ListPlayers ();
 
 		//Check Game End
 		int playersCount = 0;
-		int lastPlayer = 0;
+		GameObject lastPlayer = null;
 
-		for (int i = 0; i < livesCount.Length; i++)
-		{
-			if (livesCount [i] != 0)
+		foreach(GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			if(g.GetComponent<PlayersGameplay> ().livesCount != 0)
 			{
 				playersCount++;
-				lastPlayer = i;
+				lastPlayer = g;
 			}
-		}
 
 		if(playersCount == 1 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(GlobalVariables.Instance.Players [lastPlayer].GetComponent<PlayersGameplay> ().playerName);
+			StatsManager.Instance.Winner(lastPlayer.GetComponent<PlayersGameplay> ().playerName);
 
 			StartCoroutine (GameEnd ());
 			return;
