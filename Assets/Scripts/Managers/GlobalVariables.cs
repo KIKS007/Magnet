@@ -114,6 +114,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public Player[] rewiredPlayers = new Player[5];
 
+	public GameObject mainCamera;
+	public ScreenShakeCamera screenShakeCamera;
+	public ZoomCamera zoomCamera;
+
 	void Awake ()
 	{
 		StartCoroutine (OnGameStateChange (GameState));
@@ -133,6 +137,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
+
+		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+		screenShakeCamera = mainCamera.GetComponent<ScreenShakeCamera>();
+		zoomCamera = mainCamera.GetComponent<ZoomCamera>();
 	}
 		
 	void Update ()

@@ -11,8 +11,8 @@ public class PlayersTraining : PlayersGameplay
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			OnDeathVoid ();
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+			GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+			GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 			if(holdState == HoldState.Holding)
 			{

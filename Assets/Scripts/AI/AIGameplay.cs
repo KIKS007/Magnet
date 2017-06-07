@@ -221,9 +221,6 @@ public class AIGameplay : PlayersGameplay
 				OnHoldingVoid ();
 			}
 
-			//Deceleration
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
-
 			//Gravity
 			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 
@@ -282,8 +279,8 @@ public class AIGameplay : PlayersGameplay
 	{
 		playerState = PlayerState.Dead;
 
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -313,15 +310,18 @@ public class AIGameplay : PlayersGameplay
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			Death(DeathFX.All, other.contacts[0].point);
 
-		if (other.collider.tag != "HoldMovable")
-		if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
 		{
-			playersHit.Add(other.gameObject);
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
-
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
-
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+			
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
 		}
 	}
 
@@ -335,13 +335,17 @@ public class AIGameplay : PlayersGameplay
 			Death(DeathFX.All, other.contacts[0].point);
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-		if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
 		{
-			playersHit.Add(other.gameObject);
-			other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
 		}
 	}
 

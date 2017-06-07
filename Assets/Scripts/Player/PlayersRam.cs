@@ -37,8 +37,6 @@ public class PlayersRam : PlayersGameplay
 				OnHoldingVoid ();
 			}
 
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
-
 			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 
 			if (cubesAttracted.Count > 0)

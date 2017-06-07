@@ -23,8 +23,6 @@ public class PlayersManikin : PlayersGameplay
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
-
 			playerRigidbody.AddForce (-Vector3.up * gravity, ForceMode.Acceleration);
 		}
 	}
@@ -75,8 +73,8 @@ public class PlayersManikin : PlayersGameplay
 
 			OnDeathVoid ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+			GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+			GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 			gameObject.SetActive (false);
 		}
