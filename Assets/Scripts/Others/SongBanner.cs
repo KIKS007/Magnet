@@ -34,7 +34,14 @@ public class SongBanner : MonoBehaviour
 			StopAllCoroutines ();
 			StartCoroutine (SongChanged (newSongName));
 		};
-			
+
+		StartCoroutine (WaitForPlaylist ());
+	}
+
+	IEnumerator WaitForPlaylist ()
+	{
+		yield return new WaitUntil (() => playlistController.HasPlaylist);
+
 		StartCoroutine (SongChanged (playlistController.PlaylistName));
 	}
 
