@@ -9,24 +9,26 @@ public class MovableStandoff : MovableScript
 	public float explosionForce = 50;
 	public float explosionRadius = 50;
 
-	protected override void Update () 
+	protected override void LowVelocity () 
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			else if(currentVelocity < limitVelocity && gameObject.tag == "DeadCube")
+			else if(currentVelocity < limitVelocity)
 			{
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
+				if(gameObject.tag == "DeadCube")
+				{
+					if(slowMoTrigger == null)
+						slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
-				ToNeutralColor ();
+					slowMoTrigger.triggerEnabled = false;
+
+					gameObject.tag = "Movable";
+
+					ToNeutralColor ();
+				}
 			}
 		}
 	}

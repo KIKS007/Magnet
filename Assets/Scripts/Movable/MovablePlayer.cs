@@ -43,11 +43,8 @@ public class MovablePlayer : MovableScript
 			ToNeutralColor ();
 	}
 
-	protected override void Update ()
+	protected override void LowVelocity ()
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
@@ -60,14 +57,20 @@ public class MovablePlayer : MovableScript
 			{
 				if(currentVelocity >= limitVelocity)
 					gameObject.tag = "ThrownMovable";
-				
-				else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+			}
+
+			if(currentVelocity < limitVelocity)
+			{
+				if(gameObject.tag == "ThrownMovable")
 				{
+					if(slowMoTrigger == null)
+						slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
 					slowMoTrigger.triggerEnabled = false;
+
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
 				}
-			}			
+			}
 		}
 	}
 

@@ -90,10 +90,8 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected string playerDeadCubeTag;
 
-	[HideInInspector]
-	public List<Rigidbody> cubesAttracted = new List<Rigidbody>();
-	[HideInInspector]
-	public List<Rigidbody> cubesRepulsed = new List<Rigidbody>();
+	public List<MovableScript> cubesAttracted = new List<MovableScript>();
+	public List<MovableScript> cubesRepulsed = new List<MovableScript>();
 
     protected Transform movableParent;
     [HideInInspector]
@@ -399,32 +397,38 @@ public class PlayersGameplay : MonoBehaviour
 
     }
 
-	public virtual void Attraction(Rigidbody movable)
+	public virtual void Attraction(MovableScript movable)
 	{
-		if (movable.tag == "HoldMovable")
+		if (movable.tag == "HoldMovable" || movable.rigidbodyMovable == null)
+		{
+			Debug.Log ("Here");
 			cubesAttracted.Remove (movable);
+		}
 
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 
 		movableAttraction.Normalize ();
-		movable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
+		movable.rigidbodyMovable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
 
 		if (OnAttracting != null)
 			OnAttracting();
 	}
 
-	public virtual void Repulsion(Rigidbody movable)
+	public virtual void Repulsion(MovableScript movable)
     {
-		if (movable.tag == "HoldMovable")
+		if (movable.tag == "HoldMovable" || movable.rigidbodyMovable == null)
+		{
+			Debug.Log ("Here");
 			cubesAttracted.Remove (movable);
+		}
 		
 		playerState = PlayerState.Repulsing;
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movableRepulsion.Normalize ();
-		movable.AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
+		movable.rigidbodyMovable.AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
 		
 		if (OnRepulsing != null)
 			OnRepulsing();		
@@ -452,11 +456,14 @@ public class PlayersGameplay : MonoBehaviour
         {
 			PlayersGameplay playerScript = GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
 
-			if (playerScript.cubesAttracted.Contains(movableScript.rigidbodyMovable))
-				playerScript.cubesAttracted.Remove(movableScript.rigidbodyMovable);
+			if (playerScript.cubesAttracted.Contains(movableScript))
+			{
+				Debug.Log ("Here");
+				playerScript.cubesAttracted.Remove(movableScript);
+			}
 
-			if (playerScript.cubesRepulsed.Contains(movableScript.rigidbodyMovable))
-				playerScript.cubesRepulsed.Remove(movableScript.rigidbodyMovable);
+			if (playerScript.cubesRepulsed.Contains(movableScript))
+				playerScript.cubesRepulsed.Remove(movableScript);
         }
 
 		cubesAttracted.Clear();
@@ -489,8 +496,13 @@ public class PlayersGameplay : MonoBehaviour
 			return;
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-				Death(DeathFX.All, other.contacts[0].point);
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			if(playerThatHit == null)
+				StatsManager.Instance.PlayerSuicides (this);
+
+			Death(DeathFX.All, other.contacts[0].point);
+		}
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
 		{
@@ -514,8 +526,13 @@ public class PlayersGameplay : MonoBehaviour
 			return;
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-				Death(DeathFX.All, other.contacts[0].point);
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			if(playerThatHit == null)
+				StatsManager.Instance.PlayerSuicides (this);
+
+			Death(DeathFX.All, other.contacts[0].point);
+		}
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
 		{

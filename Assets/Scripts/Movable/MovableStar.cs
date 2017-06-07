@@ -48,12 +48,8 @@ public class MovableStar : MovableScript
 		repulsedBy.Clear ();
 	}
 
-	protected override void Update () 
+	protected override void LowVelocity () 
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
@@ -67,7 +63,6 @@ public class MovableStar : MovableScript
 
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
 				}
 			}
 		}

@@ -16,13 +16,23 @@ public class MovableSuggestible : MovableScript
 		ToDeadlyColor ();
 	}
 
-	protected override void Update ()
+	protected override void LowVelocity ()
 	{
-		if(rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
 		if (currentVelocity >= limitVelocity && !slowMoTrigger.triggerEnabled)
 			slowMoTrigger.triggerEnabled = true;
+
+		if(currentVelocity < limitVelocity)
+		{
+			if(gameObject.tag == "ThrownMovable")
+			{
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+				slowMoTrigger.triggerEnabled = false;
+
+				gameObject.tag = "Movable";
+			}
+		}
 	}
 
 	protected override void HitPlayer (Collision other)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 
 public enum CubeColor {Neutral, Blue, Pink, Green, Yellow, Deadly};
+public enum SpeedState { Acceleration, Deceleration, Same, None };
 
 public class MovableScript : MonoBehaviour 
 {
@@ -14,19 +15,19 @@ public class MovableScript : MonoBehaviour
 	public event EventHandler OnReleaseEvent;
 
 	#region Variables
-	[Header ("Informations")]
+	[Header ("Color")]
 	public CubeColor cubeColor;
+
+	[Header ("Speed")]
 	public float higherVelocity;
 	public float currentVelocity;
 	public float limitVelocity = 80f;
+	public SpeedState speedState = SpeedState.Same;
 
 	[Header ("Cube States")]
 	public bool hold;
 	public List<GameObject> attracedBy = new List<GameObject> ();
 	public List<GameObject> repulsedBy = new List<GameObject> ();
-
-	[Header ("Gravity")]
-	public float gravity = 0;
 
 	[Header ("Players")]
 	public GameObject playerThatThrew;
@@ -99,35 +100,72 @@ public class MovableScript : MonoBehaviour
 	#region Update / FixedUpdate
 	protected virtual void Update () 
 	{
+		SetSpeedState ();
+
+		CurrentVelocity ();
+
+		CheckPlayerThatThrew ();
+
+		LowVelocity ();
+	}
+
+	protected virtual void SetSpeedState () 
+	{
+		if(!hold && rigidbodyMovable != null)
+		{
+			if(rigidbodyMovable.velocity.magnitude < 1)
+				speedState = SpeedState.None;
+
+			else if (currentVelocity == rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Same;
+
+			else if(currentVelocity > rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Deceleration;
+
+			else if(currentVelocity < rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Acceleration;
+		}
+	}
+
+	protected virtual void CurrentVelocity () 
+	{
 		if(hold == false && rigidbodyMovable != null)
 			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
+		if(currentVelocity > higherVelocity)
+			higherVelocity = currentVelocity;
+	}
 
+	protected virtual void CheckPlayerThatThrew () 
+	{
+		if(currentVelocity < limitVelocity && playerThatThrew != null && gameObject.tag != "ThrownMovable")
+		{
+			if(speedState != SpeedState.Acceleration)
+				playerThatThrew = null;
+		}
+	}
+
+	protected virtual void LowVelocity () 
+	{
 		if(hold == false && currentVelocity > 0)
 		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			if(currentVelocity >= limitVelocity)
-				gameObject.tag = "ThrownMovable";
-			
-			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+			if(currentVelocity > limitVelocity)
 			{
 				if(slowMoTrigger == null)
 					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
+				slowMoTrigger.triggerEnabled = true;
 			}
-		}
-	}
 
-	protected virtual void FixedUpdate () 
-	{
-		if(rigidbodyMovable != null)
-		{
-			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
+			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+			{
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+				
+				slowMoTrigger.triggerEnabled = false;
+				
+				gameObject.tag = "Movable";
+			}
 		}
 	}
 	#endregion
@@ -243,7 +281,7 @@ public class MovableScript : MonoBehaviour
 			if(other.collider.tag != "HoldMovable")
 				HitPlayer (other);			
 			
-			if(other.gameObject.tag == "Movable")
+			if(other.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 				HitOtherMovable (other);	
 			
 			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
@@ -278,6 +316,9 @@ public class MovableScript : MonoBehaviour
 
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+
+		if (playerThatThrew != null)
+			other.gameObject.GetComponent<MovableScript> ().playerThatThrew = playerThatThrew;
 
 		if(canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			StartCoroutine(HitSound ());

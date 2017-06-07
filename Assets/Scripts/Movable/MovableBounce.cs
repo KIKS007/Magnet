@@ -10,12 +10,8 @@ public class MovableBounce : MovableScript
 	public float explosionRadius = 50;
 	public LayerMask explosionMask = (1 << 9) | (1 << 12);
 
-	protected override void Update () 
+	protected override void LowVelocity () 
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
@@ -29,7 +25,6 @@ public class MovableBounce : MovableScript
 					
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
 				}
 
 				else if(gameObject.tag == "ThrownMovable")
@@ -38,7 +33,6 @@ public class MovableBounce : MovableScript
 
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
 				}
 			}
 		}

@@ -45,31 +45,6 @@ public class MovableBomb : MovableScript
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
-
-	protected override void Update () 
-	{
-		if(hold == false)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
-		if(hold == false && currentVelocity > 0 && !trackingPlayer)
-		{
-			if(currentVelocity > higherVelocity)
-			{
-				higherVelocity = currentVelocity;
-			}
-
-			if(currentVelocity >= limitVelocity)
-			{
-				gameObject.tag = "ThrownMovable";
-			}
-			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
-			{
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
-			}
-		}
-	}
 		
 	protected override void HitPlayer (Collision other)
 	{

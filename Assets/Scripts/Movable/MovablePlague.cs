@@ -25,26 +25,31 @@ public class MovablePlague : MovableScript
 
 	protected override void Update ()
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
+		SetSpeedState ();
 
+		CurrentVelocity ();
+
+		CheckPlayerThatThrew ();
 
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
 				higherVelocity = currentVelocity;
 
-			if(tag != "DeadCube")
+			if(tag != "DeadCube" && currentVelocity >= limitVelocity)
+				gameObject.tag = "ThrownMovable";	
+			
+		}
+		else if(currentVelocity < limitVelocity)
+		{
+			if(tag != "DeadCube" && gameObject.tag == "ThrownMovable")
 			{
-				if(currentVelocity >= limitVelocity)
-					gameObject.tag = "ThrownMovable";
-				
-				else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
-				{
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-					playerThatThrew = null;
-				}				
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+				slowMoTrigger.triggerEnabled = false;
+
+				gameObject.tag = "Movable";
 			}
 		}
 	}
