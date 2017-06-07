@@ -38,21 +38,21 @@ public class MovableScript : MonoBehaviour
 	protected const float toNeutralDuration = 1.5f;
 	protected const float toDeadlyDuration = 1f;
 
-	protected Rigidbody rigidbodyMovable;
-
 	protected float massRb;
 	protected float drag;
 	protected CollisionDetectionMode collisionDetectionModeRb;
 
 	protected Renderer movableRenderer;
 
-	protected SlowMotionTriggerScript slowMoTrigger;
-
 	protected GameObject mainCamera;
 
 	protected ParticleSystem deadlyParticle;
 	protected ParticleSystem deadlyParticle2;
 
+	[HideInInspector]
+	public Rigidbody rigidbodyMovable;
+	[HideInInspector]
+	public SlowMotionTriggerScript slowMoTrigger;
 	[HideInInspector]
 	public Transform player;
 	[HideInInspector]
@@ -354,8 +354,7 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void AddRigidbody ()
 	{
-		gameObject.AddComponent<Rigidbody>();
-		rigidbodyMovable = gameObject.GetComponent<Rigidbody>();
+		rigidbodyMovable = gameObject.AddComponent<Rigidbody>();
 		rigidbodyMovable.mass = massRb;
 		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
 		rigidbodyMovable.drag = drag;

@@ -35,6 +35,7 @@ public class MovableBurden : MovableScript
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];

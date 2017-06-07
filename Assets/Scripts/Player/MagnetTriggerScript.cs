@@ -39,5 +39,4 @@ public class MagnetTriggerScript : MonoBehaviour
 	{
 		playerScript.OnHoldMovable (other.gameObject);
 	}
-
 }

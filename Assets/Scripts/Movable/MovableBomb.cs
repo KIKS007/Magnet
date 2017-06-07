@@ -31,6 +31,8 @@ public class MovableBomb : MovableScript
 		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
 
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
 		deadlyParticle.Stop ();
 		deadlyParticle2.Stop ();
 

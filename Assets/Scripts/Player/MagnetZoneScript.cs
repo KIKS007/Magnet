@@ -76,24 +76,28 @@ public class MagnetZoneScript : MonoBehaviour
 
 	protected virtual void Attract (Collider other)
 	{
-		if (!other.GetComponent<MovableScript> ().attracedBy.Contains (player.gameObject))
-			other.GetComponent<MovableScript> ().attracedBy.Add (player.gameObject);
+		MovableScript movableScript = other.GetComponent<MovableScript> ();
 
-		if (!playerScript.cubesAttracted.Contains (other.gameObject))
+		if (!movableScript.attracedBy.Contains (player.gameObject))
+			movableScript.attracedBy.Add (player.gameObject);
+
+		if (!playerScript.cubesAttracted.Contains (movableScript.rigidbodyMovable))
 		{
-			playerScript.cubesAttracted.Add (other.gameObject);
+			playerScript.cubesAttracted.Add (movableScript.rigidbodyMovable);
 			fxAnimationsScript.StartCoroutine ("AttractionFX", other.gameObject);
 		}
 	}
 
 	protected virtual void Repulse (Collider other)
 	{
-		if (!other.GetComponent<MovableScript> ().repulsedBy.Contains (player.gameObject))
-			other.GetComponent<MovableScript> ().repulsedBy.Add (player.gameObject);
+		MovableScript movableScript = other.GetComponent<MovableScript> ();
 
-		if (!playerScript.cubesRepulsed.Contains (other.gameObject))
+		if (!movableScript.repulsedBy.Contains (player.gameObject))
+			movableScript.repulsedBy.Add (player.gameObject);
+
+		if (!playerScript.cubesRepulsed.Contains (movableScript.rigidbodyMovable))
 		{
-			playerScript.cubesRepulsed.Add (other.gameObject);
+			playerScript.cubesRepulsed.Add (movableScript.rigidbodyMovable);
 			fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
 		}
 	}
@@ -104,18 +108,20 @@ public class MagnetZoneScript : MonoBehaviour
 		{
 			if(other.tag == "Movable" || other.tag =="ThrownMovable" || other.tag == "Suggestible")
 			{
-				if(other.GetComponent<MovableScript> ().attracedBy.Contains (player.gameObject))
-					other.GetComponent<MovableScript> ().attracedBy.Remove (player.gameObject);
+				MovableScript movableScript = other.GetComponent<MovableScript> ();
+
+				if(movableScript.attracedBy.Contains (player.gameObject))
+					movableScript.attracedBy.Remove (player.gameObject);
 				
-				if (other.GetComponent<MovableScript> ().repulsedBy.Contains (player.gameObject))
-					other.GetComponent<MovableScript> ().repulsedBy.Remove (player.gameObject);
+				if (movableScript.repulsedBy.Contains (player.gameObject))
+					movableScript.repulsedBy.Remove (player.gameObject);
 
 
-				if(playerScript.cubesAttracted.Contains(other.gameObject))
-					playerScript.cubesAttracted.Remove (other.gameObject);
+				if(playerScript.cubesAttracted.Contains(movableScript.rigidbodyMovable))
+					playerScript.cubesAttracted.Remove (movableScript.rigidbodyMovable);
 
-				if(playerScript.cubesRepulsed.Contains(other.gameObject))
-					playerScript.cubesRepulsed.Remove (other.gameObject);
+				if(playerScript.cubesRepulsed.Contains(movableScript.rigidbodyMovable))
+					playerScript.cubesRepulsed.Remove (movableScript.rigidbodyMovable);
 			}
 		}
 	}

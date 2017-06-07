@@ -91,9 +91,9 @@ public class PlayersGameplay : MonoBehaviour
 	protected string playerDeadCubeTag;
 
 	[HideInInspector]
-	public List<GameObject> cubesAttracted = new List<GameObject>();
+	public List<Rigidbody> cubesAttracted = new List<Rigidbody>();
 	[HideInInspector]
-	public List<GameObject> cubesRepulsed = new List<GameObject>();
+	public List<Rigidbody> cubesRepulsed = new List<Rigidbody>();
 
     protected Transform movableParent;
     [HideInInspector]
@@ -375,19 +375,21 @@ public class PlayersGameplay : MonoBehaviour
 		holdState = HoldState.CanHold;
 		playerState = PlayerState.None;
 
-        holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
+		MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript> ();
 
-        holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+		movableScript.slowMoTrigger.triggerEnabled = true;
+
+		movableScript.hold = false;
         holdMovableTransform.transform.SetParent(null);
         holdMovableTransform.transform.SetParent(movableParent);
-        holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
-        holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-        holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
+		movableScript.playerThatThrew = gameObject;
+		movableScript.AddRigidbody();
+		holdMovableRB = movableScript.rigidbodyMovable;
         holdMovableTransform.gameObject.tag = "ThrownMovable";
-		holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease();
+		movableScript.OnRelease();
 
 
-        holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 250;
+		movableScript.currentVelocity = 250;
         holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
 		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
@@ -397,7 +399,7 @@ public class PlayersGameplay : MonoBehaviour
 
     }
 
-	public virtual void Attraction(GameObject movable)
+	public virtual void Attraction(Rigidbody movable)
 	{
 		if (movable.tag == "HoldMovable")
 			cubesAttracted.Remove (movable);
@@ -407,13 +409,13 @@ public class PlayersGameplay : MonoBehaviour
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 
 		movableAttraction.Normalize ();
-		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
+		movable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
 
 		if (OnAttracting != null)
 			OnAttracting();
 	}
 
-    public virtual void Repulsion(GameObject movable)
+	public virtual void Repulsion(Rigidbody movable)
     {
 		if (movable.tag == "HoldMovable")
 			cubesAttracted.Remove (movable);
@@ -422,7 +424,7 @@ public class PlayersGameplay : MonoBehaviour
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movableRepulsion.Normalize ();
-		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
+		movable.AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
 		
 		if (OnRepulsing != null)
 			OnRepulsing();		
@@ -436,23 +438,25 @@ public class PlayersGameplay : MonoBehaviour
 
 		SetMagnetPointPosition (movable);
 
+		MovableScript movableScript = movable.GetComponent<MovableScript> ();
+
 		movable.tag = "HoldMovable";
-		movable.GetComponent<MovableScript>().player = transform;
-		movable.GetComponent<MovableScript>().DestroyRigibody();
-		movable.GetComponent<MovableScript>().OnHold();
+		movableScript.player = transform;
+		movableScript.DestroyRigibody();
+		movableScript.OnHold();
 
-        holdMovableTransform = movable.GetComponent<Transform>();
+		holdMovableTransform = movable.transform;
 		holdMovableTransform.SetParent (transform);
-//		holdMovableTransform.SetParent (playerFX.playerMesh);
-
 
         for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
         {
-            if (GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesAttracted.Contains(movable))
-                GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesAttracted.Remove(movable);
+			PlayersGameplay playerScript = GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
 
-            if (GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesRepulsed.Contains(movable))
-                GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesRepulsed.Remove(movable);
+			if (playerScript.cubesAttracted.Contains(movableScript.rigidbodyMovable))
+				playerScript.cubesAttracted.Remove(movableScript.rigidbodyMovable);
+
+			if (playerScript.cubesRepulsed.Contains(movableScript.rigidbodyMovable))
+				playerScript.cubesRepulsed.Remove(movableScript.rigidbodyMovable);
         }
 
 		cubesAttracted.Clear();
@@ -721,12 +725,14 @@ public class PlayersGameplay : MonoBehaviour
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 
-			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+			MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript> ();
+
+			movableScript.hold = false;
 			holdMovableTransform.tag = "Movable";
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
-			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-			holdMovableTransform.GetComponent<MovableScript>().OnRelease();	
+			movableScript.AddRigidbody();
+			movableScript.OnRelease();	
 		}
 
 		holdState = HoldState.CannotHold;

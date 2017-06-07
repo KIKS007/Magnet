@@ -3,27 +3,28 @@ using System.Collections;
 
 public class SlowMotionTriggerScript : MonoBehaviour 
 {
-	public LayerMask playerLayerMask;
 	public bool triggerEnabled = false;
 
 	[HideInInspector]
 	public GameObject playerThatThrew;
 
 	private SlowMotionCamera slowMotionCamera;
+	private MovableScript movableScript;
 
 	void Start ()
 	{
 		slowMotionCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera>();
+		movableScript = transform.parent.GetComponent<MovableScript> ();
 	}
 
 	void OnTriggerEnter (Collider other)
 	{
-		if(triggerEnabled && (1<<other.gameObject.layer & playerLayerMask) != 0)
+		if(triggerEnabled && other.gameObject.layer == LayerMask.NameToLayer ("Player"))
 		{
 			if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 				return;
 
-			playerThatThrew = transform.parent.GetComponent<MovableScript>().playerThatThrew;
+			playerThatThrew = movableScript.playerThatThrew;
 			
 			if(triggerEnabled && other.tag == "Player" && other.gameObject != playerThatThrew)
 			{

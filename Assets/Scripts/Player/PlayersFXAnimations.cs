@@ -290,7 +290,9 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		StartCoroutine (SetAttractionParticles (whichCube, fx, ps));
 
-		yield return new WaitWhile(() => playerScript.cubesAttracted.Contains (whichCube));
+		Rigidbody rb = whichCube.GetComponent<Rigidbody> ();
+
+		yield return new WaitWhile(() => playerScript.cubesAttracted.Contains (rb));
 
 		ps.Stop ();
 
@@ -342,7 +344,9 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
 
-		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (whichCube));
+		Rigidbody rb = whichCube.GetComponent<Rigidbody> ();
+
+		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (rb));
 
 		/*ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
 		ps.GetParticles (particlesList);
