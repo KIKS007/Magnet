@@ -75,10 +75,6 @@ public class PlayersGameplay : MonoBehaviour
     public float shootForce = 200;
     public float repulsionForce = 10;
 
-    [Header("Deceleration")]
-    [Range(0, 1)]
-    public float decelerationAmount = 1;
-
     [Header("Stun")]
     public float stunnedRotation = 400;
     public float stunnedDuration = 0.6f;
@@ -88,6 +84,9 @@ public class PlayersGameplay : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
 	public AnimationCurve dashEase;
+
+	[Header("Hits Taken")]
+	public PlayersGameplay playerThatHit;
 
 	protected string playerDeadCubeTag;
 
@@ -127,8 +126,6 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected PlayersFXAnimations playerFX;
 
-	protected GameObject mainCamera;
-
 	#endregion
 
 	#region Setup
@@ -158,7 +155,6 @@ public class PlayersGameplay : MonoBehaviour
         magnetPoint = transform.GetChild(0).transform;
         transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
 		playerFX = GetComponent<PlayersFXAnimations> ();
-		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
 	protected void SetPlayerName()
@@ -197,6 +193,8 @@ public class PlayersGameplay : MonoBehaviour
         
 		dashState = DashState.CanDash;
 		holdState = HoldState.CanHold;
+
+		playerThatHit = null;
 
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
@@ -329,9 +327,6 @@ public class PlayersGameplay : MonoBehaviour
                 if (OnHolding != null)
                     OnHolding();
             }
-
-			//Deceleration
-            playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
 			//Gravity
             playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
@@ -493,16 +488,20 @@ public class PlayersGameplay : MonoBehaviour
 			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 				Death(DeathFX.All, other.contacts[0].point);
 
-        if (other.collider.tag != "HoldMovable")
-            if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-            {
-                playersHit.Add(other.gameObject);
-                other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
-
-            }
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				playerScript.playerThatHit = this;
+				
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
     }
 
     protected virtual void OnCollisionEnter(Collision other)
@@ -515,14 +514,27 @@ public class PlayersGameplay : MonoBehaviour
 				Death(DeathFX.All, other.contacts[0].point);
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-            if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-            {
-                playersHit.Add(other.gameObject);
-                other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
-            }
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				playerScript.playerThatHit = this;
+
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+		{
+			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+
+			if (script != null && script.playerThatThrew != null)
+				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
+		}
     }
 	#endregion
 
@@ -589,8 +601,8 @@ public class PlayersGameplay : MonoBehaviour
 
 		holdState = HoldState.CannotHold;
 
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Stun);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Stun);
 
 		if (OnStun != null)
             OnStun();
@@ -603,12 +615,27 @@ public class PlayersGameplay : MonoBehaviour
 
         yield return new WaitForSeconds(stunnedDuration);
 
+		playerThatHit = null;
+
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
 
 		if(holdState == HoldState.CannotHold)
 			holdState = HoldState.CanHold;
     }
+
+	public void HitBy (PlayersGameplay player, float duration = 0)
+	{
+		playerThatHit = player;
+
+		if (duration != 0)
+			DOVirtual.DelayedCall (duration, () => 
+			{
+				if(playerThatHit == player)
+					playerThatHit = null;
+			});
+		
+	}
 	#endregion
 
 	#region Dash
@@ -673,8 +700,22 @@ public class PlayersGameplay : MonoBehaviour
 		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
 		StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] = (int)(Time.unscaledTime - startModeTime);
 
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
+
+		if (playerThatHit != null)
+		{
+			if(playerThatHit != this)
+			{
+				Debug.Log (playerThatHit.playerName.ToString () + " : +1 kill");
+				StatsManager.Instance.PlayerKills (playerThatHit);
+			}
+			else
+			{
+				Debug.Log (playerThatHit.playerName.ToString () + " : +1 suicide");
+				StatsManager.Instance.PlayerSuicides (playerThatHit);
+			}
+		}
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{

@@ -25,13 +25,12 @@ public class MovableScript : MonoBehaviour
 	public List<GameObject> attracedBy = new List<GameObject> ();
 	public List<GameObject> repulsedBy = new List<GameObject> ();
 
-	[Header ("Deceleration")]
-	public bool decelerationShotOnly = false;
-	[Range (0, 1)]
-	public float decelerationAmount = 1;
-
 	[Header ("Gravity")]
 	public float gravity = 0;
+
+	[Header ("Players")]
+	public GameObject playerThatThrew;
+	public GameObject playerHit;
 
 	protected bool canPlaySound = true;
 
@@ -56,10 +55,6 @@ public class MovableScript : MonoBehaviour
 
 	[HideInInspector]
 	public Transform player;
-	[HideInInspector]
-	public GameObject playerThatThrew;
-	[HideInInspector]
-	public GameObject playerHit;
 	[HideInInspector]
 	public MeshFilter cubeMeshFilter;
 	[HideInInspector]
@@ -133,15 +128,6 @@ public class MovableScript : MonoBehaviour
 		if(rigidbodyMovable != null)
 		{
 			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
-		}
-
-		if(rigidbodyMovable != null && currentVelocity > 5)
-		{
-			if(!decelerationShotOnly)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
-
-			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
 		}
 	}
 	#endregion
@@ -278,7 +264,7 @@ public class MovableScript : MonoBehaviour
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
 				if(playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+					StatsManager.Instance.PlayersHits (playerThatThrew, playerHit);
 			}
 		}
 	}

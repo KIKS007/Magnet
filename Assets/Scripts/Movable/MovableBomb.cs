@@ -77,7 +77,7 @@ public class MovableBomb : MovableScript
 			if(playerThatThrew == null && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
@@ -93,7 +93,7 @@ public class MovableBomb : MovableScript
 			else if(other.collider.GetComponent<PlayersGameplay>().playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
@@ -109,7 +109,7 @@ public class MovableBomb : MovableScript
 			else if(playerThatThrew != other.gameObject && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;

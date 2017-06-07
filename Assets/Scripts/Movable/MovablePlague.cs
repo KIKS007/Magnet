@@ -66,7 +66,7 @@ public class MovablePlague : MovableScript
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 					
 					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+						StatsManager.Instance.PlayersHits (playerThatThrew, playerHit);
 
 				}				
 			}

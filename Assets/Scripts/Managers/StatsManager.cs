@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 using System.Linq;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration};
+public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides };
 
 public class StatsManager : SerializedMonoBehaviour
 {
@@ -206,17 +206,31 @@ public class StatsManager : SerializedMonoBehaviour
 		}
 	}
 
-	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)
+	public void PlayersHits (GameObject playerThatThrew, GameObject playerHit)
 	{
-		playersStats [ playerThatThrew.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.Frags.ToString ()]++;
-		playersStats [ playerHit.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.Hits.ToString ()]++;
+		playersStats [ playerThatThrew.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.HitsGiven.ToString ()]++;
+		playersStats [ playerHit.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.HitsTaken.ToString ()]++;
 
-		totalStats [WhichStat.Frags.ToString ()]++;
-		totalStats [WhichStat.Hits.ToString ()]++;
+		totalStats [WhichStat.HitsGiven.ToString ()]++;
+		totalStats [WhichStat.HitsTaken.ToString ()]++;
 
 		AimPrecision ();
 
 		UpdateStats ();
+	}
+
+	public void PlayerKills (PlayersGameplay playerThatKilled)
+	{
+		playersStats [ playerThatKilled.playerName.ToString () ].playersStats [WhichStat.Kills.ToString ()]++;
+
+		totalStats [WhichStat.Kills.ToString ()]++;
+	}
+
+	public void PlayerSuicides (PlayersGameplay player)
+	{
+		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
+
+		totalStats [WhichStat.Suicides.ToString ()]++;
 	}
 
 	public void Winner (WhichPlayer whichPlayerWon)
@@ -365,7 +379,7 @@ public class StatsManager : SerializedMonoBehaviour
 			if (p.Value.playersStats [WhichStat.Shots.ToString ()] == 0)
 				continue;
 
-			float temp = (float)p.Value.playersStats [WhichStat.Frags.ToString ()] / (float)p.Value.playersStats [WhichStat.Shots.ToString ()] * 100f;
+			float temp = (float)p.Value.playersStats [WhichStat.HitsGiven.ToString ()] / (float)p.Value.playersStats [WhichStat.Shots.ToString ()] * 100f;
 
 			p.Value.playersStats [WhichStat.AimAccuracy.ToString ()] = (int) Mathf.Round (temp);
 		}
