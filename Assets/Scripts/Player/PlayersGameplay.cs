@@ -151,7 +151,7 @@ public class PlayersGameplay : MonoBehaviour
 		}
 		
         magnetPoint = transform.GetChild(0).transform;
-        transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
+		transform.GetComponentInChildren<MagnetTriggerScript>().magnetPoint = magnetPoint;
 		playerFX = GetComponent<PlayersFXAnimations> ();
     }
 

@@ -21,6 +21,8 @@ public class MagnetZoneScript : MonoBehaviour
 		player = gameObject.transform.parent;
 		playerScript = player.GetComponent<PlayersGameplay> ();
 		fxAnimationsScript = player.GetComponent<PlayersFXAnimations> ();
+		GetComponent<MeshCollider> ().enabled = false;
+		GetComponent<MeshCollider> ().enabled = true;
 	}
 
 	protected virtual void Update ()
