@@ -117,6 +117,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GameObject mainCamera;
 	public ScreenShakeCamera screenShakeCamera;
 	public ZoomCamera zoomCamera;
+	public DynamicCamera dynamicCamera;
 
 	void Awake ()
 	{
@@ -141,6 +142,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 		screenShakeCamera = mainCamera.GetComponent<ScreenShakeCamera>();
 		zoomCamera = mainCamera.GetComponent<ZoomCamera>();
+		dynamicCamera = mainCamera.GetComponent<DynamicCamera>();
 	}
 		
 	void Update ()

@@ -36,28 +36,6 @@ public class MovableDeadCube : MovableScript
 		ToDeadlyColor (0.01f);
 	}
 
-	protected override void LowVelocity ()
-	{
-		if(hold == false && currentVelocity > 0)
-		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-		}
-
-		if(currentVelocity < limitVelocity)
-		{
-			if(gameObject.tag == "ThrownMovable")
-			{
-				if(slowMoTrigger == null)
-					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
-
-				slowMoTrigger.triggerEnabled = false;
-
-				gameObject.tag = "Movable";
-			}
-		}
-	}
-
 	protected override void HitPlayer (Collision other)
 	{
 		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)

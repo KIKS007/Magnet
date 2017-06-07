@@ -18,6 +18,8 @@ public class StatsManager : SerializedMonoBehaviour
 		UpdateStats ();
 	}
 
+	public bool settingUp = false;
+
 	[Header ("Player Stats")]
 	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
 
@@ -76,11 +78,16 @@ public class StatsManager : SerializedMonoBehaviour
 
 	void SetupStats ()
 	{
+		settingUp = true;
+
 		//Players Stats
 		playersStats.Clear ();
 
 		foreach(GameObject g in GlobalVariables.Instance.Players)
 		{
+			if (g == null)
+				break;
+			
 			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
 
 			if (!GlobalVariables.Instance.EnabledPlayersList.Contains (g))
@@ -116,6 +123,8 @@ public class StatsManager : SerializedMonoBehaviour
 			leastStats.Add ( ((WhichStat)i).ToString (), new Stats ());
 			leastStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
 		}
+
+		settingUp = false;
 	}
 
 	void UpdateStats ()
@@ -387,6 +396,8 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public void ResetStats (bool resetAll = false)
 	{
+		settingUp = true;
+
 		timerDuration = 0;
 		winnerName = WhichPlayer.None;
 		roundDuration = "";

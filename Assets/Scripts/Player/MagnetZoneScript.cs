@@ -45,8 +45,6 @@ public class MagnetZoneScript : MonoBehaviour
 
 	protected virtual void OnTriggerStay (Collider other)
 	{
-		Debug.Log ("Collision Stay");
-
 		if (playerScript.rewiredPlayer == null)
 			return;
 	
@@ -55,24 +53,24 @@ public class MagnetZoneScript : MonoBehaviour
 		if (playerScript.playerState == PlayerState.Startup || playerScript.playerState == PlayerState.Dead || playerScript.playerState == PlayerState.Stunned)
 			return;
 
+		if (other.tag != "Movable" && other.tag != "Suggestible")
+			return;
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing && rewiredPlayer != null && playerScript.holdState == HoldState.CanHold)
 		{
-			if(other.tag == "Movable" || other.tag == "Suggestible")
+			RaycastHit hit;
+			
+			if(Physics.Raycast(player.transform.position, other.transform.position - player.transform.position, out hit, rayLength))
 			{
-				RaycastHit hit;
-
-				if(Physics.Raycast(player.transform.position, other.transform.position - player.transform.position, out hit, rayLength))
+				if(hit.collider.gameObject.tag == "Movable" || hit.collider.gameObject.tag == "Suggestible")
 				{
-					if(hit.collider.gameObject.tag == "Movable" || hit.collider.gameObject.tag == "Suggestible")
-					{
-						Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
-
-						if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
-							Attract (other);
-
-						if (rewiredPlayer.GetButton ("Repulse") && !rewiredPlayer.GetButton ("Attract"))
-							Repulse (other);						
-					}
+					Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
+					
+					if (rewiredPlayer.GetButton ("Attract") && !rewiredPlayer.GetButton ("Repulse"))
+						Attract (other);
+					
+					if (rewiredPlayer.GetButton ("Repulse") && !rewiredPlayer.GetButton ("Attract"))
+						Repulse (other);						
 				}
 			}
 		}
@@ -105,15 +103,9 @@ public class MagnetZoneScript : MonoBehaviour
 			fxAnimationsScript.StartCoroutine ("RepulsionFX", other.gameObject);
 		}
 	}
-	protected virtual void OnTriggerEnter (Collider other)
-	{
-		Debug.Log ("Collision Enter");
-
-	}
+		
 	protected virtual void OnTriggerExit (Collider other)
 	{
-		Debug.Log ("Collision Exit");
-
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(other.tag == "Movable" || other.tag =="ThrownMovable" || other.tag == "Suggestible")
@@ -128,10 +120,7 @@ public class MagnetZoneScript : MonoBehaviour
 
 
 				if(playerScript.cubesAttracted.Contains(movableScript))
-				{
-					Debug.Log ("Here");
 					playerScript.cubesAttracted.Remove (movableScript);
-				}
 
 				if(playerScript.cubesRepulsed.Contains(movableScript))
 					playerScript.cubesRepulsed.Remove (movableScript);

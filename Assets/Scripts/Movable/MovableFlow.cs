@@ -16,25 +16,6 @@ public class MovableFlow : MovableScript
 		ToDeadlyColor ();
 	}
 
-	protected override void LowVelocity ()
-	{
-		if (currentVelocity >= limitVelocity && !slowMoTrigger.triggerEnabled)
-			slowMoTrigger.triggerEnabled = true;
-
-		if(currentVelocity < limitVelocity)
-		{
-			if(gameObject.tag == "ThrownMovable")
-			{
-				if(slowMoTrigger == null)
-					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
-
-				slowMoTrigger.triggerEnabled = false;
-
-				gameObject.tag = "Movable";
-			}
-		}
-	}
-
 	protected override void HitPlayer (Collision other)
 	{
 		if(other.collider.tag == "Player" 

@@ -457,10 +457,7 @@ public class PlayersGameplay : MonoBehaviour
 			PlayersGameplay playerScript = GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
 
 			if (playerScript.cubesAttracted.Contains(movableScript))
-			{
-				Debug.Log ("Here");
 				playerScript.cubesAttracted.Remove(movableScript);
-			}
 
 			if (playerScript.cubesRepulsed.Contains(movableScript))
 				playerScript.cubesRepulsed.Remove(movableScript);

@@ -105,7 +105,8 @@ public class PlayersTutorial : PlayersGameplay
 
 
 		//////
-		hitsCount = StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.HitsGiven.ToString ()];;
+		if(!StatsManager.Instance.settingUp)
+			hitsCount = StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.HitsGiven.ToString ()];
 
 		if(playerState != PlayerState.Dead && playerState != PlayerState.Stunned && playerState != PlayerState.Startup)
 		{

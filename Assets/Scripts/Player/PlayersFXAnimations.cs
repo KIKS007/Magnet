@@ -346,7 +346,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		MovableScript script = whichCube.GetComponent<MovableScript> ();
 
-		yield return new WaitWhile(() => playerScript.cubesAttracted.Contains (script));
+		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (script));
 
 		/*ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
 		ps.GetParticles (particlesList);

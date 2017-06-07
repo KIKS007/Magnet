@@ -34,6 +34,8 @@ public class BombManager : LastManManager
 	{
 		textInitialSize = timerText.fontSize;
 		textLocalPosition = timerText.transform.parent.transform.localPosition;
+
+		GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (bomb);
 	}
 
 	// Use this for initialization
@@ -56,6 +58,8 @@ public class BombManager : LastManManager
 
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
+
+		yield return new WaitForSecondsRealtime (0.5f);
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
 			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
