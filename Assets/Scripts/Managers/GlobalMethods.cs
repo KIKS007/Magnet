@@ -20,6 +20,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public Vector2 deathTextPositions;
 	public float deathTextDuration;
 
+	[Header ("Explosion")]
+	public float explosionForce;
+	public float explosionRadius;
+
 	[HideInInspector]
 	public float safeDuration = 1.5f;
 
@@ -329,6 +333,23 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius)
+	{
+		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
+		{
+			Vector3 repulseDirection = other.transform.position - explosionPosition;
+			repulseDirection.Normalize ();
+
+			float explosionImpactZone = 1 - (Vector3.Distance (explosionPosition, other.transform.position) / explosionRadius);
+
+			if(explosionImpactZone > 0)
+			{
+				if(other.GetComponent<Rigidbody>() != null)
+					other.GetComponent<Rigidbody> ().AddForce (repulseDirection * explosionImpactZone * explosionForce, ForceMode.Impulse);
+			}
+		}
+	}
+
+	public void Explosion (Vector3 explosionPosition)
 	{
 		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
 		{

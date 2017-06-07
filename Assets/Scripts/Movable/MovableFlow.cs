@@ -4,10 +4,6 @@ using DarkTonic.MasterAudio;
 
 public class MovableFlow : MovableScript 
 {
-	[Header ("FLOW")]
-	public float explosionForce = 20;
-	public float explosionRadius = 50;
-
 	protected override void Start ()
 	{
 		gameObject.tag = "Suggestible";
@@ -24,7 +20,7 @@ public class MovableFlow : MovableScript
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 }

@@ -5,10 +5,6 @@ using DG.Tweening;
 
 public class MovableDeadCube : MovableScript
 {
-	[Header ("DEADCUBE")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	protected override void OnEnable ()
 	{
 		tag = "DeadCube";
@@ -44,7 +40,7 @@ public class MovableDeadCube : MovableScript
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 }

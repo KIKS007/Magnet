@@ -5,13 +5,8 @@ using DG.Tweening;
 
 public class MovableStar : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	[Header ("Trail")]
 	public Color trailNormalColor;
-
 	public Color trailDeadlyColor;
 
 	protected override void Awake ()
@@ -94,7 +89,7 @@ public class MovableStar : MovableScript
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 

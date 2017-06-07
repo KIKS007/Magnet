@@ -22,7 +22,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public bool slowMoEnabled = true;
 
 	[Header ("SlowMotion InGame")]
-	//the factor used to slow down time
+	public int slowMoNumber = 0;
 	public float[] slowFactors = new float[4];
 	public float[] slowMotionDurations = new float[4];
 	public float timeTween;
@@ -74,9 +74,6 @@ public class SlowMotionCamera : MonoBehaviour
 	public float initialFixedDelta;
 	[HideInInspector]
 	public float initialMaximumDelta;
-
-	[HideInInspector]
-	public int slowMoNumber = 0;
 
 	public float bloomInitialIntensity;
 

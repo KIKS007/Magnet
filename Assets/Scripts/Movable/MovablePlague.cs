@@ -12,46 +12,11 @@ public class MovablePlague : MovableScript
 	[Range (0, 1)]
 	public float deadlyCubeDeceleration = 0.97f;
 
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	protected override void Start ()
 	{
 		base.Start ();
 
-		ToNeutralColor ();
-	}
-
-	protected override void Update ()
-	{
-		SetSpeedState ();
-
-		CurrentVelocity ();
-
-		CheckPlayerThatThrew ();
-
-		if(hold == false && currentVelocity > 0)
-		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			if(tag != "DeadCube" && currentVelocity >= limitVelocity)
-				gameObject.tag = "ThrownMovable";	
-			
-		}
-		else if(currentVelocity < limitVelocity)
-		{
-			if(tag != "DeadCube" && gameObject.tag == "ThrownMovable")
-			{
-				if(slowMoTrigger == null)
-					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
-
-				slowMoTrigger.triggerEnabled = false;
-
-				gameObject.tag = "Movable";
-			}
-		}
+		ToNeutralColor (0);
 	}
 
 	protected override void HitPlayer (Collision other)
@@ -83,7 +48,7 @@ public class MovablePlague : MovableScript
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 

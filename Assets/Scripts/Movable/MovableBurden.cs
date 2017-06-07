@@ -14,10 +14,6 @@ public class MovableBurden : MovableScript
 
 	private float speedAddedCooldown = 0.5f;
 
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	private List<MovableBurden> otherMovables = new List<MovableBurden>();
 
 	private float initialTrackSpeed;
@@ -136,7 +132,7 @@ public class MovableBurden : MovableScript
 	{
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+		GlobalMethods.Instance.Explosion (transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	
 	}

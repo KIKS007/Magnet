@@ -5,11 +5,6 @@ using DG.Tweening;
 
 public class MovableBounce : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
-
 	protected override void LowVelocity () 
 	{
 		if(hold == false && currentVelocity > 0)
@@ -64,7 +59,7 @@ public class MovableBounce : MovableScript
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 

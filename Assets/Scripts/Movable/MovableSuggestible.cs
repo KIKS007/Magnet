@@ -5,10 +5,6 @@ using DarkTonic.MasterAudio;
 
 public class MovableSuggestible : MovableScript 
 {
-	[Header ("SUGGESTIBLE")]
-	public float explosionForce = 20;
-	public float explosionRadius = 50;
-
 	protected override void Start ()
 	{
 		gameObject.tag = "Suggestible";
@@ -23,9 +19,15 @@ public class MovableSuggestible : MovableScript
 		{
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 
+			foreach (GameObject g in attracedBy)
+				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+
+			foreach (GameObject g in repulsedBy)
+				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 }

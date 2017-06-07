@@ -5,10 +5,6 @@ using DG.Tweening;
 
 public class MovableStandoff : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	protected override void LowVelocity () 
 	{
 		if(hold == false && currentVelocity > 0)
@@ -59,7 +55,7 @@ public class MovableStandoff : MovableScript
 			if(tag == "DeadCube")
 			{
 				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+				GlobalMethods.Instance.Explosion (transform.position);
 			}
 		}
 	}

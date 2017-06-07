@@ -5,10 +5,6 @@ using DarkTonic.MasterAudio;
 
 public class MovablePlayer : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 20;
-	public float explosionRadius = 50;
-
 	[HideInInspector]
 	public bool basicMovable = true;
 
@@ -55,8 +51,13 @@ public class MovablePlayer : MovableScript
 		{
 			if(hold == false && currentVelocity > 0)
 			{
-				if(currentVelocity >= limitVelocity)
-					gameObject.tag = "ThrownMovable";
+				if(currentVelocity > limitVelocity)
+				{
+					if(slowMoTrigger == null)
+						slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+					slowMoTrigger.triggerEnabled = true;
+				}
 			}
 
 			if(currentVelocity < limitVelocity)
@@ -88,7 +89,7 @@ public class MovablePlayer : MovableScript
 
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
-				GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+				GlobalMethods.Instance.Explosion (transform.position);
 			}
 		}
 	}

@@ -12,10 +12,6 @@ public class MovableBomb : MovableScript
 
 	public bool trackingPlayer = false;
 
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
 
@@ -160,7 +156,7 @@ public class MovableBomb : MovableScript
 
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+		GlobalMethods.Instance.Explosion (transform.position);
 
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
