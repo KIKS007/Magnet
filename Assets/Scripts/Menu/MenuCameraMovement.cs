@@ -105,7 +105,7 @@ public class MenuCameraMovement : MonoBehaviour
 			positionOnPause = transform.position;
 
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
@@ -123,8 +123,10 @@ public class MenuCameraMovement : MonoBehaviour
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
 
+		transform.rotation = Quaternion.Euler (new Vector3 (90f, 0f, 0f));
+
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.FastBeyond360).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
@@ -135,9 +137,6 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		DisableBrowianMotion ();
 		StopPreviousMovement ();
-
-		if (DOTween.IsTweening ("ScreenShake"))
-			DOTween.Kill ("ScreenShake");
 
 		StartCoroutine (HideLogo ());
 
@@ -152,29 +151,27 @@ public class MenuCameraMovement : MonoBehaviour
 	public IEnumerator NewRestartRotation ()
 	{
 		StopPreviousMovement ();
-
-		if (DOTween.IsTweening ("ScreenShake"))
-			DOTween.Kill ("ScreenShake");
-
+		
 		transform.DOMove (newPlayPosition, newMovementDuration * 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		transform.DORotate (new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
-		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 	}
 
 	void StopSlowMotion ()
 	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			slowMo.StopPauseSlowMotion ();
-		else
-			slowMo.StopEndGameSlowMotion ();
+		slowMo.StopEffects ();
 	}
 
 	void StopPreviousMovement ()
 	{
 		DisableBrowianMotion ();
 
+		if (DOTween.IsTweening ("ScreenShake"))
+			DOTween.Kill ("ScreenShake");
+		
 		if (DOTween.IsTweening ("MenuCamera"))
 			DOTween.Kill ("MenuCamera");
 	}

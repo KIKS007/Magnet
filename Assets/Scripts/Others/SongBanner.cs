@@ -49,7 +49,7 @@ public class SongBanner : MonoBehaviour
 	{
 		DOTween.Kill ("SongBanner");
 
-		Tween tween = songRect.DOAnchorPosX (leftPosition, 10000f).SetSpeedBased ();
+		Tween tween = songRect.DOAnchorPosX (leftPosition, 10000f).SetSpeedBased ().SetUpdate (false);
 		yield return tween.WaitForCompletion ();
 
 		songText.text = newSongName;
@@ -68,12 +68,12 @@ public class SongBanner : MonoBehaviour
 		songRect.anchoredPosition = new Vector2 (rightPosition, songRect.anchoredPosition.y);
 		
 		songRect.DOAnchorPosX (centerPosition, bannerSpeed).SetSpeedBased ().SetEase (Ease.OutQuad).OnComplete (()=> {
-			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner");
-		}).SetId ("SongBanner");
+			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner").SetUpdate (false);
+		}).SetId ("SongBanner").SetUpdate (false);
 	}
 
 	void Hide ()
 	{
-		songRect.DOAnchorPosX (leftPosition, bannerSpeed).SetSpeedBased ().OnComplete (Show).SetId ("SongBanner");
+		songRect.DOAnchorPosX (leftPosition, bannerSpeed).SetSpeedBased ().OnComplete (Show).SetId ("SongBanner").SetUpdate (false);
 	}
 }

@@ -78,6 +78,8 @@ public class MovableBurden : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
+		yield return new WaitWhile (()=> targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
+
 		while(targetPlayer != null && Vector3.Distance(targetPlayer.transform.position, transform.position) > 0.5f)
 		{
 			Vector3 direction = (targetPlayer.transform.position - transform.position);
@@ -99,7 +101,8 @@ public class MovableBurden : MovableScript
 
 		trackSpeed += trackSpeedAdded;
 
-		StartCoroutine (AddSpeed ());
+		if (!hold)
+			StartCoroutine (AddSpeed ());
 	}
 
 	protected override void HitPlayer (Collision other)

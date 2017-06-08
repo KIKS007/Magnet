@@ -45,6 +45,6 @@ public class AIDash_Towards : AIComponent
 
 		AIScript.movement.Normalize ();
 
-		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash"));
+		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
 	}
 }

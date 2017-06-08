@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 
-public enum GameStateEnum {Menu, Playing, Paused, EndMode, Loading };
+public enum GameStateEnum { Menu, Playing, Paused, EndMode, Loading };
 
 public enum StartupType {Delayed, Wave, Done};
 

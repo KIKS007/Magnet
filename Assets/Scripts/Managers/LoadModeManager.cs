@@ -11,14 +11,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public event EventHandler OnLevelUnloaded;
 
 	private Transform mainCamera;
-	private SlowMotionCamera slowMo;
 	private MenuCameraMovement cameraMovement;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
-		slowMo = mainCamera.GetComponent<SlowMotionCamera> ();
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
@@ -116,7 +114,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
-		StopSlowMotion ();
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
@@ -168,7 +165,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
-		StopSlowMotion ();
 
 		LevelWasUnloaded (GameStateEnum.Menu);
 	
@@ -190,14 +186,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 		if (OnLevelUnloaded != null)
 			OnLevelUnloaded ();
-	}
-
-	void StopSlowMotion ()
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			slowMo.StopPauseSlowMotion ();
-		else
-			slowMo.StopEndGameSlowMotion ();
 	}
 
 	void DestroyParticules ()

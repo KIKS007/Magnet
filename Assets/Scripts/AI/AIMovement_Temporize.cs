@@ -20,7 +20,7 @@ public class AIMovement_Temporize : AIComponent
 
 		sign = (int)Mathf.Sign (Random.Range (-1f, 1f));
 
-		DOVirtual.DelayedCall (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()).SetId ("Sign" + gameObject.GetInstanceID ());
+		DOVirtual.DelayedCall (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()).SetId ("Sign" + gameObject.GetInstanceID ()).SetUpdate (false);
 	}
 
 	void Update ()

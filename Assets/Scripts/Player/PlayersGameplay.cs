@@ -596,7 +596,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		stunnedRotationTemp = stunnedRotation;
 
-		DOTween.To (()=> stunnedRotationTemp, x=> stunnedRotationTemp = x, stunnedRotationTemp * 0.3f, stunnedDuration * 0.5f).SetEase (Ease.OutQuint).SetDelay (stunnedDuration * 0.5f);
+		DOTween.To (()=> stunnedRotationTemp, x=> stunnedRotationTemp = x, stunnedRotationTemp * 0.3f, stunnedDuration * 0.5f).SetEase (Ease.OutQuint).SetDelay (stunnedDuration * 0.5f).SetUpdate (false);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -641,7 +641,7 @@ public class PlayersGameplay : MonoBehaviour
 			{
 				if(playerThatHit == player)
 					playerThatHit = null;
-			});
+				}).SetUpdate (false);
 		
 	}
 	#endregion

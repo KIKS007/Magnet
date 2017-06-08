@@ -447,7 +447,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		if(playLoadedMusics && loadedMusics.Count != 0)
 			gamePlaylist = "Loaded Musics";
 
-		if(playlistCont.HasPlaylist && playlistCont.PlaylistName != gamePlaylist)
+		if(!playlistCont.HasPlaylist || playlistCont.HasPlaylist && playlistCont.PlaylistName != gamePlaylist)
 		{
 			MasterAudio.ChangePlaylistByName (gamePlaylist, false);
 

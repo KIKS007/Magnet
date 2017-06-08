@@ -36,7 +36,7 @@ public class MovableStar : MovableScript
 		var main = deadlyParticle2.main;
 		main.startColor = trailNormalColor;
 
-		cubeMaterial.DOColor (trailNormalColor, "_EmissionNEUTRAL", 0.1f).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOColor (trailNormalColor, "_EmissionNEUTRAL", 0.1f).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
@@ -153,7 +153,7 @@ public class MovableStar : MovableScript
 		var main = deadlyParticle2.main;
 		main.startColor = trailDeadlyColor;
 
-		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeColor = CubeColor.Deadly;
 	}

@@ -194,16 +194,16 @@ public class MovableScript : MonoBehaviour
 		switch(whichColor)
 		{
 		case CubeColor.Blue:
-			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Pink:
-			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Green:
-			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Yellow:
-			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		}
 
@@ -242,7 +242,7 @@ public class MovableScript : MonoBehaviour
 		deadlyParticle.Play ();
 		deadlyParticle2.Play ();
 
-		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeColor = CubeColor.Deadly;
 	}
@@ -252,15 +252,15 @@ public class MovableScript : MonoBehaviour
 		if (DOTween.IsTweening ("CubeColorTween" + gameObject.GetInstanceID ()))
 			DOTween.Kill ("CubeColorTween" + gameObject.GetInstanceID ());
 		
-		cubeMaterial.DOFloat (0f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 	}
 
 	protected virtual IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)

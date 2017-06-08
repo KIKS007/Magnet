@@ -65,8 +65,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		else
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " life";
 
-		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad);
-		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text));
+		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad).SetUpdate (false);
+		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text)).SetUpdate (false);
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
@@ -98,7 +98,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		DOVirtual.DelayedCall (safeDuration, ()=> 
 		{
 			player.layer = LayerMask.NameToLayer ("Player");
-		});
+			}).SetUpdate (false);
 
 		player.transform.position = newPos;
 		//SpawnParticles (player);
@@ -156,7 +156,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;
 			
-			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
+			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic).SetUpdate (false);
 			StartCoroutine (ChangeMovableTag (deadCube, deadCube.tag, scaleDuration));
 
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
@@ -326,7 +326,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
 	{
 		target.transform.localScale = Vector3.zero;
-		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
+		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic).SetUpdate (false);
 		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
 
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, target.transform);

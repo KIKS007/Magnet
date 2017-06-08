@@ -176,8 +176,8 @@ public class MovableBomb : MovableScript
 
 	IEnumerator GetToPlayerPosition ()
 	{
-		transform.DORotate (Vector3.zero, 0.5f);
-		transform.DOLocalMoveY (1.5f, 0.5f);
+		transform.DORotate (Vector3.zero, 0.5f).SetUpdate (false);
+		transform.DOLocalMoveY (1.5f, 0.5f).SetUpdate (false);
 
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
@@ -195,6 +195,7 @@ public class MovableBomb : MovableScript
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
+
 				rigidbodyMovable.AddForce(direction * trackSpeedTemp, ForceMode.Impulse);
 
 				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
@@ -219,6 +220,7 @@ public class MovableBomb : MovableScript
 
 		trackSpeedTemp += trackSpeedAdded;
 
-		StartCoroutine (AddSpeed ());
+		if (!hold)
+			StartCoroutine (AddSpeed ());
 	}
 }

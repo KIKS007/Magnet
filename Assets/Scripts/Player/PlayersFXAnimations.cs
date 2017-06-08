@@ -83,7 +83,7 @@ public class PlayersFXAnimations : MonoBehaviour
 	void OnEnable ()
 	{
 		transform.localScale = Vector3.zero;
-		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack);
+		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack).SetUpdate (false);
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			if(playerMaterials[i] != null)

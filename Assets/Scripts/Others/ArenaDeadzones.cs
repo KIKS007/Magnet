@@ -124,10 +124,10 @@ public class ArenaDeadzones : MonoBehaviour
 			columnChild.tag = "DeadZone";
 			columnChild.GetComponent<Collider> ().enabled = true;
 			
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration);
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
+			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration).SetUpdate (false);
+			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration).SetUpdate (false);
 			
-			columnChild.DOScaleZ (zScale, transitionDuration);
+			columnChild.DOScaleZ (zScale, transitionDuration).SetUpdate (false);
 		}
 	}
 }

@@ -37,6 +37,9 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
 		bool exactType = true;
@@ -59,23 +62,19 @@ public class ScreenShakeCamera : MonoBehaviour
 		}
 
 		shake = false;
-		transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete (EndOfShake);
-	}
 
-	void EndOfShake ()
-	{
-		if(!DOTween.IsTweening("ScreenShake"))
-		{
-			ResetCameraRotation ();
-		}
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete (ResetCameraRotation).SetUpdate (false);
 	}
 
 	void ResetCameraRotation ()
 	{
 		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+		if (DOTween.IsTweening ("ScreenShake"))
+			return;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			transform.DORotate(new Vector3 (90f, 0f, 0f), 1f, RotateMode.Fast).SetId("ScreenShake");
+			transform.DORotate(new Vector3 (90f, 0f, 0f), 1f, RotateMode.Fast).SetId("ScreenShake").SetUpdate (false);
 	}
 	
 }

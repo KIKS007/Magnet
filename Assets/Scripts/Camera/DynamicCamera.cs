@@ -8,11 +8,6 @@ public class DynamicCamera : MonoBehaviour
 {
 	public bool dynamicEnabled = true;
 
-	public WhichMode whichMode = WhichMode.Default;
-
-	public List<DynamicCameraSettings> modesSettingsList;
-
-
 	[Header ("Current Camera Lerp")]
 	public List<GameObject> otherTargetsList = new List<GameObject>();	
 	public float cameraZoomLerp = 0.1f;
@@ -31,11 +26,6 @@ public class DynamicCamera : MonoBehaviour
 	private Vector3 centerPos = new Vector3(0, 0, 0);
 
 	public List<GameObject> targetsList = new List<GameObject>();	
-
-	void Awake ()
-	{
-		LoadModeManager.Instance.OnLevelLoaded += GetNewSettings;
-	}
 
 	// Update is called once per frame
 	void Update () 
@@ -142,50 +132,4 @@ public class DynamicCamera : MonoBehaviour
 			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp);
 		}
 	}
-
-	public void GetNewSettings ()
-	{
-		bool exactSettings = false;
-
-		for(int i = 0; i < modesSettingsList.Count; i++)
-		{
-			if(modesSettingsList[i].whichMode == GlobalVariables.Instance.CurrentModeLoaded)
-			{
-				cameraZoomLerp = modesSettingsList [i].cameraZoomLerp;
-				cameraMovementLerp = modesSettingsList [i].cameraMovementLerp;
-
-				cameraYMin = modesSettingsList [i].cameraYMin;
-				distanceMin = modesSettingsList [i].distanceMin;
-				distanceRatio = modesSettingsList [i].distanceRatio;
-				exactSettings = true;
-				break;
-			}
-		}
-
-		if(!exactSettings)
-		{
-			cameraZoomLerp = modesSettingsList [0].cameraZoomLerp;
-			cameraMovementLerp = modesSettingsList [0].cameraMovementLerp;
-
-			cameraYMin = modesSettingsList [0].cameraYMin;
-			distanceMin = modesSettingsList [0].distanceMin;
-			distanceRatio = modesSettingsList [0].distanceRatio;
-		}
-
-	}
-}
-
-[Serializable]
-public class DynamicCameraSettings
-{
-	public WhichMode whichMode = WhichMode.Default;
-
-	[Header ("Camera Lerp")]
-	public float cameraZoomLerp = 0.1f;
-	public float cameraMovementLerp = 0.1f;
-
-	[Header ("Zoom Settings")]
-	public float cameraYMin = 15;
-	public float distanceMin = 0;
-	public float distanceRatio = 1;
 }
