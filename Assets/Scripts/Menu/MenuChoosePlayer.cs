@@ -36,7 +36,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	// Use this for initialization
 	void Awake () 
 	{
-		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId);
+		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId, true);
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
 
 		controllersOnPosition = controllers [0].anchoredPosition.y;

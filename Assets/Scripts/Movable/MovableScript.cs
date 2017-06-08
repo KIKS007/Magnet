@@ -65,18 +65,18 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Setup
-	protected virtual void Awake () 
+	public virtual void Awake () 
 	{
 		initialScale = transform.localScale;
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 	}
 
-	protected virtual void Start () 
+	public virtual void Start () 
 	{
 		//ToNeutralColor ();
 	}
 
-	protected virtual void OnEnable ()
+	public virtual void OnEnable ()
 	{
 		hold = false;
 

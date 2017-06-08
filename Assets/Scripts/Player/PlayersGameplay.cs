@@ -494,12 +494,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if(playerThatHit == null)
-				StatsManager.Instance.PlayerSuicides (this);
-
 			Death(DeathFX.All, other.contacts[0].point);
-		}
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
 		{
@@ -524,12 +519,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if(playerThatHit == null)
-				StatsManager.Instance.PlayerSuicides (this);
-
 			Death(DeathFX.All, other.contacts[0].point);
-		}
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
 		{
@@ -721,19 +711,10 @@ public class PlayersGameplay : MonoBehaviour
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
-		if (playerThatHit != null)
-		{
-			if(playerThatHit != this)
-			{
-				Debug.Log (playerThatHit.playerName.ToString () + " : +1 kill");
-				StatsManager.Instance.PlayerKills (playerThatHit);
-			}
-			else
-			{
-				Debug.Log (playerThatHit.playerName.ToString () + " : +1 suicide");
-				StatsManager.Instance.PlayerSuicides (playerThatHit);
-			}
-		}
+		if (playerThatHit != null && playerThatHit != this)
+			StatsManager.Instance.PlayerKills (playerThatHit);
+		else
+			StatsManager.Instance.PlayerSuicides (this);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -754,11 +735,6 @@ public class PlayersGameplay : MonoBehaviour
 		gameObject.SetActive(false);
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
-	}
-
-	public void SpawnDeadCube ()
-	{
-		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
 	}
 		
     protected virtual void OnDestroy()

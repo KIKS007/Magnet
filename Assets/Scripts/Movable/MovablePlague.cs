@@ -12,7 +12,7 @@ public class MovablePlague : MovableScript
 	[Range (0, 1)]
 	public float deadlyCubeDeceleration = 0.97f;
 
-	protected override void Start ()
+	public override void Start ()
 	{
 		base.Start ();
 

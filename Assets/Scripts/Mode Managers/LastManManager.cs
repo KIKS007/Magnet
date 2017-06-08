@@ -19,6 +19,7 @@ public class LastManManager : MonoBehaviour
 	public float durationBetweenSpawn = 0.1f;
 
 	[Header ("Dead Cube")]
+	public MovableScript movableExampleScript;
 	public bool playerDeadCube = true;
 
 	protected bool gameEndLoopRunning = false;
@@ -78,13 +79,18 @@ public class LastManManager : MonoBehaviour
 		}
 
 		//Spawn Play if has lives left
-		if(playerScript.livesCount != 0 && !gameEndLoopRunning)
+		if (playerScript.livesCount != 0 && !gameEndLoopRunning) 
 		{
 			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
-		}
-		else if(playerDeadCube && !gameEndLoopRunning)
-			playerScript.SpawnDeadCube ();
+		} 
+		else if (playerDeadCube && !gameEndLoopRunning)
+			PlayerDeadCube (playerScript);
+	}
+
+	public virtual void PlayerDeadCube (PlayersGameplay playerScript)
+	{
+		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
 	}
 
 	protected virtual IEnumerator GameEnd ()

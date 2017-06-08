@@ -15,7 +15,7 @@ public class MovableBomb : MovableScript
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		hold = false;
 		trackingPlayer = false;

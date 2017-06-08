@@ -79,6 +79,7 @@ public class TutorialManager : MonoBehaviour
 	[Header ("DEAD CUBES")]
 	public float timeBeforePlayerRespawn = 2;
 	public bool oneDeadCube = false;
+	public MovableScript movableExampleScript;
 
 	private List<PlayersTutorial> playersScript = new List<PlayersTutorial> ();
 	private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations> ();
@@ -266,7 +267,7 @@ public class TutorialManager : MonoBehaviour
 		}
 		else 
 		{
-			playerScript.SpawnDeadCube ();
+			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
 
 			if(!oneDeadCube)
 			{

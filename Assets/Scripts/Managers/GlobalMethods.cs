@@ -117,12 +117,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
 	}
 
-	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, string tag)
+	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, MovableScript script, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, tag));
+		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, script, scaleDuration));
 	}
 
-	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag, float scaleDuration = defaultScaleDuration)
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, MovableScript script, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
@@ -145,19 +145,19 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
 			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
-			deadCube.GetComponent<MovablePlayer> ().CubeColor (tag);
-			
+
+			//
+			var clonedScript = CopyComponent (script, deadCube);
+
+			clonedScript.Awake ();
+			clonedScript.Start ();
+			clonedScript.OnEnable ();
+
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;
 			
-			deadCube.tag = "Untagged";
-
-			if (tag != "Movable")
-				deadCube.GetComponent<MovablePlayer> ().basicMovable = false;
-
 			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
-			StartCoroutine (ChangeMovableTag (deadCube, tag, scaleDuration));
-
+			StartCoroutine (ChangeMovableTag (deadCube, deadCube.tag, scaleDuration));
 
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 
@@ -384,5 +384,17 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		if(movable != null)
 			movable.tag = tagTemp;
+	}
+
+	public T CopyComponent<T>(T original, GameObject destination) where T : Component
+	{
+		System.Type type = original.GetType();
+		Component copy = destination.AddComponent(type);
+		System.Reflection.FieldInfo[] fields = type.GetFields();
+		foreach (System.Reflection.FieldInfo field in fields)
+		{
+			field.SetValue(copy, field.GetValue(original));
+		}
+		return copy as T;
 	}
 }

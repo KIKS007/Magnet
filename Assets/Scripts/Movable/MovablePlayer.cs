@@ -8,12 +8,12 @@ public class MovablePlayer : MovableScript
 	[HideInInspector]
 	public bool basicMovable = true;
 
-	protected override void Start ()
+	public override void Start ()
 	{
 		
 	}
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		hold = false;
 
@@ -92,26 +92,5 @@ public class MovablePlayer : MovableScript
 				GlobalMethods.Instance.Explosion (transform.position);
 			}
 		}
-	}
-
-	public override void OnHold ()
-	{
-		hold = true;
-
-		attracedBy.Clear ();
-		repulsedBy.Clear ();
-
-		ToColor();
-
-		OnHoldEventVoid ();
-	}
-
-	protected override IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
-	{
-		yield return new WaitForSeconds (waitTime * 0.5f);		
-
-		if(hold)
-			cubeColor = whichColor;
-
 	}
 }

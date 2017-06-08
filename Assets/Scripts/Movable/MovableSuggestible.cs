@@ -5,7 +5,7 @@ using DarkTonic.MasterAudio;
 
 public class MovableSuggestible : MovableScript 
 {
-	protected override void Start ()
+	public override void Start ()
 	{
 		gameObject.tag = "Suggestible";
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();

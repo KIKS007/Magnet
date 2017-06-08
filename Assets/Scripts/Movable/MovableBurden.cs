@@ -18,14 +18,14 @@ public class MovableBurden : MovableScript
 
 	private float initialTrackSpeed;
 
-	protected override void Awake ()
+	public override void Awake ()
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
 	}
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();

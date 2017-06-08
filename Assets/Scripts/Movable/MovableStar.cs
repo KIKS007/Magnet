@@ -9,7 +9,7 @@ public class MovableStar : MovableScript
 	public Color trailNormalColor;
 	public Color trailDeadlyColor;
 
-	protected override void Awake ()
+	public override void Awake ()
 	{
 		base.Awake ();
 
@@ -17,7 +17,7 @@ public class MovableStar : MovableScript
 		trailDeadlyColor = deadlyParticle2.main.startColor.color;
 	}
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		hold = false;
 

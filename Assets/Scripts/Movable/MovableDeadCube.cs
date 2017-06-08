@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class MovableDeadCube : MovableScript
 {
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		tag = "DeadCube";
 
@@ -27,7 +27,7 @@ public class MovableDeadCube : MovableScript
 		ToDeadlyColor (0.01f);
 	}
 
-	protected override void Start ()
+	public override void Start ()
 	{
 		ToDeadlyColor (0.01f);
 	}
