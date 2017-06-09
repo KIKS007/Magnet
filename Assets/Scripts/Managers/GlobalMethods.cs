@@ -59,7 +59,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		GameObject text = Instantiate (deathTextPrefab, position, deathTextPrefab.transform.rotation);
 		//text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
-		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName].color;
+		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName];
 
 		if(count != 1)
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " lives";

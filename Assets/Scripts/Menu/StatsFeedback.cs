@@ -136,7 +136,7 @@ public class StatsFeedback : MonoBehaviour
 		value = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()];
 
 		if(changeColor)
-			textComponent.color = GlobalVariables.Instance.playersColor [(int)whichPlayer];
+			textComponent.color = GlobalVariables.Instance.playersColors [(int)whichPlayer];
 
 		ModifyText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
 	}
@@ -150,10 +150,10 @@ public class StatsFeedback : MonoBehaviour
 			return;
 
 		if(changeColor)
-			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
+			textComponent.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
 
 		if(playerText != null && changeColor)
-			playerText.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
+			playerText.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer];
 
 
 		value = StatsManager.Instance.mostStats [whichStat.ToString ()].value;
@@ -173,10 +173,10 @@ public class StatsFeedback : MonoBehaviour
 			return;
 
 		if(changeColor)
-			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
+			textComponent.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
 
 		if(playerText != null && changeColor)
-			playerText.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
+			playerText.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer];
 
 		value = StatsManager.Instance.leastStats [whichStat.ToString ()].value;
 
@@ -199,7 +199,7 @@ public class StatsFeedback : MonoBehaviour
 	void Winner ()
 	{
 		if(changeColor)
-			textComponent.color = GlobalVariables.Instance.playersColor [(int)StatsManager.Instance.winnerName];
+			textComponent.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.winnerName];
 
 		ModifyText (textComponent, StatsManager.Instance.winner);
 	}

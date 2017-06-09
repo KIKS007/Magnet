@@ -70,7 +70,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int NumberOfDeadPlayers;
 	
 	[Header ("Players Colors")]
-	public Material[] playersColors = new Material[4];
+	public Color[] playersColors = new Color[5];
 
 	[Header ("Movables")]
 	public List<GameObject> AllMovables = new List<GameObject> ();
@@ -80,7 +80,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Cubes")]
 	public GameObject[] cubesPrefabs = new GameObject[3];
-	public Color[] playersColor = new Color[5];
 	public Mesh[] cubesStripes = new Mesh[4];
 
 	[Header ("Players Dead Cubes")]

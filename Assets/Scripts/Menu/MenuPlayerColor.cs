@@ -18,9 +18,9 @@ public class MenuPlayerColor : MonoBehaviour
 	void Setup ()
 	{
 		if(GetComponent<Text> () != null)
-			GetComponent<Text> ().color = GlobalVariables.Instance.playersColor [(int)player];
+			GetComponent<Text> ().color = GlobalVariables.Instance.playersColors [(int)player];
 		
 		else if(GetComponent<Image> () != null)
-			GetComponent<Image> ().color = GlobalVariables.Instance.playersColor [(int)player];
+			GetComponent<Image> ().color = GlobalVariables.Instance.playersColors [(int)player];
 	}
 }
