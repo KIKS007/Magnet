@@ -14,17 +14,29 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public List<Text> scoreboardPlayers = new List<Text> ();
 	public List<float> scoreScales = new List<float> ();
 
-	[Header ("Scoreboard Tween")]
+	[Header ("Panels")]
+	public List<RectTransform> playersPanels = new List<RectTransform> ();
+	public List<ScoreboardPosition> playersPanelsPosition = new List<ScoreboardPosition> ();
+	public List<float> playersPanelsYPos = new List<float> ();
+
+	[Header ("Stats")]
+	public GameObject statsPrefab;
+	public float initialYPos;
+	public float statsGapHeight;
+	public List<ModeStats> modesStats = new List<ModeStats> ();
+
+	[Header ("Tween")]
 	public float scoreTextDuration;
 	public Ease scoreTweenEase;
 
 	private List<int> scores = new List<int> ();
 	private Dictionary<int, int> previousScales = new Dictionary<int, int> ();
+	private List<RectTransform> enabledPanels = new List<RectTransform> ();
 
 	// Use this for initialization
 	void Start () 
 	{
-		GlobalVariables.Instance.OnEndMode += ()=> StartCoroutine (ScoreBoard ());
+		GlobalVariables.Instance.OnEndMode += ()=> StartCoroutine (PlayersPanels ());
 
 		GlobalVariables.Instance.OnMenu += ()=> 
 		{
@@ -37,25 +49,35 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 	}
 
-	IEnumerator ScoreBoard ()
+	IEnumerator PlayersPanels ()
 	{
 		if(GlobalVariables.Instance.NumberOfPlayers == 0)
 			yield break;
 
-		foreach (Text text in scoreboardPlayers)
-			text.gameObject.SetActive (false);
+		enabledPanels.Clear ();
 
-		List<Text> enabledText = new List<Text> ();
+		foreach (RectTransform panel in playersPanels)
+		{
+			panel.gameObject.SetActive (false);
+			panel.anchoredPosition = new Vector2 (panel.anchoredPosition.x, playersPanelsYPos [2]);
+		}
+
+		foreach (Text text in scoreboardPlayers)
+		{
+			text.text = "0";
+			text.transform.localScale = Vector3.one;
+		}
 
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 		{
-			scoreboardPlayers [(int)g.GetComponent<PlayersGameplay> ().playerName].gameObject.SetActive (true);
-			enabledText.Add (scoreboardPlayers [(int)g.GetComponent<PlayersGameplay> ().playerName]);
+			playersPanels [(int)g.GetComponent<PlayersGameplay> ().playerName].gameObject.SetActive (true);
+			enabledPanels.Add (playersPanels [(int)g.GetComponent<PlayersGameplay> ().playerName]);
 		}
 
-		for(int i = 0; i < enabledText.Count; i++)
-			enabledText [i].rectTransform.anchoredPosition = new Vector2 (scoreboardPosition [enabledText.Count - 2].positions [i], enabledText [i].rectTransform.anchoredPosition.y);
+		CreateStats ();
 
+		for(int i = 0; i < enabledPanels.Count; i++)
+			enabledPanels [i].anchoredPosition = new Vector2 (playersPanelsPosition [enabledPanels.Count - 2].positions [i], enabledPanels [i].anchoredPosition.y);
 
 		var playersStats = StatsManager.Instance.playersStats.OrderByDescending (x => x.Value.playersStats [WhichStat.Wins.ToString ()]).ToDictionary (x => x.Key, x=> x.Value);
 
@@ -80,19 +102,57 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 			if(wins != 0)
 			{
-				scoreboardPlayers [(int)playerName].transform.DOScale (scoreScales [ScoreScale (i, wins)], scoreTextDuration);
+				playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (scoreTweenEase);
 
 				if(!previousScales.ContainsKey (wins))
-					previousScales.Add (wins, ScoreScale (i, wins));
+					previousScales.Add (wins, ScoreOder (i, wins));
 			}
-			else
-				scoreboardPlayers [(int)playerName].transform.DOScale (scoreScales [3], scoreTextDuration);
 
 			StartCoroutine (GradualScore (scoreboardPlayers [(int)playerName], playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()]));
 		}
 	}
 
-	int ScoreScale (int scoreIndex, int score)
+	void CreateStats ()
+	{
+		int modesStatsIndex = 0;
+
+		for(int i = 0; i < modesStats.Count; i++)
+		{
+			if (modesStats [i].mode == GlobalVariables.Instance.CurrentModeLoaded)
+			{
+				modesStatsIndex = i;
+				break;
+			}
+		}
+
+		foreach(RectTransform r in enabledPanels)
+		{
+			//Remove Previous Stats
+			List<Transform> children = new List<Transform> ();
+
+			foreach (Transform child in r.transform.GetChild (0))
+				children.Add (child);
+			
+			children.ForEach (child => Destroy (child));
+
+			int playerIndex = playersPanels.FindIndex (x => x == r);
+
+			for(int i = 0; i < modesStats [modesStatsIndex].modesStats.Count; i++)
+			{
+				Vector3 position = new Vector3 (statsPrefab.GetComponent<RectTransform> ().anchoredPosition.x, initialYPos - statsGapHeight * i, 0);
+
+				GameObject statsClone = Instantiate (statsPrefab, statsPrefab.transform.position, statsPrefab.transform.rotation, r.transform.GetChild (0));
+				statsClone.GetComponent<RectTransform> ().anchoredPosition3D = position;
+
+				string text = StatsManager.Instance.statsText.FirstOrDefault (x=> x.Value == modesStats [modesStatsIndex].modesStats [i]).Key;
+
+				GlobalMethods.Instance.ReplaceInText (statsClone.GetComponent<Text> (), 
+					StatsManager.Instance.playersStats [((WhichPlayer)playerIndex).ToString ()].playersStats [modesStats [modesStatsIndex].modesStats [i].ToString ()].ToString ());
+			}
+		}
+	}
+
+	int ScoreOder (int scoreIndex, int score)
 	{
 		int sameScore = 0;
 		int differentScore = 0;
@@ -163,4 +223,18 @@ public class MenuEndMode : SerializedMonoBehaviour
 public class ScoreboardPosition
 {
 	public List<float> positions = new List<float> ();
+}
+
+[System.Serializable]
+public class ModeStats 
+{
+	public WhichMode mode = WhichMode.Default;
+	public List<WhichStat> modesStats = new List<WhichStat> ();
+}
+
+[System.Serializable]
+public class StatsPrefab 
+{
+	public WhichStat stats;
+	public GameObject prefab;
 }

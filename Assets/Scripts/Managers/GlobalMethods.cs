@@ -413,4 +413,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		g.GetComponent<EventTrigger> ().triggers.Add (entry);
 	}
+
+	public void ReplaceInText (Text textComponent, string newValue, string oldValue = "$")
+	{
+		if(textComponent.text.Contains (oldValue))
+			textComponent.text = textComponent.text.Replace (oldValue, newValue);
+		else
+			textComponent.text = newValue;
+	}
 }

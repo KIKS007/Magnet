@@ -71,6 +71,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	
 	[Header ("Players Colors")]
 	public Color[] playersColors = new Color[5];
+	[PropertyOrder (-1)]
+	[Button] 
+	void UpdateAllColors ()
+	{
+		foreach (var p in FindObjectsOfType<MenuPlayerColor> ())
+			p.Setup ();
+	}
 
 	[Header ("Movables")]
 	public List<GameObject> AllMovables = new List<GameObject> ();

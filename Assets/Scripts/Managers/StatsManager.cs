@@ -20,6 +20,9 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public bool settingUp = false;
 
+	[Header ("Stats Text")]
+	public Dictionary<string, WhichStat> statsText = new Dictionary<string, WhichStat> ();
+
 	[Header ("Player Stats")]
 	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
 

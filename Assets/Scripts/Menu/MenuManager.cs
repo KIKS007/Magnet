@@ -107,7 +107,8 @@ public class MenuManager : Singleton <MenuManager>
 		SetupLogo ();
 
 		for (int i = 0; i < elementsToEnable.Count; i++)
-			elementsToEnable [i].SetActive (true);
+			if(elementsToEnable [i] != null)
+				elementsToEnable [i].SetActive (true);
 	}
 
 	void SetupLogo ()

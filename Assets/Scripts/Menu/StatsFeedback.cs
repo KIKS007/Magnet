@@ -117,17 +117,6 @@ public class StatsFeedback : MonoBehaviour
 		CheckVisibility ();
 	}
 
-	void ModifyText (Text textComponent, string value)
-	{
-		if (textComponent = this.textComponent)
-			valueText = value;
-
-		if(textComponent.text.Contains ("$"))
-			textComponent.text = textComponent.text.Replace ("$", value);
-		else
-			textComponent.text = value;
-	}
-
 	void PlayerStats ()
 	{
 		if (StatsManager.Instance.playersStats.Count == 0 || !StatsManager.Instance.playersStats.ContainsKey (whichPlayer.ToString ()) || StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats.Count == 0)
@@ -138,7 +127,8 @@ public class StatsFeedback : MonoBehaviour
 		if(changeColor)
 			textComponent.color = GlobalVariables.Instance.playersColors [(int)whichPlayer];
 
-		ModifyText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		valueText = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ();
 	}
 
 	void MostStats ()
@@ -158,7 +148,8 @@ public class StatsFeedback : MonoBehaviour
 
 		value = StatsManager.Instance.mostStats [whichStat.ToString ()].value;
 
-		ModifyText (textComponent, StatsManager.Instance.mostStats [whichStat.ToString ()].value.ToString ());
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.mostStats [whichStat.ToString ()].value.ToString ());
+		valueText = StatsManager.Instance.mostStats [whichStat.ToString ()].value.ToString ();
 
 		if(playerText != null)
 			playerText.text = StatsManager.Instance.mostStats [whichStat.ToString ()].whichPlayer.ToString ();
@@ -180,7 +171,8 @@ public class StatsFeedback : MonoBehaviour
 
 		value = StatsManager.Instance.leastStats [whichStat.ToString ()].value;
 
-		ModifyText (textComponent, StatsManager.Instance.leastStats [whichStat.ToString ()].value.ToString ());
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.leastStats [whichStat.ToString ()].value.ToString ());
+		valueText = StatsManager.Instance.leastStats [whichStat.ToString ()].value.ToString ();
 
 		if (playerText != null)
 			playerText.text = StatsManager.Instance.leastStats [whichStat.ToString ()].whichPlayer.ToString ();
@@ -193,7 +185,8 @@ public class StatsFeedback : MonoBehaviour
 
 		value = StatsManager.Instance.totalStats [whichStat.ToString ()];
 
-		ModifyText (textComponent, StatsManager.Instance.totalStats [whichStat.ToString ()].ToString ());
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.totalStats [whichStat.ToString ()].ToString ());
+		valueText = StatsManager.Instance.totalStats [whichStat.ToString ()].ToString ();
 	}
 
 	void Winner ()
@@ -201,17 +194,20 @@ public class StatsFeedback : MonoBehaviour
 		if(changeColor)
 			textComponent.color = GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.winnerName];
 
-		ModifyText (textComponent, StatsManager.Instance.winner);
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.winner);
+		valueText = StatsManager.Instance.winner;
 	}
 
 	void RoundDuration ()
 	{
-		ModifyText (textComponent, StatsManager.Instance.roundDuration);
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.roundDuration);
+		valueText = StatsManager.Instance.roundDuration;
 	}
 
 	void AllRoundsDuration ()
 	{
-		ModifyText (textComponent, StatsManager.Instance.allRoundsDuration);
+		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.allRoundsDuration);
+		valueText = StatsManager.Instance.allRoundsDuration;
 	}
 
 	void CheckVisibility ()

@@ -15,12 +15,14 @@ public class MenuPlayerColor : MonoBehaviour
 	}
 
 	[ButtonAttribute()]
-	void Setup ()
+	public void Setup ()
 	{
+		GlobalVariables gv = FindObjectOfType<GlobalVariables> ();
+
 		if(GetComponent<Text> () != null)
-			GetComponent<Text> ().color = GlobalVariables.Instance.playersColors [(int)player];
+			GetComponent<Text> ().color = gv.playersColors [(int)player];
 		
 		else if(GetComponent<Image> () != null)
-			GetComponent<Image> ().color = GlobalVariables.Instance.playersColors [(int)player];
+			GetComponent<Image> ().color = gv.playersColors [(int)player];
 	}
 }
