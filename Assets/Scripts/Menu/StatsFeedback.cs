@@ -127,8 +127,24 @@ public class StatsFeedback : MonoBehaviour
 		if(changeColor)
 			textComponent.color = GlobalVariables.Instance.playersColors [(int)whichPlayer];
 
-		GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		if (whichStat != WhichStat.LifeDuration)
+			GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		else
+			LifeDuration ();
+		
 		valueText = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ();
+	}
+
+	void LifeDuration ()
+	{
+		int duration = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()];
+
+		string minutes = Mathf.Floor(duration / 60).ToString("00");
+		string seconds = Mathf.Floor(duration % 60).ToString("00");
+
+		string durationText = minutes + ":" + seconds;
+
+		GlobalMethods.Instance.ReplaceInText (textComponent, durationText);
 	}
 
 	void MostStats ()

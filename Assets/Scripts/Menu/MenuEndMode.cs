@@ -28,6 +28,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 	[Header ("Tween")]
 	public float scoreTextDuration;
 	public Ease scoreTweenEase;
+	public Ease panelTweenEase;
 
 	private List<int> scores = new List<int> ();
 	private Dictionary<int, int> previousScales = new Dictionary<int, int> ();
@@ -102,7 +103,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 			if(wins != 0)
 			{
-				playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (scoreTweenEase);
+				playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (panelTweenEase);
 
 				if(!previousScales.ContainsKey (wins))
 					previousScales.Add (wins, ScoreOder (i, wins));
@@ -133,7 +134,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 			foreach (Transform child in r.transform.GetChild (0))
 				children.Add (child);
 			
-			children.ForEach (child => Destroy (child));
+			children.ForEach (child => Destroy (child.gameObject));
 
 			int playerIndex = playersPanels.FindIndex (x => x == r);
 
@@ -145,6 +146,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 				statsClone.GetComponent<RectTransform> ().anchoredPosition3D = position;
 
 				string text = StatsManager.Instance.statsText.FirstOrDefault (x=> x.Value == modesStats [modesStatsIndex].modesStats [i]).Key;
+				statsClone.GetComponent<Text> ().text = text;
 
 				GlobalMethods.Instance.ReplaceInText (statsClone.GetComponent<Text> (), 
 					StatsManager.Instance.playersStats [((WhichPlayer)playerIndex).ToString ()].playersStats [modesStats [modesStatsIndex].modesStats [i].ToString ()].ToString ());
@@ -208,7 +210,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 	IEnumerator GradualScore (Text textComponent, int endScore)
 	{
-		int score = int.Parse (textComponent.text);
+		int score = 0;
 
 		DOTween.To (()=> score, x=> score =x, endScore, scoreTextDuration).SetEase (scoreTweenEase).OnUpdate (()=>
 			{
