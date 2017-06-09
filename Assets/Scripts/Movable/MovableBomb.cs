@@ -29,6 +29,8 @@ public class MovableBomb : MovableScript
 
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
+		tag = "Movable";
+
 		deadlyParticle.Stop ();
 		deadlyParticle2.Stop ();
 
@@ -96,7 +98,7 @@ public class MovableBomb : MovableScript
 			}
 		}
 
-		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(tag == "DeadCube" && other.gameObject.tag == "Player" && trackingPlayer && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 		{
 			hold = true;
 			playerHolding = other.gameObject;
@@ -184,6 +186,11 @@ public class MovableBomb : MovableScript
 
 		trackSpeedTemp = trackSpeed;
 
+		tag = "DeadCube";
+
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().RemoveCubeAttractionRepulsion (this);
+
 		StartCoroutine (AddSpeed ());
 
 		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
@@ -198,7 +205,8 @@ public class MovableBomb : MovableScript
 
 				rigidbodyMovable.AddForce(direction * trackSpeedTemp, ForceMode.Impulse);
 
-				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+				if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+					yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 				yield return new WaitForFixedUpdate();
 			}
@@ -216,7 +224,8 @@ public class MovableBomb : MovableScript
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
 
-		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeedTemp += trackSpeedAdded;
 

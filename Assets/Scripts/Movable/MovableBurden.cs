@@ -87,7 +87,8 @@ public class MovableBurden : MovableScript
 			
 			rigidbodyMovable.AddForce(direction * trackSpeed, ForceMode.Impulse);
 
-			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+			if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 			yield return new WaitForFixedUpdate();
 		}
@@ -97,7 +98,8 @@ public class MovableBurden : MovableScript
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
 
-		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeed += trackSpeedAdded;
 

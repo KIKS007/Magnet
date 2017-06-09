@@ -482,6 +482,15 @@ public class PlayersGameplay : MonoBehaviour
 		v3.z = 0.5f * scaleTemp.z + 1.2f;
 		magnetPoint.localPosition = v3;
 	}
+
+	public void RemoveCubeAttractionRepulsion (MovableScript script)
+	{
+		if (cubesAttracted.Contains (script))
+			cubesAttracted.Remove (script);
+
+		if (cubesRepulsed.Contains (script))
+			cubesRepulsed.Remove (script);
+	}
 	#endregion
 
 	#region Collisions
