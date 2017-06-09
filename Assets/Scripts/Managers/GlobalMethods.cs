@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
@@ -396,5 +397,20 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			field.SetValue(copy, field.GetValue(original));
 		}
 		return copy as T;
+	}
+
+	public void AddEventTriggerEntry (GameObject g, EventTriggerType type, System.Action action)
+	{
+		if(g.GetComponent<EventTrigger> () == null)
+		{
+			Debug.LogWarning ("No Event Trigger Component : " + g.name);
+			return;
+		}
+
+		EventTrigger.Entry entry = new EventTrigger.Entry ();
+		entry.eventID = type;
+		entry.callback.AddListener ((arg0) => action());
+
+		g.GetComponent<EventTrigger> ().triggers.Add (entry);
 	}
 }

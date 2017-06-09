@@ -286,7 +286,7 @@ public class MenuComponent : MonoBehaviour
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.gameObject.SetActive (true);
 
-			if (transform.parent.GetComponent<MenuScrollView> () != null)
+			if (transform.parent.GetComponent<MenuScrollRect> () != null)
 			{
 				menuButton.SetParent (aboveMenuScript.transform);
 				menuButton.SetSiblingIndex (0);
@@ -378,7 +378,7 @@ public class MenuComponent : MonoBehaviour
 			{
 				menuButton = aboveMenuScript.transform.GetChild (0).GetComponent<RectTransform> ();
 
-				if (transform.parent.GetComponent<MenuScrollView> () != null)
+				if (transform.parent.GetComponent<MenuScrollRect> () != null)
 				{
 					menuButton.SetParent (transform);
 					menuButton.SetSiblingIndex (0);

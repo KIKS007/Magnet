@@ -9,6 +9,7 @@ using GameAnalyticsSDK;
 using System.IO;
 using System.Linq;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
 
 public class SoundsManager : Singleton<SoundsManager> 
 {
@@ -31,6 +32,8 @@ public class SoundsManager : Singleton<SoundsManager>
 	public string soundsVolumeTest;
 
 	[Header ("Songs Titles")]
+	public MenuScrollRect musicsScrollRect;
+	public MenuScrollRect loadedMusicsScrollRect;
 	public Text currentSong;
 	public GameObject songTitlePrefab;
 	public GameObject songTitleContentParent;
@@ -349,6 +352,11 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayGameSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
 
+			//Add EventTrigger
+			RectTransform songTitleRect = songTitle.GetComponent<RectTransform> ();
+			musicsScrollRect.elements.Add (i, songTitleRect);
+			GlobalMethods.Instance.AddEventTriggerEntry (songTitle, EventTriggerType.Select, () => musicsScrollRect.CenterButton (songTitleRect));
+
 			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
 			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
 			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
@@ -357,7 +365,7 @@ public class SoundsManager : Singleton<SoundsManager>
 				((int)(MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
 		}
 
-		songTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (songTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count * gapHeight);
+		songTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (songTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count * gapHeight * musicsScrollRect.heightFactor);
 	}
 
 	void CreateLoadedMusicsSongTitle ()
@@ -376,6 +384,11 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			songTitle.GetComponent<Button> ().onClick.AddListener (()=> PlayLoadedSong (songTitle.transform.GetChild (0).GetComponent<Text> ().text));
 
+			//Add EventTrigger
+			RectTransform songTitleRect = songTitle.GetComponent<RectTransform> ();
+			loadedMusicsScrollRect.elements.Add (i, songTitleRect);
+			GlobalMethods.Instance.AddEventTriggerEntry (songTitle, EventTriggerType.Select, () => loadedMusicsScrollRect.CenterButton (songTitleRect));
+
 			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
 			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
 			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
@@ -384,7 +397,7 @@ public class SoundsManager : Singleton<SoundsManager>
 				((int)(MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
 		}
 
-		loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count * gapHeight);
+		loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (loadedSongTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count * gapHeight * loadedMusicsScrollRect.heightFactor);
 	}
 
 	public void PlayPlaylist (string playlist)

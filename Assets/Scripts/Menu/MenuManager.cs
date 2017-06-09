@@ -18,6 +18,7 @@ public class MenuManager : Singleton <MenuManager>
 	public bool menuTweening;
 	public MenuComponent currentMenu = null;
 	public MenuAnimationType menuAnimationType = MenuAnimationType.None;
+	public bool mouseControl = true;
 
 	[Header ("Animations Duration")]
 	public float animationDuration = 0.15f;
@@ -139,6 +140,8 @@ public class MenuManager : Singleton <MenuManager>
 			GamepadsChange ();
 
 			CheckMenuInput ();
+
+			MouseControl ();
 		}
 
 		CheckPauseInput ();
@@ -231,6 +234,21 @@ public class MenuManager : Singleton <MenuManager>
 					unpluggedPlayers [(int)p.PlayerName].gameObject.SetActive (false);
 				});
 			}
+		}
+	}
+
+	void MouseControl ()
+	{
+		if(!mouseControl)
+		{
+			if (Mathf.Abs (Input.GetAxis ("Mouse X")) > 0 || Mathf.Abs (Input.GetAxis ("Mouse Y")) > 0)
+				mouseControl = true;
+		}
+		else
+		{
+			for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+				if (GlobalVariables.Instance.rewiredPlayers [i] != null && GlobalVariables.Instance.rewiredPlayers [i].GetAxis ("UI Vertical") != 0)
+					mouseControl = false;
 		}
 	}
 	#endregion
