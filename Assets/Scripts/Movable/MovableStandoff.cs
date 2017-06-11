@@ -39,12 +39,10 @@ public class MovableStandoff : MovableScript
 				{
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
-					playerHit = other.gameObject;
-
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
 					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersHits (playerThatThrew, playerHit);
+						StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
 				}				
 			}
@@ -54,7 +52,11 @@ public class MovableStandoff : MovableScript
 		{
 			if(tag == "DeadCube")
 			{
-				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+				if (playerThatThrew != null)
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
 				GlobalMethods.Instance.Explosion (transform.position);
 			}
 		}

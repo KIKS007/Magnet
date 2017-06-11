@@ -65,7 +65,7 @@ public class PlayersManikin : PlayersGameplay
 		playerState = PlayerState.None;
 	}
 
-	public override void Death (DeathFX deathFX, Vector3 deathPosition)
+	public override void Death (DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{

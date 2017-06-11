@@ -36,7 +36,10 @@ public class MovableDeadCube : MovableScript
 	{
 		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+			if (playerThatThrew != null)
+				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 

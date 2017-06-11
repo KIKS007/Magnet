@@ -57,8 +57,6 @@ public class MovableBomb : MovableScript
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
-				playerHit = other.gameObject;
-
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
@@ -72,8 +70,6 @@ public class MovableBomb : MovableScript
 
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
-
-				playerHit = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
@@ -89,8 +85,6 @@ public class MovableBomb : MovableScript
 				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
-				playerHit = other.gameObject;
-
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
@@ -102,8 +96,6 @@ public class MovableBomb : MovableScript
 		{
 			hold = true;
 			playerHolding = other.gameObject;
-
-			playerHit = other.gameObject;
 
 			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
 

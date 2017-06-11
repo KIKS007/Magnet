@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 using System.Linq;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
-public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides };
+public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides, Stun };
 
 public class StatsManager : SerializedMonoBehaviour
 {
@@ -214,6 +214,12 @@ public class StatsManager : SerializedMonoBehaviour
 			{
 				playersStats [ playerScript.playerName.ToString () ].playersStats [WhichStat.Death.ToString ()]++;
 				totalStats [WhichStat.Death.ToString ()]++;
+			};
+
+			playerScript.OnStun += () => 
+			{
+				playersStats [ playerScript.playerName.ToString () ].playersStats [WhichStat.Stun.ToString ()]++;
+				totalStats [WhichStat.Stun.ToString ()]++;
 			};
 		}
 	}

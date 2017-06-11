@@ -150,6 +150,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			//
 			var clonedScript = CopyComponent (script, deadCube);
 
+			//Physic Material
+			if (script.gameObject.GetComponent<Collider> ().material != null)
+				deadCube.GetComponent<Collider> ().material = script.gameObject.GetComponent<Collider> ().material;
+
 			clonedScript.Awake ();
 			clonedScript.Start ();
 			clonedScript.OnEnable ();

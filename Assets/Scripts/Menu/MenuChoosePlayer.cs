@@ -58,9 +58,13 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		noInput = false;
 	
+		List<int> connectedJoystick = new List<int> ();
+		foreach (var j in ReInput.controllers.GetJoysticks ())
+			connectedJoystick.Add (j.id);
+
 		for(int i = 0; i < 4; i++)
 		{
-			if (i < ReInput.controllers.Joysticks.Count)
+			if(connectedJoystick.Contains (i))
 				GamepadOn (i, true);
 			else
 				GamepadOff (i);
@@ -71,9 +75,13 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		noInput = false;
 
+		List<int> connectedJoystick = new List<int> ();
+		foreach (var j in ReInput.controllers.GetJoysticks ())
+			connectedJoystick.Add (j.id);
+
 		for(int i = 0; i < 4; i++)
 		{
-			if (i < ReInput.controllers.Joysticks.Count)
+			if(connectedJoystick.Contains (i))
 				GamepadOn (i);
 			else
 				GamepadOff (i);
@@ -185,7 +193,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	IEnumerator WaitEndMenuAnimation () 
 	{ 
-		yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
+		if(MenuManager.Instance.isTweening)
+			yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
 
 		int playersCount = 0;
 
@@ -195,17 +204,24 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
+			DOTween.Kill ("PlayButton");
+
 			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
+			MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
 			playButton.GetComponent<Button> ().Select (); 
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
 		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
+			DOTween.Kill ("PlayButton");
+
 			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).OnComplete (()=> playButton.gameObject.SetActive (false)); 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
 		} 
+
+		yield return 0;
 	} 
 
 	void PunchPlayersScale (int controller)
@@ -230,7 +246,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	void Join (int controller)
 	{
 		hasJoined [controller] = true;
-		controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase);
+		controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
 
 		UpdateSettings ();
 		PunchPlayersScale (controller);
@@ -239,7 +255,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	void Leave (int controller)
 	{
 		hasJoined [controller] = false;
-		controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase);
+		controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
 
 		UpdateSettings ();
 	}

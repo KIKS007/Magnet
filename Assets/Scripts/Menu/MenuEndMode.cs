@@ -75,6 +75,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 			enabledPanels.Add (playersPanels [(int)g.GetComponent<PlayersGameplay> ().playerName]);
 		}
 
+
 		CreateStats ();
 
 		for(int i = 0; i < enabledPanels.Count; i++)
@@ -101,13 +102,16 @@ public class MenuEndMode : SerializedMonoBehaviour
 			PlayerName playerName = (PlayerName) Enum.Parse (typeof(PlayerName), keys [i]);
 			int wins = playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()];
 
-			if(wins != 0)
-			{
-				playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (panelTweenEase);
+			foreach (Transform t in playersPanels [(int)playerName].GetChild (3).transform)
+				t.gameObject.SetActive (false);
 
-				if(!previousScales.ContainsKey (wins))
-					previousScales.Add (wins, ScoreOder (i, wins));
-			}
+
+			playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (panelTweenEase);
+			
+			if(!previousScales.ContainsKey (wins))
+				previousScales.Add (wins, ScoreOder (i, wins));
+
+			playersPanels [(int)playerName].GetChild (3).GetChild (NumberOrder (i, wins)).gameObject.SetActive (true);
 
 			StartCoroutine (GradualScore (scoreboardPlayers [(int)playerName], playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()]));
 		}
@@ -170,19 +174,19 @@ public class MenuEndMode : SerializedMonoBehaviour
 				differentScore++;
 		}
 
-		if(differentScore == scores.Count - 1 && scores.Count == 2)
-		{
-			if (scoreIndex == 0)
-				return 0;
-			else
-				return 3;
-		}
+//		if(differentScore == scores.Count - 1 && scores.Count == 2)
+//		{
+//			if (scoreIndex == 0)
+//				return 0;
+//			else
+//				return 3;
+//		}
 
 		if (previousScales.ContainsKey (score))
 			return previousScales [score];
 		
-		if(scoreIndex == scores.Count - 1)
-			return 3;
+		/*	if(scoreIndex == scores.Count - 1)
+			return 3;*/
 
 		if (sameScore == scores.Count - 1)
 			return 1;
@@ -206,6 +210,16 @@ public class MenuEndMode : SerializedMonoBehaviour
 		}
 
 		return scoreIndex;
+	}
+
+	int NumberOrder (int scoreIndex, int score)
+	{
+		if(ScoreOder (scoreIndex, score) == 3)
+		{
+			return GlobalVariables.Instance.NumberOfPlayers - 1;
+		}
+		else
+			return ScoreOder (scoreIndex, score);
 	}
 
 	IEnumerator GradualScore (Text textComponent, int endScore)

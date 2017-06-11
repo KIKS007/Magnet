@@ -73,12 +73,10 @@ public class MovableStar : MovableScript
 				{
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
-					playerHit = other.gameObject;
-
 					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
 					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersHits (playerThatThrew, playerHit);
+						StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 				}				
 			}
 		}
@@ -86,7 +84,11 @@ public class MovableStar : MovableScript
 		if(other.collider.tag == "Player" 
 			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+			if (playerThatThrew != null)
+				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
 
 			GlobalMethods.Instance.Explosion (transform.position);

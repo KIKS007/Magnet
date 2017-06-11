@@ -55,7 +55,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int[] PlayersControllerNumber = new int[4] {-1, -1, -1, -1};
 
 	[Header ("Gamepads")]
-	public List<PlayerGamepad> PlayersGamepadList = new List<PlayerGamepad> ();
+	public List<PlayerGamepad> gamepadsList = new List<PlayerGamepad> ();
 	public bool OneGamepadUnplugged = false;
 
 	[Header ("Players")]
@@ -135,9 +135,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		SetupRewiredPlayers ();
 
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
-		ReInput.ControllerPreDisconnectEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
+		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
+
 		OnPlaying += UpdateGamepadList;
 		OnMenu += UpdateGamepadList;
+
+		LoadModeManager.Instance.OnLevelUnloaded += UpdateGamepadList;
 
 		OnPlaying += ()=> SetMouseVisibility();
 		OnPlaying += UpdatePlayedModes;
@@ -373,54 +376,36 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void UpdateGamepadList ()
 	{
-		//Update GamepadList
-		if(GameState == GameStateEnum.Menu)
-		{
-			PlayersGamepadList.Clear ();
-
-			for(int i = 0; i < EnabledPlayersList.Count; i++)
-			{
-				if (EnabledPlayersList [i] == null)
-					return;
-
-				PlayersGameplay playerScript = EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
-				
-				if (playerScript.rewiredPlayer != null && playerScript.rewiredPlayer.controllers.joystickCount != 0)
-				{
-					PlayersGamepadList.Add (new PlayerGamepad());
-					PlayersGamepadList [PlayersGamepadList.Count - 1].PlayerName = playerScript.playerName;
-					PlayersGamepadList [PlayersGamepadList.Count - 1].GamepadName = playerScript.rewiredPlayer.controllers.Joysticks [0].name;
-					PlayersGamepadList [PlayersGamepadList.Count - 1].GamepadRewiredId = playerScript.rewiredPlayer.controllers.Joysticks [0].id;
-					PlayersGamepadList [PlayersGamepadList.Count - 1].GamepadIsPlugged = playerScript.rewiredPlayer.controllers.Joysticks [0].isConnected;
-				}
-			}
-		}
-		else
-		{
-			foreach (PlayerGamepad p in PlayersGamepadList) 
-			{
-				PlayersGameplay playerScript = Players [(int)p.PlayerName].GetComponent<PlayersGameplay> ();
-
-				if(playerScript.rewiredPlayer.controllers.joystickCount != 0)
-					p.GamepadIsPlugged = Players [(int)p.PlayerName].GetComponent<PlayersGameplay> ().rewiredPlayer.controllers.Joysticks [0].isConnected;
-			}
-		}
-
+		gamepadsList.Clear ();
 		bool oneGamepadUnplugged = false;
 
-		foreach(PlayerGamepad p in PlayersGamepadList)
+		foreach(GameObject p in GlobalVariables.Instance.EnabledPlayersList)
 		{
-			if (!p.GamepadIsPlugged)
+			if (p == null)
+				continue;
+
+			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
+
+			//Unplugged
+			if(script.controllerNumber != 0 && script.controllerNumber != -1)
 			{
-				if (!OneGamepadUnplugged && OnGamepadDisconnected != null)
-					OnGamepadDisconnected ();
-				
-				oneGamepadUnplugged = true;
-				OneGamepadUnplugged = true;
+				gamepadsList.Add (new PlayerGamepad ());
+				gamepadsList [gamepadsList.Count - 1].PlayerName = script.playerName;
+
+				if(script.rewiredPlayer.controllers.joystickCount == 0)
+				{
+					gamepadsList [gamepadsList.Count - 1].GamepadIsPlugged = false;
+					oneGamepadUnplugged = true;
+				}
+				else
+					gamepadsList [gamepadsList.Count - 1].GamepadIsPlugged = true;
 			}
 		}
 
 		OneGamepadUnplugged = oneGamepadUnplugged;
+
+		if (oneGamepadUnplugged && OnGamepadDisconnected != null)
+			OnGamepadDisconnected ();
 	}
 
 	public event EventHandler OnGamepadDisconnected;
@@ -517,7 +502,5 @@ public class GlobalVariables : Singleton<GlobalVariables>
 public class PlayerGamepad
 {
 	public PlayerName PlayerName;
-	public string GamepadName;
-	public int GamepadRewiredId;
 	public bool GamepadIsPlugged = false;
 }

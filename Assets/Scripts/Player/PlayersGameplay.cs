@@ -640,19 +640,6 @@ public class PlayersGameplay : MonoBehaviour
 		if(holdState == HoldState.CannotHold)
 			holdState = HoldState.CanHold;
     }
-
-	public void HitBy (PlayersGameplay player, float duration = 0)
-	{
-		playerThatHit = player;
-
-		if (duration != 0)
-			DOVirtual.DelayedCall (duration, () => 
-			{
-				if(playerThatHit == player)
-					playerThatHit = null;
-				}).SetUpdate (false);
-		
-	}
 	#endregion
 
 	#region Dash
@@ -696,7 +683,7 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Death
-	public virtual void Death(DeathFX deathFX, Vector3 deathPosition)
+	public virtual void Death(DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
@@ -705,6 +692,9 @@ public class PlayersGameplay : MonoBehaviour
 
 			if(deathFX == DeathFX.Particles || deathFX == DeathFX.All)
 				playerFX.DeathParticles(deathPosition);
+
+			if (killingPlayer)
+				playerThatHit = killingPlayer.GetComponent<PlayersGameplay> ();
 
 			StartCoroutine (DeathCoroutine ());        
 		}
@@ -720,10 +710,7 @@ public class PlayersGameplay : MonoBehaviour
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
-		if (playerThatHit != null && playerThatHit != this)
-			StatsManager.Instance.PlayerKills (playerThatHit);
-		else
-			StatsManager.Instance.PlayerSuicides (this);
+		PlayerStats (playerThatHit);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -744,6 +731,17 @@ public class PlayersGameplay : MonoBehaviour
 		gameObject.SetActive(false);
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+	}
+
+	void PlayerStats (PlayersGameplay playerThatHit = null)
+	{
+		if (playerThatHit == null)
+			return;
+
+		if (playerThatHit != this)
+			StatsManager.Instance.PlayerKills (playerThatHit);
+		else
+			StatsManager.Instance.PlayerSuicides (this);
 	}
 		
     protected virtual void OnDestroy()

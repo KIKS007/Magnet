@@ -31,7 +31,6 @@ public class MovableScript : MonoBehaviour
 
 	[Header ("Players")]
 	public GameObject playerThatThrew;
-	public GameObject playerHit;
 
 	protected bool canPlaySound = true;
 
@@ -297,12 +296,10 @@ public class MovableScript : MonoBehaviour
 			{
 				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 				
-				playerHit = other.gameObject;
-
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
 
 				if(playerThatThrew != null)
-					StatsManager.Instance.PlayersHits (playerThatThrew, playerHit);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 			}
 		}
 	}

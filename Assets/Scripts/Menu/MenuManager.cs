@@ -9,6 +9,7 @@ using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
 using System;
+using GameAnalyticsSDK.Setup;
 
 public class MenuManager : Singleton <MenuManager> 
 {
@@ -72,7 +73,8 @@ public class MenuManager : Singleton <MenuManager>
 	private RectTransform endModecontent;
 	private List<SecondaryContent> endModesecondaryContentList;
 
-	private EventSystem eventSyst;
+	[HideInInspector]
+	public EventSystem eventSyst;
 	private GameObject mainCamera;
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
@@ -137,8 +139,6 @@ public class MenuManager : Singleton <MenuManager>
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			CheckNothingSelected ();
-
-			GamepadsChange ();
 
 			CheckMenuInput ();
 
@@ -210,30 +210,32 @@ public class MenuManager : Singleton <MenuManager>
 		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			PauseResumeGame ();
 
-		if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
-			ReturnToMainMenu ();
+		/*if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			ReturnToMainMenu ();*/
 	}
 
 	void GamepadsChange ()
 	{
-		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			return;
-
-		foreach(PlayerGamepad p in GlobalVariables.Instance.PlayersGamepadList)
+		foreach(GameObject p in GlobalVariables.Instance.EnabledPlayersList)
 		{
+			if (p == null)
+				continue;
+
+			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
+
 			//Unplugged
-			if(!p.GamepadIsPlugged)
+			if(script.rewiredPlayer.controllers.joystickCount == 0 && script.controllerNumber != 0 && script.controllerNumber != -1)
 			{
-				unpluggedPlayers [(int)p.PlayerName].gameObject.SetActive (true);
-				unpluggedPlayers [(int)p.PlayerName].DOAnchorPosY (disconnectedPlayersYPos.y, animationDuration).SetEase (easeMenu);
+				unpluggedPlayers [(int)script.playerName].gameObject.SetActive (true);
+				unpluggedPlayers [(int)script.playerName].DOAnchorPosY (disconnectedPlayersYPos.y, animationDuration).SetEase (easeMenu);
 			}
 			//Plugged
 			else
 			{
-				unpluggedPlayers [(int)p.PlayerName].DOAnchorPosY (disconnectedPlayersYPos.x, animationDuration).SetEase (easeMenu).OnComplete (()=> 
-				{
-					unpluggedPlayers [(int)p.PlayerName].gameObject.SetActive (false);
-				});
+				unpluggedPlayers [(int)script.playerName].DOAnchorPosY (disconnectedPlayersYPos.x, animationDuration).SetEase (easeMenu).OnComplete (()=> 
+					{
+						unpluggedPlayers [(int)script.playerName].gameObject.SetActive (false);
+					});
 			}
 		}
 	}
@@ -252,6 +254,8 @@ public class MenuManager : Singleton <MenuManager>
 					mouseControl = false;
 		}
 	}
+
+
 	#endregion
 
 	#region Submit Methods
@@ -763,7 +767,7 @@ public class MenuManager : Singleton <MenuManager>
 	}
 	#endregion
 
-	#region StartMode
+	#region Mode Methods
 	public void MenuLoadMode (WhichMode whichMode)
 	{
 		LoadModeManager.Instance.LoadSceneVoid (whichMode);
@@ -788,6 +792,19 @@ public class MenuManager : Singleton <MenuManager>
 //		yield return cameraMovement.StartCoroutine ("PlayPosition");
 
 		GlobalVariables.Instance.GameState = GameStateEnum.Playing;
+	}
+
+	public void ResetMode ()
+	{
+		LoadModeManager.Instance.UnLoadSceneVoid ();
+
+		foreach(var r in unpluggedPlayers)
+		{
+			r.DOAnchorPosY (disconnectedPlayersYPos.x, animationDuration).SetEase (easeMenu).OnComplete (()=> 
+				{
+					r.gameObject.SetActive (false);
+				});
+		}
 	}
 	#endregion
 
