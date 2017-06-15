@@ -25,6 +25,7 @@ public class ArenaDeadzones : MonoBehaviour
 	[Header ("Deadly State")]
 	public Color deadlyColor;
 	public float zScale = 3f;
+	public float xScale = 1.8f;
 	public float transitionDuration;
 
 	[Header ("Columns")]
@@ -128,6 +129,7 @@ public class ArenaDeadzones : MonoBehaviour
 			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration).SetUpdate (false);
 			
 			columnChild.DOScaleZ (zScale, transitionDuration).SetUpdate (false);
+			columnChild.DOScaleX (xScale, transitionDuration).SetUpdate (false);
 		}
 	}
 }

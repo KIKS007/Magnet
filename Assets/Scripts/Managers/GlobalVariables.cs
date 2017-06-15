@@ -137,7 +137,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
 
-		OnPlaying += UpdateGamepadList;
+		//OnPlaying += UpdateGamepadList;
 		OnMenu += UpdateGamepadList;
 
 		LoadModeManager.Instance.OnLevelUnloaded += UpdateGamepadList;

@@ -216,6 +216,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	void GamepadsChange ()
 	{
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Menu)
+			return;
+
 		foreach(GameObject p in GlobalVariables.Instance.EnabledPlayersList)
 		{
 			if (p == null)

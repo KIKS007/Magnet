@@ -59,8 +59,10 @@ public class MenuChoosePlayer : MonoBehaviour
 		noInput = false;
 	
 		List<int> connectedJoystick = new List<int> ();
-		foreach (var j in ReInput.controllers.GetJoysticks ())
-			connectedJoystick.Add (j.id);
+
+		if(ReInput.controllers.joystickCount > 0)
+			foreach (var j in ReInput.controllers.GetJoysticks ())
+				connectedJoystick.Add (j.id);
 
 		for(int i = 0; i < 4; i++)
 		{
@@ -76,8 +78,10 @@ public class MenuChoosePlayer : MonoBehaviour
 		noInput = false;
 
 		List<int> connectedJoystick = new List<int> ();
-		foreach (var j in ReInput.controllers.GetJoysticks ())
-			connectedJoystick.Add (j.id);
+
+		if(ReInput.controllers.joystickCount > 0)
+			foreach (var j in ReInput.controllers.GetJoysticks ())
+				connectedJoystick.Add (j.id);
 
 		for(int i = 0; i < 4; i++)
 		{

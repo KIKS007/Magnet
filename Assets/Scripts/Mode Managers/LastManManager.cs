@@ -9,7 +9,8 @@ public class LastManManager : MonoBehaviour
 {
 	[Header ("Settings")]
 	public WhichMode whichMode;
-	public float timeBeforeEndGame = 2;
+	public float endGameDelay = 2;
+	public float endGameDelayInstantRestart = 3;
 
 	[Header ("Death Count")]
 	public float timeBeforePlayerRespawn = 2;
@@ -105,14 +106,14 @@ public class LastManManager : MonoBehaviour
 
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+			yield return new WaitForSecondsRealtime (endGameDelay);
 
 			LoadModeManager.Instance.RestartSceneVoid (false);
 		}
 
 		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
 		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 1.5f);
+			yield return new WaitForSecondsRealtime (endGameDelayInstantRestart);
 
 			LoadModeManager.Instance.RestartSceneVoid (true);
 		}
@@ -120,7 +121,7 @@ public class LastManManager : MonoBehaviour
 		{
 			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+			yield return new WaitForSecondsRealtime (endGameDelay);
 
 //			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 			MenuManager.Instance.ShowEndMode ();
