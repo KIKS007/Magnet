@@ -246,7 +246,9 @@ public class PlayersTutorial : PlayersGameplay
 	{
 		playerState = PlayerState.Dead;
 
-		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
+		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
+		
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 

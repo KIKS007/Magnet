@@ -58,6 +58,9 @@ public class PlayersGameplay : MonoBehaviour
     public DashState dashState = DashState.CanDash;
 	public HoldState holdState = HoldState.CanHold;
 
+	[Header("Life Duration")]
+	public int lifeDuration = 0;
+
     [Header("Controller Number")]
     public int controllerNumber = -1;
     [HideInInspector]
@@ -119,9 +122,6 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected float stunnedRotationTemp;
 
-	[HideInInspector]
-	public float startModeTime;
-
 	protected PlayersFXAnimations playerFX;
 
 	#endregion
@@ -135,11 +135,10 @@ public class PlayersGameplay : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
-		GlobalVariables.Instance.OnStartMode += StartModeTime;
-		GlobalVariables.Instance.OnRestartMode += StartModeTime;
-
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
+
+		lifeDuration = 0;
 
 		if(GameObject.FindGameObjectWithTag("MovableParent") != null)
 		{
@@ -174,11 +173,6 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-    protected void StartModeTime()
-    {
-        startModeTime = Time.unscaledTime;
-    }
-
     protected virtual void OnEnable()
     {
         StartCoroutine(WaitTillPlayerEnabled());
@@ -188,6 +182,8 @@ public class PlayersGameplay : MonoBehaviour
 
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
+	
+		StartCoroutine (LifeDuration ());
         
 		dashState = DashState.CanDash;
 		holdState = HoldState.CanHold;
@@ -704,8 +700,8 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		playerState = PlayerState.Dead;
 
-		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] = (int)(Time.unscaledTime - startModeTime);
+		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
 
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
@@ -764,6 +760,20 @@ public class PlayersGameplay : MonoBehaviour
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());
     }
+
+	protected virtual IEnumerator LifeDuration ()
+	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		yield return new WaitForSecondsRealtime (1);
+
+		if (playerState == PlayerState.Dead)
+			yield break;
+
+		lifeDuration += 1;
+
+		StartCoroutine (LifeDuration ());
+	}
 	#endregion
 
 	#region Events

@@ -11,6 +11,8 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 {
 	public enum Bounce { Bounce, Wait, Reset }
 
+	[Space (20)]
+
 	public AudioSpectrum.LevelsType levelsType = AudioSpectrum.LevelsType.Mean;
 	public bool normalizedValues = true;
 
@@ -39,6 +41,10 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 
 	[Header ("Color Bounce")]
 	public List<BounceSettings> bounceSettings;
+
+	[Header ("Single Color Bounce")]
+	public float singleColorBounceDuration = 0.2f;
+	public float singleColorBounceResetDuration = 0.1f;
 
 	private Renderer[] columnsRenderers = new Renderer[0];
 	private bool wrongSettings = false;
@@ -291,6 +297,7 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 //		}
 	}
 
+	[PropertyOrder (-1)]
 	[Button]
 	public void DoColorBounce ()
 	{
@@ -331,6 +338,36 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 		}
 
 		yield return 0;
+	}
+
+	[PropertyOrder (-1)]
+	[Button ("Do Single Color Bounce")]
+	public void SingleColorBounce ()
+	{
+		StartCoroutine (SingleColorBounceCoroutine ());
+	}
+
+	public IEnumerator SingleColorBounceCoroutine (PlayerName player = PlayerName.Player3)
+	{
+		foreach(Renderer r in columnsRenderers)
+		{
+			if(r.material.color == columnInitialColor)
+			{
+				r.material.DOColor (GlobalVariables.Instance.playersColors [(int)player], singleColorBounceDuration).SetEase (Ease.OutQuad);
+				r.material.DOColor (GlobalVariables.Instance.playersColors [(int)player], "_EmissionColor", singleColorBounceDuration).SetEase (Ease.OutQuad);
+			}
+		}
+
+		yield return new WaitForSecondsRealtime (singleColorBounceDuration);
+
+		foreach(Renderer r in columnsRenderers)
+		{
+			if(r.material.color == columnInitialColor)
+			{
+				r.material.DOColor (columnInitialColor, singleColorBounceResetDuration).SetEase (Ease.OutQuad);
+				r.material.DOColor (columnInitialColor, "_EmissionColor", singleColorBounceResetDuration).SetEase (Ease.OutQuad);
+			}
+		}
 	}
 }
 

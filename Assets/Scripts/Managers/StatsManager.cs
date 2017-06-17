@@ -51,9 +51,8 @@ public class StatsManager : SerializedMonoBehaviour
 	public string allRoundsDuration;
 	public string roundDuration;
 
-	private float timerDuration;
+	private float roundsDurationValue;
 	private float allRoundsDurationValue;
-
 	private WhichPlayer previousWinner = WhichPlayer.None;
 
 	public static StatsManager Instance;
@@ -69,10 +68,16 @@ public class StatsManager : SerializedMonoBehaviour
 	void Start ()
 	{
 		GlobalVariables.Instance.OnStartMode += SetupStats;
-		GlobalVariables.Instance.OnStartMode += ()=> StartCoroutine (StartTimer ());
-
-		GlobalVariables.Instance.OnEndMode += UpdateStats;
-		GlobalVariables.Instance.OnPause += UpdateStats;
+		GlobalVariables.Instance.OnStartMode += () => 
+		{
+			StopAllCoroutines ();
+			StartCoroutine (StartTimer ());
+		};
+		GlobalVariables.Instance.OnRestartMode += () => 
+		{
+			StopAllCoroutines ();
+			StartCoroutine (StartTimer ());
+		};
 
 		GlobalVariables.Instance.OnMenu += ()=> ResetStats(true);
 
@@ -251,6 +256,16 @@ public class StatsManager : SerializedMonoBehaviour
 		totalStats [WhichStat.Suicides.ToString ()]++;
 	}
 
+	public void PlayersLifeDuration ()
+	{
+		foreach(var p in GlobalVariables.Instance.EnabledPlayersList)
+		{
+			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
+
+			playersStats [script.playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] += script.lifeDuration;
+		}
+	}
+
 	public void Winner (WhichPlayer whichPlayerWon)
 	{
 		winnerName = whichPlayerWon;
@@ -259,12 +274,7 @@ public class StatsManager : SerializedMonoBehaviour
 		playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
 		SetAllRoundsDuration ();
-
-		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
-		{
-			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
-				p.Value.playersStats [WhichStat.LifeDuration.ToString ()] = (int)timerDuration;
-		}
+		PlayersLifeDuration ();
 
 		UpdateStats ();
 
@@ -289,6 +299,8 @@ public class StatsManager : SerializedMonoBehaviour
 			winner = "None";
 			break;
 		}
+
+		StopAllCoroutines ();
 	}
 
 	public void Winner (PlayerName playerName)
@@ -299,12 +311,7 @@ public class StatsManager : SerializedMonoBehaviour
 		playersStats [ playerName.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
 
 		SetAllRoundsDuration ();
-
-		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
-		{
-			if (p.Value.playersStats [WhichStat.LifeDuration.ToString ()] == 0)
-				p.Value.playersStats [WhichStat.LifeDuration.ToString ()] = (int)timerDuration;
-		}
+		PlayersLifeDuration ();
 
 		UpdateStats ();
 
@@ -324,11 +331,12 @@ public class StatsManager : SerializedMonoBehaviour
 			break;
 		}
 
+		StopAllCoroutines ();
 	}
 
 	void SetAllRoundsDuration ()
 	{
-		allRoundsDurationValue += timerDuration;
+		allRoundsDurationValue += roundsDurationValue;
 
 		string minutes = Mathf.Floor(allRoundsDurationValue / 60).ToString("00");
 		string seconds = Mathf.Floor(allRoundsDurationValue % 60).ToString("00");
@@ -407,7 +415,7 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		settingUp = true;
 
-		timerDuration = 0;
+		roundsDurationValue = 0;
 		winnerName = WhichPlayer.None;
 		roundDuration = "";
 		winner = "";
@@ -468,24 +476,21 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		timerDuration = 0;
+		roundsDurationValue = 0;
 
 		StartCoroutine (Timer ());
 	}
 
 	IEnumerator Timer ()
 	{
-		yield return new WaitForSecondsRealtime (1);
-
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			yield break;
+		yield return new WaitForSecondsRealtime (1);
 
-		timerDuration += 1;
+		roundsDurationValue += 1;
 
-		string minutes = Mathf.Floor(timerDuration / 60).ToString("00");
-		string seconds = Mathf.Floor(timerDuration % 60).ToString("00");
+		string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
 
 		roundDuration = minutes + ":" + seconds;
 
