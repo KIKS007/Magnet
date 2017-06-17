@@ -28,7 +28,9 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 //		else
 //			AIScript.currentMovementTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
 
-		AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
+		AIScript.playerTarget = null;
+
+		AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 4)].transform;
 	}
 
 	protected override void Update ()
@@ -37,14 +39,14 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 			return;
 		
 		if(target == null)
-			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
+			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 4)].transform;
 
 		base.Update ();
 	}
 
 	protected override void OnDisable ()
 	{
-		AIScript.cubeTarget = null;
+		//AIScript.cubeTarget = null;
 		target = null;
 
 		base.OnDisable ();

@@ -141,6 +141,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		//LoadMusics ();
 		SetGamePlaylist ();
 
+		if(canTakeTime != null)
 		canTakeTime.SetActive (false);
 
 		slowMo = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ();
@@ -175,7 +176,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		LowPass (pauseLowPass, 0.5f);
 
-		CreateMusicsSongTitle ();
+		if (SceneManager.GetActiveScene().name != "Scene Testing")
+			CreateMusicsSongTitle ();
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();

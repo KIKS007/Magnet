@@ -26,7 +26,7 @@ public class AIComponent : MonoBehaviour
 		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
 			return;
 
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+		if (!GlobalVariables.Instance || GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
 	}
 }

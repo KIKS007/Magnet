@@ -27,6 +27,8 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 //		else
 //			AIScript.currentMovementTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
 
+		AIScript.cubeTarget = null;
+
 		AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
 	}
 
@@ -43,7 +45,7 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 
 	protected override void OnDisable ()
 	{
-		AIScript.playerTarget = null;
+		//AIScript.playerTarget = null;
 		target = null;
 
 		base.OnDisable ();

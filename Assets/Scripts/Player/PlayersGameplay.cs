@@ -403,17 +403,16 @@ public class PlayersGameplay : MonoBehaviour
 	public virtual void Attraction(MovableScript movable)
 	{
 		if (movable.tag == "HoldMovable" || movable.rigidbodyMovable == null)
-		{
-			Debug.Log ("Here");
 			cubesAttracted.Remove (movable);
-		}
 
 		playerState = PlayerState.Attracting;
 
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 
 		movableAttraction.Normalize ();
-		movable.rigidbodyMovable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
+
+		if(movable.rigidbodyMovable != null)
+			movable.rigidbodyMovable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
 
 		if (OnAttracting != null)
 			OnAttracting();

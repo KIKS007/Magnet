@@ -39,17 +39,14 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Safe FX")]
 	public float safeDurationBetween = 0.5f;
 
+
 	private PlayersGameplay playerScript;
 	private PlayersSounds playerSoundsScript;
 	private PlayerName playerName;
-
 	private int playerNumber = -1;
-
 	private float spawnDuration = 0.2f;
 	private Vector3 initialScale;
-
 	private Color playerColor;
-
 	[HideInInspector]
 	public float distance;
 
@@ -82,8 +79,11 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	void OnEnable ()
 	{
-		transform.localScale = Vector3.zero;
-		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack).SetUpdate (false);
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			transform.localScale = Vector3.zero;
+			transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack).SetUpdate (false);
+		}
 
 		for (int i = 0; i < playerMaterials.Length; i++)
 			if(playerMaterials[i] != null)
@@ -442,7 +442,8 @@ public class PlayersFXAnimations : MonoBehaviour
 				Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
 				//instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 
-				GetComponent<PlayersVibration> ().Wave ();
+					if(GetComponent<PlayersVibration> () != null)
+						GetComponent<PlayersVibration> ().Wave ();
 			});
 		}
 
