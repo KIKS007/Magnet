@@ -123,10 +123,13 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 		for(int i = 0; i < modesStats.Count; i++)
 		{
-			if (modesStats [i].mode == GlobalVariables.Instance.CurrentModeLoaded)
+			foreach(WhichMode m in modesStats [i].modes)
 			{
-				modesStatsIndex = i;
-				break;
+				if (m == GlobalVariables.Instance.CurrentModeLoaded)
+				{
+					modesStatsIndex = i;
+					break;
+				}
 			}
 		}
 
@@ -244,7 +247,7 @@ public class ScoreboardPosition
 [System.Serializable]
 public class ModeStats 
 {
-	public WhichMode mode = WhichMode.Default;
+	public List<WhichMode> modes = new List<WhichMode> ();
 	public List<WhichStat> modesStats = new List<WhichStat> ();
 }
 

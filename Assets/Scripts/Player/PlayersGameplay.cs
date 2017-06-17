@@ -183,6 +183,9 @@ public class PlayersGameplay : MonoBehaviour
 		cubesAttracted.Clear();
 		cubesRepulsed.Clear();
 
+		if(playerRigidbody != null)
+			playerRigidbody.velocity = Vector3.zero;
+
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
 	
@@ -631,6 +634,8 @@ public class PlayersGameplay : MonoBehaviour
             OnDashHit();
 
         yield return new WaitForSeconds(stunnedDuration);
+
+		playerRigidbody.velocity = Vector3.zero;
 
 		playerThatHit = null;
 
