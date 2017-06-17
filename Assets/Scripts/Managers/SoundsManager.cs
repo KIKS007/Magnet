@@ -156,8 +156,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
 		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
-		GlobalVariables.Instance.OnMenu += ()=> { if(!MenuManager.Instance.startScreen) ResetLowPass(); };
-
 		GlobalVariables.Instance.OnPlaying += ResetLowPass;
 		GlobalVariables.Instance.OnPlaying += ResetHighPass;
 
