@@ -175,16 +175,17 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 	}
 
-	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn, scaleDuration));
+		StartCoroutine (RandomPositionMovables (allMovables, scaleDuration));
 	}
 
-	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string[] allTags = new string[allMovables.Length];
 		int loopCount = 0;
+		float durationBetweenSpawn = (GlobalVariables.Instance.delayedStartupDuration - scaleDuration) / allMovables.Length;
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{

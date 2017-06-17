@@ -7,6 +7,7 @@ using Klak.Motion;
 public class MenuCameraMovement : MonoBehaviour 
 {
 	public Ease cameraEaseMovement = Ease.OutQuad;
+	public bool tweening = false;
 
 	[Header ("Start Screen")]
 	public RectTransform startScreenText;
@@ -73,6 +74,11 @@ public class MenuCameraMovement : MonoBehaviour
 
 		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
+	}
+
+	void Update ()
+	{
+		tweening = DOTween.IsTweening ("MenuCamera");
 	}
 
 	public IEnumerator HideLogo ()

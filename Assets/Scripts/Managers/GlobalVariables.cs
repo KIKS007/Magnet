@@ -124,6 +124,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public ScreenShakeCamera screenShakeCamera;
 	public ZoomCamera zoomCamera;
 	public DynamicCamera dynamicCamera;
+	public MenuCameraMovement menuCameraMovement;
 
 	void Awake ()
 	{
@@ -152,6 +153,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		screenShakeCamera = mainCamera.GetComponent<ScreenShakeCamera>();
 		zoomCamera = mainCamera.GetComponent<ZoomCamera>();
 		dynamicCamera = mainCamera.GetComponent<DynamicCamera>();
+		menuCameraMovement = mainCamera.GetComponent<MenuCameraMovement>();
 	}
 		
 	void Update ()

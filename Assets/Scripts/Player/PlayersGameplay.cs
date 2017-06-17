@@ -180,6 +180,9 @@ public class PlayersGameplay : MonoBehaviour
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			StartCoroutine (Startup ());
 
+		cubesAttracted.Clear();
+		cubesRepulsed.Clear();
+
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
 	
@@ -218,7 +221,8 @@ public class PlayersGameplay : MonoBehaviour
 		case StartupType.Wave:
 			yield return new WaitForSeconds (0.25f);
 			playerFX.WaveFX ();
-			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
+
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration - 0.25f);
 			break;
 		}
 

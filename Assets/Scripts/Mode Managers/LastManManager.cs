@@ -17,7 +17,6 @@ public class LastManManager : MonoBehaviour
 
 	[Header ("Cubes Spawn")]
 	public bool spawnCubes = true;
-	public float durationBetweenSpawn = 0.1f;
 
 	[Header ("Dead Cube")]
 	public MovableScript movableExampleScript;
@@ -39,7 +38,7 @@ public class LastManManager : MonoBehaviour
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
 	}
 
 	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
