@@ -4,30 +4,28 @@ using UnityEngine;
 
 public class AIMovement_TowardsPlayer : AIMovement_Towards 
 {
-	private AIAimPlayer AIAimPlayer;
-
-	protected override void Awake ()
+	protected override void OnEnable ()
 	{
-		AIAimPlayer = GetComponent<AIAimPlayer> ();
+		AIScript.cubeTarget = null;
 
-		base.Awake ();
+		base.OnEnable ();
+
+		if (!CanPlay ())
+			return;
 	}
+
 	protected override void Enable ()
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
-		
+
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 
 		if (AIScript.closerPlayers.Count == 0)
 			return;
-
-//		if(AIAimPlayer.target != null)
-//			AIScript.currentMovementTarget = target = AIAimPlayer.target;
-//		else
-//			AIScript.currentMovementTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
-
-		AIScript.cubeTarget = null;
 
 		AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
 	}
@@ -36,11 +34,14 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
+
+		if (!CanPlay ())
+			return;
+		
+		base.Update ();
 		
 		if(target == null || target.tag != "Player")
 			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
-
-		base.Update ();
 	}
 
 	protected override void OnDisable ()

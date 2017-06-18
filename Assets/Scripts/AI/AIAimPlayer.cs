@@ -9,6 +9,9 @@ public class AIAimPlayer : AIAim
 		if (!AIScript.aimLayerEnabled)
 			return;
 
+		if (!CanPlay ())
+			return;
+		
 		base.Enable ();
 
 		target = null;
@@ -18,6 +21,9 @@ public class AIAimPlayer : AIAim
 
 	protected override void Update ()
 	{
+		if (!CanPlay ())
+			return;
+
 		base.Update ();
 
 		SetTarget ();

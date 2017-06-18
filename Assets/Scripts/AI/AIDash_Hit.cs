@@ -19,9 +19,11 @@ public class AIDash_Hit : AIComponent
 	{
 		if (!AIScript.dashLayerEnabled)
 			return;
+
+		if (!CanPlay ())
+			return;
 		
 		base.Enable ();
-
 
 		if (Random.Range (0, 100) > hitChances [(int)AIScript.aiLevel])
 			return;

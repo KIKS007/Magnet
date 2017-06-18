@@ -9,6 +9,9 @@ public class AIShoot : AIComponent
 		if (!AIScript.shootLayerEnabled)
 			return;
 			
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 		
 		AIScript.Shoot ();

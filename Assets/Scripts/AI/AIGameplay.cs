@@ -28,6 +28,9 @@ public class AIGameplay : PlayersGameplay
 	public bool isAttracting;
 	public bool isRepelling;
 
+	[Header ("AI Delay")]
+	public List<AIComponentsDelay> aiComponentsDelay = new List<AIComponentsDelay> ();
+
 	[Header ("AI Debug")]
 	public bool dashLayerEnabled = true;
 	public bool movementLayerEnabled = true;
@@ -41,7 +44,24 @@ public class AIGameplay : PlayersGameplay
 	{
 		base.Start ();
 
+		SetupDelays ();
+
 		aiAnimator = GetComponent<Animator> ();
+	}
+
+	void SetupDelays ()
+	{
+		foreach(AIComponentsDelay l in aiComponentsDelay)
+		{
+			foreach(AIComponents c in l.components)
+			{
+				if(gameObject.GetComponent (c.ToString ()))
+				{
+					AIComponent component = gameObject.GetComponent (c.ToString ()) as AIComponent;
+					component.enableDelay = l.delay;
+				}
+			}
+		}
 	}
 
 	protected override IEnumerator Startup ()
@@ -186,17 +206,17 @@ public class AIGameplay : PlayersGameplay
 		if(dangerousCubes.Count != 0)
 			aiAnimator.SetFloat ("closerDangerousCubeDistance", Vector3.Distance (dangerousCubes [0].transform.position, transform.position));
 		else
-			aiAnimator.SetFloat ("closerDangerousCubeDistance", -1f);
+			aiAnimator.SetFloat ("closerDangerousCubeDistance", 666);
 
 		if(playerTarget != null)
 			aiAnimator.SetFloat ("playerTargetDistance", Vector3.Distance (playerTarget.position, transform.position));
 		else
-			aiAnimator.SetFloat ("playerTargetDistance", -1f);
+			aiAnimator.SetFloat ("playerTargetDistance", 666);
 
 		if(cubeTarget != null)
 			aiAnimator.SetFloat ("cubeTargetDistance", Vector3.Distance (cubeTarget.position, transform.position));
 		else
-			aiAnimator.SetFloat ("cubeTargetDistance", -1f);
+			aiAnimator.SetFloat ("cubeTargetDistance", 666);
 	}
 
 	protected override void FixedUpdate ()
@@ -365,4 +385,11 @@ public class AIRandomAngle
 	public float randomAngleMin;
 	[Range (0, 45)]
 	public float randomAngleMax;
+}
+
+[System.Serializable]
+public class AIComponentsDelay
+{
+	public float delay;
+	public List<AIComponents> components = new List<AIComponents> ();
 }

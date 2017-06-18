@@ -8,7 +8,10 @@ public class AIAttract : AIComponent
 	{
 		if (!AIScript.shootLayerEnabled)
 			return;
-		
+
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 		
 		AIScript.isAttracting = true;

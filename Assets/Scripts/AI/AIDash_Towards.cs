@@ -20,6 +20,9 @@ public class AIDash_Towards : AIComponent
 		if (!AIScript.dashLayerEnabled)
 			return;
 
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 
 		if (Random.Range (0, 100) > towardsChances [(int)AIScript.aiLevel])

@@ -4,31 +4,29 @@ using UnityEngine;
 
 public class AIMovement_TowardsCube : AIMovement_Towards 
 {
-	private AIAimCube AIAimCube;
-
-	protected override void Awake ()
+	protected override void OnEnable ()
 	{
-		AIAimCube = GetComponent<AIAimCube> ();
+		AIScript.playerTarget = null;
 
-		base.Awake ();
+		if (!CanPlay ())
+			return;
+		
+		base.OnEnable ();
 	}
+
 
 	protected override void Enable ()
 	{
 		if (!AIScript.movementLayerEnabled)
+			return;
+
+		if (!CanPlay ())
 			return;
 		
 		base.Enable ();
 
 		if (AIScript.closerCubes.Count == 0)
 			return;
-			
-//		if(AIAimCube.target != null)
-//			AIScript.currentMovementTarget = target = AIAimCube.target;
-//		else
-//			AIScript.currentMovementTarget = target = AIScript.closerCubes [Random.Range (0, 2)].transform;
-
-		AIScript.playerTarget = null;
 
 		AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 4)].transform;
 	}
@@ -37,18 +35,24 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
+
+		if (!CanPlay ())
+			return;
+
+		base.Update ();
+
+		if (AIScript.closerCubes.Count == 0)
+			return;
 		
 		if(target == null || target.tag != "Movable")
 			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 4)].transform;
-
-		base.Update ();
 	}
 
 	protected override void OnDisable ()
 	{
 		//AIScript.cubeTarget = null;
 		target = null;
-
+		
 		base.OnDisable ();
 	}
 }

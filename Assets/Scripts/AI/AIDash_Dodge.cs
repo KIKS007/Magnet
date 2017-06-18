@@ -19,7 +19,10 @@ public class AIDash_Dodge : AIComponent
 	{
 		if (!AIScript.dashLayerEnabled)
 			return;
-		
+
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 		
 		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
@@ -44,8 +47,13 @@ public class AIDash_Dodge : AIComponent
 		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
 	}
 
-	void Update ()
+	protected override void Update ()
 	{
+		if (!CanPlay ())
+			return;
+
+		base.Update ();
+
 //		if (!AIScript.dashLayerEnabled)
 //			return;
 //		

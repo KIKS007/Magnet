@@ -9,6 +9,9 @@ public class AIAimForwards : AIAim
 		if (!AIScript.aimLayerEnabled)
 			return;
 
+		if (!CanPlay ())
+			return;
+		
 		base.Enable ();
 
 		target = null;
@@ -16,6 +19,9 @@ public class AIAimForwards : AIAim
 
 	protected override void Update ()
 	{
+		if (!CanPlay ())
+			return;
+		
 		base.Update ();
 
 		if(target != null)

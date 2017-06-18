@@ -6,8 +6,10 @@ public class AIMovement_Towards : AIComponent
 {
 	protected Transform target;
 
-	protected virtual void Update ()
+	protected override void Update ()
 	{
+		base.Update ();
+
 		if (!AIScript.movementLayerEnabled)
 			return;
 

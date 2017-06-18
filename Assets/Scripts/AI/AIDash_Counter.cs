@@ -17,10 +17,13 @@ public class AIDash_Counter : AIComponent
 
 	protected override void Enable ()
 	{
-		base.Enable ();
-
 		if (!AIScript.dashLayerEnabled)
 			return;
+
+		if (!CanPlay ())
+			return;
+		
+		base.Enable ();
 
 		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
 			return;
@@ -42,10 +45,16 @@ public class AIDash_Counter : AIComponent
 		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
 	}
 
-	protected virtual void Update ()
+	protected override void Update ()
 	{
 		if (!AIScript.dashLayerEnabled)
 			return;
+
+		if (!CanPlay ())
+			return;
+		
+		base.Update ();
+		
 
 //		if(AIScript.playerState == PlayerState.Stunned)
 //		{

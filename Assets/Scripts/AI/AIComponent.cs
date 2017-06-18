@@ -4,61 +4,64 @@ using UnityEngine;
 
 public class AIComponent : MonoBehaviour 
 {
+	[HideInInspector]
 	public float enableDelay = 0;
 
 	protected AIGameplay AIScript;
-	protected bool componentEnabled = true;
+	public bool componentEnabled = true;
 
 	// Use this for initialization
 	protected virtual void Awake () 
 	{
 		AIScript = GetComponent<AIGameplay> ();
 	}
-	
-	protected virtual void Enable ()
+
+	protected virtual void OnEnable ()
 	{
-		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
-			return;
-
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
-
+		StartCoroutine (OnEnableDelay ());
 	}
 
 	IEnumerator OnEnableDelay ()
 	{
+		componentEnabled = false;
+
 		if(enableDelay > 0)
-		{
-			componentEnabled = false;
 			yield return new WaitForSecondsRealtime (enableDelay);
-		}
 
 		componentEnabled = true;
-	
+
 		Enable ();
 
 		yield return 0;
 	}
 
-	protected virtual void Update ()
+	protected virtual bool CanPlay ()
 	{
 		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
-			return;
+			return false;
 
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+			return false;
 
 		if (!componentEnabled)
-			return;
+			return false;
 
+
+		return true;
+	}
+
+	protected virtual void Enable ()
+	{
+		
+	}
+
+	protected virtual void Update ()
+	{
+		
 	}
 
 	protected virtual void OnDisable ()
 	{
-		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
-			return;
-
-		if (!GlobalVariables.Instance || GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+		StopAllCoroutines ();
 	}
 }

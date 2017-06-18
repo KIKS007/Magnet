@@ -8,7 +8,10 @@ public class AIAimCube : AIAim
 	{
 		if (!AIScript.aimLayerEnabled)
 			return;
-		
+
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 
 		target = null;
@@ -18,6 +21,9 @@ public class AIAimCube : AIAim
 
 	protected override void Update ()
 	{
+		if (!CanPlay ())
+			return;
+
 		base.Update ();
 
 		SetTarget ();

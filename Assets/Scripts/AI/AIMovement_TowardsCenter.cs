@@ -8,7 +8,10 @@ public class AIMovement_TowardsCenter : AIMovement_Towards
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
-		
+
+		if (!CanPlay ())
+			return;
+
 		base.Enable ();
 
 		target = null;
