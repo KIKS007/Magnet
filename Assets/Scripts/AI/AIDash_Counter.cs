@@ -15,9 +15,9 @@ public class AIDash_Counter : AIComponent
 	[Header ("Delay")]
 	public Vector2 randomDelay = new Vector2 (0.05f, 0.5f);
 
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
-		base.OnEnable ();
+		base.Enable ();
 
 		if (!AIScript.dashLayerEnabled)
 			return;
@@ -42,7 +42,7 @@ public class AIDash_Counter : AIComponent
 		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
 	}
 
-	void Update ()
+	protected virtual void Update ()
 	{
 		if (!AIScript.dashLayerEnabled)
 			return;

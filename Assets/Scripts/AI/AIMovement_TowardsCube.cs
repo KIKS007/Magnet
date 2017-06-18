@@ -13,12 +13,12 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 		base.Awake ();
 	}
 
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
-		base.OnEnable ();
+		base.Enable ();
 
 		if (AIScript.closerCubes.Count == 0)
 			return;

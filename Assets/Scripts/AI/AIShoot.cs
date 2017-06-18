@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AIShoot : AIComponent
 {
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.shootLayerEnabled)
 			return;
 			
-		base.OnEnable ();
+		base.Enable ();
 		
 		AIScript.Shoot ();
 	}

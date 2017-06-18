@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AIAimPlayer : AIAim
 {
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.aimLayerEnabled)
 			return;
 
-		base.OnEnable ();
+		base.Enable ();
 
 		target = null;
 		

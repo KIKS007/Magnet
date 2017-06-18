@@ -12,12 +12,12 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 
 		base.Awake ();
 	}
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
-		base.OnEnable ();
+		base.Enable ();
 
 		if (AIScript.closerPlayers.Count == 0)
 			return;

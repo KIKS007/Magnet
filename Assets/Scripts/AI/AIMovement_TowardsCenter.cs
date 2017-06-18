@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class AIMovement_TowardsCenter : AIMovement_Towards 
 {
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
-		base.OnEnable ();
+		base.Enable ();
 
 		target = null;
 	}

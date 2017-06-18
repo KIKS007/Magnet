@@ -11,9 +11,9 @@ public class AIMovement_Away : AIComponent
 
 	protected Quaternion randomAngle;
 
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
-		base.OnEnable ();
+		base.Enable ();
 
 		if (AIScript.dangerousCubes.Count == 0)
 			return;

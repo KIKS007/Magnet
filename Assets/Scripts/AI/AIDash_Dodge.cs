@@ -15,12 +15,12 @@ public class AIDash_Dodge : AIComponent
 	[Header ("Delay")]
 	public Vector2 randomDelay = new Vector2 (0.05f, 0.5f);
 
-	protected override void OnEnable ()
+	protected override void Enable ()
 	{
 		if (!AIScript.dashLayerEnabled)
 			return;
 		
-		base.OnEnable ();
+		base.Enable ();
 		
 		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
 			return;
