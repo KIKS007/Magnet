@@ -37,7 +37,7 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
-		if(target == null)
+		if(target == null || target.tag != "Player")
 			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
 
 		base.Update ();

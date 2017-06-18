@@ -7,6 +7,7 @@ public class AIAimZone : MonoBehaviour
 {
 	public LayerMask raycastLayer;
 
+	private int targetSearchCount = 2;
 	private AIGameplay AIScript;
 
 	// Use this for initialization
@@ -15,6 +16,9 @@ public class AIAimZone : MonoBehaviour
 		AIScript = transform.GetComponentInParent <AIGameplay> ();
 
 		LoadModeManager.Instance.OnLevelLoaded += () => AIScript.objectives.Clear ();
+
+		AIScript.OnStun += () => AIScript.objectives.Clear ();
+		AIScript.OnDeath += () => AIScript.objectives.Clear ();
 
 		AIScript.OnHold += () => 
 		{
@@ -26,29 +30,30 @@ public class AIAimZone : MonoBehaviour
 		};
 	}
 
-	void OnTriggerStay (Collider collider){
+	void OnTriggerStay (Collider collider)
+	{
 		if(collider.tag == "Player" || collider.tag == "Movable")
 		{
 			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
 				return;
 
-			AIScript.objectives.Clear ();
+			if(!AIScript.objectives.Contains (collider.gameObject))
+				AIScript.objectives.Add (collider.gameObject);
 
-			AIScript.objectives.Add (collider.gameObject);
 			Refresh ();
 		}
 	}
 
-//	void OnTriggerExit(Collider collider){
-//		if(collider.tag == "Player" || collider.tag == "Movable")
-//		{
-//			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
-//				return;
-//			
-//			AIScript.objectives.Remove (collider.gameObject);
-//			Refresh ();
-//		}
-//	}
+	void OnTriggerExit(Collider collider)
+	{
+		if(collider.tag == "Player" || collider.tag == "Movable")
+		{
+			if(AIScript.objectives.Contains (collider.gameObject))
+				AIScript.objectives.Remove (collider.gameObject);
+
+			Refresh ();
+		}
+	}
 
 	void Refresh()
 	{
@@ -63,12 +68,18 @@ public class AIAimZone : MonoBehaviour
 
 		AIScript.objectives = AIScript.objectives.OrderBy (x => Vector3.Distance (transform.parent.position, x.transform.position)).ToList ();
 
+		for(int i = 0; i < targetSearchCount + 1; i++)
+		{
+			if (i >= AIScript.objectives.Count)
+				break;
+
+			if(AIScript.objectives[i].tag == "Player")
+				AIScript.isAimingPlayer = true;
+		}
+
 		if(AIScript.objectives[0].tag == "Movable")
 			AIScript.isAimingCube = true;
 		
-		else if(AIScript.objectives[0].tag == "Player")
-			AIScript.isAimingPlayer = true;
-
 		AIScript.aiAnimator.SetBool ("isAimingPlayer", AIScript.isAimingPlayer);
 		AIScript.aiAnimator.SetBool ("isAimingCube", AIScript.isAimingCube);
 	}

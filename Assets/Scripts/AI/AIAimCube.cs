@@ -27,13 +27,13 @@ public class AIAimCube : AIAim
 	{
 		if (AIScript.cubeTarget != null)
 		{
-			target = AIScript.cubeTarget;
-			return;
+			if (AIScript.cubeTarget != target || target == null)
+			{
+				target = AIScript.cubeTarget;
+				return;
+			}
 		}
-		else
-		{
 
-		}
 
 //		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Movable")
 //		{

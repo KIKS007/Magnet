@@ -8,7 +8,6 @@ public class AIAim : AIComponent
 	[Range (0, 1)]
 	public float[] lerps = new float[3] { 0.2f, 0.2f, 0.2f };
 
-
 	protected virtual void Update ()
 	{
 		if (!AIScript.aimLayerEnabled)
@@ -21,14 +20,20 @@ public class AIAim : AIComponent
 
 		if(target != null)
 		{
-			targetRotation = Quaternion.LookRotation (target.position - transform.position);
+			Vector3 lookat = target.position - transform.position;
+			lookat.y = 0;
+
+			targetRotation = Quaternion.LookRotation (lookat);
 			
 			transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, lerps [(int)AIScript.aiLevel]);
 		}
 		
 		else if(AIScript.movement != Vector3.zero)
 		{
-			targetRotation = Quaternion.LookRotation (AIScript.movement);
+			Vector3 lookat = AIScript.movement;
+			lookat.y = 0;
+
+			targetRotation = Quaternion.LookRotation (lookat);
 			
 			transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, lerps [(int)AIScript.aiLevel]);
 		}

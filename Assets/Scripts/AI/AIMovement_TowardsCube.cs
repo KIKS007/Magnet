@@ -38,7 +38,7 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
-		if(target == null)
+		if(target == null || target.tag != "Movable")
 			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, 4)].transform;
 
 		base.Update ();

@@ -362,7 +362,7 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 
 		foreach(Renderer r in columnsRenderers)
 		{
-			if(r.material.color == columnInitialColor)
+			if(r.material.color == GlobalVariables.Instance.playersColors [(int)player])
 			{
 				r.material.DOColor (columnInitialColor, singleColorBounceResetDuration).SetEase (Ease.OutQuad);
 				r.material.DOColor (columnInitialColor, "_EmissionColor", singleColorBounceResetDuration).SetEase (Ease.OutQuad);

@@ -27,14 +27,13 @@ public class AIAimPlayer : AIAim
 	{
 		if (AIScript.playerTarget != null)
 		{
-			target = AIScript.playerTarget;
-			return;
+			if (AIScript.playerTarget != target || target == null)
+			{
+				target = AIScript.playerTarget;
+				return;
+			}
 		}
-		else
-		{
 			
-		}
-
 //		if (AIScript.currentMovementTarget != null && AIScript.currentMovementTarget.tag == "Player")
 //		{
 //			target = AIScript.currentMovementTarget;

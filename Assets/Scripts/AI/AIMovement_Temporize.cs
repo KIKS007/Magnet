@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class AIMovement_Temporize : AIComponent 
 {
-	private LayerMask walls = 1 << 8;
+	/*private LayerMask walls = 1 << 8;
 
 	private int sign;
 
@@ -51,5 +51,12 @@ public class AIMovement_Temporize : AIComponent
 		DOVirtual.DelayedCall (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()).SetId ("Sign" + gameObject.GetInstanceID ());
 
 		sign = -sign;
+	}*/
+
+	protected override void OnDisable ()
+	{
+		AIScript.movement = Vector3.zero;
+
+		base.OnDisable ();
 	}
 }

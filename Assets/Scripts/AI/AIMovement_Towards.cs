@@ -29,4 +29,11 @@ public class AIMovement_Towards : AIComponent
 				AIScript.movement = Vector3.zero;
 		}
 	}
+
+	protected override void OnDisable ()
+	{
+		AIScript.movement = Vector3.zero;
+
+		base.OnDisable ();
+	}
 }
