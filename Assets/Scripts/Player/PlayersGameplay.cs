@@ -283,12 +283,24 @@ public class PlayersGameplay : MonoBehaviour
             if (playerState == PlayerState.Stunned)
 				transform.Rotate(0, stunnedRotationTemp * Time.deltaTime, 0, Space.World);
 
+
 			//Reset Attraction - Repulsion State
 			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
+			{
 				playerState = PlayerState.None;
+				
+				if (OnAttractingEnd != null)
+					OnAttractingEnd ();
+			}
 
 			if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
+			{
 				playerState = PlayerState.None;
+				
+				if (OnRepulsingEnd != null)
+					OnRepulsingEnd ();
+			}
+
 
 			//Attraction - Repulsion State
 			if (playerState == PlayerState.None)
@@ -787,6 +799,8 @@ public class PlayersGameplay : MonoBehaviour
 	#region Events
 	public event EventHandler OnAttracting;
 	public event EventHandler OnAttracted;
+	public event EventHandler OnAttractingEnd;
+	public event EventHandler OnRepulsingEnd;
 	public event EventHandler OnRepulsing;
 	public event EventHandler OnRepulsed;
 	public event EventHandler OnHolding;

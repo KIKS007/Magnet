@@ -50,6 +50,21 @@ public class PlayersSounds : MonoBehaviour
 	private bool fadeInAttraction = false;
 	private bool fadeOutAttraction = false;
 
+	void Update ()
+	{
+		if(MasterAudio.GetGroupVolume (attractingSound) != 0)
+		{
+			if(playerScript.playerState != PlayerState.Attracting || playerScript.cubesAttracted.Count == 0)
+				MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> fadeOutAttraction = false);
+		}
+
+		if(MasterAudio.GetGroupVolume (repulsingSound) != 0)
+		{
+			if(playerScript.playerState != PlayerState.Repulsing || playerScript.cubesRepulsed.Count == 0)
+				MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> fadeOutRepulsion = false);
+		}
+	}
+
 	void Attracting ()
 	{
 		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != initialAttractingVolume && !fadeInAttraction)
