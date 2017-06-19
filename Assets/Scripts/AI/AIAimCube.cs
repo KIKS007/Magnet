@@ -31,11 +31,11 @@ public class AIAimCube : AIAim
 
 	void SetTarget ()
 	{
-		if (AIScript.cubeTarget != null)
+		if (AIScript.holdTarget != null)
 		{
-			if (AIScript.cubeTarget != target || target == null)
+			if (AIScript.holdTarget != target || target == null)
 			{
-				target = AIScript.cubeTarget;
+				target = AIScript.holdTarget;
 				return;
 			}
 		}

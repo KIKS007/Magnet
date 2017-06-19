@@ -20,8 +20,8 @@ public class AIGameplay : PlayersGameplay
 	public List<GameObject> objectives = new List<GameObject> ();
 
 	[Header ("AI Target")]
-	public Transform cubeTarget;
-	public Transform playerTarget;
+	public Transform holdTarget;
+	public Transform shootTarget;
 
 	[Header ("AI States")]
 	public bool isAimingPlayer;
@@ -207,8 +207,8 @@ public class AIGameplay : PlayersGameplay
 		aiAnimator.SetBool ("canHold", holdState == HoldState.CanHold);
 		aiAnimator.SetBool ("isHolding", holdState == HoldState.Holding);
 
-		aiAnimator.SetBool ("hasPlayerTarget", playerTarget != null);
-		aiAnimator.SetBool ("hasCubeTarget", cubeTarget != null);
+		aiAnimator.SetBool ("hasPlayerTarget", shootTarget != null);
+		aiAnimator.SetBool ("hasCubeTarget", holdTarget != null);
 
 		aiAnimator.SetInteger ("thrownDangerousCubes", thrownDangerousCubes.Count);
 
@@ -225,13 +225,13 @@ public class AIGameplay : PlayersGameplay
 		else
 			aiAnimator.SetFloat ("closerDangerousCubeDistance", 666);
 
-		if(playerTarget != null)
-			aiAnimator.SetFloat ("playerTargetDistance", Vector3.Distance (playerTarget.position, transform.position));
+		if(shootTarget != null)
+			aiAnimator.SetFloat ("playerTargetDistance", Vector3.Distance (shootTarget.position, transform.position));
 		else
 			aiAnimator.SetFloat ("playerTargetDistance", 666);
 
-		if(cubeTarget != null)
-			aiAnimator.SetFloat ("cubeTargetDistance", Vector3.Distance (cubeTarget.position, transform.position));
+		if(holdTarget != null)
+			aiAnimator.SetFloat ("cubeTargetDistance", Vector3.Distance (holdTarget.position, transform.position));
 		else
 			aiAnimator.SetFloat ("cubeTargetDistance", 666);
 	}

@@ -6,7 +6,7 @@ public class AIStuck : AIMovement_Towards
 {
 	protected override void OnEnable ()
 	{
-		AIScript.cubeTarget = null;
-		AIScript.playerTarget = null;
+		AIScript.holdTarget = null;
+		AIScript.shootTarget = null;
 	}
 }

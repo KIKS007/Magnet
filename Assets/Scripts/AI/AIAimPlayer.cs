@@ -31,11 +31,11 @@ public class AIAimPlayer : AIAim
 
 	void SetTarget ()
 	{
-		if (AIScript.playerTarget != null)
+		if (AIScript.shootTarget != null)
 		{
-			if (AIScript.playerTarget != target || target == null)
+			if (AIScript.shootTarget != target || target == null)
 			{
-				target = AIScript.playerTarget;
+				target = AIScript.shootTarget;
 				return;
 			}
 		}

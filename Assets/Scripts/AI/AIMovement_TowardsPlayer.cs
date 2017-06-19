@@ -8,7 +8,7 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 
 	protected override void OnEnable ()
 	{
-		AIScript.cubeTarget = null;
+		AIScript.holdTarget = null;
 
 		base.OnEnable ();
 
@@ -30,9 +30,9 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 			return;
 
 		if(AIScript.closerPlayers.Count >= randomPlayers)
-			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+			AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
 		else
-			AIScript.playerTarget = target = AIScript.closerPlayers [0].transform;
+			AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
 	}
 
 	protected override void Update ()
@@ -48,9 +48,9 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 		if(target == null || target.tag != "Player")
 		{
 			if(AIScript.closerPlayers.Count >= randomPlayers)
-				AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+				AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
 			else
-				AIScript.playerTarget = target = AIScript.closerPlayers [0].transform;
+				AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
 		}
 	}
 

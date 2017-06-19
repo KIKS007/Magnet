@@ -8,7 +8,7 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 
 	protected override void OnEnable ()
 	{
-		AIScript.playerTarget = null;
+		AIScript.shootTarget = null;
 
 		if (!CanPlay ())
 			return;
@@ -31,9 +31,9 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 			return;
 
 		if(AIScript.closerPlayers.Count >= randomCubes)
-			AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, randomCubes)].transform;
+			AIScript.holdTarget = target = AIScript.closerCubes [Random.Range (0, randomCubes)].transform;
 		else
-			AIScript.cubeTarget = target = AIScript.closerCubes [0].transform;
+			AIScript.holdTarget = target = AIScript.closerCubes [0].transform;
 	}
 
 	protected override void Update ()
@@ -52,9 +52,9 @@ public class AIMovement_TowardsCube : AIMovement_Towards
 		if(target == null || target.tag != "Movable")
 		{
 			if(AIScript.closerPlayers.Count >= randomCubes)
-				AIScript.cubeTarget = target = AIScript.closerCubes [Random.Range (0, randomCubes)].transform;
+				AIScript.holdTarget = target = AIScript.closerCubes [Random.Range (0, randomCubes)].transform;
 			else
-				AIScript.cubeTarget = target = AIScript.closerCubes [0].transform;
+				AIScript.holdTarget = target = AIScript.closerCubes [0].transform;
 		}
 	}
 

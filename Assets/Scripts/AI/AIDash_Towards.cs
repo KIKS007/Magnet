@@ -38,18 +38,18 @@ public class AIDash_Towards : AIComponent
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
 
-		if (AIScript.cubeTarget != null && AIScript.playerTarget != null)
+		if (AIScript.holdTarget != null && AIScript.shootTarget != null)
 			yield break;
 
-		if (AIScript.cubeTarget == null && AIScript.playerTarget == null)
+		if (AIScript.holdTarget == null && AIScript.shootTarget == null)
 			yield break;
 
 		AIScript.dashState = DashState.Dashing;
 
-		if (AIScript.playerTarget != null)
-			AIScript.movement = (AIScript.playerTarget.position - transform.position).normalized;
+		if (AIScript.shootTarget != null)
+			AIScript.movement = (AIScript.shootTarget.position - transform.position).normalized;
 		else
-			AIScript.movement = (AIScript.cubeTarget.position - transform.position).normalized;
+			AIScript.movement = (AIScript.holdTarget.position - transform.position).normalized;
 
 		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
 
