@@ -65,15 +65,20 @@ public class MovableStar : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(other.collider.tag == "Player")
 		{
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+
 			if(tag == "ThrownMovable")
 			{
 				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 				{
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
-					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
+					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
 
 					if(playerThatThrew != null)
 						StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
@@ -81,15 +86,19 @@ public class MovableStar : MovableScript
 			}
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
+		if(other.collider.tag == "Player" && tag == "DeadCube")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+
+			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
 
 			if (playerThatThrew != null)
 				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 
 			GlobalMethods.Instance.Explosion (transform.position);
 		}

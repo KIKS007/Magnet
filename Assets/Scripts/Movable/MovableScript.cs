@@ -290,13 +290,18 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && gameObject.tag == "ThrownMovable")
+		if(other.collider.tag == "Player" && gameObject.tag == "ThrownMovable")
 		{
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+
 			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{
-				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
+				playerScript.StunVoid(true);
 				
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
 
 				if(playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);

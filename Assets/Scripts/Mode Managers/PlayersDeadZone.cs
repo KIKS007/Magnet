@@ -15,7 +15,7 @@ public class PlayersDeadZone : MonoBehaviour
 			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
 			instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
 			instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
-			instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = other.GetComponent<Renderer>().material.color;
+			instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors [ (int)other.gameObject.GetComponent<PlayersGameplay>().playerName];
 
 			other.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.transform.position);
 		}

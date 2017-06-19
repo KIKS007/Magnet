@@ -115,7 +115,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, player.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 	
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors [ (int)player.gameObject.GetComponent<PlayersGameplay>().playerName];
 	}
 
 	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, MovableScript script, float scaleDuration = defaultScaleDuration)
@@ -167,7 +167,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 
 			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.Players [(int)playerName].gameObject.GetComponent<Renderer> ().material.color;
+			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.playersColors [ (int)playerName];
 
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
 

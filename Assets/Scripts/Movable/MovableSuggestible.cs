@@ -14,10 +14,14 @@ public class MovableSuggestible : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(other.collider.tag == "Player")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+
+			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
 			foreach (GameObject g in attracedBy)
 				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
@@ -25,7 +29,7 @@ public class MovableSuggestible : MovableScript
 			foreach (GameObject g in repulsedBy)
 				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 
 			GlobalMethods.Instance.Explosion (transform.position);
 		}

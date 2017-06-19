@@ -50,7 +50,7 @@ public class PlayersManikin : PlayersGameplay
 
 			DeathExplosionFX (other.contacts[0]);
 
-			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent<Renderer> ().material.color);
+			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GlobalVariables.Instance.playersColors [ (int)playerName]);
 		}
 	}
 

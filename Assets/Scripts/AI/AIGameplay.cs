@@ -285,6 +285,13 @@ public class AIGameplay : PlayersGameplay
 		{
 			gameObject.SetActive(false);
 		}
+		else
+			SetupSkin ();
+	}
+
+	void SetupSkin ()
+	{
+		
 	}
 
 	public override IEnumerator Dash ()

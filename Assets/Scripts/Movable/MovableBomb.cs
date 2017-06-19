@@ -46,65 +46,69 @@ public class MovableBomb : MovableScript
 		
 	protected override void HitPlayer (Collision other)
 	{
+		PlayersGameplay playerScript = null;
+
+		if (other.gameObject.tag == "Player")
+			playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+
 		if(tag == "Movable" && other.gameObject.tag == "Player" 
 			|| tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
-			if(playerThatThrew == null && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+			if(playerThatThrew == null && playerScript.playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
+				playerScript.OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 			}
 
-			else if(other.collider.GetComponent<PlayersGameplay>().playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
+			else if(playerScript.playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
+				playerScript.OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 			}
 
-			else if(playerThatThrew != other.gameObject && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+			else if(playerThatThrew != other.gameObject && playerScript.playerState != PlayerState.Stunned)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
+				playerScript.OnHoldMovable (gameObject);
 				playerHolding = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 			}
 		}
 
-		if(tag == "DeadCube" && other.gameObject.tag == "Player" && trackingPlayer && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(tag == "DeadCube" && other.gameObject.tag == "Player" && trackingPlayer && playerScript.playerState != PlayerState.Dead)
 		{
 			hold = true;
 			playerHolding = other.gameObject;
 
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
 			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 		}
-
 	}
 
 	public override void OnHold ()
