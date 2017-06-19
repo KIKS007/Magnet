@@ -1,14 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class AIComponent : MonoBehaviour 
 {
+	public bool stuckAvoidance = false;
+	[ShowIf ("stuckAvoidance")]
+	public float stuckDelay;
+	[ShowIf ("stuckAvoidance")]
+	public string animatorTrigger;
+
 	[HideInInspector]
 	public float enableDelay = 0;
 
 	protected AIGameplay AIScript;
-	public bool componentEnabled = true;
+	protected bool componentEnabled = true;
 
 	// Use this for initialization
 	protected virtual void Awake () 
@@ -30,6 +37,9 @@ public class AIComponent : MonoBehaviour
 
 		componentEnabled = true;
 
+		if (stuckAvoidance)
+			StartCoroutine (StuckDelay ());
+
 		Enable ();
 
 		yield return 0;
@@ -50,6 +60,13 @@ public class AIComponent : MonoBehaviour
 		return true;
 	}
 
+	IEnumerator StuckDelay ()
+	{
+		yield return new WaitForSecondsRealtime (stuckDelay);
+
+		AIScript.aiAnimator.SetTrigger (animatorTrigger);
+	}
+
 	protected virtual void Enable ()
 	{
 		
@@ -63,5 +80,6 @@ public class AIComponent : MonoBehaviour
 	protected virtual void OnDisable ()
 	{
 		StopAllCoroutines ();
+		componentEnabled = true;
 	}
 }

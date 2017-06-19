@@ -25,59 +25,34 @@ public class AIDash_Dodge : AIComponent
 
 		base.Enable ();
 		
-		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
-			return;
+		StartCoroutine (Delay ());
+	}
 
-		if (AIScript.thrownDangerousCubes.Count == 0)
-			return;
-		
+	IEnumerator Delay ()
+	{
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
+		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
+			yield break;
+
+		if (AIScript.closerPlayers.Count == 0)
+			yield break;
+
 		if (AIScript.dashState != DashState.CanDash)
-			return;
-		
+			yield break;
+
 		AIScript.dashState = DashState.Dashing;
-		
+
 		Vector3 direction = transform.position - AIScript.thrownDangerousCubes [0].transform.position;
-		
+
 		direction = Quaternion.Euler (new Vector3 (0, Mathf.Sign (Random.Range (-1, 1f)) * 90f, 0)) * direction;
 
 		AIScript.movement =  direction.normalized;
 
 		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
 
-		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
-	}
+		AIScript.movement.Normalize ();
 
-	protected override void Update ()
-	{
-		if (!CanPlay ())
-			return;
-
-		base.Update ();
-
-//		if (!AIScript.dashLayerEnabled)
-//			return;
-//		
-//		if(AIScript.thrownDangerousCubes.Count != 0)
-//		{
-//			if (AIScript.dashState != DashState.CanDash)
-//				return;
-//
-//			AIScript.dashState = DashState.Dashing;
-//
-//			Vector3 direction = transform.position - AIScript.thrownDangerousCubes [0].transform.position;
-//
-//			direction = Quaternion.Euler (new Vector3 (0, Mathf.Sign (Random.Range (-1, 1f)) * 90f, 0)) * direction;
-//			direction.Normalize ();
-//
-//			Vector3 random = new Vector3 ();
-//			random.x = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-//			random.z = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-//
-//			AIScript.movement = direction;
-//
-//			direction.Normalize ();
-//
-//			AIScript.StartCoroutine ("Dash");
-//		}
+		AIScript.StartCoroutine ("Dash");
 	}
 }

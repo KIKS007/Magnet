@@ -5,10 +5,10 @@ using DG.Tweening;
 
 public class AIMovement_Temporize : AIComponent 
 {
-	/*private LayerMask walls = 1 << 8;
+	public bool temporizeEnabled = true;
 
+	private LayerMask walls = 1 << 8;
 	private int sign;
-
 	private Vector2 movementDuration = new Vector2 (0.5f, 2);
 
 	protected override void OnEnable ()
@@ -16,17 +16,23 @@ public class AIMovement_Temporize : AIComponent
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
+		if (!temporizeEnabled)
+			return;
+
 		base.OnEnable ();
 
 		sign = (int)Mathf.Sign (Random.Range (-1f, 1f));
 
-		DOVirtual.DelayedCall (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()).SetId ("Sign" + gameObject.GetInstanceID ()).SetUpdate (false);
+		StartCoroutine (Delay (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()));
 	}
 
-	void Update ()
+	protected override void Update ()
 	{
 		//return;
 
+		if (!temporizeEnabled)
+			return;
+		
 		if (!AIScript.movementLayerEnabled)
 			return;
 		
@@ -46,12 +52,17 @@ public class AIMovement_Temporize : AIComponent
 
 	void ToggleSign ()
 	{
-		DOTween.Kill ("Sign" + gameObject.GetInstanceID ());
-
-		DOVirtual.DelayedCall (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()).SetId ("Sign" + gameObject.GetInstanceID ());
-
 		sign = -sign;
-	}*/
+
+		StartCoroutine (Delay (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()));
+	}
+
+	IEnumerator Delay (float delay, System.Action action)
+	{
+		yield return new WaitForSecondsRealtime (delay);
+
+		action ();
+	}
 
 	protected override void OnDisable ()
 	{

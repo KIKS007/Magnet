@@ -25,17 +25,24 @@ public class AIDash_Towards : AIComponent
 
 		base.Enable ();
 
+		StartCoroutine (Delay ());
+	}
+
+	IEnumerator Delay ()
+	{
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
 		if (Random.Range (0, 100) > towardsChances [(int)AIScript.aiLevel])
-			return;
+			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
-			return;
+			yield break;
 
 		if (AIScript.cubeTarget != null && AIScript.playerTarget != null)
-			return;
+			yield break;
 
 		if (AIScript.cubeTarget == null && AIScript.playerTarget == null)
-			return;
+			yield break;
 
 		AIScript.dashState = DashState.Dashing;
 
@@ -48,6 +55,6 @@ public class AIDash_Towards : AIComponent
 
 		AIScript.movement.Normalize ();
 
-		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
+		AIScript.StartCoroutine ("Dash");
 	}
 }

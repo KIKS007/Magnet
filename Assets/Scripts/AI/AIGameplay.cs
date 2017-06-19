@@ -10,6 +10,7 @@ public class AIGameplay : PlayersGameplay
 	[Header ("AI")]
 	public AILevel aiLevel;
 	public LayerMask playerLayer = 1 << 12;
+	public GameObject[] aiZones = new GameObject[3];
 
 	[Header ("AI Elements")]
 	public List<GameObject> closerPlayers = new List<GameObject> ();
@@ -46,7 +47,20 @@ public class AIGameplay : PlayersGameplay
 
 		SetupDelays ();
 
+		SetupZones ();
+
 		aiAnimator = GetComponent<Animator> ();
+	}
+
+	void SetupZones ()
+	{
+		for (int i = 0; i < aiZones.Length; i++)
+		{
+			if (i != (int)aiLevel)
+				aiZones [i].SetActive (false);
+			else
+				aiZones [i].SetActive (true);
+		}
 	}
 
 	void SetupDelays ()
@@ -58,7 +72,7 @@ public class AIGameplay : PlayersGameplay
 				if(gameObject.GetComponent (c.ToString ()))
 				{
 					AIComponent component = gameObject.GetComponent (c.ToString ()) as AIComponent;
-					component.enableDelay = l.delay;
+					component.enableDelay = l.delays [(int)aiLevel];
 				}
 			}
 		}
@@ -390,6 +404,6 @@ public class AIRandomAngle
 [System.Serializable]
 public class AIComponentsDelay
 {
-	public float delay;
+	public float[] delays = new float[3];
 	public List<AIComponents> components = new List<AIComponents> ();
 }

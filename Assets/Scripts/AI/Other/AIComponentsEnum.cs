@@ -14,5 +14,6 @@ public enum AIComponents
 	AIAimCube,
 	AIShoot,
 	AIAttract,
-	AIRepel
+	AIRepel,
+	AIStuck
 };

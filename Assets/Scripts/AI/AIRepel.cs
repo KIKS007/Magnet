@@ -17,6 +17,17 @@ public class AIRepel : AIComponent
 		AIScript.isRepelling = true;
 	}
 
+	protected override void Update ()
+	{
+		base.Update ();
+
+		if (!AIScript.shootLayerEnabled)
+			return;
+		
+		if(!AIScript.isRepelling)
+			AIScript.isRepelling = true;
+	}
+
 	protected override void OnDisable ()
 	{
 		if (!AIScript.shootLayerEnabled)

@@ -25,14 +25,21 @@ public class AIDash_Hit : AIComponent
 		
 		base.Enable ();
 
+		StartCoroutine (Delay ());
+	}
+
+	IEnumerator Delay ()
+	{
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
 		if (Random.Range (0, 100) > hitChances [(int)AIScript.aiLevel])
-			return;
+			yield break;
 
 		if (AIScript.closerPlayers.Count == 0)
-			return;
+			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
-			return;
+			yield break;
 
 		AIScript.dashState = DashState.Dashing;
 
@@ -42,6 +49,6 @@ public class AIDash_Hit : AIComponent
 
 		AIScript.movement.Normalize ();
 
-		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
+		AIScript.StartCoroutine ("Dash");
 	}
 }

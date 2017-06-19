@@ -25,56 +25,32 @@ public class AIDash_Counter : AIComponent
 		
 		base.Enable ();
 
-		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
-			return;
+		StartCoroutine (Delay ());
+	}
 
-		if (AIScript.playerState != PlayerState.Stunned)
-			return;
+	IEnumerator Delay ()
+	{
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
+		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
+			yield break;
+
+		if (AIScript.closerPlayers.Count == 0)
+			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
-			return;
+			yield break;
 
 		AIScript.dashState = DashState.Dashing;
 
 		Vector3 direction = Vector3.zero - transform.position;
 
 		AIScript.movement = direction.normalized;
-			
+
 		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
 
-		DOVirtual.DelayedCall (Random.Range (randomDelay.x, randomDelay.y), ()=> AIScript.StartCoroutine ("Dash")).SetUpdate (false);
-	}
+		AIScript.movement.Normalize ();
 
-	protected override void Update ()
-	{
-		if (!AIScript.dashLayerEnabled)
-			return;
-
-		if (!CanPlay ())
-			return;
-		
-		base.Update ();
-		
-
-//		if(AIScript.playerState == PlayerState.Stunned)
-//		{
-//			if (AIScript.dashState != DashState.CanDash)
-//				return;
-//
-//			AIScript.dashState = DashState.Dashing;
-//
-//			Vector3 direction = Vector3.zero - transform.position;
-//			direction.Normalize ();
-//
-//			Vector3 random = new Vector3 ();
-//			random.x = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-//			random.z = Mathf.Sign (Random.Range (-1, 1)) * Random.Range (0.5f, 1);
-//
-//			AIScript.movement = direction + random;
-//
-//			direction.Normalize ();
-//
-//			AIScript.StartCoroutine ("Dash");
-//		}
+		AIScript.StartCoroutine ("Dash");
 	}
 }

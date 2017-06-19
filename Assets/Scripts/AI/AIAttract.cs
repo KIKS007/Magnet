@@ -17,6 +17,17 @@ public class AIAttract : AIComponent
 		AIScript.isAttracting = true;
 	}
 
+	protected override void Update ()
+	{
+		base.Update ();
+
+		if (!AIScript.shootLayerEnabled)
+			return;
+
+		if(!AIScript.isAttracting)
+			AIScript.isAttracting = true;
+	}
+
 	protected override void OnDisable ()
 	{
 		if (!AIScript.shootLayerEnabled)
