@@ -24,8 +24,6 @@ public class MovableBounce : MovableScript
 
 				else if(gameObject.tag == "ThrownMovable")
 				{
-					ToNeutralColor ();
-
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
 				}
@@ -84,16 +82,13 @@ public class MovableBounce : MovableScript
 			if(canPlaySound)
 				StartCoroutine(HitSound ());
 
-			if(currentVelocity > limitVelocity)
-				StartCoroutine (DeadlyTransition ());
+			DeadlyTransition ();
 		}
 	}
 
-	IEnumerator DeadlyTransition ()
+	void DeadlyTransition ()
 	{
-		ToDeadlyColor (0.15f);
-
-		yield return new WaitForSecondsRealtime (0);
+		ToDeadlyColor (0.1f);
 
 		tag = "DeadCube";
 	}

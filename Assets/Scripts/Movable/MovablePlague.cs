@@ -64,7 +64,8 @@ public class MovablePlague : MovableScript
 	{
 		cubeColor = CubeColor.Neutral;
 
-		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
+		if(GetComponent<PlayersDeadCube> () == null)
+			GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
 
 		tag = "Untagged";
 

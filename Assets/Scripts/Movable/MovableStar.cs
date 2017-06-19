@@ -114,8 +114,7 @@ public class MovableStar : MovableScript
 			if(canPlaySound)
 				StartCoroutine(HitSound ());
 
-			if(currentVelocity > limitVelocity)
-				StartCoroutine (DeadlyTransition ());
+			DeadlyTransition ();
 		}
 	}
 
@@ -169,11 +168,9 @@ public class MovableStar : MovableScript
 		cubeColor = CubeColor.Deadly;
 	}
 
-	IEnumerator DeadlyTransition ()
+	void DeadlyTransition ()
 	{
-		ToDeadlyColor (0.15f);
-
-		yield return new WaitForSeconds (0.01f);
+		ToDeadlyColor (0.1f);
 
 		tag = "DeadCube";
 	}

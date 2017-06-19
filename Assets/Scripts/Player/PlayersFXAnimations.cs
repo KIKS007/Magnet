@@ -63,7 +63,7 @@ public class PlayersFXAnimations : MonoBehaviour
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
-		playerColor = GetComponent <Renderer> ().material.color;
+		playerColor = GlobalVariables.Instance.playersColors [(int)playerScript.playerName];
 
 		playerScript.OnShoot += ShootFX;
 		playerScript.OnDashAvailable += DashAvailableFX;
