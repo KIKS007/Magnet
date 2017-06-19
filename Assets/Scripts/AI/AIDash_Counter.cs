@@ -35,9 +35,6 @@ public class AIDash_Counter : AIComponent
 		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
 			yield break;
 
-		if (AIScript.closerPlayers.Count == 0)
-			yield break;
-
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
 

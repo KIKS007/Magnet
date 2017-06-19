@@ -35,7 +35,7 @@ public class AIDash_Dodge : AIComponent
 		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
 			yield break;
 
-		if (AIScript.closerPlayers.Count == 0)
+		if (AIScript.thrownDangerousCubes.Count == 0)
 			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)

@@ -50,6 +50,9 @@ public class AIGameplay : PlayersGameplay
 		SetupZones ();
 
 		aiAnimator = GetComponent<Animator> ();
+
+		if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains (gameObject))
+			GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (gameObject);
 	}
 
 	void SetupZones ()

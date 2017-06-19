@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AIMovement_TowardsPlayer : AIMovement_Towards 
 {
+	private int randomPlayers = 2;
+
 	protected override void OnEnable ()
 	{
 		AIScript.cubeTarget = null;
@@ -27,7 +29,10 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 		if (AIScript.closerPlayers.Count == 0)
 			return;
 
-		AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
+		if(AIScript.closerPlayers.Count >= randomPlayers)
+			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+		else
+			AIScript.playerTarget = target = AIScript.closerPlayers [0].transform;
 	}
 
 	protected override void Update ()
@@ -41,7 +46,12 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 		base.Update ();
 		
 		if(target == null || target.tag != "Player")
-			AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, 2)].transform;
+		{
+			if(AIScript.closerPlayers.Count >= randomPlayers)
+				AIScript.playerTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+			else
+				AIScript.playerTarget = target = AIScript.closerPlayers [0].transform;
+		}
 	}
 
 	protected override void OnDisable ()
