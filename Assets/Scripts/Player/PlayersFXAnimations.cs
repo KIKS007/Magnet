@@ -74,6 +74,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnSafe += () => StartCoroutine (SafeFX ());
 
 		SetupMaterials ();
+
+		Setup ();
 	}
 
 	protected virtual void Setup ()

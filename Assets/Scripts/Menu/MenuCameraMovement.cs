@@ -206,11 +206,6 @@ public class MenuCameraMovement : MonoBehaviour
 		DOTween.To (()=> browianMotion.positionFrequency, x=> browianMotion.positionFrequency =x, 0, newMovementDuration);
 	}
 
-	Vector3 ModeRelativePosition (Vector3 position)
-	{
-		return position + GlobalVariables.Instance.currentModePosition;
-	}
-
 	[ContextMenu ("Menu Position")]
 	public void EditorMenuPosition ()
 	{

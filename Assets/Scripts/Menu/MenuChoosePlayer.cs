@@ -25,9 +25,11 @@ public class MenuChoosePlayer : MonoBehaviour
 	public RectTransform playButton; 
 	public Vector2 playButtonYPos; 
 
+	private List<List<Button>> aiButtons = new List<List<Button>> ();
 	private float controllersOnPosition;
 	private float[] playersLogosInitialPos = new float[4];
 	private bool[] hasJoined = new bool[5];
+	public bool[] aiHasJoined = new bool[4];
 	private float playerChangeMovement;
 	private bool noInput = false;
 
@@ -41,6 +43,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		controllersOnPosition = controllers [0].anchoredPosition.y;
 		playerChangeMovement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
+
+		SetupAIButtons ();
 
 		for (int i = 0; i < playersLogos.Length; i++)
 			playersLogosInitialPos [i] = playersLogos [i].anchoredPosition.x;
@@ -93,7 +97,36 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		CheckCanPlay ();
 	}
-	
+
+	void SetupAIButtons ()
+	{
+		aiButtons.Clear ();
+
+		foreach(RectTransform t in playersLogos)
+		{
+			aiButtons.Add (new List<Button> ());
+
+			foreach(Transform child in t.GetChild (1))
+				aiButtons [aiButtons.Count - 1].Add (child.GetComponent<Button> ());
+		}
+
+		for(int listIndex = 0; listIndex < aiButtons.Count; listIndex++)
+		{
+			for(int i = 0; i < aiButtons [listIndex].Count; i++)
+			{
+				aiButtons [listIndex] [i].gameObject.SetActive (i == 0);
+
+				int player = listIndex;
+				int level = i;
+
+				if(i == 3)
+					aiButtons [listIndex] [i].onClick.AddListener (()=> AILeave (player));
+				else
+					aiButtons [listIndex] [i].onClick.AddListener (()=> AIJoin (player, level));
+			}
+		}
+	}
+
 	// Update is called once per frame
 	void Update () 
 	{
@@ -128,6 +161,14 @@ public class MenuChoosePlayer : MonoBehaviour
 		UpdatePlayersControllers ();
 		GlobalVariables.Instance.UpdateGamepadList ();
 		CheckCanPlay ();
+
+		int botsCount = 0;
+
+		foreach (var b in aiHasJoined)
+			if (b)
+				botsCount++;
+
+		GlobalVariables.Instance.NumberOfBots = botsCount;
 
 		if (OnControllerChange != null) 
 			OnControllerChange (); 
@@ -236,6 +277,24 @@ public class MenuChoosePlayer : MonoBehaviour
 //			playersLogos [controller - 1].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
 	}
 
+	void AIJoin (int player, int level)
+	{
+		aiHasJoined [player] = true;
+
+		if (hasJoined [0])
+			Leave ((int)player);
+		else
+			Leave ((int)player + 1);
+	}
+
+	void AILeave (int player)
+	{
+		aiHasJoined [player] = false;
+
+		for (int i = 0; i < aiButtons [player].Count; i++)
+			aiButtons [player] [i].gameObject.SetActive (i == 0);
+	}
+
 	public void ToggleJoinLeave (int controller)
 	{
 		if (noInput)
@@ -254,6 +313,11 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		UpdateSettings ();
 		PunchPlayersScale (controller);
+
+		if (hasJoined [0])
+			AILeave (controller);
+		else
+			AILeave (controller - 1);
 	}
 
 	void Leave (int controller)

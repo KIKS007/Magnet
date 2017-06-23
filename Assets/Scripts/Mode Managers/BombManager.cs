@@ -166,7 +166,7 @@ public class BombManager : LastManManager
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 		timerText.fontSize = 0;
 
-		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
+		Vector3 bombPosition =  Vector3.zero;
 		bombPosition.y = 2;
 
 		if(!Physics.CheckSphere(bombPosition, 5f, GlobalMethods.Instance.gameplayLayer))

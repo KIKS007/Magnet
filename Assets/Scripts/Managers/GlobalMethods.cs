@@ -49,8 +49,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		xLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
 		zLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
 
-		xLimits.x = GlobalVariables.Instance.currentModePosition.x - (xLimits.y - GlobalVariables.Instance.currentModePosition.x);
-		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
+		xLimits.x = -xLimits.y;
+		zLimits.x = -zLimits.y;
 	}
 
 	public void SpawnDeathText (PlayerName playerName, GameObject player, int count)

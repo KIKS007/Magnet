@@ -33,7 +33,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Modes")]
 	public WhichMode firstSceneToLoad;
 	public WhichMode CurrentModeLoaded;
-	public Vector3 currentModePosition;
 	public List<WhichMode> lastPlayedModes = new List<WhichMode>();
 	public List<WhichMode> selectedCocktailModes = new List<WhichMode>();
 	public List<WhichMode> currentCocktailModes = new List<WhichMode>();
@@ -63,12 +62,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 	public List<GameObject> AlivePlayersList = new List<GameObject>();
 
+	[Header ("AI Prefab")]
+	public List<AIPrefab> aiPrefabs = new List<AIPrefab> ();
+
 	[Header ("Players Count")]
 	public int NumberOfPlayers;
 	public int NumberOfDisabledPlayers;
 	public int NumberOfAlivePlayers;
 	public int NumberOfDeadPlayers;
-	
+	public int NumberOfBots;
+
 	[Header ("Players Colors")]
 	public Color[] playersColors = new Color[5];
 	public Material[] playersMaterials = new Material[4];
@@ -263,8 +266,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void SetModePosition ()
 	{
-		currentModePosition = GameObject.FindGameObjectWithTag ("ModeParent").transform.position;
-
 		GlobalMethods.Instance.SetLimits ();
 	}
 
@@ -506,4 +507,11 @@ public class PlayerGamepad
 {
 	public PlayerName PlayerName;
 	public bool GamepadIsPlugged = false;
+}
+
+[System.Serializable]
+public class AIPrefab
+{
+	public WhichMode mode;
+	public GameObject prefab;
 }
