@@ -45,6 +45,13 @@ public class AIGameplay : PlayersGameplay
 	{
 		base.Start ();
 
+		Setup (playerName);
+	}
+
+	public void Setup (PlayerName playerName)
+	{
+		this.playerName = playerName;
+
 		SetupDelays ();
 
 		SetupZones ();
@@ -53,6 +60,8 @@ public class AIGameplay : PlayersGameplay
 
 		if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains (gameObject))
 			GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (gameObject);
+
+		GetComponent<AIFXAnimations> ().AISetup ();
 	}
 
 	void SetupZones ()

@@ -71,6 +71,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	
 	[Header ("Players Colors")]
 	public Color[] playersColors = new Color[5];
+	public Material[] playersMaterials = new Material[4];
 	[PropertyOrder (-1)]
 	[Button] 
 	void UpdateAllColors ()

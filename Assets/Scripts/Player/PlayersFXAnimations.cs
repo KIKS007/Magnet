@@ -64,9 +64,6 @@ public class PlayersFXAnimations : MonoBehaviour
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
-		playerColor = GlobalVariables.Instance.playersColors [(int)playerScript.playerName];
-
-		SetupMaterials ();
 
 		playerScript.OnShoot += ShootFX;
 		playerScript.OnDashAvailable += DashAvailableFX;
@@ -75,6 +72,15 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnDash += EnableDashFX;
 		playerScript.OnDeath += RemoveAttractionRepulsionFX;
 		playerScript.OnSafe += () => StartCoroutine (SafeFX ());
+
+		SetupMaterials ();
+	}
+
+	protected virtual void Setup ()
+	{
+		playerColor = GlobalVariables.Instance.playersColors [(int)playerScript.playerName];
+
+		SetupMaterials ();
 
 		playerName = playerScript.playerName;
 		playerNumber = (int)playerScript.playerName;
