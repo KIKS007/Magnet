@@ -209,13 +209,9 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual IEnumerator Startup ()
 	{
-		Debug.Log ("Bite : " + name);
-
 		playerState = PlayerState.Startup;
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
-
-		Debug.Log ("Bite : " + controllerNumber + " : " + this.GetType () != typeof (AIGameplay));
 
 		if (controllerNumber == -1 && this.GetType () != typeof (AIGameplay))
 			yield break;
@@ -325,43 +321,43 @@ public class PlayersGameplay : MonoBehaviour
     {
 		if (rewiredPlayer == null)
 			return;
+
+		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerState == PlayerState.Startup)
+			return;
+
+		//Movement
+		if (dashState != DashState.Dashing)
+		{
+			float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
+			playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
+		}
 		
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
-        {
-			//Movement
-            if (dashState != DashState.Dashing)
-			{
-				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
-				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-			}
-
-			//Hold Movable
-			if (holdState == HoldState.Holding)
-            {
-                holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-                holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
-
-                if (OnHolding != null)
-                    OnHolding();
-            }
-
-			//Gravity
-            playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
-
-			//Attraction
-            if (cubesAttracted.Count > 0)
-            {
-                for (int i = 0; i < cubesAttracted.Count; i++)
-                    Attraction(cubesAttracted[i]);
-            }
-
-			//Repulse
-            if (cubesRepulsed.Count > 0)
-            {
-                for (int i = 0; i < cubesRepulsed.Count; i++)
-                    Repulsion(cubesRepulsed[i]);
-            }
-        }
+		//Hold Movable
+		if (holdState == HoldState.Holding)
+		{
+			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+			
+			if (OnHolding != null)
+				OnHolding();
+		}
+		
+		//Gravity
+		playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
+		
+		//Attraction
+		if (cubesAttracted.Count > 0)
+		{
+			for (int i = 0; i < cubesAttracted.Count; i++)
+				Attraction(cubesAttracted[i]);
+		}
+		
+		//Repulse
+		if (cubesRepulsed.Count > 0)
+		{
+			for (int i = 0; i < cubesRepulsed.Count; i++)
+				Repulsion(cubesRepulsed[i]);
+		}
     }
 	#endregion
 
@@ -454,6 +450,9 @@ public class PlayersGameplay : MonoBehaviour
 
     public virtual void OnHoldMovable(GameObject movable)
     {
+		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || holdState == HoldState.CannotHold)
+			return;
+
 		gettingMovable = true;
         
 		holdState = HoldState.Holding;
@@ -614,6 +613,9 @@ public class PlayersGameplay : MonoBehaviour
 	#region Stun
     public virtual void StunVoid(bool cubeHit)
     {
+		if (playerState == PlayerState.Stunned)
+			return;
+
         StartCoroutine(Stun(cubeHit));
     }
 
@@ -742,7 +744,10 @@ public class PlayersGameplay : MonoBehaviour
 			holdMovableTransform.tag = "Movable";
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
-			movableScript.AddRigidbody();
+
+			if(movableScript.rigidbodyMovable == null)
+				movableScript.AddRigidbody();
+
 			movableScript.OnRelease();	
 		}
 
@@ -753,7 +758,7 @@ public class PlayersGameplay : MonoBehaviour
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
 	}
 
-	void PlayerStats (PlayersGameplay playerThatHit = null)
+	protected virtual void PlayerStats (PlayersGameplay playerThatHit = null)
 	{
 		if (playerThatHit == null)
 			return;

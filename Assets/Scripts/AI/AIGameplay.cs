@@ -61,6 +61,8 @@ public class AIGameplay : PlayersGameplay
 		this.playerName = playerName;
 		aiLevel = level;
 
+		name += " " + ((int)playerName + 1).ToString ();
+
 		SetupDelays ();
 
 		SetupZones ();
@@ -167,6 +169,8 @@ public class AIGameplay : PlayersGameplay
 
 		closerPlayers = closerPlayers.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
 
+		closerPlayers.Remove (gameObject);
+
 		closerCubes.Clear ();
 
 		foreach (GameObject g in GlobalVariables.Instance.AllMovables)
@@ -233,8 +237,11 @@ public class AIGameplay : PlayersGameplay
 		aiAnimator.SetInteger ("attractedCubes", cubesAttracted.Count);
 		aiAnimator.SetInteger ("repulsedCubes", cubesRepulsed.Count);
 
-		aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
-		aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
+		if(closerPlayers.Count > 0)
+			aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
+		
+		if(closerCubes.Count > 0)
+			aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
 
 		aiAnimator.SetFloat ("distanceFromCenter", Vector3.Distance (Vector3.zero, transform.position));
 
@@ -343,6 +350,8 @@ public class AIGameplay : PlayersGameplay
 
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
+
+		PlayerStats (playerThatHit);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{

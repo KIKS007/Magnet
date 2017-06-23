@@ -177,14 +177,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GetPlayers ();
 		SetModeLimits ();
 		GetMovables ();
+		CreateAIs ();
 
 		if (levelLoaded != WhichMode.Tutorial)
 			lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
 
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
-
-		CreateAIs ();
 	}
 
 	public void LevelWasUnloaded (GameStateEnum gameState)

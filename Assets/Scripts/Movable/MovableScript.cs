@@ -397,7 +397,9 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void AddRigidbody ()
 	{
-		rigidbodyMovable = gameObject.AddComponent<Rigidbody>();
+		if (rigidbodyMovable == null)
+			rigidbodyMovable = gameObject.AddComponent<Rigidbody>();
+		
 		rigidbodyMovable.mass = massRb;
 		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
 		rigidbodyMovable.drag = drag;
