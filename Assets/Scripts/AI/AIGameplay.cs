@@ -41,16 +41,25 @@ public class AIGameplay : PlayersGameplay
 	[HideInInspector]
 	public Animator aiAnimator;
 
+	protected override void Awake ()
+	{
+		controllerNumber = -2;
+		base.Awake ();
+	}
+
 	protected override void Start ()
 	{
 		base.Start ();
 
-		Setup (playerName);
+		//Setup (playerName, aiLevel);
+
+		GlobalVariables.Instance.ListPlayers ();
 	}
 
-	public void Setup (PlayerName playerName)
+	public void Setup (PlayerName playerName, AILevel level)
 	{
 		this.playerName = playerName;
+		aiLevel = level;
 
 		SetupDelays ();
 

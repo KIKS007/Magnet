@@ -62,12 +62,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<GameObject> EnabledPlayersList = new List<GameObject>();
 	public List<GameObject> AlivePlayersList = new List<GameObject>();
 
-	[Header ("AI Prefab")]
+	[Header ("AI")]
+	public bool[] aiEnabled = new bool[4];
+	public AILevel[] aiLevels = new AILevel[4];
 	public List<AIPrefab> aiPrefabs = new List<AIPrefab> ();
 
 	[Header ("Players Count")]
 	public int NumberOfPlayers;
-	public int NumberOfDisabledPlayers;
 	public int NumberOfAlivePlayers;
 	public int NumberOfDeadPlayers;
 	public int NumberOfBots;
@@ -174,7 +175,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public void LevelWasLoaded (WhichMode levelLoaded, GameStateEnum gameState)
 	{
 		GetPlayers ();
-		SetModePosition ();
+		SetModeLimits ();
 		GetMovables ();
 
 		if (levelLoaded != WhichMode.Tutorial)
@@ -182,6 +183,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		CurrentModeLoaded = levelLoaded;
 		GameState = gameState;
+
+		CreateAIs ();
 	}
 
 	public void LevelWasUnloaded (GameStateEnum gameState)
@@ -264,7 +267,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		ListPlayers ();
 	}
 
-	void SetModePosition ()
+	void SetModeLimits ()
 	{
 		GlobalMethods.Instance.SetLimits ();
 	}
@@ -307,16 +310,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		
 		for(int i = 0; i < Players.Length; i++)
 		{
-			if (PlayersControllerNumber [i] != -1 && !EnabledPlayersList.Contains (Players [i]))
+			if (Players [i] == null)
+				continue;
+
+			if (Players [i].GetComponent<PlayersGameplay> ().controllerNumber != -1 && !EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Add (Players [i]);
 			
-			if (PlayersControllerNumber[i] == -1 && EnabledPlayersList.Contains (Players [i]))
+			if (Players [i].GetComponent<PlayersGameplay> ().controllerNumber == -1 && EnabledPlayersList.Contains (Players [i]))
 				EnabledPlayersList.Remove (Players [i]);
 		}
 
 		NumberOfPlayers = EnabledPlayersList.Count;
-		NumberOfDisabledPlayers = 4 - NumberOfPlayers;
-
 
 		//ALIVE PLAYERS
 		AlivePlayersList.Clear ();
@@ -332,6 +336,32 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (OnPlayerListed != null)
 			OnPlayerListed ();
+	}
+
+	public void CreateAIs ()
+	{
+		GameObject aiPrefab = aiPrefabs [0].prefab;
+
+		foreach(AIPrefab a in aiPrefabs)
+			if(a.mode == CurrentModeLoaded)
+			{
+				aiPrefab = a.prefab;
+				break;
+			}
+
+		for(int i = 0; i < aiEnabled.Length; i++)
+		{
+			if(aiEnabled [i])
+			{
+				GameObject aiClone = Instantiate (aiPrefab, Players [i].transform.position, Players [i].transform.rotation) as GameObject;
+
+				SceneManager.MoveGameObjectToScene (aiClone, SceneManager.GetSceneAt (1));
+
+				aiClone.GetComponent<AIGameplay> ().Setup ((PlayerName)i, aiLevels [i]);
+
+				Players [i] = aiClone;
+			}
+		}
 	}
 
 	void UpdatePlayedModes ()
@@ -389,6 +419,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 				continue;
 
 			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
+
+			if (script.GetType () == typeof(AIGameplay))
+				continue;
 
 			//Unplugged
 			if(script.controllerNumber != 0 && script.controllerNumber != -1)

@@ -162,13 +162,7 @@ public class MenuChoosePlayer : MonoBehaviour
 		GlobalVariables.Instance.UpdateGamepadList ();
 		CheckCanPlay ();
 
-		int botsCount = 0;
-
-		foreach (var b in aiHasJoined)
-			if (b)
-				botsCount++;
-
-		GlobalVariables.Instance.NumberOfBots = botsCount;
+		UpdateBotsCount ();
 
 		if (OnControllerChange != null) 
 			OnControllerChange (); 
@@ -209,11 +203,9 @@ public class MenuChoosePlayer : MonoBehaviour
 					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = -1;
 		}
 
-		//Debug.Log (ReInput.controllers.GetControllerCount (ControllerType.Joystick));
-
-		//Allow to play Alone and choose any character 
+		/*//Allow to play Alone and choose any character 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 
-			GlobalVariables.Instance.PlayersControllerNumber[1] = 1; 
+			GlobalVariables.Instance.PlayersControllerNumber[1] = 1; */
 	}
 
 	void ChangePlayersPosition ()
@@ -246,6 +238,8 @@ public class MenuChoosePlayer : MonoBehaviour
 		for (int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
 			if (GlobalVariables.Instance.PlayersControllerNumber [i] != -1)
 				playersCount++;
+
+		playersCount += GlobalVariables.Instance.NumberOfBots;
 
 		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
@@ -280,19 +274,40 @@ public class MenuChoosePlayer : MonoBehaviour
 	void AIJoin (int player, int level)
 	{
 		aiHasJoined [player] = true;
+		GlobalVariables.Instance.aiEnabled [player] = true;
+		GlobalVariables.Instance.aiLevels [player] = (AILevel)level;
 
 		if (hasJoined [0])
 			Leave ((int)player);
 		else
 			Leave ((int)player + 1);
+
+		UpdateBotsCount ();
+		UpdateSettings ();
 	}
 
 	void AILeave (int player)
 	{
 		aiHasJoined [player] = false;
+		GlobalVariables.Instance.aiEnabled [player] = false;
 
 		for (int i = 0; i < aiButtons [player].Count; i++)
 			aiButtons [player] [i].gameObject.SetActive (i == 0);
+
+		UpdateBotsCount ();
+		UpdateSettings ();
+	}
+
+	void UpdateBotsCount ()
+	{
+		int botsCount = 0;
+
+		foreach (var b in aiHasJoined)
+			if (b)
+				botsCount++;
+
+		GlobalVariables.Instance.NumberOfBots = botsCount;
+
 	}
 
 	public void ToggleJoinLeave (int controller)

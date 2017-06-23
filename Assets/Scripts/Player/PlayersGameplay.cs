@@ -209,11 +209,15 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual IEnumerator Startup ()
 	{
+		Debug.Log ("Bite : " + name);
+
 		playerState = PlayerState.Startup;
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		if (controllerNumber == -1)
+		Debug.Log ("Bite : " + controllerNumber + " : " + this.GetType () != typeof (AIGameplay));
+
+		if (controllerNumber == -1 && this.GetType () != typeof (AIGameplay))
 			yield break;
 		
 		switch (GlobalVariables.Instance.Startup)
@@ -762,7 +766,7 @@ public class PlayersGameplay : MonoBehaviour
 		
     protected virtual void OnDestroy()
     {
-        if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
+        if (controllerNumber > 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration(controllerNumber);
     }
 
