@@ -367,6 +367,8 @@ public class AIGameplay : PlayersGameplay
 
 		holdState = HoldState.CannotHold;
 
+		RemoveFromAIObjectives ();
+
 		gameObject.SetActive(false);
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
@@ -389,7 +391,8 @@ public class AIGameplay : PlayersGameplay
 			{
 				playersHit.Add(other.gameObject);
 				playerScript.StunVoid(false);
-				
+				playerScript.playerThatHit = this;
+
 				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
 				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
 			}
@@ -413,10 +416,19 @@ public class AIGameplay : PlayersGameplay
 			{
 				playersHit.Add(other.gameObject);
 				playerScript.StunVoid(false);
+				playerScript.playerThatHit = this;
 
 				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
 				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
 			}
+		}
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+		{
+			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+
+			if (script != null && script.playerThatThrew != null)
+				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
 		}
 	}
 

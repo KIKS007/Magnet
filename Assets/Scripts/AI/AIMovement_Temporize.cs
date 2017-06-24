@@ -42,7 +42,7 @@ public class AIMovement_Temporize : AIComponent
 		Vector3 direction = (Vector3.zero - transform.position).normalized;
 		direction = Quaternion.Euler (new Vector3 (0, sign * 90f, 0)) * direction;
 
-		Debug.DrawRay (transform.position, direction * 10000f, Color.cyan);
+		//Debug.DrawRay (transform.position, direction * 10000f, Color.cyan);
 
 		if (Physics.Raycast (transform.position, direction, 6f, walls))
 			ToggleSign ();

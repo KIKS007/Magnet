@@ -317,6 +317,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		EnableGameObject (clone, newPos);
 		ScaleGameObect (clone, tagTemp, movableScale, scaleDuration);
+
+		GlobalVariables.Instance.AllMovables.Add (clone);
 	}
 
 	void EnableGameObject (GameObject target, Vector3 position)

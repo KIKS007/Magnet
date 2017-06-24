@@ -32,6 +32,8 @@ public class MenuChoosePlayer : MonoBehaviour
 	public bool[] aiHasJoined = new bool[4];
 	private float playerChangeMovement;
 	private bool noInput = false;
+	private bool canPlay = false;
+	private Button playButtonComponent;
 
 	public event EventHandler OnControllerChange; 
 
@@ -40,6 +42,8 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId, true);
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
+
+		playButtonComponent = playButton.GetComponent<Button> ();
 
 		controllersOnPosition = controllers [0].anchoredPosition.y;
 		playerChangeMovement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
@@ -75,6 +79,8 @@ public class MenuChoosePlayer : MonoBehaviour
 			else
 				GamepadOff (i);
 		}
+
+		CheckCanPlay ();
 	}
 
 	void OnEnable ()
@@ -132,6 +138,9 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput)
 			CheckInput ();
+
+		if (!canPlay && playButtonComponent.interactable || MenuManager.Instance.isTweening)
+			playButtonComponent.interactable = false;
 	}
 
 	void CheckInput ()
@@ -243,6 +252,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
+			canPlay = true;
+
 			DOTween.Kill ("PlayButton");
 
 			playButton.gameObject.SetActive (true);
@@ -254,6 +265,8 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
+			canPlay = false;
+
 			DOTween.Kill ("PlayButton");
 
 			playButton.GetComponent<Button> ().interactable = false; 

@@ -753,9 +753,26 @@ public class PlayersGameplay : MonoBehaviour
 
 		holdState = HoldState.CannotHold;
 
+		RemoveFromAIObjectives ();
+
 		gameObject.SetActive(false);
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+	}
+
+	protected virtual void RemoveFromAIObjectives ()
+	{
+		foreach(var player in GlobalVariables.Instance.Players)
+		{
+			if (player == gameObject)
+				return;
+
+			if (player.GetComponent<AIGameplay> () == null)
+				return;
+
+			if (player.GetComponent<AIGameplay> ().objectives.Contains (gameObject))
+				player.GetComponent<AIGameplay> ().objectives.Remove (gameObject);
+		}
 	}
 
 	protected virtual void PlayerStats (PlayersGameplay playerThatHit = null)
