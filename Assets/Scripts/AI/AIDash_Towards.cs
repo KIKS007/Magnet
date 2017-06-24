@@ -33,6 +33,8 @@ public class AIDash_Towards : AIComponent
 		if (Random.Range (0, 101) > towardsChances [(int)AIScript.aiLevel])
 			yield break;
 
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
 
@@ -41,8 +43,6 @@ public class AIDash_Towards : AIComponent
 
 		if (AIScript.holdTarget == null && AIScript.shootTarget == null)
 			yield break;
-		
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 

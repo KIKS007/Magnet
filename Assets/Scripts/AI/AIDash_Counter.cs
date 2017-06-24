@@ -33,10 +33,10 @@ public class AIDash_Counter : AIComponent
 		if (Random.Range (0, 101) > counterChances [(int)AIScript.aiLevel])
 			yield break;
 
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+		
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
-		
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 

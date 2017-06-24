@@ -33,13 +33,13 @@ public class AIDash_Hit : AIComponent
 		if (Random.Range (0, 101) > hitChances [(int)AIScript.aiLevel])
 			yield break;
 
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
 		if (AIScript.closerPlayers.Count == 0)
 			yield break;
-
+		
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
-
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 

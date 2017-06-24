@@ -251,8 +251,10 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public void PlayerSuicides (PlayersGameplay player)
 	{
-		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
+		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Death.ToString ()]++;
+		totalStats [WhichStat.Death.ToString ()]++;
 
+		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
 		totalStats [WhichStat.Suicides.ToString ()]++;
 	}
 

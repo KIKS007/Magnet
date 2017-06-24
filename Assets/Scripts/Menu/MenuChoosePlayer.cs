@@ -295,6 +295,9 @@ public class MenuChoosePlayer : MonoBehaviour
 		else
 			Leave ((int)player + 1);
 
+		if (player == 0 && hasJoined [1])
+			Leave (1);
+
 		UpdateBotsCount ();
 		UpdateSettings ();
 	}
@@ -346,6 +349,9 @@ public class MenuChoosePlayer : MonoBehaviour
 			AILeave (controller);
 		else
 			AILeave (controller - 1);
+
+		if(controller == 0 && aiHasJoined [1] && hasJoined [1])
+			AILeave (1);
 	}
 
 	void Leave (int controller)

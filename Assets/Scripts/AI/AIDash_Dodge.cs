@@ -33,14 +33,14 @@ public class AIDash_Dodge : AIComponent
 		if (Random.Range (0, 101) > dodgeChances [(int)AIScript.aiLevel])
 			yield break;
 
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+		
 		if (AIScript.thrownDangerousCubes.Count == 0)
 			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
 		
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-
 		AIScript.dashState = DashState.Dashing;
 
 		Vector3 direction = transform.position - AIScript.thrownDangerousCubes [0].transform.position;
