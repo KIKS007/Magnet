@@ -270,6 +270,9 @@ public class PlayersTutorial : PlayersGameplay
 
 		FindObjectOfType<TutorialManager> () .PlayerDeath (playerName, gameObject);
 
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
+		
 //		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
 	}
 }

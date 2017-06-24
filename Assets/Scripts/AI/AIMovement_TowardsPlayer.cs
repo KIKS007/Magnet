@@ -30,9 +30,18 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 			return;
 
 		if(AIScript.closerPlayers.Count >= randomPlayers)
-			AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+		{
+			do
+			{
+				AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+			}
+			while(!AIScript.shootTarget.gameObject.activeSelf);
+		}
 		else
-			AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
+		{
+			if(AIScript.closerPlayers [0].activeSelf)
+				AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
+		}
 	}
 
 	protected override void Update ()
@@ -44,13 +53,31 @@ public class AIMovement_TowardsPlayer : AIMovement_Towards
 			return;
 		
 		base.Update ();
-		
+
+		if(AIScript.shootTarget != null && !AIScript.shootTarget.gameObject.activeSelf)
+		{
+			AIScript.shootTarget = null;
+			target = null;
+		}
+
+		if (AIScript.closerPlayers.Count == 0)
+			return;
+
 		if(target == null || target.tag != "Player")
 		{
 			if(AIScript.closerPlayers.Count >= randomPlayers)
-				AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+			{
+				do
+				{
+					AIScript.shootTarget = target = AIScript.closerPlayers [Random.Range (0, randomPlayers)].transform;
+				}
+				while(!AIScript.shootTarget.gameObject.activeSelf);
+			}
 			else
-				AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
+			{
+				if(AIScript.closerPlayers [0].activeSelf)
+					AIScript.shootTarget = target = AIScript.closerPlayers [0].transform;
+			}
 		}
 	}
 

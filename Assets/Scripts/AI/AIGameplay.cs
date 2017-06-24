@@ -168,7 +168,12 @@ public class AIGameplay : PlayersGameplay
 			return;
 
 		closerPlayers.Clear ();
-		closerPlayers.AddRange (GlobalVariables.Instance.AlivePlayersList);
+
+		foreach (var item in GlobalVariables.Instance.AlivePlayersList) 
+		{
+			if(item.activeSelf)
+				closerPlayers.Add (item);	
+		}
 
 		closerPlayers = closerPlayers.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
 
@@ -177,7 +182,7 @@ public class AIGameplay : PlayersGameplay
 		closerCubes.Clear ();
 
 		foreach (GameObject g in GlobalVariables.Instance.AllMovables)
-			if (g.tag != "DeadCube")
+			if (g.tag != "DeadCube" && g.tag != "Suggestible")
 				closerCubes.Add (g);
 
 		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
@@ -239,6 +244,9 @@ public class AIGameplay : PlayersGameplay
 
 		aiAnimator.SetInteger ("attractedCubes", cubesAttracted.Count);
 		aiAnimator.SetInteger ("repulsedCubes", cubesRepulsed.Count);
+
+		aiAnimator.SetInteger ("closerPlayersCount", closerPlayers.Count);
+		aiAnimator.SetInteger ("closerCubesCount", closerCubes.Count);
 
 		if(closerPlayers.Count > 0)
 			aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
@@ -374,9 +382,9 @@ public class AIGameplay : PlayersGameplay
 
 		holdState = HoldState.CannotHold;
 
-		RemoveFromAIObjectives ();
-
 		gameObject.SetActive(false);
+
+		RemoveFromAIObjectives ();
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
 	}

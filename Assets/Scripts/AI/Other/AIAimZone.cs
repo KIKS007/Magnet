@@ -37,6 +37,12 @@ public class AIAimZone : MonoBehaviour
 			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
 				return;
 
+			if(!collider.gameObject.activeSelf && AIScript.objectives.Contains (collider.gameObject))
+				AIScript.objectives.Remove (collider.gameObject);
+
+			if (!collider.gameObject.activeSelf)
+				return;
+
 			if(!AIScript.objectives.Contains (collider.gameObject))
 				AIScript.objectives.Add (collider.gameObject);
 
