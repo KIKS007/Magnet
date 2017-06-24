@@ -8,7 +8,7 @@ public class AIMovement_Temporize : AIComponent
 	public bool temporizeEnabled = true;
 
 	private LayerMask walls = 1 << 8;
-	private int sign;
+	private int sign = -1;
 	private Vector2 movementDuration = new Vector2 (0.5f, 2);
 
 	protected override void OnEnable ()
@@ -21,7 +21,7 @@ public class AIMovement_Temporize : AIComponent
 
 		base.OnEnable ();
 
-		sign = (int)Mathf.Sign (Random.Range (-1f, 1f));
+		sign = -sign;
 
 		StartCoroutine (Delay (Random.Range (movementDuration.x, movementDuration.y), ()=> ToggleSign ()));
 	}

@@ -30,9 +30,7 @@ public class AIDash_Towards : AIComponent
 
 	IEnumerator Delay ()
 	{
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-
-		if (Random.Range (0, 100) > towardsChances [(int)AIScript.aiLevel])
+		if (Random.Range (0, 101) > towardsChances [(int)AIScript.aiLevel])
 			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
@@ -43,17 +41,19 @@ public class AIDash_Towards : AIComponent
 
 		if (AIScript.holdTarget == null && AIScript.shootTarget == null)
 			yield break;
+		
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 
 		if (AIScript.shootTarget != null)
-			AIScript.movement = (AIScript.shootTarget.position - transform.position).normalized;
+			AIScript.dashMovement = (AIScript.shootTarget.position - transform.position).normalized;
 		else
-			AIScript.movement = (AIScript.holdTarget.position - transform.position).normalized;
+			AIScript.dashMovement = (AIScript.holdTarget.position - transform.position).normalized;
 
-		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
+		AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
 
-		AIScript.movement.Normalize ();
+		AIScript.dashMovement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
 	}

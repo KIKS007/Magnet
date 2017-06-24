@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public enum AILevel { Easy, Normal , Hard};
 
@@ -40,6 +41,8 @@ public class AIGameplay : PlayersGameplay
 
 	[HideInInspector]
 	public Animator aiAnimator;
+	[HideInInspector]
+	public Vector3 dashMovement;
 
 	protected override void Awake ()
 	{
@@ -69,7 +72,7 @@ public class AIGameplay : PlayersGameplay
 
 		aiAnimator = GetComponent<Animator> ();
 
-		if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains (gameObject))
+		if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains (gameObject) && SceneManager.GetActiveScene ().name == "Scene Testing")
 			GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (gameObject);
 
 		GetComponent<AIFXAnimations> ().AISetup ();
@@ -222,7 +225,7 @@ public class AIGameplay : PlayersGameplay
 			return;
 		
 		aiAnimator.SetBool ("canDash", dashState == DashState.CanDash);
-		aiAnimator.SetBool ("isDashing", dashState == DashState.Dashing);
+		aiAnimator.SetBool ("isDashing", dashState != DashState.CanDash);
 
 		aiAnimator.SetBool ("isStunned", playerState == PlayerState.Stunned);
 
@@ -239,9 +242,13 @@ public class AIGameplay : PlayersGameplay
 
 		if(closerPlayers.Count > 0)
 			aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
-		
+		else
+			aiAnimator.SetFloat ("closerPlayerDistance", 666);
+
 		if(closerCubes.Count > 0)
 			aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
+		else
+			aiAnimator.SetFloat ("closerCubeDistance", 666);
 
 		aiAnimator.SetFloat ("distanceFromCenter", Vector3.Distance (Vector3.zero, transform.position));
 
@@ -325,7 +332,7 @@ public class AIGameplay : PlayersGameplay
 
 		OnDashVoid ();
 
-		movement.Normalize ();
+		dashMovement.Normalize ();
 
 		float dashSpeedTemp = dashSpeed;
 		float futureTime = Time.time + dashDuration;
@@ -336,12 +343,12 @@ public class AIGameplay : PlayersGameplay
 		while (Time.time <= futureTime)
 		{
 			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = movement * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1 / Time.timeScale;
+			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1 / Time.timeScale;
 
 			yield return new WaitForFixedUpdate();
 		}
 
-		movement = Vector3.zero;
+		dashMovement = Vector3.zero;
 	}
 
 	protected override IEnumerator DeathCoroutine ()

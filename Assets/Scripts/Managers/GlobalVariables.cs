@@ -177,7 +177,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		GetPlayers ();
 		SetModeLimits ();
 		GetMovables ();
-		CreateAIs ();
+
+		if(gameState == GameStateEnum.Playing)
+			CreateAIs ();
 
 		if (levelLoaded != WhichMode.Tutorial)
 			lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();

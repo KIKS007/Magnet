@@ -30,23 +30,23 @@ public class AIDash_Counter : AIComponent
 
 	IEnumerator Delay ()
 	{
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-
-		if (Random.Range (0, 100) > counterChances [(int)AIScript.aiLevel])
+		if (Random.Range (0, 101) > counterChances [(int)AIScript.aiLevel])
 			yield break;
 
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
+		
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 
 		Vector3 direction = Vector3.zero - transform.position;
 
-		AIScript.movement = direction.normalized;
+		AIScript.dashMovement = direction.normalized;
 
-		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
+		AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
 
-		AIScript.movement.Normalize ();
+		AIScript.dashMovement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
 	}

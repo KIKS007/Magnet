@@ -30,9 +30,7 @@ public class AIDash_Dodge : AIComponent
 
 	IEnumerator Delay ()
 	{
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-
-		if (Random.Range (0, 100) > dodgeChances [(int)AIScript.aiLevel])
+		if (Random.Range (0, 101) > dodgeChances [(int)AIScript.aiLevel])
 			yield break;
 
 		if (AIScript.thrownDangerousCubes.Count == 0)
@@ -40,6 +38,8 @@ public class AIDash_Dodge : AIComponent
 
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
+		
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
 
 		AIScript.dashState = DashState.Dashing;
 
@@ -47,11 +47,11 @@ public class AIDash_Dodge : AIComponent
 
 		direction = Quaternion.Euler (new Vector3 (0, Mathf.Sign (Random.Range (-1, 1f)) * 90f, 0)) * direction;
 
-		AIScript.movement =  direction.normalized;
+		AIScript.dashMovement =  direction.normalized;
 
-		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
+		AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
 
-		AIScript.movement.Normalize ();
+		AIScript.dashMovement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
 	}

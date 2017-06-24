@@ -30,9 +30,7 @@ public class AIDash_Hit : AIComponent
 
 	IEnumerator Delay ()
 	{
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-
-		if (Random.Range (0, 100) > hitChances [(int)AIScript.aiLevel])
+		if (Random.Range (0, 101) > hitChances [(int)AIScript.aiLevel])
 			yield break;
 
 		if (AIScript.closerPlayers.Count == 0)
@@ -41,13 +39,15 @@ public class AIDash_Hit : AIComponent
 		if (AIScript.dashState != DashState.CanDash)
 			yield break;
 
+		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+
 		AIScript.dashState = DashState.Dashing;
 
-		AIScript.movement = (AIScript.closerPlayers [0].transform.position - transform.position).normalized;
+		AIScript.dashMovement = (AIScript.closerPlayers [0].transform.position - transform.position).normalized;
 
-		AIScript.movement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.movement;
+		AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
 
-		AIScript.movement.Normalize ();
+		AIScript.dashMovement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
 	}
