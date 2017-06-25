@@ -757,6 +757,12 @@ public class PlayersGameplay : MonoBehaviour
 
 		RemoveFromAIObjectives ();
 
+		if (OnDeath != null)
+			OnDeath();
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
+
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
 	}
 
@@ -799,12 +805,6 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        if (playerState == PlayerState.Dead && OnDeath != null)
-            OnDeath();
-
-		if(GlobalVariables.Instance != null)
-			GlobalVariables.Instance.ListPlayers ();
-
 		if (controllerNumber == 0 && GlobalVariables.Instance != null && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			GlobalVariables.Instance.SetMouseVisibility (true);
 

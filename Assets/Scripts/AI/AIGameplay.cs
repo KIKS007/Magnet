@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using Sirenix.OdinInspector;
 
 public enum AILevel { Easy, Normal , Hard};
 
@@ -66,8 +67,6 @@ public class AIGameplay : PlayersGameplay
 
 		name += " " + ((int)playerName + 1).ToString ();
 
-		SetupDelays ();
-
 		SetupZones ();
 
 		aiAnimator = GetComponent<Animator> ();
@@ -86,21 +85,6 @@ public class AIGameplay : PlayersGameplay
 				aiZones [i].SetActive (false);
 			else
 				aiZones [i].SetActive (true);
-		}
-	}
-
-	void SetupDelays ()
-	{
-		foreach(AIComponentsDelay l in aiComponentsDelay)
-		{
-			foreach(AIComponents c in l.components)
-			{
-				if(gameObject.GetComponent (c.ToString ()))
-				{
-					AIComponent component = gameObject.GetComponent (c.ToString ()) as AIComponent;
-					component.enableDelay = l.delays [(int)aiLevel];
-				}
-			}
 		}
 	}
 
@@ -386,6 +370,11 @@ public class AIGameplay : PlayersGameplay
 
 		RemoveFromAIObjectives ();
 
+		OnDeathVoid ();
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
+
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
 	}
 
@@ -468,6 +457,7 @@ public class AIRandomAngle
 [System.Serializable]
 public class AIComponentsDelay
 {
-	public float[] delays = new float[3];
+	[MinMaxSliderAttribute (0, 2)]
+	public Vector2[] delays = new Vector2[3];
 	public List<AIComponents> components = new List<AIComponents> ();
 }

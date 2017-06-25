@@ -32,6 +32,15 @@ public class AIComponent : MonoBehaviour
 	{
 		componentEnabled = false;
 
+		foreach (var l in AIScript.aiComponentsDelay) 
+		{
+			if(l.components.Contains ( (AIComponents) System.Enum.Parse (typeof(AIComponents), this.GetType ().ToString () )) )
+			{
+				enableDelay =  Random.Range (l.delays [(int)AIScript.aiLevel].x, l.delays [(int)AIScript.aiLevel].y);
+				break;
+			}
+		}
+
 		if(enableDelay > 0)
 			yield return new WaitForSecondsRealtime (enableDelay);
 

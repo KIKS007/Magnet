@@ -68,6 +68,8 @@ public class StatsManager : SerializedMonoBehaviour
 	void Start ()
 	{
 		GlobalVariables.Instance.OnStartMode += SetupStats;
+		GlobalVariables.Instance.OnRestartMode += GetPlayersEvents;
+
 		GlobalVariables.Instance.OnStartMode += () => 
 		{
 			StopAllCoroutines ();
@@ -95,7 +97,7 @@ public class StatsManager : SerializedMonoBehaviour
 		{
 			if (g == null)
 				break;
-			
+
 			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
 
 			if (!GlobalVariables.Instance.EnabledPlayersList.Contains (g))
@@ -131,6 +133,8 @@ public class StatsManager : SerializedMonoBehaviour
 			leastStats.Add ( ((WhichStat)i).ToString (), new Stats ());
 			leastStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
 		}
+
+		GetPlayersEvents ();
 
 		settingUp = false;
 	}
@@ -251,9 +255,6 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public void PlayerSuicides (PlayersGameplay player)
 	{
-		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Death.ToString ()]++;
-		totalStats [WhichStat.Death.ToString ()]++;
-
 		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
 		totalStats [WhichStat.Suicides.ToString ()]++;
 	}

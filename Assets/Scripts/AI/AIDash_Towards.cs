@@ -12,9 +12,6 @@ public class AIDash_Towards : AIComponent
 	[Header ("Random")]
 	public AIRandomAngle[] randomAngles = new AIRandomAngle[3];
 
-	[Header ("Delay")]
-	public Vector2 randomDelay = new Vector2 (0.05f, 0.5f);
-
 	protected override void Enable ()
 	{
 		if (!AIScript.dashLayerEnabled)
@@ -25,24 +22,17 @@ public class AIDash_Towards : AIComponent
 
 		base.Enable ();
 
-		StartCoroutine (Delay ());
-	}
-
-	IEnumerator Delay ()
-	{
 		if (Random.Range (0, 101) > towardsChances [(int)AIScript.aiLevel])
-			yield break;
-
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
+			return;
 
 		if (AIScript.dashState != DashState.CanDash)
-			yield break;
+			return;
 
 		if (AIScript.holdTarget != null && AIScript.shootTarget != null)
-			yield break;
+			return;
 
 		if (AIScript.holdTarget == null && AIScript.shootTarget == null)
-			yield break;
+			return;
 
 		AIScript.dashState = DashState.Dashing;
 

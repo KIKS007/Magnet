@@ -262,8 +262,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		foreach (GameObject player in Players)
 			player.GetComponent <PlayersGameplay> ().SetupController ();
 
-		StatsManager.Instance.GetPlayersEvents ();
-
 		SetPlayersControllerNumbers ();
 		ListPlayers ();
 	}

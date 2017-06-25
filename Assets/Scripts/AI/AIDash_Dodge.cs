@@ -12,9 +12,6 @@ public class AIDash_Dodge : AIComponent
 	[Header ("Random")]
 	public AIRandomAngle[] randomAngles = new AIRandomAngle[3];
 
-	[Header ("Delay")]
-	public Vector2 randomDelay = new Vector2 (0.05f, 0.5f);
-
 	protected override void Enable ()
 	{
 		if (!AIScript.dashLayerEnabled)
@@ -25,22 +22,15 @@ public class AIDash_Dodge : AIComponent
 
 		base.Enable ();
 		
-		StartCoroutine (Delay ());
-	}
-
-	IEnumerator Delay ()
-	{
 		if (Random.Range (0, 101) > dodgeChances [(int)AIScript.aiLevel])
-			yield break;
+			return;
 
-		yield return new WaitForSecondsRealtime (Random.Range (randomDelay.x, randomDelay.y));
-		
 		if (AIScript.thrownDangerousCubes.Count == 0)
-			yield break;
+			return;
 
 		if (AIScript.dashState != DashState.CanDash)
-			yield break;
-		
+			return;
+
 		AIScript.dashState = DashState.Dashing;
 
 		Vector3 direction = transform.position - AIScript.thrownDangerousCubes [0].transform.position;
