@@ -201,6 +201,9 @@ public class AIGameplay : PlayersGameplay
 
 			else if(cube.tag == "DeadCube")
 			{
+				if (holdMovableTransform && cube == holdMovableTransform.gameObject)
+					continue;
+
 				dangerousCubes.Add (cube);
 
 				dangerousCubes = dangerousCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
@@ -221,8 +224,8 @@ public class AIGameplay : PlayersGameplay
 		aiAnimator.SetBool ("canHold", holdState == HoldState.CanHold);
 		aiAnimator.SetBool ("isHolding", holdState == HoldState.Holding);
 
-		aiAnimator.SetBool ("hasPlayerTarget", shootTarget != null);
-		aiAnimator.SetBool ("hasCubeTarget", holdTarget != null);
+		aiAnimator.SetBool ("hasShootTarget", shootTarget != null);
+		aiAnimator.SetBool ("hasHoldTarget", holdTarget != null);
 
 		aiAnimator.SetInteger ("thrownDangerousCubes", thrownDangerousCubes.Count);
 
