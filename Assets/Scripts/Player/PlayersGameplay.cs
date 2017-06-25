@@ -68,20 +68,20 @@ public class PlayersGameplay : MonoBehaviour
 
     [Header("Movement")]
     public float speed = 18;
-    public float stunnedSpeed = 8;
+    public float stunnedSpeed = 5;
     public float gravity = 100;
 	public float velocity;
 
     protected float rightJoystickDeadzone = 0.5f;
 
     [Header("Forces")]
-    public float attractionForce = 10;
+    public float attractionForce = 15;
     public float shootForce = 200;
-    public float repulsionForce = 10;
+    public float repulsionForce = 20;
 
     [Header("Stun")]
-    public float stunnedRotation = 400;
-    public float stunnedDuration = 0.6f;
+    public float stunnedRotation = 700;
+    public float stunnedDuration = 1;
 
     [Header("Dash")]
     public float dashSpeed = 80;

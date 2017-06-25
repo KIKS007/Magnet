@@ -77,7 +77,7 @@ public class AIGameplay : PlayersGameplay
 		GetComponent<AIFXAnimations> ().AISetup ();
 	}
 
-	void SetupZones ()
+	protected virtual void SetupZones ()
 	{
 		for (int i = 0; i < aiZones.Length; i++)
 		{
@@ -146,7 +146,7 @@ public class AIGameplay : PlayersGameplay
 		}
 	}
 
-	void FindCloserElements ()
+	protected virtual void FindCloserElements ()
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
@@ -175,7 +175,7 @@ public class AIGameplay : PlayersGameplay
 			closerCubes.Remove (holdMovableTransform.gameObject);
 	}
 
-	void FindDangerousCubes ()
+	protected virtual void FindDangerousCubes ()
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
@@ -211,7 +211,7 @@ public class AIGameplay : PlayersGameplay
 		}
 	}
 
-	void SetAnimatorParameters ()
+	protected virtual void SetAnimatorParameters ()
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
@@ -322,7 +322,7 @@ public class AIGameplay : PlayersGameplay
 			SetupSkin ();
 	}
 
-	void SetupSkin ()
+	protected virtual void SetupSkin ()
 	{
 		
 	}
