@@ -202,6 +202,9 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		foreach(GameObject g in GlobalVariables.Instance.Players)
 		{
+			if (g == null)
+				continue;
+
 			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
 
 			playerScript.OnDash += () => 
@@ -249,7 +252,6 @@ public class StatsManager : SerializedMonoBehaviour
 	public void PlayerKills (PlayersGameplay playerThatKilled)
 	{
 		playersStats [ playerThatKilled.playerName.ToString () ].playersStats [WhichStat.Kills.ToString ()]++;
-
 		totalStats [WhichStat.Kills.ToString ()]++;
 	}
 

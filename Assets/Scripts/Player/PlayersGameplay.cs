@@ -70,6 +70,7 @@ public class PlayersGameplay : MonoBehaviour
     public float speed = 18;
     public float stunnedSpeed = 8;
     public float gravity = 100;
+	public float velocity;
 
     protected float rightJoystickDeadzone = 0.5f;
 
@@ -91,37 +92,32 @@ public class PlayersGameplay : MonoBehaviour
 	[Header("Hits Taken")]
 	public PlayersGameplay playerThatHit;
 
-	protected string playerDeadCubeTag;
-
+	[HideInInspector]
 	public List<MovableScript> cubesAttracted = new List<MovableScript>();
+	[HideInInspector]
 	public List<MovableScript> cubesRepulsed = new List<MovableScript>();
-
-    protected Transform movableParent;
     [HideInInspector]
     public Transform magnetPoint;
-
-    protected float lerpHold = 0.05f;
-
     [HideInInspector]
     public Rigidbody playerRigidbody;
 	[HideInInspector]
 	public Vector3 movement;
-
-    protected int triggerMask;
-    protected float camRayLength = 200f;
-
-    [HideInInspector]
-    public Rigidbody holdMovableRB;
-    [HideInInspector]
-    public Transform holdMovableTransform;
+	[HideInInspector]
+	public Rigidbody holdMovableRB;
+	[HideInInspector]
+	public Transform holdMovableTransform;
 	[HideInInspector]
 	public bool gettingMovable = false;
 
-    protected bool hasAttracted;
-    protected bool hasRepulsed;
-
+	protected float noForcesThreshold = 3f;
+	protected string playerDeadCubeTag;
+	protected Transform movableParent;
+	protected float lerpHold = 0.05f;
+    protected int triggerMask;
+    protected float camRayLength = 200f;
+	protected bool hasAttracted;
+	protected bool hasRepulsed;
 	protected float stunnedRotationTemp;
-
 	protected PlayersFXAnimations playerFX;
 
 	#endregion
@@ -331,7 +327,13 @@ public class PlayersGameplay : MonoBehaviour
 			float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
 			playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
 		}
-		
+
+		//No Forces
+		velocity = playerRigidbody.velocity.magnitude;
+
+		if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+			playerThatHit = null;
+
 		//Hold Movable
 		if (holdState == HoldState.Holding)
 		{
@@ -562,6 +564,9 @@ public class PlayersGameplay : MonoBehaviour
 			}
 		}
 
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
+			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+
 		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 		{
 			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
@@ -668,6 +673,8 @@ public class PlayersGameplay : MonoBehaviour
 	public virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
+
+		playerThatHit = null;
 
         if (OnDash != null)
             OnDash();
@@ -788,13 +795,12 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual void PlayerStats (PlayersGameplay playerThatHit = null)
 	{
-		if (playerThatHit == null)
-			return;
-
-		if (playerThatHit != this)
-			StatsManager.Instance.PlayerKills (playerThatHit);
-		else
+		if(playerThatHit == null || playerThatHit == this)
 			StatsManager.Instance.PlayerSuicides (this);
+		
+		else if (playerThatHit != this)
+			StatsManager.Instance.PlayerKills (playerThatHit);
+		
 	}
 		
     protected virtual void OnDestroy()

@@ -171,6 +171,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
 
+			GlobalVariables.Instance.AllMovables.Add (deadCube);
+
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, deadCube.transform);
 		}
 	}

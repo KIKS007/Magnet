@@ -11,6 +11,12 @@ public class PlayersRam : PlayersGameplay
 	{
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			//No Forces
+			velocity = playerRigidbody.velocity.magnitude;
+
+			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+				playerThatHit = null;
+
 			if (dashState != DashState.Dashing)
 			{
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;

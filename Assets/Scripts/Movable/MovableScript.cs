@@ -277,12 +277,15 @@ public class MovableScript : MonoBehaviour
 	{
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(other.collider.tag != "HoldMovable")
+			if(other.collider.tag != "HoldMovable" && other.collider.tag == "Player")
 				HitPlayer (other);			
 			
-			if(other.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+			if(!hold && other.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 				HitOtherMovable (other);	
-			
+
+			if(!hold && other.collider.tag == "HoldMovable" && playerThatThrew)
+				other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = playerThatThrew.GetComponent<PlayersGameplay> ();
+
 			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
 				HitWall (other);			
 		}
@@ -319,7 +322,7 @@ public class MovableScript : MonoBehaviour
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
 
-		if (playerThatThrew != null)
+		if (playerThatThrew != null && other.collider.tag != "HoldMovable")
 			other.gameObject.GetComponent<MovableScript> ().playerThatThrew = playerThatThrew;
 
 		if(canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
@@ -420,6 +423,8 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void OnRelease ()
 	{
+		hold = false;
+
 		ToNeutralColor();
 
 		OnReleaseEventVoid ();

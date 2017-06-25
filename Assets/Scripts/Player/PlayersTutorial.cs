@@ -140,6 +140,12 @@ public class PlayersTutorial : PlayersGameplay
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
 			}
 
+			//No Forces
+			velocity = playerRigidbody.velocity.magnitude;
+
+			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+				playerThatHit = null;
+
 			//Hold Movable
 			if (holdState == HoldState.Holding)
 			{
@@ -233,6 +239,17 @@ public class PlayersTutorial : PlayersGameplay
 				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
 				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
 			}
+		}
+
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
+			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+		{
+			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+
+			if (script != null && script.playerThatThrew != null)
+				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
 		}
 	}
 

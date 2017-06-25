@@ -177,40 +177,33 @@ public class MenuEndMode : SerializedMonoBehaviour
 				differentScore++;
 		}
 
-//		if(differentScore == scores.Count - 1 && scores.Count == 2)
-//		{
-//			if (scoreIndex == 0)
-//				return 0;
-//			else
-//				return 3;
-//		}
-
+		//If Same Previous Same Score
 		if (previousScales.ContainsKey (score))
 			return previousScales [score];
-		
-		/*	if(scoreIndex == scores.Count - 1)
-			return 3;*/
 
+		//All Same Score
 		if (sameScore == scores.Count - 1)
 			return 1;
 
+		//All Diferent Score
 		if (differentScore == scores.Count - 1)
 			return scoreIndex;
 
-
-		else
+		//First and Second Same Score
+		if(scoreIndex == 0)
 		{
-			if(scoreIndex == 0)
-			{
-				if (scores [0] == scores [1])
-					return 1;
-				else
-					return 0;
-			}
-
-			if (scoreIndex != 0 && scores [scoreIndex] == scores [0])
+			if (scores [0] == scores [1])
 				return 1;
+			else
+				return 0;
 		}
+		
+		//First and Second Same Score
+		if (scoreIndex != 0 && scores [scoreIndex] == scores [0])
+			return 1;
+
+		if (scoreIndex == 3)
+			return previousScales.Values.Last () + 1;
 
 		return scoreIndex;
 	}
