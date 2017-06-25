@@ -3,10 +3,6 @@ using System.Collections;
 
 public class PlayersRam : PlayersGameplay 
 {
-	[Header("RAM")]
-	public float currentRamVelocity;
-	public float maxRamVelocity;
-
 	protected override void FixedUpdate ()
 	{
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
@@ -22,16 +18,6 @@ public class PlayersRam : PlayersGameplay
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
 
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-
-				//playerRigidbody.AddForce(movement * speedTemp);		
-
-				if(playerState != PlayerState.Stunned)
-				{
-					currentRamVelocity = playerRigidbody.velocity.magnitude;
-					
-					if (playerRigidbody.velocity.magnitude > maxRamVelocity)
-						playerRigidbody.velocity = playerRigidbody.velocity.normalized * maxRamVelocity;					
-				}
 			}
 
 

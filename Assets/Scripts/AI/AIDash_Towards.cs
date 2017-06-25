@@ -34,17 +34,44 @@ public class AIDash_Towards : AIComponent
 		if (AIScript.holdTarget == null && AIScript.shootTarget == null)
 			return;
 
+		int triesCount = 0;
+
+		do 
+		{
+			if(triesCount == 20)
+				return;
+
+			if (AIScript.shootTarget != null)
+				AIScript.dashMovement = (AIScript.shootTarget.position - transform.position).normalized;
+			else
+				AIScript.dashMovement = (AIScript.holdTarget.position - transform.position).normalized;
+
+			AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
+
+			triesCount++;
+		} 
+		while (DangerousCubes (AIScript.dashMovement));
+
 		AIScript.dashState = DashState.Dashing;
-
-		if (AIScript.shootTarget != null)
-			AIScript.dashMovement = (AIScript.shootTarget.position - transform.position).normalized;
-		else
-			AIScript.dashMovement = (AIScript.holdTarget.position - transform.position).normalized;
-
-		AIScript.dashMovement = Quaternion.AngleAxis (Mathf.Sign (Random.Range (-1f, -1f)) * Random.Range (randomAngles [(int)AIScript.aiLevel].randomAngleMin, randomAngles [(int)AIScript.aiLevel].randomAngleMax), Vector3.up) * AIScript.dashMovement;
 
 		AIScript.dashMovement.Normalize ();
 
 		AIScript.StartCoroutine ("Dash");
+	}
+
+	bool DangerousCubes (Vector3 movement)
+	{
+		int layer = 1 << LayerMask.NameToLayer ("Movables");
+		RaycastHit hit;
+		Physics.Raycast (transform.position, movement, out hit, 9f, layer);
+
+		if (hit.collider == null)
+			return false;
+
+		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible")
+			return true;
+
+		else
+			return false;
 	}
 }

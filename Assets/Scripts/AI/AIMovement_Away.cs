@@ -42,6 +42,9 @@ public class AIMovement_Away : AIComponent
 		if (AIScript.dangerousCubes.Count == 0)
 			return;
 
+		if(target == null)
+			target = AIScript.dangerousCubes [0].transform;
+
 		AIScript.movement = (transform.position - target.position).normalized;
 
 		AIScript.movement = randomAngle * AIScript.movement;
