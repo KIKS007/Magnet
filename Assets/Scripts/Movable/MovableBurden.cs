@@ -78,7 +78,7 @@ public class MovableBurden : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
-		yield return new WaitWhile (()=> targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
+		yield return new WaitWhile (()=> targetPlayer && targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
 
 		while(targetPlayer != null && Vector3.Distance(targetPlayer.transform.position, transform.position) > 0.5f)
 		{

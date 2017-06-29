@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AIMovement_Away : AIComponent 
 {
+	public float awayThreshold = 10f;
+
 	[Header ("Random")]
 	public AIRandomAngle[] randomAngles = new AIRandomAngle[3];
 
@@ -42,11 +44,16 @@ public class AIMovement_Away : AIComponent
 		if (AIScript.dangerousCubes.Count == 0)
 			return;
 
-		if(target == null)
-			target = AIScript.dangerousCubes [0].transform;
+		Vector3 movement = new Vector3 ();
 
-		AIScript.movement = (transform.position - target.position).normalized;
+		foreach (GameObject g in AIScript.dangerousCubes)
+			if (Vector3.Distance (g.transform.position, transform.position) < awayThreshold)
+				movement += (transform.position - g.transform.position);
 
-		AIScript.movement = randomAngle * AIScript.movement;
+		movement.Normalize ();
+
+		movement = randomAngle * movement;
+
+		AIScript.movement = movement;
 	}
 }
