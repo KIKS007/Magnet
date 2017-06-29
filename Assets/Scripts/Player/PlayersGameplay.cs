@@ -52,7 +52,7 @@ public class PlayersGameplay : MonoBehaviour
 {
 	#region Variables
     [Header("States")]
-	public int livesCount = 0;
+	public int livesCount = 1;
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AIAimZone : MonoBehaviour 
 {
-	public LayerMask raycastLayer;
+	public bool removeHoldMovable = true;
 
 	private int targetSearchCount = 2;
 	private AIGameplay AIScript;
@@ -20,6 +20,7 @@ public class AIAimZone : MonoBehaviour
 		AIScript.OnStun += () => AIScript.objectives.Clear ();
 		AIScript.OnDeath += () => AIScript.objectives.Clear ();
 
+		if(removeHoldMovable)
 		AIScript.OnHold += () => 
 		{
 			if(AIScript.objectives.Contains (AIScript.holdMovableTransform.gameObject))
@@ -34,6 +35,7 @@ public class AIAimZone : MonoBehaviour
 	{
 		if(collider.tag == "Player" || collider.tag == "Movable")
 		{
+			if(removeHoldMovable)
 			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
 				return;
 

@@ -7,9 +7,10 @@ public class AIMovement_Temporize : AIComponent
 {
 	public bool temporizeEnabled = true;
 
+	private float rayLength = 6f;
 	private LayerMask walls = 1 << 8;
 	private int sign = -1;
-	private Vector2 movementDuration = new Vector2 (0.5f, 2);
+	private Vector2 movementDuration = new Vector2 (0.7f, 3);
 
 	protected override void OnEnable ()
 	{
@@ -40,11 +41,13 @@ public class AIMovement_Temporize : AIComponent
 			return;
 
 		Vector3 direction = (Vector3.zero - transform.position).normalized;
+		direction.y = 0;
+
 		direction = Quaternion.Euler (new Vector3 (0, sign * 90f, 0)) * direction;
 
-		//Debug.DrawRay (transform.position, direction * 10000f, Color.cyan);
+		Debug.DrawRay (transform.position, direction * rayLength, Color.cyan);
 
-		if (Physics.Raycast (transform.position, direction, 6f, walls))
+		if (Physics.Raycast (transform.position, direction, rayLength, walls))
 			ToggleSign ();
 
 		AIScript.movement = direction;

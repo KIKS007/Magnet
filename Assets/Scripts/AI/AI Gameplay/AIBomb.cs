@@ -16,6 +16,13 @@ public class AIBomb : AIGameplay
 		bombScript = bomb.GetComponent<MovableBomb> ();
 	}
 
+	protected override void Update ()
+	{
+		base.Update ();
+
+
+	}
+
 	protected override void FindCloserElements ()
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
@@ -41,16 +48,8 @@ public class AIBomb : AIGameplay
 
 	protected override void FindDangerousCubes ()
 	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+		base.FindDangerousCubes ();
 
-		thrownDangerousCubes.Clear ();
-		dangerousCubes.Clear ();
-
-		if (bombScript.playerHolding != gameObject)
-		{
-			dangerousCubes.Add (bomb);
-			dangerousCubes.Add (bombScript.playerHolding);
-		}
+		dangerousCubes.Add (bomb);
 	}
 }

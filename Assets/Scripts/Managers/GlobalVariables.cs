@@ -423,7 +423,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 				continue;
 
 			//Unplugged
-			if(script.controllerNumber != 0 && script.controllerNumber != -1)
+			if(script.controllerNumber != 0 && script.controllerNumber != -1 && script.controllerNumber != -2)
 			{
 				gamepadsList.Add (new PlayerGamepad ());
 				gamepadsList [gamepadsList.Count - 1].PlayerName = script.playerName;
