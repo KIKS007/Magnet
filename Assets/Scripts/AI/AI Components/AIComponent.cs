@@ -96,14 +96,14 @@ public class AIComponent : MonoBehaviour
 	{
 		int layer = 1 << LayerMask.NameToLayer ("Movables");
 		RaycastHit hit;
-		Physics.Raycast (transform.position, movement, out hit, 9f, layer);
+
+		Physics.SphereCast (transform.position, 1.2f, movement, out hit, 10f, layer);
 
 		if (hit.collider == null)
 			return false;
 
 		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible")
 			return true;
-
 		else
 			return false;
 	}
