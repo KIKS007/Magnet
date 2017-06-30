@@ -37,7 +37,7 @@ public class AIMovement_Towards_Pool : AIMovement_Towards
 		foreach(GameObject g in AIScript.dangerousCubes)
 		{
 			foreach (GameObject p in GlobalVariables.Instance.AlivePlayersList)
-				if (Vector3.Distance (g.transform.position, p.transform.position) < cubeCloseToPlayerDistance)
+				if (p != gameObject && Vector3.Distance (g.transform.position, p.transform.position) < cubeCloseToPlayerDistance)
 					targetsTemp.Add (g);
 		}
 
@@ -78,7 +78,7 @@ public class AIMovement_Towards_Pool : AIMovement_Towards
 		if (AIScript.closerPlayers.Count == 0)
 			return;
 
-		if(target == null || target.tag != "Player")
+		if(target == null)
 		{
 			List<GameObject> targetsTemp = new List<GameObject> ();
 			targetsTemp.AddRange (AIScript.closerPlayers);

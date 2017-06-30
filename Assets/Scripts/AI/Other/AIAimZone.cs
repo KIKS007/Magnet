@@ -33,7 +33,7 @@ public class AIAimZone : MonoBehaviour
 
 	void OnTriggerStay (Collider collider)
 	{
-		if(collider.tag == "Player" || collider.tag == "Movable")
+		if(collider.tag == "Player" || collider.tag == "Movable" || collider.tag == "Suggestible" || collider.tag == "DeadCube")
 		{
 			if(removeHoldMovable)
 			if (collider.tag == "Movable" && collider.gameObject.transform == AIScript.holdMovableTransform)
@@ -54,7 +54,7 @@ public class AIAimZone : MonoBehaviour
 
 	void OnTriggerExit(Collider collider)
 	{
-		if(collider.tag == "Player" || collider.tag == "Movable")
+		if(collider.tag == "Player" || collider.tag == "Movable" || collider.tag == "Suggestible" || collider.tag == "DeadCube")
 		{
 			if(AIScript.objectives.Contains (collider.gameObject))
 				AIScript.objectives.Remove (collider.gameObject);
