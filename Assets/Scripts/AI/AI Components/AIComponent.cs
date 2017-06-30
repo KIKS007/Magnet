@@ -91,4 +91,20 @@ public class AIComponent : MonoBehaviour
 		StopAllCoroutines ();
 		componentEnabled = true;
 	}
+
+	protected virtual bool DangerousCubes (Vector3 movement)
+	{
+		int layer = 1 << LayerMask.NameToLayer ("Movables");
+		RaycastHit hit;
+		Physics.Raycast (transform.position, movement, out hit, 9f, layer);
+
+		if (hit.collider == null)
+			return false;
+
+		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible")
+			return true;
+
+		else
+			return false;
+	}
 }

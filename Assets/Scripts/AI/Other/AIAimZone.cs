@@ -58,15 +58,13 @@ public class AIAimZone : MonoBehaviour
 		{
 			if(AIScript.objectives.Contains (collider.gameObject))
 				AIScript.objectives.Remove (collider.gameObject);
-
-			Refresh ();
 		}
 	}
 
 	void Refresh()
 	{
-		AIScript.isAimingPlayer = false;
-		AIScript.isAimingCube = false;
+		AIScript.isAimingShootTarget = false;
+		AIScript.isAimingHoldTarget = false;
 
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
@@ -81,14 +79,17 @@ public class AIAimZone : MonoBehaviour
 			if (i >= AIScript.objectives.Count)
 				break;
 
-			if(AIScript.objectives[i].tag == "Player")
-				AIScript.isAimingPlayer = true;
+			if(AIScript.shootTarget && AIScript.objectives[i] == AIScript.shootTarget.gameObject)
+			{
+				AIScript.isAimingShootTarget = true;
+				break;
+			}
 		}
 
-		if(AIScript.objectives[0].tag == "Movable")
-			AIScript.isAimingCube = true;
+		if(AIScript.holdTarget && AIScript.objectives[0] == AIScript.holdTarget.gameObject)
+			AIScript.isAimingHoldTarget = true;
 		
-		AIScript.aiAnimator.SetBool ("isAimingPlayer", AIScript.isAimingPlayer);
-		AIScript.aiAnimator.SetBool ("isAimingCube", AIScript.isAimingCube);
+		AIScript.aiAnimator.SetBool ("isAimingShootTarget", AIScript.isAimingShootTarget);
+		AIScript.aiAnimator.SetBool ("isAimingHoldTarget", AIScript.isAimingHoldTarget);
 	}
 }

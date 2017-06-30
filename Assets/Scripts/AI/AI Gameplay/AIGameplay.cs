@@ -26,8 +26,8 @@ public class AIGameplay : PlayersGameplay
 	public Transform shootTarget;
 
 	[Header ("AI States")]
-	public bool isAimingPlayer;
-	public bool isAimingCube;
+	public bool isAimingShootTarget;
+	public bool isAimingHoldTarget;
 	public bool isAttracting;
 	public bool isRepelling;
 
@@ -446,6 +446,9 @@ public class AIGameplay : PlayersGameplay
 			if (script != null && script.playerThatThrew != null)
 				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
 		}
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Walls"))
+			aiAnimator.SetTrigger ("touchedWall");
 	}
 
 	public override void OnHoldMovable (GameObject movable)

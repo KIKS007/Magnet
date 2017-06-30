@@ -284,7 +284,7 @@ public class MovableScript : MonoBehaviour
 				HitOtherMovable (other);	
 
 			if(!hold && other.collider.tag == "HoldMovable" && playerThatThrew)
-				other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = playerThatThrew.GetComponent<PlayersGameplay> ();
+				other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = playerThatThrew.GetComponent<PlayersGameplay> ();
 
 			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
 				HitWall (other);			
