@@ -27,7 +27,7 @@ public class AIBounce : AIGameplay
 
 		Physics.Raycast (transform.position + forward, forward, out hit, 100f, bounceLayer, QueryTriggerInteraction.Ignore);
 
-//		Debug.DrawLine (transform.position, hit.point, Color.red);
+//		Debug.DraplayerswLine (transform.position, hit.point, Color.red);
 //		Debug.Log (hit.collider);
 
 		if (hit.collider.gameObject.tag == "Player" && hit.collider.gameObject != gameObject)

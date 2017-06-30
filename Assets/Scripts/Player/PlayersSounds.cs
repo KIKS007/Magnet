@@ -10,13 +10,9 @@ public class PlayersSounds : MonoBehaviour
 
 	[Header ("Attraction Sound")]
 	public SoundState attractingSoundState = SoundState.NotPlaying;
-	[SoundGroupAttribute]
-	public string attractingSound;
 
 	[Header ("Repulsing Sound")]
 	public SoundState repulsingSoundState = SoundState.NotPlaying;
-	[SoundGroupAttribute]
-	public string repulsingSound;
 
 	private PlayersGameplay playerScript;
 
@@ -25,8 +21,8 @@ public class PlayersSounds : MonoBehaviour
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 
-		MasterAudio.PlaySound3DFollowTransformAndForget (attractingSound, transform);
-		MasterAudio.PlaySound3DFollowTransformAndForget (repulsingSound, transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], transform);
 
 		/*playerScript.OnPlayerstateChange += Attracting;
 		playerScript.OnPlayerstateChange += Repulsing;
@@ -62,7 +58,7 @@ public class PlayersSounds : MonoBehaviour
 			if(attractingSoundState != SoundState.Playing && attractingSoundState != SoundState.TransitionToPlaying)
 			{
 				attractingSoundState = SoundState.TransitionToPlaying;
-				MasterAudio.FadeSoundGroupToVolume (attractingSound, SoundsManager.Instance.initialAttractingVolume, fadeDuration, ()=> attractingSoundState = SoundState.Playing);
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], SoundsManager.Instance.initialAttractingVolume, fadeDuration, ()=> attractingSoundState = SoundState.Playing);
 			}
 		}
 		else 
@@ -70,7 +66,7 @@ public class PlayersSounds : MonoBehaviour
 			if(attractingSoundState != SoundState.NotPlaying && attractingSoundState != SoundState.TransitionToNotPlaying)
 			{
 				attractingSoundState = SoundState.TransitionToNotPlaying;
-				MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> attractingSoundState = SoundState.NotPlaying);
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], 0, fadeDuration, ()=> attractingSoundState = SoundState.NotPlaying);
 			}
 		}
 	}
@@ -82,7 +78,7 @@ public class PlayersSounds : MonoBehaviour
 			if(repulsingSoundState != SoundState.Playing && repulsingSoundState != SoundState.TransitionToPlaying)
 			{
 				repulsingSoundState = SoundState.TransitionToPlaying;
-				MasterAudio.FadeSoundGroupToVolume (repulsingSound, SoundsManager.Instance.initialRepulsingVolume, fadeDuration, ()=> repulsingSoundState = SoundState.Playing);
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], SoundsManager.Instance.initialRepulsingVolume, fadeDuration, ()=> repulsingSoundState = SoundState.Playing);
 			}
 		}
 		else 
@@ -90,7 +86,7 @@ public class PlayersSounds : MonoBehaviour
 			if(repulsingSoundState != SoundState.NotPlaying && repulsingSoundState != SoundState.TransitionToNotPlaying)
 			{
 				repulsingSoundState = SoundState.TransitionToNotPlaying;
-				MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> repulsingSoundState = SoundState.NotPlaying);
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], 0, fadeDuration, ()=> repulsingSoundState = SoundState.NotPlaying);
 			}	
 		}
 	}
@@ -145,15 +141,12 @@ public class PlayersSounds : MonoBehaviour
 		FadeSounds ();
 	}
 
-	void OnDestroy ()
-	{
-		MasterAudio.StopSoundGroupOfTransform (transform, attractingSound);
-		MasterAudio.StopSoundGroupOfTransform (transform, repulsingSound);
-	}
-
 	void FadeSounds ()
 	{
-		MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration);
-		MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration);
+		if (!MasterAudio.Instance || !SoundsManager.Instance || !playerScript)
+			return;
+		
+		MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], 0, fadeDuration);
+		MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], 0, fadeDuration);
 	}
 }

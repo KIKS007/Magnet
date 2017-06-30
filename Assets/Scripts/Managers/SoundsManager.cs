@@ -83,10 +83,9 @@ public class SoundsManager : Singleton<SoundsManager>
 	public string winSound;
 
 	[Header ("Player Sounds")]
+	public string[] attractingSounds = new string[4];
 	[SoundGroupAttribute]
-	public string attractingSound;
-	[SoundGroupAttribute]
-	public string repulsingSound;
+	public string[] repulsingSounds = new string[4];
 	[SoundGroupAttribute]
 	public string onHoldSound;
 	[SoundGroupAttribute]
@@ -150,11 +149,11 @@ public class SoundsManager : Singleton<SoundsManager>
 		//LoadMusics ();
 		SetGamePlaylist ();
 
-		initialAttractingVolume = MasterAudio.GetGroupVolume ( attractingSound);
-		initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
+		initialAttractingVolume = MasterAudio.GetGroupVolume ( attractingSounds [0]);
+		initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSounds [0]);
 
-		MasterAudio.SetGroupVolume (attractingSound, 0);
-		MasterAudio.SetGroupVolume (repulsingSound, 0);
+		MasterAudio.SetGroupVolume (attractingSounds [0], 0);
+		MasterAudio.SetGroupVolume (repulsingSounds [0], 0);
 
 		if(canTakeTime != null)
 			canTakeTime.SetActive (false);
@@ -177,6 +176,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		GlobalVariables.Instance.OnPause += ()=> LowPass (pauseLowPass);
 		GlobalVariables.Instance.OnEndMode += ()=> LowPass (gameOverLowPass);
+
+		LoadModeManager.Instance.OnLevelLoaded += StopAttractionRepulsionSounds;
+		LoadModeManager.Instance.OnLevelUnloaded += StopAttractionRepulsionSounds;
 
 		slowMo.OnSlowMotionStart += () => HighPass (sloMoHighPass);
 		slowMo.OnSlowMotionStop += ResetHighPass;
@@ -438,6 +440,15 @@ public class SoundsManager : Singleton<SoundsManager>
 		PlayPlaylist ("Loaded Musics");
 
 		playlistCont.TriggerPlaylistClip (song);
+	}
+
+	void StopAttractionRepulsionSounds ()
+	{
+		foreach(string s in attractingSounds)
+			MasterAudio.StopAllOfSound (s);
+
+		foreach(string s in repulsingSounds)
+			MasterAudio.StopAllOfSound (s);
 	}
 
 	void RandomMusic ()
@@ -864,7 +875,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "SoundsMute", soundsMuteTemp);
 		GameAnalytics.NewDesignEvent ("Menu:" + "Options:" + "Sounds:" + "MuteMusic", musicMuteTemp);
 	}
-
 
 	IEnumerator MusicVolumeChange ()
 	{

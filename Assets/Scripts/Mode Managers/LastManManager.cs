@@ -84,7 +84,7 @@ public class LastManManager : MonoBehaviour
 			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
 		} 
-		else if (playerDeadCube && !gameEndLoopRunning && playerScript.GetType () != typeof(AIGameplay))
+		else if (playerDeadCube && !gameEndLoopRunning && playerScript.GetType ().BaseType != typeof(AIGameplay))
 			PlayerDeadCube (playerScript);
 	}
 

@@ -209,7 +209,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		if (controllerNumber == -1 && this.GetType () != typeof (AIGameplay))
+		if (controllerNumber == -1 && this.GetType ().BaseType != typeof (AIGameplay))
 			yield break;
 		
 		switch (GlobalVariables.Instance.Startup)
