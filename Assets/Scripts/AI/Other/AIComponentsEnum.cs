@@ -17,5 +17,7 @@ public enum AIComponents
 	AIRepel,
 	AIStuck,
 	AIDash_Away,
-	AIMovement_Towards_Pool
+	AIMovement_Towards_Pool,
+	AIRepel_Flow,
+	AIMovement_Towards_Flow
 };

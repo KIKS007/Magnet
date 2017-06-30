@@ -21,6 +21,9 @@ public class AIGameplay : PlayersGameplay
 	public List<GameObject> dangerousCubes = new List<GameObject> ();
 	public List<GameObject> objectives = new List<GameObject> ();
 
+	[Header ("AI Cubes Velocity")]
+	public float dangerousCubeVelocity = 50f;
+
 	[Header ("AI Target")]
 	public Transform holdTarget;
 	public Transform shootTarget;
@@ -185,21 +188,7 @@ public class AIGameplay : PlayersGameplay
 
 		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
 		{
-			if(cube.tag == "ThrownMovable")
-			{
-				RaycastHit hitInfo;
-
-				if(cube.GetComponent<Rigidbody> ().velocity.magnitude > 50)
-				{
-					if(Physics.Raycast (cube.transform.position, cube.GetComponent<Rigidbody> ().velocity, out hitInfo, 2000f, playerLayer))
-					{
-						if(hitInfo.collider.gameObject == gameObject)
-							thrownDangerousCubes.Add (cube);
-					}
-				}
-			}
-
-			else if(cube.tag == "DeadCube")
+			if(cube.tag == "DeadCube" || cube.tag == "Suggestible")
 			{
 				if (holdMovableTransform && cube == holdMovableTransform.gameObject)
 					continue;
@@ -207,6 +196,21 @@ public class AIGameplay : PlayersGameplay
 				dangerousCubes.Add (cube);
 
 				dangerousCubes = dangerousCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+			}
+
+			RaycastHit hitInfo;
+			Rigidbody rigidbody = cube.GetComponent<Rigidbody> ();
+
+			if (rigidbody == null)
+				continue;
+
+			if(rigidbody.velocity.magnitude > dangerousCubeVelocity)
+			{
+				if(Physics.Raycast (cube.transform.position, rigidbody.velocity, out hitInfo, 2000f, playerLayer))
+				{
+					if(hitInfo.collider.gameObject == gameObject)
+						thrownDangerousCubes.Add (cube);
+				}
 			}
 		}
 	}

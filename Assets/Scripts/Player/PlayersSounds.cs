@@ -52,6 +52,9 @@ public class PlayersSounds : MonoBehaviour
 
 	void Update ()
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
 		if(MasterAudio.GetGroupVolume (attractingSound) != 0)
 		{
 			if(playerScript.playerState != PlayerState.Attracting || playerScript.cubesAttracted.Count == 0)
@@ -67,6 +70,9 @@ public class PlayersSounds : MonoBehaviour
 
 	void Attracting ()
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
 		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != initialAttractingVolume && !fadeInAttraction)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (attractingSound, transform);
@@ -82,6 +88,9 @@ public class PlayersSounds : MonoBehaviour
 
 	void Repulsing ()
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
 		if(playerScript.cubesRepulsed.Count > 0 && MasterAudio.GetGroupVolume(repulsingSound) != initialRepulsingVolume && !fadeInRepulsion)
 		{
 			MasterAudio.PlaySound3DFollowTransformAndForget (repulsingSound, transform);
@@ -139,7 +148,13 @@ public class PlayersSounds : MonoBehaviour
 
 	void OnDisable ()
 	{
-		//FadeSounds ();
+		FadeSounds ();
+	}
+
+	void OnDestroy ()
+	{
+		MasterAudio.StopSoundGroupOfTransform (transform, attractingSound);
+		MasterAudio.StopSoundGroupOfTransform (transform, repulsingSound);
 	}
 
 	void FadeSounds ()

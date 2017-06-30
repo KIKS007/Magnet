@@ -14,6 +14,9 @@ public class AIAim : AIComponent
 			return;
 
 		base.Update ();
+		
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
 
 		Quaternion targetRotation = new Quaternion ();
 
