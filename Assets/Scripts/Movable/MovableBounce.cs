@@ -71,19 +71,12 @@ public class MovableBounce : MovableScript
 
 	protected override void HitWall (Collision other)
 	{
-		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			if (tag != "ThrownMovable")
-				return;
-
-			/*if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);*/
-
-			if(canPlaySound)
-				StartCoroutine(HitSound ());
-
-			DeadlyTransition ();
-		}
+		if(canPlaySound)
+			StartCoroutine(HitSound ());
+		
+		if (tag != "ThrownMovable")
+			return;
+		DeadlyTransition ();
 	}
 
 	void DeadlyTransition ()

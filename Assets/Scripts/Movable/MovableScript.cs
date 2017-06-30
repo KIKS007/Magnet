@@ -331,15 +331,8 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitWall (Collision other)
 	{
-		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			/*if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);*/
-
-			if(canPlaySound)
-				StartCoroutine(HitSound ());
-		}
-		
+		if(canPlaySound)
+			StartCoroutine(HitSound ());
 	}
 
 	protected IEnumerator HitSound ()
@@ -355,7 +348,7 @@ public class MovableScript : MonoBehaviour
 			MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.wallHitSound, transform, soundVolume);	
 		}
 
-		yield return new WaitForSeconds (0.05f);
+		yield return new WaitForSecondsRealtime (0.05f);
 
 		canPlaySound = true;
 	}

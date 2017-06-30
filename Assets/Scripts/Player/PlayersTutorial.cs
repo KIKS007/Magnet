@@ -50,8 +50,10 @@ public class PlayersTutorial : PlayersGameplay
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Movement Vector
-			movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
-			movement.Normalize();
+			movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
+
+			if(movement.magnitude > 1)
+				movement.Normalize();
 
 			//Turning Player
 			if (controllerNumber == 0 && playerState != PlayerState.Stunned)

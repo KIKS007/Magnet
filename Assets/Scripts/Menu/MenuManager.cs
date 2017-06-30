@@ -226,6 +226,9 @@ public class MenuManager : Singleton <MenuManager>
 
 			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
 
+			if (script.rewiredPlayer == null)
+				continue;
+
 			//Unplugged
 			if(script.rewiredPlayer.controllers.joystickCount == 0 && script.controllerNumber != 0 && script.controllerNumber != -1)
 			{

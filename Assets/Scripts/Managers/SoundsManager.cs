@@ -84,6 +84,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	[Header ("Player Sounds")]
 	[SoundGroupAttribute]
+	public string attractingSound;
+	[SoundGroupAttribute]
+	public string repulsingSound;
+	[SoundGroupAttribute]
 	public string onHoldSound;
 	[SoundGroupAttribute]
 	public string shootSound;
@@ -132,6 +136,11 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	private SlowMotionCamera slowMo;
 
+	[HideInInspector]
+	public float initialAttractingVolume = -1;
+	[HideInInspector]
+	public float initialRepulsingVolume = -1;
+
 	public event EventHandler OnMusicVolumeChange;
 	public event EventHandler OnSoundsVolumeChange;
 	public event EventHandler OnMasterVolumeChange;
@@ -141,8 +150,14 @@ public class SoundsManager : Singleton<SoundsManager>
 		//LoadMusics ();
 		SetGamePlaylist ();
 
+		initialAttractingVolume = MasterAudio.GetGroupVolume ( attractingSound);
+		initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
+
+		MasterAudio.SetGroupVolume (attractingSound, 0);
+		MasterAudio.SetGroupVolume (repulsingSound, 0);
+
 		if(canTakeTime != null)
-		canTakeTime.SetActive (false);
+			canTakeTime.SetActive (false);
 
 		slowMo = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ();
 
