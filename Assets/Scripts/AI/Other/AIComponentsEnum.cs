@@ -19,5 +19,6 @@ public enum AIComponents
 	AIDash_Away,
 	AIMovement_Towards_Pool,
 	AIRepel_Flow,
-	AIMovement_Towards_Flow
+	AIMovement_Towards_Flow,
+	AIMovement_Towards_Plague
 };

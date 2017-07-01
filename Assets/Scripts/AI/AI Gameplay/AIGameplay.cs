@@ -190,7 +190,7 @@ public class AIGameplay : PlayersGameplay
 		thrownDangerousCubes.Clear ();
 		dangerousCubes.Clear ();
 
-		dangerousCubes.AddRange (arenaDeadzones.deadlyColumns);
+		//dangerousCubes.AddRange (arenaDeadzones.deadlyColumns);
 
 		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
 		{
