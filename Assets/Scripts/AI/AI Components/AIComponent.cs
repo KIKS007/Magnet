@@ -94,19 +94,18 @@ public class AIComponent : MonoBehaviour
 
 	protected virtual bool DangerousCubes (Vector3 movement)
 	{
-		int layer = 1 << LayerMask.NameToLayer ("Movables") | LayerMask.NameToLayer ("IgnoreMovables");
+		int layer = 1 << LayerMask.NameToLayer ("Movables") | 1 << LayerMask.NameToLayer ("IgnoreMovables");
 		RaycastHit hit;
+
+		movement.y = 0;
 
 		Physics.SphereCast (transform.position, 1.3f, movement, out hit, 11f, layer);
 
 		if (hit.collider == null)
 			return false;
 
-		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible" &&  hit.collider.gameObject.tag == "DeadZone")
-		{
-			Debug.Log (hit.collider);
+		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible" || hit.collider.gameObject.tag == "DeadZone")
 			return true;
-		}
 		else
 			return false;
 	}

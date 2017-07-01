@@ -48,6 +48,8 @@ public class AIGameplay : PlayersGameplay
 	[HideInInspector]
 	public Vector3 dashMovement;
 
+	protected ArenaDeadzones arenaDeadzones;
+
 	protected override void Awake ()
 	{
 		controllerNumber = -2;
@@ -59,6 +61,8 @@ public class AIGameplay : PlayersGameplay
 		base.Start ();
 
 		//Setup (playerName, aiLevel);
+
+		arenaDeadzones = FindObjectOfType<ArenaDeadzones> ();
 
 		GlobalVariables.Instance.ListPlayers ();
 	}
@@ -185,6 +189,8 @@ public class AIGameplay : PlayersGameplay
 
 		thrownDangerousCubes.Clear ();
 		dangerousCubes.Clear ();
+
+		dangerousCubes.AddRange (arenaDeadzones.deadlyColumns);
 
 		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
 		{

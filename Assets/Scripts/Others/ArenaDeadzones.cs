@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
+	public delegate void ColumnDeadly (Transform column);
+
 	public enum RandomType { Single, AllSettings, CurrentSettings };
 
 	[Header ("Random")]
@@ -33,6 +35,9 @@ public class ArenaDeadzones : MonoBehaviour
 	public Transform[] backColumns = new Transform[27];
 	public Transform[] rightColumns = new Transform[17];
 	public Transform[] leftColumns = new Transform[17];
+
+	[HideInInspector]
+	public List<GameObject> deadlyColumns = new List<GameObject> ();
 
 	// Use this for initialization
 	void Start () 
@@ -120,16 +125,24 @@ public class ArenaDeadzones : MonoBehaviour
 
 	void SetDeadly (Transform column)
 	{
-		foreach(Transform columnChild in column)
+		for(int i = 0; i < column.childCount; i++)
 		{
-			columnChild.tag = "DeadZone";
-			columnChild.GetComponent<Collider> ().enabled = true;
-			
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration).SetUpdate (false);
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration).SetUpdate (false);
-			
-			columnChild.DOScaleZ (zScale, transitionDuration).SetUpdate (false);
-			columnChild.DOScaleX (xScale, transitionDuration).SetUpdate (false);
+			column.GetChild (i);
+
+			column.GetChild (i).tag = "DeadZone";
+			column.GetChild (i).GetComponent<Collider> ().enabled = true;
+
+			column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration).SetUpdate (false);
+			column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration).SetUpdate (false);
+
+			column.GetChild (i).DOScaleZ (zScale, transitionDuration).SetUpdate (false);
+
+			if(i == 0)
+				column.GetChild (i).DOScaleX (xScale, transitionDuration).SetUpdate (false);
+			else
+				column.GetChild (i).DOScaleX (1.3f, transitionDuration).SetUpdate (false);
+
+			deadlyColumns.Add (column.GetChild (i).gameObject);
 		}
 	}
 }
