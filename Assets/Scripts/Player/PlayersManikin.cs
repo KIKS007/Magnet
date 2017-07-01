@@ -27,11 +27,6 @@ public class PlayersManikin : PlayersGameplay
 		}
 	}
 
-	public override void OnHoldMovable (GameObject movable)
-	{
-		
-	}
-
 	protected override void OnCollisionStay (Collision other)
 	{
 		if(other.gameObject.tag == "DeadZone" && playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)

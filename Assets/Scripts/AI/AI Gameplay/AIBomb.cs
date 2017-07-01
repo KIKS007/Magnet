@@ -16,13 +16,6 @@ public class AIBomb : AIGameplay
 		bombScript = bomb.GetComponent<MovableBomb> ();
 	}
 
-	protected override void Update ()
-	{
-		base.Update ();
-
-
-	}
-
 	protected override void FindCloserElements ()
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)

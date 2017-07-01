@@ -59,10 +59,10 @@ public class BombManager : LastManManager
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
-		yield return new WaitForSecondsRealtime (0.1f);
+		yield return new WaitForSecondsRealtime (0.2f);
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), 0.8f, 8f);
 	}
 
 	protected IEnumerator Setup ()
@@ -104,7 +104,7 @@ public class BombManager : LastManManager
 	{
 		timer -= Time.deltaTime;
 
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false || bombScript.changingPlayer);
 
 		if(timer > 0)
 		{
@@ -193,13 +193,13 @@ public class BombManager : LastManManager
 		if (gameEndLoopRunning)
 			yield break;
 
-		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
+		if(bombScript.playerHolding == null && bombScript.hold == false)
 		{
-			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
+			if(bombScript.attracedBy.Count == 0)
 				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 
-			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
+			else if(bombScript.attracedBy.Count > 0)
+				bombScript.attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
 		}
 	}
 

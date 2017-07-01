@@ -383,12 +383,12 @@ public class AIGameplay : PlayersGameplay
 
 		RemoveFromAIObjectives ();
 
-		OnDeathVoid ();
-
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+		
+		OnDeathVoid ();
 	}
 
 	protected override void OnCollisionStay (Collision other)
@@ -441,7 +441,10 @@ public class AIGameplay : PlayersGameplay
 		}
 
 		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
-			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		{
+			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
+			//other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		}
 
 		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 		{
@@ -455,12 +458,12 @@ public class AIGameplay : PlayersGameplay
 			aiAnimator.SetTrigger ("touchedWall");
 	}
 
-	public override void OnHoldMovable (GameObject movable)
+	public override void OnHoldMovable (GameObject movable, bool forceHold = false)
 	{
-		base.OnHoldMovable (movable);
+		base.OnHoldMovable (movable, forceHold);
 
-		if(closerCubes.Contains (holdMovableTransform.gameObject))
-			closerCubes.Remove (holdMovableTransform.gameObject);
+		if(closerCubes.Contains (movable))
+			closerCubes.Remove (movable);
 	}
 }
 

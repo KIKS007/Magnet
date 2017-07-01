@@ -209,7 +209,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		if (controllerNumber == -1 && this.GetType ().BaseType != typeof (AIGameplay))
+		if (controllerNumber == -1 && GetComponent<AIFXAnimations> () == null)
 			yield break;
 		
 		switch (GlobalVariables.Instance.Startup)
@@ -247,11 +247,19 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
-			//Movement Vector
-			movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
-
-			if(movement.magnitude > 1)
+			if(controllerNumber != 0)
+			{
+				//Movement Vector
+				movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
+				
+				if(movement.magnitude > 1)
+					movement.Normalize();
+			}
+			else
+			{
+				movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
 				movement.Normalize();
+			}
 
 			//Turning Player
 			if (controllerNumber == 0 && playerState != PlayerState.Stunned)
@@ -397,6 +405,8 @@ public class PlayersGameplay : MonoBehaviour
 		holdState = HoldState.CanHold;
 		playerState = PlayerState.None;
 
+		holdMovableTransform.gameObject.tag = "ThrownMovable";
+
 		MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript> ();
 
 		movableScript.slowMoTrigger.triggerEnabled = true;
@@ -407,7 +417,6 @@ public class PlayersGameplay : MonoBehaviour
 		movableScript.playerThatThrew = gameObject;
 		movableScript.AddRigidbody();
 		holdMovableRB = movableScript.rigidbodyMovable;
-        holdMovableTransform.gameObject.tag = "ThrownMovable";
 		movableScript.OnRelease();
 
 
@@ -457,8 +466,9 @@ public class PlayersGameplay : MonoBehaviour
 			OnRepulsing();		
     }
 
-    public virtual void OnHoldMovable(GameObject movable)
+	public virtual void OnHoldMovable(GameObject movable, bool forceHold = false)
     {
+		if(!forceHold)
 		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || holdState == HoldState.CannotHold)
 			return;
 
@@ -571,8 +581,11 @@ public class PlayersGameplay : MonoBehaviour
 			}
 		}
 
-		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
-			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing && other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit)
+		{
+			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
+//			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		}
 
 		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 		{
@@ -771,13 +784,13 @@ public class PlayersGameplay : MonoBehaviour
 
 		RemoveFromAIObjectives ();
 
-		if (OnDeath != null)
-			OnDeath();
-
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
 
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+
+		if (OnDeath != null)
+			OnDeath();
 	}
 
 	protected virtual void RemoveFromAIObjectives ()

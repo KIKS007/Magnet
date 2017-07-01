@@ -384,6 +384,9 @@ public class MovableScript : MonoBehaviour
 	#region Hold / Release
 	public virtual void DestroyRigibody ()
 	{
+		if (rigidbodyMovable == null)
+			return;
+
 		massRb = rigidbodyMovable.mass;
 		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
 		drag = rigidbodyMovable.drag;

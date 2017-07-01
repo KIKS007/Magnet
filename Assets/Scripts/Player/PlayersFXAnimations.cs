@@ -123,6 +123,9 @@ public class PlayersFXAnimations : MonoBehaviour
 	// Update is called once per frame
 	protected virtual void Update () 
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerScript.playerState == PlayerState.Startup)
+			return;
+
 		if(dashAvailableFX.isPlaying)
 		{
 			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];

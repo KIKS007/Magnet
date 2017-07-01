@@ -17,4 +17,18 @@ public class AIShoot : AIComponent
 		
 		AIScript.Shoot ();
 	}
+
+	protected override void Update ()
+	{
+		if (!AIScript.shootLayerEnabled)
+			return;
+
+		if (!CanPlay ())
+			return;
+
+		base.Enable ();
+
+		if(AIScript.holdState == HoldState.Holding)
+			AIScript.Shoot ();
+	}
 }

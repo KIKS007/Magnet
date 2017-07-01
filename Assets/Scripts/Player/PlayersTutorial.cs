@@ -49,11 +49,19 @@ public class PlayersTutorial : PlayersGameplay
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
-			//Movement Vector
-			movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
+			if(controllerNumber != 0)
+			{
+				//Movement Vector
+				movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
 
-			if(movement.magnitude > 1)
+				if(movement.magnitude > 1)
+					movement.Normalize();
+			}
+			else
+			{
+				movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
 				movement.Normalize();
+			}
 
 			//Turning Player
 			if (controllerNumber == 0 && playerState != PlayerState.Stunned)
@@ -243,8 +251,11 @@ public class PlayersTutorial : PlayersGameplay
 			}
 		}
 
-		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
-			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing && other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit)
+		{
+			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
+//			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		}
 
 		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 		{
@@ -255,10 +266,10 @@ public class PlayersTutorial : PlayersGameplay
 		}
 	}
 
-	public override void OnHoldMovable (GameObject movable)
+	public override void OnHoldMovable (GameObject movable, bool forceHold = false)
 	{
 		if((tutorialManager.tutorialState & TutorialState.Shoot) == TutorialState.Shoot)
-			base.OnHoldMovable (movable);
+			base.OnHoldMovable (movable, forceHold);
 	}
 
 	protected override IEnumerator DeathCoroutine ()

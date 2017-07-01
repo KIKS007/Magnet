@@ -25,7 +25,6 @@ public class VibrationManager : Singleton<VibrationManager>
 	public FeedbackType whichFeedbackTest = FeedbackType.Default;
 
 	private float timeToStopVibration = 1;
-	private bool applicationIsQuitting = false;
 
 	// Use this for initialization
 	void Start () 
@@ -192,7 +191,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		
 	public void StopVibration (int whichPlayer)
 	{
-		if(!applicationIsQuitting)
+		if(!GlobalVariables.applicationIsQuitting)
 		{
 			playersLeftMotor [whichPlayer] = 0;
 			playersRightMotor [whichPlayer] = 0;
@@ -286,8 +285,6 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	void OnApplicationQuit ()
 	{
-		applicationIsQuitting = true;
-
 		StopAllVibration ();
 	}
 }

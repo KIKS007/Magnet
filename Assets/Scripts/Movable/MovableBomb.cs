@@ -2,6 +2,7 @@
 using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using UnityEngine.PostProcessing;
 
 public class MovableBomb : MovableScript 
 {
@@ -11,6 +12,9 @@ public class MovableBomb : MovableScript
 	public float trackSpeedAdded = 0.001f;
 
 	public bool trackingPlayer = false;
+
+	[HideInInspector]
+	public bool changingPlayer = false;
 
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
@@ -34,6 +38,8 @@ public class MovableBomb : MovableScript
 		deadlyParticle.Stop ();
 		deadlyParticle2.Stop ();
 
+		changingPlayer = false;
+
 		if(playerHolding == null)
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
@@ -54,40 +60,12 @@ public class MovableBomb : MovableScript
 		if(tag == "Movable" && other.gameObject.tag == "Player" 
 			|| tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
-			if(playerThatThrew == null && playerScript.playerState != PlayerState.Stunned)
+			if(playerThatThrew == null || playerThatThrew != other.gameObject)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-				playerScript.OnHoldMovable (gameObject);
-				playerHolding = other.gameObject;
-
-				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
-
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
-			}
-
-			else if(playerScript.playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
-			{
-				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
-
-				playerScript.OnHoldMovable (gameObject);
-				playerHolding = other.gameObject;
-
-				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
-
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
-			}
-
-			else if(playerThatThrew != other.gameObject && playerScript.playerState != PlayerState.Stunned)
-			{
-				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
-
-				playerScript.OnHoldMovable (gameObject);
+				playerScript.OnHoldMovable (gameObject, true);
 				playerHolding = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
@@ -115,7 +93,12 @@ public class MovableBomb : MovableScript
 	{
 		base.OnHold ();
 
+		if (playerHolding != null)
+			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
+
 		playerHolding = player.gameObject;
+
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath += ChooseAnotherPlayer;
 	}
 
 	public override void OnRelease ()
@@ -160,6 +143,8 @@ public class MovableBomb : MovableScript
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
 
 		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
+
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
 
 		playerHolding.GetComponent<PlayersGameplay> ().Death (DeathFX.All, explosionPos);
 
@@ -227,5 +212,28 @@ public class MovableBomb : MovableScript
 
 		if (!hold)
 			StartCoroutine (AddSpeed ());
+	}
+
+	void ChooseAnotherPlayer ()
+	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerHolding.GetComponent<PlayersGameplay> ().livesCount != 0)
+			return;
+
+		changingPlayer = true;
+
+		StartCoroutine (ChooseAnotherPlayerCoroutine ());
+	}
+
+	IEnumerator ChooseAnotherPlayerCoroutine ()
+	{
+		yield return new WaitForSecondsRealtime (2f);
+
+		if(attracedBy.Count == 0)
+			GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
+
+		else if(attracedBy.Count > 0)
+			attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);	
+
+		changingPlayer = false;
 	}
 }

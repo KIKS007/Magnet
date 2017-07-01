@@ -143,7 +143,7 @@ public class PlayersSounds : MonoBehaviour
 
 	void FadeSounds ()
 	{
-		if (!MasterAudio.Instance || !SoundsManager.Instance || !playerScript)
+		if (GlobalVariables.applicationIsQuitting || !playerScript)
 			return;
 		
 		MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], 0, fadeDuration);

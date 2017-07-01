@@ -177,12 +177,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		}
 	}
 
-	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration, float sphereRadius = checkSphereRadius)
 	{
-		StartCoroutine (RandomPositionMovables (allMovables, scaleDuration));
+		StartCoroutine (RandomPositionMovables (allMovables, scaleDuration, sphereRadius));
 	}
 
-	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration)
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration, float sphereRadius = checkSphereRadius)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string[] allTags = new string[allMovables.Length];
