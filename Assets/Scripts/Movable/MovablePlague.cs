@@ -8,15 +8,22 @@ public class MovablePlague : MovableScript
 	[Header ("PLAGUE")]
 	public float deadlyCubeTransitionDuration = 0.5f;
 	public float deadlyCubeMass = 50;
-	public float deadlyCubeMaxVelocity = 2;
-	[Range (0, 1)]
-	public float deadlyCubeDeceleration = 0.97f;
+
+	private bool deadlyTransition = false;
 
 	public override void Start ()
 	{
 		base.Start ();
 
 		ToNeutralColor (0);
+	}
+
+	protected override void LowVelocity ()
+	{
+		base.LowVelocity ();
+
+		if(currentVelocity < limitVelocity && gameObject.tag == "DeadCube" && rigidbodyMovable.mass != deadlyCubeMass)
+			rigidbodyMovable.mass = deadlyCubeMass;
 	}
 
 	protected override void HitPlayer (Collision other)
@@ -30,7 +37,7 @@ public class MovablePlague : MovableScript
 			
 			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{
-				StartCoroutine (DeadlyTransition ());
+				//StartCoroutine (DeadlyTransition ());
 				
 				playerScript.StunVoid(true);
 				
@@ -60,28 +67,25 @@ public class MovablePlague : MovableScript
 		}
 	}
 
-	IEnumerator DeadlyTransition ()
+	protected override void HitOtherMovable (Collision other)
 	{
+		base.HitOtherMovable (other);
+
+		if(other.gameObject.tag == "DeadCube" && !deadlyTransition && currentVelocity > limitVelocity)
+			DeadlyTransition ();
+	}
+
+	void DeadlyTransition ()
+	{
+		deadlyTransition = true;
+
 		cubeColor = CubeColor.Neutral;
 
 		if(GetComponent<PlayersDeadCube> () == null)
 			GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
 
-		tag = "Untagged";
-
-		ToDeadlyColor ();
-
-		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
-		{
-			rigidbodyMovable.velocity = rigidbodyMovable.velocity.normalized * deadlyCubeDeceleration;
-
-			yield return new WaitForFixedUpdate ();
-		}
-
-		yield return new WaitForSeconds (deadlyCubeTransitionDuration);
-
 		tag = "DeadCube";
 
-		rigidbodyMovable.mass = deadlyCubeMass;
+		ToDeadlyColor ();
 	}
 }
