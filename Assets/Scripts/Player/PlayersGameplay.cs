@@ -247,19 +247,9 @@ public class PlayersGameplay : MonoBehaviour
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
-			if(controllerNumber != 0)
-			{
-				//Movement Vector
-				movement = new Vector3(rewiredPlayer.GetAxis("Move Horizontal"), 0f, rewiredPlayer.GetAxis("Move Vertical"));
-				
-				if(movement.magnitude > 1)
-					movement.Normalize();
-			}
-			else
-			{
-				movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
-				movement.Normalize();
-			}
+			//Movement Vector
+			movement = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
+			movement.Normalize();
 
 			//Turning Player
 			if (controllerNumber == 0 && playerState != PlayerState.Stunned)
