@@ -254,6 +254,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		{
 			Debug.LogWarning ("No (valid) Musics in folder!");
 			SetGamePlaylist ();
+			loadButtonText.text = "Load";
+			canTakeTime.SetActive (false);
 			yield break;
 		}
 
