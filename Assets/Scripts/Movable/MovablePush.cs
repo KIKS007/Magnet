@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class MovablePush : MovableScript 
 {
-	private float deadlyDelay = 0.02f;
+	private float deadlyDelay = 0.045f;
 
 	protected override void LowVelocity () 
 	{
