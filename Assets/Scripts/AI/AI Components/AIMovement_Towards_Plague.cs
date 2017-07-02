@@ -5,8 +5,6 @@ using System.Linq;
 
 public class AIMovement_Towards_Plague : AIMovement_Towards 
 {
-	private int randomPlayers = 3;
-
 	protected override void OnEnable ()
 	{
 		AIScript.holdTarget = null;

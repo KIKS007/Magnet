@@ -35,8 +35,8 @@ public class MovableScript : MonoBehaviour
 	protected bool canPlaySound = true;
 
 	protected const float toColorDuration = 0.5f;
-	protected const float toNeutralDuration = 1.5f;
-	protected const float toDeadlyDuration = 1f;
+	protected const float toNeutralDuration = 0.5f;
+	protected const float toDeadlyDuration = 0.5f;
 
 	protected float massRb;
 	protected float drag;

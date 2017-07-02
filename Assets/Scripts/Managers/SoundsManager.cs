@@ -152,8 +152,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		initialAttractingVolume = MasterAudio.GetGroupVolume ( attractingSounds [0]);
 		initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSounds [0]);
 
-		MasterAudio.SetGroupVolume (attractingSounds [0], 0);
-		MasterAudio.SetGroupVolume (repulsingSounds [0], 0);
+		MuteAttractionRepulsionSounds ();
 
 		if(canTakeTime != null)
 			canTakeTime.SetActive (false);
@@ -449,6 +448,15 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		foreach(string s in repulsingSounds)
 			MasterAudio.StopAllOfSound (s);
+	}
+
+	void MuteAttractionRepulsionSounds ()
+	{
+		foreach(string s in attractingSounds)
+			MasterAudio.SetGroupVolume (s, 0);
+
+		foreach(string s in repulsingSounds)
+			MasterAudio.SetGroupVolume (s, 0);
 	}
 
 	void RandomMusic ()
