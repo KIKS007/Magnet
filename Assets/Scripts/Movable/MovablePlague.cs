@@ -86,6 +86,6 @@ public class MovablePlague : MovableScript
 
 		tag = "DeadCube";
 
-		ToDeadlyColor ();
+		ToDeadlyColor (0.1f);
 	}
 }

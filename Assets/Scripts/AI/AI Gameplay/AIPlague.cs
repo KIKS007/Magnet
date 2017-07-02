@@ -34,10 +34,10 @@ public class AIPlague : AIGameplay
 		Debug.DrawLine (transform.position, hit.point, Color.red);
 //		Debug.Log (hit.collider);
 
-		if (hit.collider.gameObject.tag == "Player" && hit.collider.gameObject != gameObject)
+		if (hit.collider && hit.collider.gameObject.tag == "Player" && hit.collider.gameObject != gameObject)
 			return true;
 
-		else if(hit.collider.gameObject.tag == "DeadCube")
+		else if(hit.collider && hit.collider.gameObject.tag == "DeadCube")
 		{
 			Physics.Raycast (hit.point, Vector3.Reflect (forward, hit.normal), out hit2, 100f, plagueLayer2, QueryTriggerInteraction.Ignore);
 			Debug.DrawRay (hit.point, Vector3.Reflect (forward, hit.normal) * 20, Color.red);

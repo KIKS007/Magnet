@@ -19,6 +19,12 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public List<ScoreboardPosition> playersPanelsPosition = new List<ScoreboardPosition> ();
 	public List<float> playersPanelsYPos = new List<float> ();
 
+	[Header ("Player Position")]
+	public List<GameObjectList> playersPositions = new List<GameObjectList> ();
+
+	[Header ("Player Titles")]
+	public List<GameObjectList> playersTitles = new List<GameObjectList> ();
+
 	[Header ("Stats")]
 	public GameObject statsPrefab;
 	public float initialYPos;
@@ -69,12 +75,33 @@ public class MenuEndMode : SerializedMonoBehaviour
 			text.transform.localScale = Vector3.one;
 		}
 
+		foreach(var l in playersTitles)
+			foreach(var t in l.gameobjects)
+				t.SetActive (false);
+
+		foreach(var l in playersPositions)
+			foreach(var t in l.gameobjects)
+				t.SetActive (false);
+
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 		{
 			playersPanels [(int)g.GetComponent<PlayersGameplay> ().playerName].gameObject.SetActive (true);
 			enabledPanels.Add (playersPanels [(int)g.GetComponent<PlayersGameplay> ().playerName]);
-		}
 
+			if (g.GetComponent<AIFXAnimations> () == null)
+			{
+				Debug.Log ("Player :" + g.name + " : " + (int)g.GetComponent<PlayersGameplay> ().playerName);
+				Debug.Log (playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].name + " parent " + playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].transform.parent.parent.gameObject.name);
+				playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].SetActive (true);
+			}
+			else
+			{
+				Debug.Log ("Bot :" + g.name + " : " + (int)g.GetComponent<PlayersGameplay> ().playerName);
+				int level = (int) g.GetComponent<AIGameplay> ().aiLevel;
+				Debug.Log (playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].name + " parent " + playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].transform.parent.parent.gameObject.name);
+				playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].SetActive (true);
+			}
+		}
 
 		CreateStats ();
 
@@ -102,16 +129,12 @@ public class MenuEndMode : SerializedMonoBehaviour
 			PlayerName playerName = (PlayerName) Enum.Parse (typeof(PlayerName), keys [i]);
 			int wins = playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()];
 
-			foreach (Transform t in playersPanels [(int)playerName].GetChild (3).transform)
-				t.gameObject.SetActive (false);
-
-
 			playersPanels [(int)playerName].DOAnchorPosY (playersPanelsYPos [ScoreOder (i, wins)], scoreTextDuration).SetEase (panelTweenEase);
 			
 			if(!previousScales.ContainsKey (wins))
 				previousScales.Add (wins, ScoreOder (i, wins));
 
-			playersPanels [(int)playerName].GetChild (3).GetChild (NumberOrder (i, wins)).gameObject.SetActive (true);
+			playersPositions [(int)playerName].gameobjects [NumberOrder (i, wins)].SetActive (true);
 
 			StartCoroutine (GradualScore (scoreboardPlayers [(int)playerName], playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()]));
 		}
@@ -249,4 +272,10 @@ public class StatsPrefab
 {
 	public WhichStat stats;
 	public GameObject prefab;
+}
+
+[System.Serializable]
+public class GameObjectList
+{
+	public List<GameObject> gameobjects = new List<GameObject> ();
 }

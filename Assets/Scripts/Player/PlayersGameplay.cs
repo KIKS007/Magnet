@@ -631,7 +631,8 @@ public class PlayersGameplay : MonoBehaviour
 		if (playerState == PlayerState.Stunned)
 			return;
 
-        StartCoroutine(Stun(cubeHit));
+		if(gameObject.activeSelf)
+			StartCoroutine(Stun(cubeHit));
     }
 
     protected virtual IEnumerator Stun(bool cubeHit)
