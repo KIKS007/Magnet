@@ -90,15 +90,11 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 			if (g.GetComponent<AIFXAnimations> () == null)
 			{
-				Debug.Log ("Player :" + g.name + " : " + (int)g.GetComponent<PlayersGameplay> ().playerName);
-				Debug.Log (playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].name + " parent " + playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].transform.parent.parent.gameObject.name);
 				playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [0].SetActive (true);
 			}
 			else
 			{
-				Debug.Log ("Bot :" + g.name + " : " + (int)g.GetComponent<PlayersGameplay> ().playerName);
 				int level = (int) g.GetComponent<AIGameplay> ().aiLevel;
-				Debug.Log (playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].name + " parent " + playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].transform.parent.parent.gameObject.name);
 				playersTitles [(int)g.GetComponent<PlayersGameplay> ().playerName].gameobjects [level + 1].SetActive (true);
 			}
 		}

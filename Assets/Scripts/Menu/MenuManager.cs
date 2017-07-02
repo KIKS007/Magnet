@@ -10,6 +10,7 @@ using Rewired;
 using GameAnalyticsSDK;
 using System;
 using GameAnalyticsSDK.Setup;
+using Steamworks;
 
 public class MenuManager : Singleton <MenuManager> 
 {
@@ -82,6 +83,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	[HideInInspector]
 	public bool startScreen = true;
+
+	protected Callback<GameOverlayActivated_t> GameOverlayActivated;
+
 	#endregion
 
 	#region Setup
@@ -113,6 +117,18 @@ public class MenuManager : Singleton <MenuManager>
 				elementsToEnable [i].SetActive (true);
 	}
 
+	void OnEnable ()
+	{
+		if (SteamManager.Initialized)
+			GameOverlayActivated = Callback<GameOverlayActivated_t>.Create (OnSteamGameOverlay);
+	}
+
+	void OnSteamGameOverlay (GameOverlayActivated_t callback)
+	{
+		if (callback.m_bActive != 0 && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			PauseResumeGame ();	
+	}
+
 	void SetupLogo ()
 	{
 		mainMenuScript.secondaryContents [0].content.gameObject.SetActive (true);
@@ -130,6 +146,12 @@ public class MenuManager : Singleton <MenuManager>
 		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
 
 		startScreen = false;
+	}
+
+	void OnApplicationFocus (bool value)
+	{
+		if(!value && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			PauseResumeGame ();	
 	}
 	#endregion
 
