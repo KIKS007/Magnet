@@ -11,6 +11,7 @@ public class MovableBurden : MovableScript
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
 	public float trackSpeedAdded = 0.001f;
+	public Transform deadlyTrails;
 
 	private float speedAddedCooldown = 0.5f;
 
@@ -67,6 +68,8 @@ public class MovableBurden : MovableScript
 	IEnumerator ColorTransition ()
 	{
 		ToColor (targetPlayer);
+
+		deadlyTrails.GetChild ((int)targetPlayerName).gameObject.SetActive (true);
 
 		yield return new WaitForSeconds (1f);
 
