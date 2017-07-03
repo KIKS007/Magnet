@@ -43,7 +43,11 @@ public class MenuEndMode : SerializedMonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		GlobalVariables.Instance.OnEndMode += ()=> StartCoroutine (PlayersPanels ());
+		GlobalVariables.Instance.OnEndMode += ()=> {
+
+			if(GlobalVariables.Instance.CurrentGamesCount == GlobalVariables.Instance.GamesCount)
+				StartCoroutine (PlayersPanels ());
+		};
 
 		GlobalVariables.Instance.OnMenu += ()=> 
 		{

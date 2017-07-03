@@ -241,7 +241,7 @@ public class PlayersTutorial : PlayersGameplay
 			}
 		}
 
-		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing && other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit)
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
 		{
 			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
 //			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
