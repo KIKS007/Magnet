@@ -115,7 +115,7 @@ public class SteamAchievements : Singleton<SteamAchievements>
 			GlobalVariables.Instance.OnStartMode += () => UnlockAchievement (AchievementID.ACH_WIN_ONE_GAME);
 	}
 
-	bool Achieved (AchievementID id)
+	public bool Achieved (AchievementID id)
 	{
 		foreach(var a in Achievements)
 		{

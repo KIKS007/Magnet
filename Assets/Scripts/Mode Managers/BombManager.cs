@@ -121,9 +121,13 @@ public class BombManager : LastManManager
 			timerText.text = "00";
 
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeTrackingSound, bomb.transform);
-			bombScript.StartCoroutine ("Explode");
+
+			if(bomb.activeSelf)
+				bombScript.StartCoroutine ("Explode");
 
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
+
+			MasterAudio.StopSoundGroupOfTransform (bomb.transform, SoundsManager.Instance.cubeTrackingSound);
 
 			if (gameEndLoopRunning)
 				yield break;
@@ -151,8 +155,14 @@ public class BombManager : LastManManager
 
 	}
 
+	public void SpawnNewBomb ()
+	{
+		timer = -1f;
+	}
+
 	IEnumerator SpawnBomb ()
 	{
+
 		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
 		firstSpawn = false;
 		bombScript.ResetColor ();

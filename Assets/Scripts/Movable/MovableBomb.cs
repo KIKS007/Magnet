@@ -216,24 +216,20 @@ public class MovableBomb : MovableScript
 
 	void ChooseAnotherPlayer ()
 	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerHolding.GetComponent<PlayersGameplay> ().livesCount != 0)
+		if (tag == "DeadCube")
 			return;
 
-		changingPlayer = true;
+		playerHolding = null;
+		trackingPlayer = false;
+		hold = false;
 
-		StartCoroutine (ChooseAnotherPlayerCoroutine ());
-	}
+		Vector3 scale = transform.localScale;
 
-	IEnumerator ChooseAnotherPlayerCoroutine ()
-	{
-		yield return new WaitForSecondsRealtime (2f);
-
-		if(attracedBy.Count == 0)
-			GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
-
-		else if(attracedBy.Count > 0)
-			attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);	
-
-		changingPlayer = false;
+		transform.DOScale (0, 0.5f).OnComplete (()=> 
+			{
+				gameObject.SetActive (false);
+				transform.localScale = scale;
+				FindObjectOfType<BombManager> ().timer = -1f;
+			});
 	}
 }
