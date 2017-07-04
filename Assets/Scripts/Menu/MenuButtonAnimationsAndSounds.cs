@@ -7,16 +7,20 @@ using DG.Tweening;
 
 public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler, ISelectHandler, IPointerEnterHandler, IPointerExitHandler, IDeselectHandler, ISubmitHandler, IPointerDownHandler, IPointerUpHandler
 {
-	[Header ("On Selected Feedback")]
+	[Header ("Settings")]
+	public bool scaleChange = true;
+	public bool colorChange = true;
+	public bool vibration = true;
+
+	[Header ("Debug")]
 	public bool selected;
-	public bool scaleChangement = true;
 
 	private Text text;
 
 	private RectTransform buttonRect;
 	
 	private static float scaleOnSelected = 1.1f;
-	private static float scaleOnDuration = 0.5f;
+	private static float scaleOnDuration = 0.25f;
 
 	private EventSystem eventSys;
 
@@ -33,6 +37,12 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		buttonComponent = GetComponent<Button> ();
 		text = transform.GetChild (0).GetComponent<Text> ();
 
+		if (colorChange)
+			ColorChangeSetup ();
+	}
+
+	void ColorChangeSetup ()
+	{
 		if (tag == "MainButton")
 		{
 			mainButton = true;
@@ -50,6 +60,18 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	void Update ()
 	{
+		if (colorChange)
+			ColorChangeUpdate ();
+
+		if(scaleChange && buttonComponent.interactable == true)
+		{
+			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && !DOTween.IsTweening ("ResetScale" + GetInstanceID ()))
+				buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
+		}
+	}
+
+	void ColorChangeUpdate ()
+	{
 		if(buttonComponent.interactable == true)
 		{
 			if(!pointerDown)
@@ -60,20 +82,22 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 				else
 					text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 			}
-
-			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && !DOTween.IsTweening ("ResetScale" + GetInstanceID ()))
-				buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
 		}
-
 		else
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonIdleColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
+	}
+
+	void ColorChange ()
+	{
+		if (colorChange)
+			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 	}
 
 	public void OnSelect () 
 	{
 		selected = true;
 			
-		if(scaleChangement && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 
 	}
@@ -82,23 +106,22 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	{
 		selected = false;
 
-		if(scaleChangement && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
+		if(scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
 			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
 
 	}
-
-
 
 	//OnSelect Methods
 	public void OnPointerClick( PointerEventData data )
 	{
 		if(buttonComponent.interactable == true)
 		{
-			VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
+			if(vibration)
+				VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
 			
 			OnSelect ();
 
-			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
+			ColorChange ();
 		}
 	}
 
@@ -120,7 +143,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 			selected = true;			
 		}
 
-		if(scaleChangement && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 		
 		SoundsManager.Instance.MenuNavigation ();
@@ -146,13 +169,17 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	{
 		if(buttonComponent.interactable == true)
 		{
-			VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
+			if(vibration)
+				VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
 			
 			OnDeselect ();
 
 			SoundsManager.Instance.MenuSubmit ();
 
-			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
+			ColorChange ();
+
+			if (colorChange)
+				text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 		}
 	}
 
@@ -162,7 +189,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		{
 			pointerDown = true;
 
-			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
+			ColorChange ();
 		}
 
 	}

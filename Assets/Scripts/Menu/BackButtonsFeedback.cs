@@ -43,16 +43,10 @@ public class BackButtonsFeedback : MonoBehaviour
 		if (GetComponent<Image> () != null)
 			initialColor = GetComponent<Image> ().color;
 	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		WhichFeedback ();
-	}
 
-	void WhichFeedback ()
+	public void Back (int rewiredIndex)
 	{
-		if(GlobalVariables.Instance.rewiredPlayers [0].GetButtonDown("UI Cancel"))
+		if(rewiredIndex == 0)
 		{
 			if (whichButton == WhichButton.Esc || whichButton == WhichButton.RightClick)
 				ButtonPressed ();
@@ -61,7 +55,7 @@ public class BackButtonsFeedback : MonoBehaviour
 				BackText ();
 		}
 
-		if(GlobalVariables.Instance.rewiredPlayers [1].GetButtonDown("UI Cancel"))
+		if(rewiredIndex > 0)
 		{
 			if(whichButton == WhichButton.B)
 				ButtonPressed ();

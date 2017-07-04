@@ -80,6 +80,7 @@ public class MenuManager : Singleton <MenuManager>
 	private LoadModeManager loadModeScript;
 	private MenuCameraMovement cameraMovement;
 	private bool isWaitingToSelect = false;
+	private BackButtonsFeedback[] backButtonsScript = new BackButtonsFeedback[0];
 
 	[HideInInspector]
 	public bool startScreen = true;
@@ -108,6 +109,8 @@ public class MenuManager : Singleton <MenuManager>
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
+		backButtonsScript = backButtons.transform.GetComponentsInChildren<BackButtonsFeedback> ();
+
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
 		SetupLogo ();
@@ -115,6 +118,8 @@ public class MenuManager : Singleton <MenuManager>
 		for (int i = 0; i < elementsToEnable.Count; i++)
 			if(elementsToEnable [i] != null)
 				elementsToEnable [i].SetActive (true);
+
+		StartCoroutine (WaitStartScreen ());
 	}
 
 	void OnEnable ()
@@ -133,6 +138,37 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		mainMenuScript.secondaryContents [0].content.gameObject.SetActive (true);
 		mainMenuScript.secondaryContents [0].content.anchoredPosition = mainMenuScript.secondaryContents [0].onScreenPos;
+	}
+
+	IEnumerator WaitStartScreen ()
+	{
+		bool startScreenInput = false;
+
+		do
+		{
+			if(Input.GetMouseButton(0))
+			{
+				startScreenInput = true;
+				break;
+			}	
+
+			for(int i = 0; i < 2; i++)
+			{
+				if(GlobalVariables.Instance.rewiredPlayers[i].GetButton("UI Submit") || GlobalVariables.Instance.rewiredPlayers[i].GetButton("UI Start"))
+				{
+					startScreenInput = true;
+					break;
+				}
+			}
+
+			yield return 0;
+		}
+		while (!startScreenInput);
+
+		VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
+
+		StartScreen ();
+
 	}
 		
 	void StartScreen ()
@@ -177,42 +213,45 @@ public class MenuManager : Singleton <MenuManager>
 
 	void CheckMenuInput ()
 	{
-		if(!isTweening && !DOTween.IsTweening ("MenuCamera"))
+		if (isTweening || DOTween.IsTweening ("MenuCamera") || startScreen)
+			return;
+
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			return;
+
+		//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+		for(int i = 0; i < 2; i++)
 		{
-			//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-			for(int i = 0; i < 2; i++)
+			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
 			{
-				if(startScreen)
-				{
-					if(GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Submit") || GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start") || Input.GetMouseButtonDown(0))
-						StartScreen ();
-				}
-				else
-				{
-					if (GlobalVariables.Instance.GameState != GameStateEnum.Playing && GlobalVariables.Instance.GameState != GameStateEnum.EndMode && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
-						currentMenu.Cancel ();
-				}
+				foreach (var b in backButtonsScript)
+					b.Back (i);
+				
+				currentMenu.Cancel ();
 			}
 		}
 	}
 
 	void CheckPauseInput ()
 	{
-		if(!isTweening && !DOTween.IsTweening ("MenuCamera"))
-		{
-			//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-			for(int i = 0; i < 2; i++)
-			{
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
-				{
-					currentMenu.HideMenu ();
-					PauseResumeGame ();
-				}
+		if (isTweening || DOTween.IsTweening ("MenuCamera"))
+			return;
 
-				if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start"))
-					PauseResumeGame ();				
-			}			
-		}
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Paused && GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+		
+		//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+		for(int i = 0; i < 2; i++)
+		{
+			if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
+			{
+				currentMenu.HideMenu ();
+				PauseResumeGame ();
+			}
+			
+			if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start"))
+				PauseResumeGame ();				
+		}			
 	}
 		
 	public void ExitMenu ()
@@ -673,6 +712,8 @@ public class MenuManager : Singleton <MenuManager>
 			selectable = whichMenu.selectable;
 
 		eventSyst.SetSelectedGameObject (null);
+
+		yield return new WaitWhile (()=> isTweening || DOTween.IsTweening ("MenuCamera"));
 
 		if(selectable != null)
 		{
