@@ -5,7 +5,9 @@ using DG.Tweening;
 
 public class MovablePush : MovableScript 
 {
-	private float deadlyDelay = 0.045f;
+	private float deadlyDelay = 0.01f;
+
+	private GameObject playerThatThrewTemp;
 
 	protected override void LowVelocity () 
 	{
@@ -47,18 +49,17 @@ public class MovablePush : MovableScript
 			if (playerScript.dashState != DashState.Dashing)
 				return;
 
-			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
-			{
-				DeadlyTransition ();
+			playerThatThrewTemp = other.gameObject;
 
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
-				
-				if(playerThatThrew != null)
-					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
-			}				
+			DOTween.Kill ("PushNull"+ gameObject.GetInstanceID ());
+			DOVirtual.DelayedCall (0.5f, ()=> playerThatThrewTemp = null).SetId ("PushNull"+ gameObject.GetInstanceID ());
+
+			DeadlyTransition ();
+			
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 		}
 
-		if(other.collider.tag == "Player" && tag == "DeadCube")
+		if(other.collider.tag == "Player" && tag == "DeadCube" && other.gameObject != playerThatThrewTemp)
 		{
 			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
 
