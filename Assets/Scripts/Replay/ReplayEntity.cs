@@ -84,6 +84,10 @@ namespace Replay
 
 	public class ReplayEntity : MonoBehaviour
 	{
+		[Header ("States")]
+		public bool isRecording = false;
+
+		[Header ("Data")]
 		public RecordData data = new RecordData ();
 
 		private Rigidbody rigidbody;
@@ -111,8 +115,11 @@ namespace Replay
 
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
 				{
+					isRecording = true;
 					data.Add (transform);
-				}
+				} 
+				else
+					isRecording = false;
 			}
 		}
 

@@ -112,11 +112,10 @@ namespace Replay
 
 		void Awake ()
 		{
-			if (ReplayManager.Instance == null) {
+			if (ReplayManager.Instance == null) 
 				ReplayManager.Instance = this;
-			} else {
+			else 
 				Destroy (gameObject);
-			}
 		}
 
 		public float GetCurrentTime ()
@@ -126,14 +125,16 @@ namespace Replay
 
 		public void StartRecording ()
 		{
-			isRecording = true;
 			_startTime = Time.time;
+			isRecording = true;
+			isPlaying = false;
 		}
 
 		public void StopRecording ()
 		{
 			_endTime = Time.time;
 			isRecording = false;
+			isPlaying = false;
 		}
 
 		void StartReplay ()
@@ -165,11 +166,8 @@ namespace Replay
 
 		void StopReplay ()
 		{
-			if (OnReplayTimeChange == null)
-				return;
-
 			_replayCanvas.SetActive (false);
-			isPlaying = true;
+			isPlaying = false;
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 0;
 
 			if(OnReplayTimeChange != null)
@@ -177,6 +175,10 @@ namespace Replay
 
 			if (OnReplayStop != null) 
 				OnReplayStop ();
+
+			OnReplayStart = null;
+			OnReplayStop = null;
+			OnReplayTimeChange = null;
 		}
 
 		// Use this for initialization
@@ -238,29 +240,21 @@ namespace Replay
 		// Update is called once per frame
 		void Update ()
 		{
-			if (isPlaying) {
+			if (isPlaying) 
+			{
 				_slide.value += Time.deltaTime * Time.timeScale;
 
 				if(OnReplayTimeChange != null)
 					OnReplayTimeChange (_slide.value);
 			}
-
-
-			// You can remove/modify this if you use Space for something else
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				if (isPlaying) {
-					Pause ();
-				} else {
-					Play ();
-				}
-			}
-			// ------
 		}
 
 		public void Play ()
 		{
 			_slide.Select ();
-			if (!isPlaying && _slide.value != _endTime - _startTime) {
+
+			if (!isPlaying && _slide.value != _endTime - _startTime) 
+			{
 				isPlaying = true;
 
 				Swap (_play.gameObject, _pause.gameObject);
@@ -273,8 +267,8 @@ namespace Replay
 
 		void Swap (GameObject _out, GameObject _in = null, float delay = 0f)
 		{
-		
-			if (_in != null) {
+			if (_in != null) 
+			{
 				_in.SetActive (true);
 			}
 
@@ -284,7 +278,9 @@ namespace Replay
 		public void Pause ()
 		{
 			_slide.Select ();
-			if (isPlaying) {
+
+			if (isPlaying) 
+			{
 				isPlaying = false;
 
 				Swap (_pause.gameObject, _play.gameObject);
@@ -308,7 +304,8 @@ namespace Replay
 		{
 			RefreshTimer ();
 
-			if (replayReplayAvailable) {
+			if (replayReplayAvailable) 
+			{
 				replayReplayAvailable = false;
 				Swap (_replay.gameObject, _play.gameObject);
 			}

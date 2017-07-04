@@ -911,6 +911,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void RestartMode ()
 	{
+		if (isTweening)
+			return;
+
 		StartCoroutine (RestartModeCoroutine ());
 	}
 
