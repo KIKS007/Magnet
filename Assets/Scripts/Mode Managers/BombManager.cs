@@ -59,10 +59,10 @@ public class BombManager : LastManManager
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
-		yield return new WaitForSecondsRealtime (0.2f);
+		yield return new WaitForSecondsRealtime (0.3f);
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), 0.8f, 8f);
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), 0.6f, 8f);
 	}
 
 	protected IEnumerator Setup ()
@@ -162,7 +162,6 @@ public class BombManager : LastManManager
 
 	IEnumerator SpawnBomb ()
 	{
-
 		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
 		firstSpawn = false;
 		bombScript.ResetColor ();

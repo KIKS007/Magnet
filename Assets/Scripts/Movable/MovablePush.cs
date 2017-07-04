@@ -49,6 +49,7 @@ public class MovablePush : MovableScript
 			if (playerScript.dashState != DashState.Dashing)
 				return;
 
+			playerThatThrew = other.gameObject;
 			playerThatThrewTemp = other.gameObject;
 
 			DOTween.Kill ("PushNull"+ gameObject.GetInstanceID ());

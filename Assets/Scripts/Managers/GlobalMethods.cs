@@ -211,7 +211,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				loopCount++;
 				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+			while(Physics.CheckSphere(newPos, sphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
