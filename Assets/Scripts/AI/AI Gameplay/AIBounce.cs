@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Replay;
 
 public class AIBounce : AIGameplay
 {
@@ -9,6 +10,9 @@ public class AIBounce : AIGameplay
 
 	protected override void Update ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		base.Update ();
 
 		if(holdState == HoldState.Holding && IsAimingPlayer ())

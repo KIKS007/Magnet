@@ -44,47 +44,14 @@ namespace Replay
 		}
 	}
 
-	[Serializable]
-	public class TimelinedDeadlyParticles
-	{
-		public AnimationCurve deadParticle;
-		public AnimationCurve deadParticle2;
-
-		public void Add (Vector2 particles)
-		{
-			float time = ReplayManager.Instance.GetCurrentTime ();
-			deadParticle.AddKey (time, particles.x);
-			deadParticle2.AddKey (time, particles.y);
-		}
-
-		public void Set (float _time, ParticleSystem ps1, ParticleSystem ps2)
-		{
-			if (deadParticle.Evaluate (_time) > 0.5f && !ps1.isEmitting)
-				ps1.Play ();
-
-			if (deadParticle2.Evaluate (_time) > 0.5f && !ps2.isEmitting)
-				ps2.Play ();
-
-			if (deadParticle.Evaluate (_time) < 0.5f && ps1.isEmitting)
-				ps1.Stop ();
-
-			if (deadParticle2.Evaluate (_time) < 0.5f && ps2.isEmitting)
-				ps2.Stop ();
-		}
-	}
-
 	public class ReplayMovable : MonoBehaviour
 	{
 		public TimelinedMovableColor colors = new TimelinedMovableColor ();
-		public TimelinedDeadlyParticles deadlyParticles = new TimelinedDeadlyParticles ();
 
 		[HideInInspector]
 		public Material cubeMaterial;
 
 		protected MovableScript cubeScript;
-
-		protected ParticleSystem deadlyParticle;
-		protected ParticleSystem deadlyParticle2;
 
 		protected virtual void Start ()
 		{
@@ -95,11 +62,6 @@ namespace Replay
 			cubeScript = GetComponent<MovableScript> ();
 
 			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
-			deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
-
-			deadlyParticle.Stop ();
-			deadlyParticle2.Stop ();
 		}
 
 		void OnEnable ()
@@ -121,7 +83,6 @@ namespace Replay
 		protected virtual void Record ()
 		{
 			RecordColors ();
-			RecordParticles ();
 		}
 
 		void RecordColors ()
@@ -133,14 +94,6 @@ namespace Replay
 			float r = cubeMaterial.GetFloat ("_LerpRED");
 
 			colors.Add (b, p, g, y, r);
-		}
-
-		void RecordParticles ()
-		{
-			int x = deadlyParticle.isEmitting ? 1 : 0;
-			int y = deadlyParticle.isEmitting ? 1 : 0;
-
-			deadlyParticles.Add (new Vector2(x, y));
 		}
 			
 
@@ -156,9 +109,8 @@ namespace Replay
 
 		public void Replay (float t)
 		{
-			colors.Set (t, cubeMaterial);
-
-			deadlyParticles.Set (t, deadlyParticle, deadlyParticle2);
+			if(colors.blue.keys.Length > 0)
+				colors.Set (t, cubeMaterial);
 		}
 
 		public void OnDestroy ()

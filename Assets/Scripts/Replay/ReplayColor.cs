@@ -48,8 +48,8 @@ namespace Replay
 				material.color.a);
 
 			if(recordEmission)
-				color.Add (
-					material.GetColor ("_EmissionColor").a, 
+				emissionColor.Add (
+					material.GetColor ("_EmissionColor").r, 
 					material.GetColor ("_EmissionColor").g, 
 					material.GetColor ("_EmissionColor").b, 
 					material.GetColor ("_EmissionColor").a);
@@ -67,9 +67,11 @@ namespace Replay
 
 		public void Replay (float t)
 		{
-			color.Set (t, material);
+			if(color.a.keys.Length > 0)
+				color.Set (t, material);
 
-			color.Set (t, material, true);
+			if(emissionColor.a.keys.Length > 0)
+				emissionColor.Set (t, material, true);
 		}
 
 		public void OnDestroy ()

@@ -129,11 +129,6 @@ namespace Replay
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
 
-			ReplayManager.Instance.OnRecordingStart += () => 
-			{
-				//data.AddEnable (false, ReplayManager.Instance.GetCurrentTime () - (1 / ReplayManager.Instance.recordRate));
-				data.AddEnable (true);
-			};
 
 			rigidBody = GetComponent<Rigidbody> ();
 			agent = GetComponent<NavMeshAgent> ();
@@ -179,6 +174,8 @@ namespace Replay
 
 		public void OnReplayStart ()
 		{
+			data.AddEnable (true);
+
 			ReplayManager.Instance.SetCurveConstant (data.enabled);
 
 			if (rigidBody != null)
@@ -207,14 +204,16 @@ namespace Replay
 		{
 			ReplayManager.Instance.SetCurveConstant (data.enabled);
 
-			if(recordPosition)
+			if(recordPosition && data.position.x.keys.Length > 0)
 				transform.position = data.position.Get (t);
-			if(recordRotation)
+			
+			if(recordRotation && data.rotation.x.keys.Length > 0)
 				transform.rotation = data.rotation.Get (t);
-			if(recordScale)
+			
+			if(recordScale && data.scale.x.keys.Length > 0)
 				transform.localScale = data.scale.Get (t);
 
-			if(recordEnable)
+			if(recordEnable && data.enabled.keys.Length > 0)
 				data.SetEnable (t, transform.gameObject);
 		}
 

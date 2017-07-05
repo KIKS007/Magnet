@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Replay;
 
 public class PlayersTraining : PlayersGameplay 
 {
@@ -8,6 +9,9 @@ public class PlayersTraining : PlayersGameplay
 
 	public override void Death (DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			OnDeathVoid ();

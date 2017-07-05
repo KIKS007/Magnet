@@ -5,6 +5,7 @@ using System.Collections;
 using DG.Tweening;
 using System.Collections.Generic;
 using DarkTonic.MasterAudio;
+using Replay;
 
 public enum CubeColor {Neutral, Blue, Pink, Green, Yellow, Deadly};
 public enum SpeedState { Acceleration, Deceleration, Same, None };
@@ -99,6 +100,9 @@ public class MovableScript : MonoBehaviour
 	#region Update / FixedUpdate
 	protected virtual void Update () 
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		SetSpeedState ();
 
 		CurrentVelocity ();
@@ -277,6 +281,9 @@ public class MovableScript : MonoBehaviour
 	#region Collisions
 	protected virtual void OnCollisionEnter (Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(other.collider.tag != "HoldMovable" && other.collider.tag == "Player")

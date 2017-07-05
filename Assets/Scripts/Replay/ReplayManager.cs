@@ -21,6 +21,22 @@ namespace Replay
 	{
 		#region Buttons
 
+		[PropertyOrder (-4)]
+		[Button ("Clear Recording")]
+		public void Clear ()
+		{
+			StopRecording ();
+			StopReplay ();
+
+			isRecording = false;
+			isReplaying = false;
+			isPaused = false;
+
+			OnReplayStart = null;
+			OnReplayStop = null;
+			OnReplayTimeChange = null;
+		}
+
 		[ButtonGroupAttribute ("Record", -3)]
 		[Button ("Start Recording")]
 		public void StartRecordingButton ()
@@ -50,7 +66,7 @@ namespace Replay
 			StopReplay ();
 		}
 
-		[ButtonGroupAttribute ("Play", -1)]
+		/*[ButtonGroupAttribute ("Play", -1)]
 		[Button ("Play")]
 		public void PlayButton ()
 		{
@@ -69,7 +85,7 @@ namespace Replay
 		public void ReplayButton ()
 		{
 			ReplayReplay ();
-		}
+		}*/
 
 		#endregion
 
@@ -156,7 +172,6 @@ namespace Replay
 			isReplaying = true;
 			isPaused = true;
 
-			_replayCanvas.SetActive (true);
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 1;
 			_slide.maxValue = _endTime - _startTime;
 			
@@ -178,7 +193,6 @@ namespace Replay
 
 		void StopReplay ()
 		{
-			_replayCanvas.SetActive (false);
 			isReplaying = false;
 			isPaused = false;
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 0;
@@ -215,7 +229,7 @@ namespace Replay
 				EventTrigger.Entry entry = new EventTrigger.Entry ();
 				entry.eventID = EventTriggerType.PointerDown;
 				entry.callback.AddListener ((eventData) => {
-					wasPlaying = isReplaying;
+					wasPlaying = !isPaused;
 					Pause ();
 				});
 				trigger.triggers.Add (entry);
@@ -337,7 +351,8 @@ namespace Replay
 				Swap (_play.gameObject, _replay.gameObject, .2f);
 			}
 
-			if (OnReplayTimeChange != null) {
+			if (OnReplayTimeChange != null) 
+			{
 				OnReplayTimeChange (value + _startTime);
 			}
 		}

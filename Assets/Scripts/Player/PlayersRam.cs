@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Replay;
 
 public class PlayersRam : PlayersGameplay 
 {
 	protected override void FixedUpdate ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			//No Forces

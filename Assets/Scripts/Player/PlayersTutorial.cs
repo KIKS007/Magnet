@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GameAnalyticsSDK;
+using Replay;
 
 public class PlayersTutorial : PlayersGameplay 
 {
@@ -45,6 +46,9 @@ public class PlayersTutorial : PlayersGameplay
 	protected override void Update ()
 	{
 		if (rewiredPlayer == null)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
 			return;
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
@@ -131,6 +135,9 @@ public class PlayersTutorial : PlayersGameplay
 		if (rewiredPlayer == null)
 			return;
 
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Movement
@@ -190,6 +197,9 @@ public class PlayersTutorial : PlayersGameplay
 
 	protected override void OnCollisionStay(Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
@@ -217,6 +227,9 @@ public class PlayersTutorial : PlayersGameplay
 
 	protected override void OnCollisionEnter(Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 

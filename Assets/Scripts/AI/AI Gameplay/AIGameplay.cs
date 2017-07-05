@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
+using Replay;
 
 public enum AILevel { Easy, Normal , Hard};
 
@@ -129,6 +130,9 @@ public class AIGameplay : PlayersGameplay
 
 	protected override void Update ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		FindCloserElements ();
 
 		FindDangerousCubes ();
@@ -275,6 +279,9 @@ public class AIGameplay : PlayersGameplay
 
 	protected override void FixedUpdate ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Movement
@@ -399,6 +406,9 @@ public class AIGameplay : PlayersGameplay
 
 	protected override void OnCollisionStay (Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup)
 			return;
 
@@ -424,6 +434,9 @@ public class AIGameplay : PlayersGameplay
 
 	protected override void OnCollisionEnter (Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup)
 			return;
 

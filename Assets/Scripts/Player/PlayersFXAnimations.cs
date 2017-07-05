@@ -207,7 +207,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 	protected virtual void ShootFX ()
 	{
-		Instantiate (GlobalVariables.Instance.shootFX [playerNumber], transform.position + shootPosOffset, transform.rotation);
+		Instantiate (GlobalVariables.Instance.shootFX [playerNumber], transform.position + shootPosOffset, transform.rotation, GlobalVariables.Instance.ParticulesClonesParent);
 	}
 
 	protected virtual IEnumerator StunFX ()
@@ -339,7 +339,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		attractionRepulsionFX.Remove (fx);
 
-		Destroy (fx);
+		//Destroy (fx);
 	}
 
 	protected virtual IEnumerator SetAttractionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
@@ -400,7 +400,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		attractionRepulsionFX.Remove (fx);
 
-		Destroy (fx);
+		//Destroy (fx);
 	}
 
 	protected virtual IEnumerator SetRepulsionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
@@ -441,7 +441,7 @@ public class PlayersFXAnimations : MonoBehaviour
 	{
 		for (int i = 0; i < attractionRepulsionFX.Count; i++)
 		{
-			Destroy(attractionRepulsionFX[i]);
+			//Destroy(attractionRepulsionFX[i]);
 		}
 	}
 
