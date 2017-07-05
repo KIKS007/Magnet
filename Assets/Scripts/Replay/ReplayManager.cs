@@ -153,14 +153,12 @@ namespace Replay
 			if (OnReplayTimeChange == null)
 				return;
 
+			isReplaying = true;
+			isPaused = true;
+
 			_replayCanvas.SetActive (true);
-			isReplaying = false;
-			isPaused = false;
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 1;
 			_slide.maxValue = _endTime - _startTime;
-
-			if(OnReplayTimeChange != null)
-				OnReplayTimeChange (_startTime);
 			
 			RefreshTimer ();
 
@@ -173,6 +171,9 @@ namespace Replay
 
 				OnReplayStart ();
 			}
+
+			if(OnReplayTimeChange != null)
+				OnReplayTimeChange (_startTime);
 		}
 
 		void StopReplay ()

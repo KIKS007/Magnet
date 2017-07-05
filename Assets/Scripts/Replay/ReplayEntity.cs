@@ -90,6 +90,11 @@ namespace Replay
 			enabled.AddKey (time, enable ? 1f : 0f);
 		}
 
+		public void AddEnable (bool enable, float _time)
+		{
+			enabled.AddKey (_time, enable ? 1f : 0f);
+		}
+
 		public void SetEnable (float _time, GameObject _gameobject)
 		{
 			if(enabled.Evaluate (_time) > 0.5f && !_gameobject.activeSelf)
@@ -126,10 +131,9 @@ namespace Replay
 
 			ReplayManager.Instance.OnRecordingStart += () => 
 			{
-				data.AddEnable (false);
+				//data.AddEnable (false, ReplayManager.Instance.GetCurrentTime () - (1 / ReplayManager.Instance.recordRate));
 				data.AddEnable (true);
 			};
-
 
 			rigidBody = GetComponent<Rigidbody> ();
 			agent = GetComponent<NavMeshAgent> ();
