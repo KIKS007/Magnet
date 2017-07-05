@@ -2,6 +2,7 @@
 using System.Collections;
 using DG.Tweening;
 using Rewired;
+using Replay;
 
 public class MagnetTriggerScript : MonoBehaviour 
 {	
@@ -20,6 +21,9 @@ public class MagnetTriggerScript : MonoBehaviour
 
 	protected virtual void OnTriggerStay (Collider other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if (playerScript.rewiredPlayer == null)
 			return;
 		

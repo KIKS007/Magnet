@@ -16,7 +16,7 @@ using UnityEngine.AI;
 namespace Replay
 {
 	[Serializable]
-	public class TimelinedColor
+	public class TimelinedMovableColor
 	{
 		public AnimationCurve blue;
 		public AnimationCurve pink;
@@ -75,7 +75,7 @@ namespace Replay
 
 	public class ReplayMovable : MonoBehaviour
 	{
-		public TimelinedColor colors = new TimelinedColor ();
+		public TimelinedMovableColor colors = new TimelinedMovableColor ();
 		public TimelinedDeadlyParticles deadlyParticles = new TimelinedDeadlyParticles ();
 
 		[HideInInspector]

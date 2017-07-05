@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Rewired;
+using Replay;
 
 public class MagnetZoneScript : MonoBehaviour 
 {
@@ -27,6 +28,9 @@ public class MagnetZoneScript : MonoBehaviour
 
 	protected virtual void Update ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(rewiredPlayer != null)
 		{
 			if (rewiredPlayer.GetButtonUp ("Attract"))
@@ -45,6 +49,9 @@ public class MagnetZoneScript : MonoBehaviour
 
 	protected virtual void OnTriggerStay (Collider other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if (playerScript.rewiredPlayer == null)
 			return;
 	

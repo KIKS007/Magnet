@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using Replay;
 
 public class PlayersFXAnimations : MonoBehaviour 
 {
@@ -124,6 +125,9 @@ public class PlayersFXAnimations : MonoBehaviour
 	protected virtual void Update () 
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerScript.playerState == PlayerState.Startup)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
 			return;
 
 		if(dashAvailableFX.isPlaying)

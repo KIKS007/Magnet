@@ -6,6 +6,7 @@ using Rewired;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
+using Replay;
 
 public enum GameStateEnum { Menu, Playing, Paused, EndMode, Loading };
 
@@ -386,7 +387,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	{
 		if(forcedHide || PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
 		{
-			if(Cursor.lockState != CursorLockMode.Locked)
+			if(Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
 				Cursor.visible = false;

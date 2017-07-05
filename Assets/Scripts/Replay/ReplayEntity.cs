@@ -105,6 +105,12 @@ namespace Replay
 		[Header ("States")]
 		public bool isRecording = false;
 
+		[Header ("Settings")]
+		public bool recordPosition = true;
+		public bool recordRotation = true;
+		public bool recordScale = true;
+		public bool recordEnable = true;
+
 		[Header ("Data")]
 		public RecordData data = new RecordData ();
 
@@ -118,7 +124,11 @@ namespace Replay
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
 
-			ReplayManager.Instance.OnRecordingStart += ()=> data.AddEnable (true);
+			ReplayManager.Instance.OnRecordingStart += () => 
+			{
+				data.AddEnable (false);
+				data.AddEnable (true);
+			};
 
 
 			rigidBody = GetComponent<Rigidbody> ();
@@ -128,13 +138,15 @@ namespace Replay
 
 		void OnEnable ()
 		{
-			data.AddEnable (true);
+			if(recordEnable)
+				data.AddEnable (true);
 			StartCoroutine (Recording ());
 		}
 
 		void OnDisable ()
 		{
-			data.AddEnable (false);
+			if(recordEnable)
+				data.AddEnable (false);
 		}
 
 		IEnumerator Recording ()
@@ -146,7 +158,15 @@ namespace Replay
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
 				{
 					isRecording = true;
-					data.Add (transform);
+
+					if(recordPosition)
+						data.position.Add (transform.position);
+					
+					if(recordRotation)
+						data.rotation.Add (transform.rotation);
+					
+					if(recordScale)
+						data.scale.Add (transform.localScale);
 				} 
 				else
 					isRecording = false;
@@ -181,7 +201,17 @@ namespace Replay
 
 		public void Replay (float t)
 		{
-			data.Set (t, transform);
+			ReplayManager.Instance.SetCurveConstant (data.enabled);
+
+			if(recordPosition)
+				transform.position = data.position.Get (t);
+			if(recordRotation)
+				transform.rotation = data.rotation.Get (t);
+			if(recordScale)
+				transform.localScale = data.scale.Get (t);
+
+			if(recordEnable)
+				data.SetEnable (t, transform.gameObject);
 		}
 
 		public void OnDestroy ()

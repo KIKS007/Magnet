@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using Replay;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
@@ -78,6 +79,8 @@ public class ArenaDeadzones : MonoBehaviour
 		{
 			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
+			yield return new WaitWhile (() => ReplayManager.Instance.isReplaying);
+
 			for(int j = 0; j  < indexes.Length; j++)
 			{
 				if (indexes [j] == i)
@@ -104,6 +107,8 @@ public class ArenaDeadzones : MonoBehaviour
 		for(int i = 0; i < columnsCount; i++)
 		{
 			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+			yield return new WaitWhile (() => ReplayManager.Instance.isReplaying);
 
 			Transform column = null;
 

@@ -160,7 +160,7 @@ namespace Replay
 			_slide.maxValue = _endTime - _startTime;
 
 			if(OnReplayTimeChange != null)
-				OnReplayTimeChange (0);
+				OnReplayTimeChange (_startTime);
 			
 			RefreshTimer ();
 

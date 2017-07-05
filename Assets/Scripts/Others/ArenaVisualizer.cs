@@ -6,6 +6,7 @@ using DarkTonic.MasterAudio;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Demos;
+using Replay;
 
 public class ArenaVisualizer : SerializedMonoBehaviour
 {
@@ -181,6 +182,9 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 		if (AudioSpectrum.Instance == null || wrongSettings)
 			return;
 
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (currentSettings >= allSettings.Count)
 			return;
 
@@ -307,6 +311,9 @@ public class ArenaVisualizer : SerializedMonoBehaviour
 	IEnumerator ColorBounce ()
 	{
 		if (StatsManager.Instance.winnerName == WhichPlayer.Draw || StatsManager.Instance.winnerName == WhichPlayer.None)
+			yield break;
+
+		if (ReplayManager.Instance.isReplaying)
 			yield break;
 
 		foreach(var b in bounceSettings)
