@@ -6,54 +6,34 @@ using Sirenix.OdinInspector;
 
 namespace Replay
 {
-	public class ReplayColor : MonoBehaviour 
+	public class ReplayColor : ReplayComponent 
 	{
+		[Header ("Data")]
 		public bool recordEmission = true;
 
 		public TimelinedColor color = new TimelinedColor ();
 		public TimelinedColor emissionColor = new TimelinedColor ();
 
-		[Header ("Record Rate")]
-		public bool overrideRecordRate = false;
-		[ShowIfAttribute ("overrideRecordRate")]
-		public int recordRate = 120;
-
-		public bool isReplaying = false;
-
 		protected Material material;
 
-		protected virtual void Start ()
+		protected override void Start ()
 		{
-			ReplayManager.Instance.OnReplayTimeChange += Replay;
-			ReplayManager.Instance.OnReplayStart += OnReplayStart;
-			ReplayManager.Instance.OnReplayStop += OnReplayStop;
+			base.Start ();
 
 			material = GetComponent<Renderer> ().material;
 		}
 
-		void OnEnable ()
+		public override void OnClear ()
 		{
-			StartCoroutine (Recording ());
+			base.OnClear ();
+			color = new TimelinedColor ();
+			emissionColor = new TimelinedColor ();
 		}
 
-		IEnumerator Recording ()
+		protected override void Recording ()
 		{
-			while (true) 
-			{
-				int recordRate = ReplayManager.Instance.recordRate;
+			base.Recording ();
 
-				if (overrideRecordRate)
-					recordRate = this.recordRate;
-
-				yield return new WaitForSeconds (1 / recordRate);
-
-				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
-					Record ();
-			}
-		}
-
-		protected virtual void Record ()
-		{
 			color.Add (
 				material.color.r, 
 				material.color.g, 
@@ -68,37 +48,20 @@ namespace Replay
 					material.GetColor ("_EmissionColor").a);
 		}
 
-		public void OnReplayStart ()
+		public override void OnReplayStart ()
 		{
-
+			base.OnReplayStart ();
 		}
 
-		public void OnReplayStop ()
+		public override void Replay (float t)
 		{
+			base.Replay (t);
 
-		}
-
-		void Update ()
-		{
-			if (isReplaying)
-				Replay (ReplayManager.Instance.GetReplayTime ());
-		}
-
-
-		public void Replay (float t)
-		{
 			if(color.a.keys.Length > 0)
 				color.Set (t, material);
 
 			if(emissionColor.a.keys.Length > 0)
 				emissionColor.Set (t, material, true);
-		}
-
-		public void OnDestroy ()
-		{
-			ReplayManager.Instance.OnReplayTimeChange -= Replay;
-			ReplayManager.Instance.OnReplayStart -= OnReplayStart;
-			ReplayManager.Instance.OnReplayStop -= OnReplayStop;
 		}
 
 		[Serializable]

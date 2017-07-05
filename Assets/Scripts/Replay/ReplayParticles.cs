@@ -6,20 +6,14 @@ using Sirenix.OdinInspector;
 
 namespace Replay
 {
-	public class ReplayParticles : MonoBehaviour 
+	public class ReplayParticles : ReplayComponent 
 	{
+		[Header ("Data")]
 		public List<TimelinedParticles> particles = new List<TimelinedParticles> ();
-
-		[Header ("Record Rate")]
-		public bool overrideRecordRate = false;
-		[ShowIfAttribute ("overrideRecordRate")]
-		public int recordRate = 120;
-
-		public bool isReplaying = false;
 
 		protected ParticleSystem particleSys;
 
-		protected virtual void Start ()
+		protected override void Start ()
 		{
 			particleSys = GetComponent<ParticleSystem> ();
 
@@ -27,73 +21,66 @@ namespace Replay
 				if (child.GetComponent<ParticleSystem> () != null)
 					child.gameObject.AddComponent<ReplayParticles> ();
 
-			ReplayManager.Instance.OnReplayTimeChange += Replay;
-			ReplayManager.Instance.OnReplayStart += OnReplayStart;
-			ReplayManager.Instance.OnReplayStop += OnReplayStop;
-
-			ReplayManager.Instance.OnRecordingStart += () => 
-			{
-				if(particleSys != null)
-					particles.Add (new TimelinedParticles (particleSys));
-			};
+			base.Start ();
 
 			if (GetComponent<ParticlesAutoDestroy> () != null)
 				Destroy (GetComponent<ParticlesAutoDestroy> ());
 		}
 
-		void OnEnable ()
+		public override void OnClear ()
 		{
-			StartCoroutine (Recording ());
+			base.OnClear ();
+			particles.Clear ();
 		}
 
-		IEnumerator Recording ()
+		public override void OnRecordingStart ()
 		{
-			yield return new WaitUntil (() => ReplayManager.Instance != null);
+			base.OnRecordingStart ();
 
-			while (true) 
-			{
-				int recordRate = ReplayManager.Instance.particlesRecordRate;
+			particles = new List<TimelinedParticles> ();
 
-				if (overrideRecordRate)
-					recordRate = this.recordRate;
-
-				yield return new WaitForSeconds (1 / recordRate);
-
-				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
-					Record ();
-			}
+			if (particleSys != null)
+				particles.Add (new TimelinedParticles (particleSys));
+			else
+				Debug.LogWarning ("No ParticleSystem!"); 
 		}
 
-		protected virtual void Record ()
+		protected override void Recording ()
 		{
+			base.Recording ();
+
 			particles.Add (new TimelinedParticles (particleSys));
 		}
 
-		public void OnReplayStart ()
+		public override void OnReplayStart ()
 		{
+			base.OnReplayStart ();
+
 			particleSys.Play (true);
 			particleSys.Pause (true);
 		}
 
-		public void OnReplayStop ()
+		public override void OnReplayStop ()
 		{
+			base.OnReplayStop ();
 
 		}
 
-		void Update ()
+		public override void Replay (float t)
 		{
-			if (isReplaying)
-				Replay (ReplayManager.Instance.GetReplayTime ());
-		}
+			base.Replay (t);
 
-
-		public void Replay (float t)
-		{
-			if (t < particles [0].time)
-				particleSys.Clear ();
+			if(particles == null)
+			{
+				Debug.LogWarning ("No Particles!");
+				return;
+			}
 
 			if (particles.Count == 0)
 				return;
+			
+			if (t < particles [0].time)
+				particleSys.Clear ();
 
 			foreach(var p in particles)
 			{
@@ -103,13 +90,6 @@ namespace Replay
 					break;
 				}
 			}
-		}
-
-		public void OnDestroy ()
-		{
-			ReplayManager.Instance.OnReplayTimeChange -= Replay;
-			ReplayManager.Instance.OnReplayStart -= OnReplayStart;
-			ReplayManager.Instance.OnReplayStop -= OnReplayStop;
 		}
 	}
 

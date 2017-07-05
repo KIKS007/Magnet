@@ -17,7 +17,7 @@ using UnityEditor;
 
 namespace Replay
 {
-	public class ReplayManager : MonoBehaviour
+	public class ReplayManager : Singleton<ReplayManager>
 	{
 		#region Buttons
 
@@ -35,6 +35,9 @@ namespace Replay
 			OnReplayStart = null;
 			OnReplayStop = null;
 			OnReplayTimeChange = null;
+
+			if (OnClear != null)
+				OnClear ();
 
 			LoadModeManager.Instance.DestroyParticules ();
 		}
@@ -91,8 +94,6 @@ namespace Replay
 
 		#endregion
 
-		public static ReplayManager Instance;
-
 		[Header ("Record Rate")]
 		public int recordRate = 120;
 		public int particlesRecordRate = 60;
@@ -112,6 +113,7 @@ namespace Replay
 		public Action OnRecordingStop;
 		public Action OnReplayPlay;
 		public Action OnReplayPause;
+		public Action OnClear;
 
 		private bool wasPlaying = true;
 
@@ -135,14 +137,6 @@ namespace Replay
 		private float _endTime;
 
 		#endregion
-
-		void Awake ()
-		{
-			if (ReplayManager.Instance == null) 
-				ReplayManager.Instance = this;
-			else 
-				Destroy (gameObject);
-		}
 
 		public float GetCurrentTime ()
 		{
@@ -176,15 +170,20 @@ namespace Replay
 
 		void StartReplay ()
 		{
-			if (OnReplayTimeChange == null)
+			if (OnRecordingStart == null)
+			{
+				Debug.LogWarning ("No Replay Entity!"); 
 				return;
+			}
 
 			isReplaying = true;
 			isPaused = true;
 
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 1;
 			_slide.maxValue = _endTime - _startTime;
-			
+
+			_slide.value= _slide.minValue;
+
 			RefreshTimer ();
 
 			if (OnReplayStart != null) 
@@ -203,15 +202,15 @@ namespace Replay
 
 		void StopReplay ()
 		{
-			isReplaying = false;
-			isPaused = false;
-			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 0;
-
 			if(OnReplayTimeChange != null)
 				OnReplayTimeChange (_endTime);
 
 			if (OnReplayStop != null) 
 				OnReplayStop ();
+
+			isReplaying = false;
+			isPaused = false;
+			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 0;
 
 			OnReplayStart = null;
 			OnReplayStop = null;
@@ -222,7 +221,6 @@ namespace Replay
 		void Start ()
 		{
 			_slide = _replayCanvas.GetComponentInChildren<Slider> ();
-
 
 			_play.GetComponent<Button> ().onClick.AddListener (() => Play ());
 			_pause.GetComponent<Button> ().onClick.AddListener (() => Pause ());
@@ -238,16 +236,21 @@ namespace Replay
 			{
 				EventTrigger.Entry entry = new EventTrigger.Entry ();
 				entry.eventID = EventTriggerType.PointerDown;
-				entry.callback.AddListener ((eventData) => {
-					wasPlaying = !isPaused;
-					Pause ();
-				});
+				entry.callback.AddListener ((eventData) => 
+					{
+						wasPlaying = !isPaused;
+						
+						isPaused = true;
+
+						Pause ();
+					});
 				trigger.triggers.Add (entry);
 			}
 			{
 				EventTrigger.Entry entry = new EventTrigger.Entry ();
 				entry.eventID = EventTriggerType.PointerUp;
-				entry.callback.AddListener ((eventData) => {
+				entry.callback.AddListener ((eventData) => 
+				{
 					if (wasPlaying)
 						Play ();
 				});
@@ -258,7 +261,8 @@ namespace Replay
 			{
 				EventTrigger.Entry entry = new EventTrigger.Entry ();
 				entry.eventID = EventTriggerType.PointerExit;
-				entry.callback.AddListener ((eventData) => {
+				entry.callback.AddListener ((eventData) => 
+				{
 					_slide.handleRect.transform.localScale = Vector3.zero;
 				});
 				trigger.triggers.Add (entry);
@@ -280,10 +284,12 @@ namespace Replay
 			if (isReplaying) 
 			{
 				if (!isPaused) 
+				{
 					_slide.value += Time.deltaTime * Time.timeScale;
-
-				/*if(OnReplayTimeChange != null)
-					OnReplayTimeChange (_slide.value);*/
+					
+					/*if (OnReplayTimeChange != null) 
+						OnReplayTimeChange (_slide.value);*/
+				}
 			}
 		}
 
@@ -367,9 +373,10 @@ namespace Replay
 				Swap (_play.gameObject, _replay.gameObject, .2f);
 			}
 
-			if (OnReplayTimeChange != null) 
+			if (OnReplayTimeChange != null && isPaused)
 			{
 				OnReplayTimeChange (value + _startTime);
+				Debug.Log (value + _startTime);
 			}
 		}
 
@@ -395,12 +402,5 @@ namespace Replay
 				AnimationUtility.SetKeyRightTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
 			}
 		}
-
-		#if UNITY_EDITOR
-		void OnDestroy ()
-		{
-//			Debug.LogWarning (gameObject.name + " destroyed.");
-		}
-		#endif
 	}
 }

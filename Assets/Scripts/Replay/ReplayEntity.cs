@@ -13,9 +13,121 @@ using System;
 using UnityEngine.AI;
 using Sirenix.OdinInspector;
 
-
 namespace Replay
 {
+	public class ReplayEntity : ReplayComponent
+	{
+		[Header ("Settings")]
+		public bool recordPosition = true;
+		public bool recordRotation = true;
+		public bool recordScale = true;
+		public bool recordEnable = true;
+
+		[Header ("Data")]
+		public RecordData data = new RecordData ();
+
+		private Rigidbody rigidBody;
+		private NavMeshAgent agent;
+		private Animator animator;
+
+		protected override void Start ()
+		{
+			base.Start ();
+
+			rigidBody = GetComponent<Rigidbody> ();
+			agent = GetComponent<NavMeshAgent> ();
+			animator = GetComponent<Animator> ();
+		}
+
+		protected override void OnEnable ()
+		{
+			base.OnEnable ();
+
+			if(recordEnable)
+				data.AddEnable (true);
+		}
+
+		void OnDisable ()
+		{
+			if(gameObject && recordEnable && !ReplayManager.applicationIsQuitting)
+				data.AddEnable (false);
+		}
+
+		public override void OnClear ()
+		{
+			base.OnClear ();
+			data = new RecordData ();
+		}
+
+		protected override void Recording ()
+		{
+			base.Recording ();
+
+			if(recordPosition)
+				data.position.Add (transform.position);
+
+			if(recordRotation)
+				data.rotation.Add (transform.rotation);
+
+			if(recordScale)
+				data.scale.Add (transform.localScale);
+		}
+
+		public override void OnReplayStart ()
+		{
+			base.OnReplayStart ();
+
+			data.AddEnable (true);
+
+			ReplayManager.Instance.SetCurveConstant (data.enabled);
+
+			rigidBody = GetComponent<Rigidbody> ();
+
+			if (rigidBody != null)
+				rigidBody.isKinematic = true;
+
+			if (agent)
+				agent.enabled = false;
+
+			if (animator)
+				animator.enabled = false;	
+		}
+
+		public override void OnReplayStop ()
+		{
+			base.OnReplayStop ();
+
+			rigidBody = GetComponent<Rigidbody> ();
+
+			if (rigidBody != null)
+				rigidBody.isKinematic = false;
+
+			if (agent)
+				agent.enabled = true;
+
+			if (animator)
+				animator.enabled = true;	
+		}
+
+		public override void Replay (float t)
+		{
+			base.Replay (t);
+
+			ReplayManager.Instance.SetCurveConstant (data.enabled);
+
+			if(recordPosition && data.position.x.keys.Length > 0)
+				transform.position = data.position.Get (t);
+			
+			if(recordRotation && data.rotation.x.keys.Length > 0)
+				transform.rotation = data.rotation.Get (t);
+			
+			if(recordScale && data.scale.x.keys.Length > 0)
+				transform.localScale = data.scale.Get (t);
+
+			if(recordEnable && data.enabled.keys.Length > 0)
+				data.SetEnable (t, transform.gameObject);
+		}
+	}
 
 	[Serializable]
 	public class TimelinedVector3
@@ -85,12 +197,14 @@ namespace Replay
 
 		public void AddEnable (bool enable)
 		{
-			enabled.AddKey (ReplayManager.Instance.GetCurrentTime (), enable ? 1f : 0f);
+			if(enabled != null)
+				enabled.AddKey (ReplayManager.Instance.GetCurrentTime (), enable ? 1f : 0f);
 		}
 
 		public void AddEnable (bool enable, float _time)
 		{
-			enabled.AddKey (_time, enable ? 1f : 0f);
+			if(enabled != null)
+				enabled.AddKey (_time, enable ? 1f : 0f);
 		}
 
 		public void SetEnable (float _time, GameObject _gameobject)
@@ -100,145 +214,6 @@ namespace Replay
 
 			if(enabled.Evaluate (_time) < 0.5f && _gameobject.activeSelf)
 				_gameobject.SetActive (false);
-		}
-	}
-
-	public class ReplayEntity : MonoBehaviour
-	{
-		[Header ("States")]
-		public bool isRecording = false;
-		public bool isReplaying = false;
-
-		[Header ("Record Rate")]
-		public bool overrideRecordRate = false;
-		[ShowIfAttribute ("overrideRecordRate")]
-		public int recordRate = 120;
-
-		[Header ("Settings")]
-		public bool recordPosition = true;
-		public bool recordRotation = true;
-		public bool recordScale = true;
-		public bool recordEnable = true;
-
-		[Header ("Data")]
-		public RecordData data = new RecordData ();
-
-		private Rigidbody rigidBody;
-		private NavMeshAgent agent;
-		private Animator animator;
-
-		protected virtual void Start ()
-		{
-			//ReplayManager.Instance.OnReplayTimeChange += Replay;
-			ReplayManager.Instance.OnReplayStart += OnReplayStart;
-			ReplayManager.Instance.OnReplayStop += OnReplayStop;
-
-			ReplayManager.Instance.OnReplayPlay += () => isReplaying = true;
-			ReplayManager.Instance.OnReplayPause += () => isReplaying = false;
-
-			rigidBody = GetComponent<Rigidbody> ();
-			agent = GetComponent<NavMeshAgent> ();
-			animator = GetComponent<Animator> ();
-		}
-
-		void OnEnable ()
-		{
-			if(recordEnable)
-				data.AddEnable (true);
-			StartCoroutine (Recording ());
-		}
-
-		void OnDisable ()
-		{
-			if(recordEnable)
-				data.AddEnable (false);
-		}
-
-		IEnumerator Recording ()
-		{
-			while (true) 
-			{
-				int recordRate = ReplayManager.Instance.recordRate;
-
-				if (overrideRecordRate)
-					recordRate = this.recordRate;
-
-				yield return new WaitForSeconds (1 / recordRate);
-
-				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
-				{
-					isRecording = true;
-
-					if(recordPosition)
-						data.position.Add (transform.position);
-					
-					if(recordRotation)
-						data.rotation.Add (transform.rotation);
-					
-					if(recordScale)
-						data.scale.Add (transform.localScale);
-				} 
-				else
-					isRecording = false;
-			}
-		}
-
-		public void OnReplayStart ()
-		{
-			data.AddEnable (true);
-
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
-
-			if (rigidBody != null)
-				rigidBody.isKinematic = true;
-
-			if (agent)
-				agent.enabled = false;
-
-			if (animator)
-				animator.enabled = false;	
-		}
-
-		public void OnReplayStop ()
-		{
-			if (rigidBody != null)
-				rigidBody.isKinematic = false;
-
-			if (agent)
-				agent.enabled = true;
-
-			if (animator)
-				animator.enabled = true;	
-		}
-
-		void Update ()
-		{
-			if (isReplaying)
-				Replay (ReplayManager.Instance.GetReplayTime ());
-		}
-
-		public void Replay (float t)
-		{
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
-
-			if(recordPosition && data.position.x.keys.Length > 0)
-				transform.position = data.position.Get (t);
-			
-			if(recordRotation && data.rotation.x.keys.Length > 0)
-				transform.rotation = data.rotation.Get (t);
-			
-			if(recordScale && data.scale.x.keys.Length > 0)
-				transform.localScale = data.scale.Get (t);
-
-			if(recordEnable && data.enabled.keys.Length > 0)
-				data.SetEnable (t, transform.gameObject);
-		}
-
-		public void OnDestroy ()
-		{
-			ReplayManager.Instance.OnReplayTimeChange -= Replay;
-			ReplayManager.Instance.OnReplayStart -= OnReplayStart;
-			ReplayManager.Instance.OnReplayStop -= OnReplayStop;
 		}
 	}
 }
