@@ -18,6 +18,8 @@ public enum ModeObjective {LastMan, LeastDeath};
 
 public enum WhichMode {Bomb, Bounce, Burden, Crush, Flow, Plague, Pool, Ram, Standoff, Push, Tutorial, None, Default};
 
+public enum EnvironementChroma { Purple, Blue, Green, Orange };
+
 public class GlobalVariables : Singleton<GlobalVariables>
 {
 	[PropertyOrder (-1)]
@@ -44,6 +46,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int GamesCount = 1;
 	public int CurrentGamesCount = 1;
 	public int LivesCount = 5;
+
+	[Header ("Environement")]
+	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
@@ -138,6 +143,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnStartupDoneEvent ());
 		StartCoroutine (OnCocktailModes (selectedCocktailModes.Count));
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
+		StartCoroutine (OnEnvironementChromaChangement (environementChroma));
 
 		SetupRewiredPlayers ();
 
@@ -461,6 +467,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnLivesCountChange;
 	public event EventHandler OnCocktailModesChange;
 	public event EventHandler OnSequenceChange;
+	public event EventHandler OnEnvironementChromaChange;
 
 	IEnumerator OnGameStateChange (GameStateEnum state)
 	{
@@ -532,6 +539,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		yield return new WaitUntil (() => sequence != ModeSequenceType);
 
 		StartCoroutine (OnSequenceChangement (ModeSequenceType));
+	}
+
+	IEnumerator OnEnvironementChromaChangement (EnvironementChroma color)
+	{
+		if (OnEnvironementChromaChange != null)
+			OnEnvironementChromaChange ();
+
+		yield return new WaitUntil (() => color != environementChroma);
+
+		StartCoroutine (OnEnvironementChromaChangement (environementChroma));
 	}
 }
 

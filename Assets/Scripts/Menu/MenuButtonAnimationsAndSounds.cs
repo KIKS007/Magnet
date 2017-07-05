@@ -11,24 +11,33 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	public bool scaleChange = true;
 	public bool colorChange = true;
 	public bool vibration = true;
+	public bool useUIShader = false;
+	public bool textColorChange = false;
 
 	[Header ("Debug")]
 	public bool selected;
 
 	private Text text;
-
 	private RectTransform buttonRect;
-	
-	private static float scaleOnSelected = 1.1f;
-	private static float scaleOnDuration = 0.25f;
-
 	private EventSystem eventSys;
-
 	private bool mainButton;
-
 	private bool pointerDown = false;
 
+	private float scaleOnSelected = 1.1f;
+	private float scaleOnDuration = 0.25f;
 	private Button buttonComponent;
+
+	private Material material;
+
+	private string[] chromasToggles = new string[] {"_BlueChroma", "_GreenChroma", "_OrangeChroma" };
+	private string highlightToggle = "_Highlighting";
+	private string clickToggle = "_Selection";
+	private float clickDuration = 0.2f;
+
+	private string [] chromas = new string[] {"_PURPLECHROMA", "_BLUECHROMA", "_GREENCHROMA", "_ORANGECHROMA" };
+	private string idle = "Idle";
+	private string highlight = "Highlight";
+	private string click = "Selection";
 
 	void Awake	 ()
 	{
@@ -37,8 +46,17 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		buttonComponent = GetComponent<Button> ();
 		text = transform.GetChild (0).GetComponent<Text> ();
 
+		GetComponent<Image> ().material = new Material (GetComponent<Image> ().material);
+		material = GetComponent<Image> ().material;
+
+		GlobalVariables.Instance.OnEnvironementChromaChange += ShaderColorChange;
+
+		if(useUIShader)
+			ShaderColorChange ();
+
 		if (colorChange)
 			ColorChangeSetup ();
+
 	}
 
 	void ColorChangeSetup ()
@@ -93,6 +111,83 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 	}
 
+	void ShaderColorChange ()
+	{
+		if (!useUIShader)
+			return;
+
+		foreach(string s in chromasToggles)
+			material.SetInt (s, 0);
+
+		if(GlobalVariables.Instance.environementChroma != EnvironementChroma.Purple)
+			material.SetInt (chromasToggles [(int)GlobalVariables.Instance.environementChroma - 1], 1);
+
+		ShaderHighlight ();
+
+		TextColorChange ();
+	}
+
+	void ShaderHighlight ()
+	{
+		if (!useUIShader)
+			return;
+		
+		if(selected)
+			material.SetInt (highlightToggle, 1);
+		else
+			material.SetInt (highlightToggle, 0);
+
+		TextColorChange ();
+	}
+
+	void ShaderClick (bool duration = false)
+	{
+		if (!useUIShader)
+			return;
+
+		if(!duration)
+		{
+			if(material.GetInt (clickToggle) == 0)
+				material.SetInt (clickToggle, 1);
+			else
+				material.SetInt (clickToggle, 0);
+			
+			TextColorChange ();
+		}
+		else
+		{
+			material.SetInt (clickToggle, 1);
+
+			TextColorChange ();
+
+			DOVirtual.DelayedCall (clickDuration, ()=> 
+				{
+					material.SetInt (clickToggle, 0);
+					TextColorChange ();
+				});
+		}
+	}
+
+	void TextColorChange ()
+	{
+		string color = chromas [(int)GlobalVariables.Instance.environementChroma];
+
+		if(material.GetInt (clickToggle) == 1)
+			color += this.click;
+
+		else if(material.GetInt (highlightToggle) == 1)
+			color += highlight;
+
+		else if (text && textColorChange)
+		{
+			text.color = Color.white;
+			return;
+		}
+
+		if (text && textColorChange)
+			text.color = material.GetColor (color);
+	}
+
 	public void OnSelect () 
 	{
 		selected = true;
@@ -100,15 +195,17 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 
+		ShaderHighlight ();
 	}
 
 	public void OnDeselect () 
 	{
 		selected = false;
 
-		if(scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
+		if(buttonComponent.interactable == true && scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
 			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
 
+		ShaderHighlight ();
 	}
 
 	//OnSelect Methods
@@ -143,7 +240,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 			selected = true;			
 		}
 
-		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+		if(buttonComponent.interactable == true && scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
 		
 		SoundsManager.Instance.MenuNavigation ();
@@ -180,6 +277,8 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 			if (colorChange)
 				text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
+
+			ShaderClick (true);
 		}
 	}
 
@@ -189,14 +288,19 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		{
 			pointerDown = true;
 
+			ShaderClick ();
+
 			ColorChange ();
 		}
-
 	}
 
 	public void OnPointerUp (PointerEventData eventData)
 	{
 		if(buttonComponent.interactable == true)
+		{
 			pointerDown = false;
+
+			ShaderClick ();
+		}
 	}
 }
