@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.AI;
+using Sirenix.OdinInspector;
 
 
 namespace Replay
@@ -25,10 +26,9 @@ namespace Replay
 
 		public void Add (Vector3 v)
 		{
-			float time = ReplayManager.Instance.GetCurrentTime ();
-			x.AddKey (time, v.x);
-			y.AddKey (time, v.y);
-			z.AddKey (time, v.z);
+			x.AddKey (ReplayManager.Instance.GetCurrentTime (), v.x);
+			y.AddKey (ReplayManager.Instance.GetCurrentTime (), v.y);
+			z.AddKey (ReplayManager.Instance.GetCurrentTime (), v.z);
 		}
 
 		public Vector3 Get (float _time)
@@ -47,11 +47,10 @@ namespace Replay
 
 		public void Add (Quaternion v)
 		{
-			float time = ReplayManager.Instance.GetCurrentTime ();
-			x.AddKey (time, v.x);
-			y.AddKey (time, v.y);
-			z.AddKey (time, v.z);
-			w.AddKey (time, v.w);
+			x.AddKey (ReplayManager.Instance.GetCurrentTime (), v.x);
+			y.AddKey (ReplayManager.Instance.GetCurrentTime (), v.y);
+			z.AddKey (ReplayManager.Instance.GetCurrentTime (), v.z);
+			w.AddKey (ReplayManager.Instance.GetCurrentTime (), v.w);
 		}
 
 		public Quaternion Get (float _time)
@@ -86,8 +85,7 @@ namespace Replay
 
 		public void AddEnable (bool enable)
 		{
-			float time = ReplayManager.Instance.GetCurrentTime ();
-			enabled.AddKey (time, enable ? 1f : 0f);
+			enabled.AddKey (ReplayManager.Instance.GetCurrentTime (), enable ? 1f : 0f);
 		}
 
 		public void AddEnable (bool enable, float _time)
@@ -109,6 +107,12 @@ namespace Replay
 	{
 		[Header ("States")]
 		public bool isRecording = false;
+		public bool isReplaying = false;
+
+		[Header ("Record Rate")]
+		public bool overrideRecordRate = false;
+		[ShowIfAttribute ("overrideRecordRate")]
+		public int recordRate = 120;
 
 		[Header ("Settings")]
 		public bool recordPosition = true;
@@ -125,10 +129,12 @@ namespace Replay
 
 		protected virtual void Start ()
 		{
-			ReplayManager.Instance.OnReplayTimeChange += Replay;
+			//ReplayManager.Instance.OnReplayTimeChange += Replay;
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
 
+			ReplayManager.Instance.OnReplayPlay += () => isReplaying = true;
+			ReplayManager.Instance.OnReplayPause += () => isReplaying = false;
 
 			rigidBody = GetComponent<Rigidbody> ();
 			agent = GetComponent<NavMeshAgent> ();
@@ -152,7 +158,12 @@ namespace Replay
 		{
 			while (true) 
 			{
-				yield return new WaitForSeconds (1 / ReplayManager.Instance.recordRate);
+				int recordRate = ReplayManager.Instance.recordRate;
+
+				if (overrideRecordRate)
+					recordRate = this.recordRate;
+
+				yield return new WaitForSeconds (1 / recordRate);
 
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
 				{
@@ -198,6 +209,12 @@ namespace Replay
 
 			if (animator)
 				animator.enabled = true;	
+		}
+
+		void Update ()
+		{
+			if (isReplaying)
+				Replay (ReplayManager.Instance.GetReplayTime ());
 		}
 
 		public void Replay (float t)

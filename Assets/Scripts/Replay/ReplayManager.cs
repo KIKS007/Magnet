@@ -35,6 +35,8 @@ namespace Replay
 			OnReplayStart = null;
 			OnReplayStop = null;
 			OnReplayTimeChange = null;
+
+			LoadModeManager.Instance.DestroyParticules ();
 		}
 
 		[ButtonGroupAttribute ("Record", -3)]
@@ -93,6 +95,7 @@ namespace Replay
 
 		[Header ("Record Rate")]
 		public int recordRate = 120;
+		public int particlesRecordRate = 60;
 
 		[Header ("States")]
 		public bool isRecording = false;
@@ -107,6 +110,8 @@ namespace Replay
 		public Action OnReplayStop;
 		public Action OnRecordingStart;
 		public Action OnRecordingStop;
+		public Action OnReplayPlay;
+		public Action OnReplayPause;
 
 		private bool wasPlaying = true;
 
@@ -142,6 +147,11 @@ namespace Replay
 		public float GetCurrentTime ()
 		{
 			return Time.time - _startTime;
+		}
+
+		public float GetReplayTime ()
+		{
+			return _slide.value;
 		}
 
 		public void StartRecording ()
@@ -272,8 +282,8 @@ namespace Replay
 				if (!isPaused) 
 					_slide.value += Time.deltaTime * Time.timeScale;
 
-				if(OnReplayTimeChange != null)
-					OnReplayTimeChange (_slide.value);
+				/*if(OnReplayTimeChange != null)
+					OnReplayTimeChange (_slide.value);*/
 			}
 		}
 
@@ -283,7 +293,10 @@ namespace Replay
 
 			if (_slide.value == _endTime - _startTime)
 				return;
-			
+
+			if (OnReplayPlay != null)
+				OnReplayPlay ();
+
 			if (isPaused || !isReplaying) 
 			{
 				isReplaying = true;
@@ -310,6 +323,9 @@ namespace Replay
 		public void Pause ()
 		{
 			_slide.Select ();
+
+			if (OnReplayPause != null)
+				OnReplayPause ();
 
 			if (!isPaused) 
 			{

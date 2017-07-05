@@ -364,13 +364,13 @@ public class PlayersFXAnimations : MonoBehaviour
 			{
 				distance = Vector3.Distance (transform.position, whichCube.transform.position);
 
-				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
+				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
 				lifeTime = aFactor * dist + bFactor;
 
 				if(dist > distance + fadeDistance)
 					particlesList [i].startLifetime = 0;
-				else
-					particlesList [i].startLifetime = lifeTime;
+				/*else
+					particlesList [i].startLifetime = lifeTime;*/
 			}
 
 			ps.SetParticles (particlesList, particlesList.Length);

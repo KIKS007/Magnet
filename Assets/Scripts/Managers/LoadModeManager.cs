@@ -188,7 +188,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			OnLevelUnloaded ();
 	}
 
-	void DestroyParticules ()
+	public void DestroyParticules ()
 	{
 		if(GlobalVariables.Instance.ParticulesClonesParent.childCount != 0)
 		{

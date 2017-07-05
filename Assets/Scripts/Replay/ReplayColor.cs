@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 namespace Replay
 {
@@ -11,6 +12,13 @@ namespace Replay
 
 		public TimelinedColor color = new TimelinedColor ();
 		public TimelinedColor emissionColor = new TimelinedColor ();
+
+		[Header ("Record Rate")]
+		public bool overrideRecordRate = false;
+		[ShowIfAttribute ("overrideRecordRate")]
+		public int recordRate = 120;
+
+		public bool isReplaying = false;
 
 		protected Material material;
 
@@ -32,7 +40,12 @@ namespace Replay
 		{
 			while (true) 
 			{
-				yield return new WaitForSeconds (1 / ReplayManager.Instance.recordRate);
+				int recordRate = ReplayManager.Instance.recordRate;
+
+				if (overrideRecordRate)
+					recordRate = this.recordRate;
+
+				yield return new WaitForSeconds (1 / recordRate);
 
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
 					Record ();
@@ -64,6 +77,13 @@ namespace Replay
 		{
 
 		}
+
+		void Update ()
+		{
+			if (isReplaying)
+				Replay (ReplayManager.Instance.GetReplayTime ());
+		}
+
 
 		public void Replay (float t)
 		{

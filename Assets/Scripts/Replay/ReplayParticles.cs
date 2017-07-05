@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 namespace Replay
 {
 	public class ReplayParticles : MonoBehaviour 
 	{
 		public List<TimelinedParticles> particles = new List<TimelinedParticles> ();
+
+		[Header ("Record Rate")]
+		public bool overrideRecordRate = false;
+		[ShowIfAttribute ("overrideRecordRate")]
+		public int recordRate = 120;
+
+		public bool isReplaying = false;
 
 		protected ParticleSystem particleSys;
 
@@ -44,7 +52,12 @@ namespace Replay
 
 			while (true) 
 			{
-				yield return new WaitForSeconds (1 / ReplayManager.Instance.recordRate);
+				int recordRate = ReplayManager.Instance.particlesRecordRate;
+
+				if (overrideRecordRate)
+					recordRate = this.recordRate;
+
+				yield return new WaitForSeconds (1 / recordRate);
 
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
 					Record ();
@@ -58,6 +71,7 @@ namespace Replay
 
 		public void OnReplayStart ()
 		{
+			particleSys.Play (true);
 			particleSys.Pause (true);
 		}
 
@@ -65,6 +79,13 @@ namespace Replay
 		{
 
 		}
+
+		void Update ()
+		{
+			if (isReplaying)
+				Replay (ReplayManager.Instance.GetReplayTime ());
+		}
+
 
 		public void Replay (float t)
 		{
