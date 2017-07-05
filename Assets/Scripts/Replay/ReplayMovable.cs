@@ -34,31 +34,6 @@ namespace Replay
 			red.AddKey (time, r);
 		}
 
-		public float GetBlue (float _time)
-		{
-			return blue.Evaluate (_time);
-		}
-
-		public float GetPink (float _time)
-		{
-			return pink.Evaluate (_time);
-		}
-
-		public float GetGreen (float _time)
-		{
-			return green.Evaluate (_time);
-		}
-
-		public float GetYellow (float _time)
-		{
-			return yellow.Evaluate (_time);
-		}
-
-		public float GetRed (float _time)
-		{
-			return red.Evaluate (_time);
-		}
-
 		public void Set (float _time, Material _material)
 		{
 			_material.SetFloat ("_LerpBLUE", blue.Evaluate (_time));
@@ -69,24 +44,55 @@ namespace Replay
 		}
 	}
 
+	[Serializable]
+	public class TimelinedDeadlyParticles
+	{
+		public AnimationCurve deadParticle;
+		public AnimationCurve deadParticle2;
+
+		public void Add (Vector2 particles)
+		{
+			float time = ReplayManager.Instance.GetCurrentTime ();
+			deadParticle.AddKey (time, particles.x);
+			deadParticle2.AddKey (time, particles.y);
+		}
+
+		public void Set (float _time, ParticleSystem ps1, ParticleSystem ps2)
+		{
+			if (deadParticle.Evaluate (_time) > 0.5f && !ps1.isEmitting)
+				ps1.Play ();
+
+			if (deadParticle2.Evaluate (_time) > 0.5f && !ps2.isEmitting)
+				ps2.Play ();
+
+			if (deadParticle.Evaluate (_time) < 0.5f && ps1.isEmitting)
+				ps1.Stop ();
+
+			if (deadParticle2.Evaluate (_time) < 0.5f && ps2.isEmitting)
+				ps2.Stop ();
+		}
+	}
 
 	public class ReplayMovable : MonoBehaviour
 	{
 		public TimelinedColor colors = new TimelinedColor ();
+		public TimelinedDeadlyParticles deadlyParticles = new TimelinedDeadlyParticles ();
 
 		[HideInInspector]
 		public Material cubeMaterial;
+
+		protected MovableScript cubeScript;
 
 		protected ParticleSystem deadlyParticle;
 		protected ParticleSystem deadlyParticle2;
 
 		protected virtual void Start ()
 		{
-			StartCoroutine (Recording ());
-
 			ReplayManager.Instance.OnReplayTimeChange += Replay;
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
+
+			cubeScript = GetComponent<MovableScript> ();
 
 			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
 			deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
@@ -96,6 +102,11 @@ namespace Replay
 			deadlyParticle2.Stop ();
 		}
 
+		void OnEnable ()
+		{
+			StartCoroutine (Recording ());
+		}
+
 		IEnumerator Recording ()
 		{
 			while (true) 
@@ -103,10 +114,14 @@ namespace Replay
 				yield return new WaitForSeconds (1 / ReplayManager.Instance.recordRate);
 
 				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
-				{
-					RecordColors ();
-				}
+					Record ();
 			}
+		}
+
+		protected virtual void Record ()
+		{
+			RecordColors ();
+			RecordParticles ();
 		}
 
 		void RecordColors ()
@@ -118,6 +133,14 @@ namespace Replay
 			float r = cubeMaterial.GetFloat ("_LerpRED");
 
 			colors.Add (b, p, g, y, r);
+		}
+
+		void RecordParticles ()
+		{
+			int x = deadlyParticle.isEmitting ? 1 : 0;
+			int y = deadlyParticle.isEmitting ? 1 : 0;
+
+			deadlyParticles.Add (new Vector2(x, y));
 		}
 			
 
@@ -134,6 +157,8 @@ namespace Replay
 		public void Replay (float t)
 		{
 			colors.Set (t, cubeMaterial);
+
+			deadlyParticles.Set (t, deadlyParticle, deadlyParticle2);
 		}
 
 		public void OnDestroy ()

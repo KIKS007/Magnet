@@ -66,6 +66,7 @@ namespace Replay
 		public TimelinedVector3 position;
 		public TimelinedQuaternion rotation;
 		public TimelinedVector3 scale;
+		public AnimationCurve enabled;
 
 		public void Add (Transform t)
 		{
@@ -79,6 +80,23 @@ namespace Replay
 			_transform.position = position.Get (_time);
 			_transform.rotation = rotation.Get (_time);
 			_transform.localScale = scale.Get (_time);
+
+			SetEnable (_time, _transform.gameObject);
+		}
+
+		public void AddEnable (bool enable)
+		{
+			float time = ReplayManager.Instance.GetCurrentTime ();
+			enabled.AddKey (time, enable ? 1f : 0f);
+		}
+
+		public void SetEnable (float _time, GameObject _gameobject)
+		{
+			if(enabled.Evaluate (_time) > 0.5f && !_gameobject.activeSelf)
+				_gameobject.SetActive (true);
+
+			if(enabled.Evaluate (_time) < 0.5f && _gameobject.activeSelf)
+				_gameobject.SetActive (false);
 		}
 	}
 
@@ -90,21 +108,33 @@ namespace Replay
 		[Header ("Data")]
 		public RecordData data = new RecordData ();
 
-		private Rigidbody rigidbody;
+		private Rigidbody rigidBody;
 		private NavMeshAgent agent;
 		private Animator animator;
 
 		protected virtual void Start ()
 		{
-			StartCoroutine (Recording ());
-
 			ReplayManager.Instance.OnReplayTimeChange += Replay;
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
 
-			rigidbody = GetComponent<Rigidbody> ();
+			ReplayManager.Instance.OnRecordingStart += ()=> data.AddEnable (true);
+
+
+			rigidBody = GetComponent<Rigidbody> ();
 			agent = GetComponent<NavMeshAgent> ();
 			animator = GetComponent<Animator> ();
+		}
+
+		void OnEnable ()
+		{
+			data.AddEnable (true);
+			StartCoroutine (Recording ());
+		}
+
+		void OnDisable ()
+		{
+			data.AddEnable (false);
 		}
 
 		IEnumerator Recording ()
@@ -125,8 +155,10 @@ namespace Replay
 
 		public void OnReplayStart ()
 		{
-			if (rigidbody != null)
-				rigidbody.isKinematic = true;
+			ReplayManager.Instance.SetCurveConstant (data.enabled);
+
+			if (rigidBody != null)
+				rigidBody.isKinematic = true;
 
 			if (agent)
 				agent.enabled = false;
@@ -137,8 +169,8 @@ namespace Replay
 
 		public void OnReplayStop ()
 		{
-			if (rigidbody != null)
-				rigidbody.isKinematic = false;
+			if (rigidBody != null)
+				rigidBody.isKinematic = false;
 
 			if (agent)
 				agent.enabled = true;

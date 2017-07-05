@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using Sirenix.OdinInspector;
+using UnityEditor;
 
 namespace Replay
 {
@@ -45,6 +46,7 @@ namespace Replay
 		[Button ("Stop Replay")]
 		public void StopReplayButton ()
 		{
+			StopRecording ();
 			StopReplay ();
 		}
 
@@ -78,7 +80,8 @@ namespace Replay
 
 		[Header ("States")]
 		public bool isRecording = false;
-		public bool isPlaying = false;
+		public bool isReplaying = false;
+		public bool isPaused = false;
 
 		[Header ("No Record States")]
 		public List<GameStateEnum> noRecordStates = new List<GameStateEnum> ();
@@ -86,6 +89,8 @@ namespace Replay
 		public Action<float> OnReplayTimeChange;
 		public Action OnReplayStart;
 		public Action OnReplayStop;
+		public Action OnRecordingStart;
+		public Action OnRecordingStop;
 
 		private bool wasPlaying = true;
 
@@ -127,14 +132,20 @@ namespace Replay
 		{
 			_startTime = Time.time;
 			isRecording = true;
-			isPlaying = false;
+			isReplaying = false;
+
+			if (OnRecordingStart != null)
+				OnRecordingStart ();
 		}
 
 		public void StopRecording ()
 		{
 			_endTime = Time.time;
 			isRecording = false;
-			isPlaying = false;
+			isReplaying = false;
+
+			if (OnRecordingStop != null)
+				OnRecordingStop ();
 		}
 
 		void StartReplay ()
@@ -142,9 +153,9 @@ namespace Replay
 			if (OnReplayTimeChange == null)
 				return;
 
-			_endTime = Time.time;
 			_replayCanvas.SetActive (true);
-			isPlaying = false;
+			isReplaying = false;
+			isPaused = false;
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 1;
 			_slide.maxValue = _endTime - _startTime;
 
@@ -167,7 +178,8 @@ namespace Replay
 		void StopReplay ()
 		{
 			_replayCanvas.SetActive (false);
-			isPlaying = false;
+			isReplaying = false;
+			isPaused = false;
 			_replayCanvas.GetComponent<CanvasGroup> ().alpha = 0;
 
 			if(OnReplayTimeChange != null)
@@ -202,7 +214,7 @@ namespace Replay
 				EventTrigger.Entry entry = new EventTrigger.Entry ();
 				entry.eventID = EventTriggerType.PointerDown;
 				entry.callback.AddListener ((eventData) => {
-					wasPlaying = isPlaying;
+					wasPlaying = isReplaying;
 					Pause ();
 				});
 				trigger.triggers.Add (entry);
@@ -240,9 +252,10 @@ namespace Replay
 		// Update is called once per frame
 		void Update ()
 		{
-			if (isPlaying) 
+			if (isReplaying) 
 			{
-				_slide.value += Time.deltaTime * Time.timeScale;
+				if (!isPaused) 
+					_slide.value += Time.deltaTime * Time.timeScale;
 
 				if(OnReplayTimeChange != null)
 					OnReplayTimeChange (_slide.value);
@@ -253,9 +266,13 @@ namespace Replay
 		{
 			_slide.Select ();
 
-			if (!isPlaying && _slide.value != _endTime - _startTime) 
+			if (_slide.value == _endTime - _startTime)
+				return;
+			
+			if (isPaused || !isReplaying) 
 			{
-				isPlaying = true;
+				isReplaying = true;
+				isPaused = false;
 
 				Swap (_play.gameObject, _pause.gameObject);
 
@@ -279,9 +296,9 @@ namespace Replay
 		{
 			_slide.Select ();
 
-			if (isPlaying) 
+			if (!isPaused) 
 			{
-				isPlaying = false;
+				isPaused = true;
 
 				Swap (_pause.gameObject, _play.gameObject);
 
@@ -295,9 +312,10 @@ namespace Replay
 		{
 			_slide.value = 0;
 			replayReplayAvailable = false;
+			isPaused = false;
+
 			Swap (_replay.gameObject);
 			Play ();
-
 		}
 
 		public void SetCursor (Single value)
@@ -310,7 +328,8 @@ namespace Replay
 				Swap (_replay.gameObject, _play.gameObject);
 			}
 
-			if (_slide.value == _endTime - _startTime) {
+			if (_slide.value == _endTime - _startTime) 
+			{
 				Pause ();
 
 				replayReplayAvailable = true;
@@ -336,10 +355,19 @@ namespace Replay
 			_timestamp.text = currentMinutes + ":" + currentSeconds + " / " + totalMinutes + ":" + totalSeconds;
 		}
 
+		public void SetCurveConstant (AnimationCurve curve)
+		{
+			for(int i = 0; i < curve.keys.Length; i++)
+			{
+				AnimationUtility.SetKeyLeftTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
+				AnimationUtility.SetKeyRightTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
+			}
+		}
+
 		#if UNITY_EDITOR
 		void OnDestroy ()
 		{
-			Debug.LogWarning (gameObject.name + " destroyed.");
+//			Debug.LogWarning (gameObject.name + " destroyed.");
 		}
 		#endif
 	}

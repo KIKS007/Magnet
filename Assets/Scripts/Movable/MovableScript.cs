@@ -222,6 +222,8 @@ public class MovableScript : MonoBehaviour
 			deadlyParticle.Stop ();
 			deadlyParticle2.Stop ();
 
+			//cubeColor = CubeColor.Neutral;
+
 			DisableAllColor (overrideDuration);
 
 			StartCoroutine (WaitToChangeColorEnum (CubeColor.Neutral, overrideDuration));
@@ -266,7 +268,7 @@ public class MovableScript : MonoBehaviour
 	{
 		yield return new WaitForSeconds (waitTime * 0.5f);		
 
-		if(hold)
+		if(!hold)
 			cubeColor = whichColor;
 		
 	}

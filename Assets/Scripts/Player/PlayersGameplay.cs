@@ -5,6 +5,7 @@ using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
+using Replay;
 
 public enum PlayerState
 {
@@ -245,6 +246,9 @@ public class PlayersGameplay : MonoBehaviour
 		if (rewiredPlayer == null)
 			return;
 
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
         {
 			//Movement Vector
@@ -323,6 +327,9 @@ public class PlayersGameplay : MonoBehaviour
 		if (rewiredPlayer == null)
 			return;
 
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerState == PlayerState.Startup)
 			return;
 
@@ -524,6 +531,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
@@ -549,6 +559,9 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision other)
     {
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
@@ -725,6 +738,9 @@ public class PlayersGameplay : MonoBehaviour
 	#region Death
 	public virtual void Death(DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(deathFX == DeathFX.Explosion || deathFX == DeathFX.All)
