@@ -146,15 +146,18 @@ public class MenuComponent : MonoBehaviour
 	{
 		//MENU BUTTON
 		if(menuComponentType == MenuComponentType.BasicMenu)
-			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, menuButton.anchoredPosition.y);
+			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreen.x, menuButton.anchoredPosition.y);
+//			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, menuButton.anchoredPosition.y);
 
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
-			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
+			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreen.x, MenuManager.Instance.MenuButtonYPos (i));
+//			underMenusButtons[i].anchoredPosition = new Vector2(MenuManager.Instance.menuOffScreenX, MenuManager.Instance.MenuButtonYPos (i));
 
 		//CONTENT
 		if(mainContent != null)
-			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, mainContent.anchoredPosition.y);
+			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreen.x, mainContent.anchoredPosition.y);
+//			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, mainContent.anchoredPosition.y);
 
 		//SECONDARY CONTENT
 		if (secondaryContents.Count > 0)
@@ -292,7 +295,8 @@ public class MenuComponent : MonoBehaviour
 				menuButton.SetSiblingIndex (0);
 			}
 
-			menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuManager.menuHeaderY);
+			menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreen.x, menuManager.menuHeaderY);
+//			menuButton.anchoredPosition = new Vector2(menuManager.menuOnScreenX, menuManager.menuHeaderY);
 		}
 
 		//UNDER MENUS
@@ -314,7 +318,8 @@ public class MenuComponent : MonoBehaviour
 		//UNDER MENUS BUTTONS
 		for (int i = 0; i < underMenusButtons.Count; i++)
 		{
-			underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
+			underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreen.x, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
+//			underMenusButtons [i].anchoredPosition = new Vector2 (menuManager.menuOnScreenX, menuManager.MenuButtonYPos (i) + menuManager.GapAfterHeaderButton ()) - menusParent.anchoredPosition;
 
 			underMenusButtons [i].gameObject.SetActive (true);
 		}
