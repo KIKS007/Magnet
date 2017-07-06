@@ -19,10 +19,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	[Header ("Settings")]
 	public bool scaleChange = true;
-	public bool colorChange = true;
+	public bool colorChange = false;
 	public bool vibration = true;
-	public bool useUIShader = false;
-	public bool textColorChange = false;
+	public bool useUIShader = true;
+	public bool textColorChange = true;
 
 	[Header ("Debug")]
 	public bool selected;
@@ -129,8 +129,11 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (colorChange)
 			ColorChangeUpdate ();
 
-		if(scaleChange && buttonComponent.interactable == true)
+		if(scaleChange)
 		{
+			if (buttonComponent && buttonComponent.interactable == false)
+				return;
+			
 			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && !DOTween.IsTweening ("ResetScale" + GetInstanceID ()))
 				buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
 		}
@@ -250,8 +253,13 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	{
 		selected = false;
 
-		if(buttonComponent.interactable == true && scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
+		if(scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
+		{
+			if (buttonComponent && buttonComponent.interactable == false)
+				return;
+			
 			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
+		}
 
 		ShaderHighlight ();
 	}
@@ -262,16 +270,15 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
+		if (buttonComponent && buttonComponent.interactable == false)
+			return;
 
-		if(buttonComponent.interactable == true)
-		{
 			if(vibration)
 				VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
 			
 			OnSelect ();
 
 			ColorChange ();
-		}
 	}
 
 	public void OnSelect( BaseEventData data )
@@ -291,17 +298,22 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
+		if (buttonComponent && buttonComponent.interactable == false)
+			return;
 
-		if(buttonComponent.interactable == true)
-		{
+
 			eventSys.SetSelectedGameObject (null);
 			eventSys.SetSelectedGameObject (gameObject);
 			
 			selected = true;			
-		}
 
-		if(buttonComponent.interactable == true && scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
+		{
+			if (buttonComponent && buttonComponent.interactable == false)
+				return;
+			
 			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+		}
 		
 		SoundsManager.Instance.MenuNavigation ();
 	}
@@ -335,23 +347,23 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
-
-		if(buttonComponent.interactable == true)
-		{
-			if(vibration)
-				VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
-			
-			OnDeselect ();
-
-			SoundsManager.Instance.MenuSubmit ();
-
-			ColorChange ();
-
-			if (colorChange)
-				text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
-
-			ShaderClick (true);
-		}
+		
+		if (buttonComponent && buttonComponent.interactable == false)
+			return;
+		
+		if(vibration)
+			VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
+		
+		OnDeselect ();
+		
+		SoundsManager.Instance.MenuSubmit ();
+		
+		ColorChange ();
+		
+		if (colorChange)
+			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
+		
+		ShaderClick (true);
 	}
 
 	public void OnPointerDown (PointerEventData eventData)
@@ -359,15 +371,14 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
-
-		if(buttonComponent.interactable == true)
-		{
-			pointerDown = true;
-
-			ShaderClick ();
-
-			ColorChange ();
-		}
+		if (buttonComponent && buttonComponent.interactable == false)
+			return;
+		
+		pointerDown = true;
+		
+		ShaderClick ();
+		
+		ColorChange ();
 	}
 
 	public void OnPointerUp (PointerEventData eventData)
@@ -375,12 +386,11 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
-
-		if(buttonComponent.interactable == true)
-		{
-			pointerDown = false;
-
-			ShaderClick ();
-		}
+		if (buttonComponent && buttonComponent.interactable == false)
+			return;
+		
+		pointerDown = false;
+		
+		ShaderClick ();
 	}
 }
