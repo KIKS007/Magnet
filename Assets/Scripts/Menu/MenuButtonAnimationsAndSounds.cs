@@ -54,7 +54,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	void Awake	 ()
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
@@ -76,7 +76,8 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		
 	void OnEnable ()
 	{
-		SetupShader ();
+		if (!Application.isPlaying)
+			SetupShader ();
 	}
 		
 	void SetupShader ()
@@ -119,7 +120,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	void Update ()
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -256,7 +257,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	//OnSelect Methods
 	public void OnPointerClick( PointerEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -273,7 +274,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnSelect( BaseEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -285,7 +286,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerEnter(PointerEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -305,7 +306,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerExit( PointerEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -320,7 +321,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnDeselect( BaseEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -329,7 +330,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnSubmit( BaseEventData data )
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -353,7 +354,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerDown (PointerEventData eventData)
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 
@@ -369,7 +370,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerUp (PointerEventData eventData)
 	{
-		if (Application.isEditor)
+		if (!Application.isPlaying)
 			return;
 
 

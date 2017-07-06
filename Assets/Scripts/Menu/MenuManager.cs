@@ -40,7 +40,6 @@ public class MenuManager : Singleton <MenuManager>
 	public Vector2 onScreenContent = new Vector2 (0, 0);
 
 	[Header ("Header Buttons")]
-	public bool hidePreviousHeaderButton;
 	public Vector2 offScreenHeader;
 	public Vector2 onScreenHeader;
 	public float menuHeaderY = 540;
@@ -48,7 +47,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Main Menu")]
 	public GameObject mainMenu;
-	public float mainMenuFirstButtonY = 100;
 
 	[Header ("Buttons Positions")]
 	public float menuFirstButtonY = 278;
@@ -450,7 +448,7 @@ public class MenuManager : Singleton <MenuManager>
 		Enable (whichMenu.menuButton);
 		SetNonInteractable (whichMenu.menuButton);
 		
-		if(hidePreviousHeaderButton && whichMenu.menuButton != null)
+		if(whichMenu.menuButton != null)
 		{
 //			whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 			whichMenu.menuButton.DOAnchorPos (new Vector2(onScreenButton.x, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
@@ -580,56 +578,56 @@ public class MenuManager : Singleton <MenuManager>
 	void HidePreviousHeader (int delay)
 	{
 		//Hide Previous Header Button
-		if(hidePreviousHeaderButton)
+		if(headerButtonsList.Count > 0)
 		{
-			if(headerButtonsList.Count > 0)
-			{
-				Disable (headerButtonsList [headerButtonsList.Count - 1], animationDuration + ButtonsDelay (delay));
-				SetNonInteractable (headerButtonsList [headerButtonsList.Count - 1]);
-
-				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPos (offScreenHeader, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-
-				//headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (menuOffScreenX, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-
-				headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
-			}
+			Disable (headerButtonsList [headerButtonsList.Count - 1], animationDuration + ButtonsDelay (delay));
+			SetNonInteractable (headerButtonsList [headerButtonsList.Count - 1]);
+			
+			headerButtonsList [headerButtonsList.Count - 1].DOAnchorPos (offScreenHeader, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			
+			//headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (menuOffScreenX, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			
+			headerButtonsList.RemoveAt (headerButtonsList.Count - 1);
 		}
 	}
 
 	Tween PlaceCurrentHeader (MenuComponent whichMenu, int submitButton, int delay)
 	{
+		if (headerButtonsList.Contains (whichMenu.underMenusButtons [submitButton]))
+			return null;
+		
+		if (whichMenu.underMenusButtons [submitButton].anchoredPosition.x != onScreenHeader.x)
+			whichMenu.underMenusButtons [submitButton].anchoredPosition = offScreenHeader;
+
+		headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]);
+
 		//Place Submit Button as Header
 		Enable (whichMenu.underMenusButtons [submitButton]);
 		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
 
-//		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
 		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (onScreenHeader, animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
-			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
 			.SetId ("Menu");
 	}
 
 	Tween PlaceCurrentHeader (MenuComponent whichMenu, int delay)
 	{
-		Debug.Log ("Bite");
-
-//		if (whichMenu.menuButton.anchoredPosition.x == menuOnScreenX)
-		if (whichMenu.menuButton.anchoredPosition == onScreenHeader)
+		if (headerButtonsList.Contains (whichMenu.menuButton))
 			return null;
 
-//		whichMenu.menuButton.anchoredPosition = new Vector2 (menuOffScreenX, MenuHeaderButtonPosition ());
-		whichMenu.menuButton.anchoredPosition = offScreenHeader;
+		if (whichMenu.menuButton.anchoredPosition.x != onScreenHeader.x)
+			whichMenu.menuButton.anchoredPosition = offScreenHeader;
+
+		headerButtonsList.Add (whichMenu.menuButton);
 
 		//Place Submit Button as Header
 		Enable (whichMenu.menuButton);
 		SetNonInteractable (whichMenu.menuButton);
 
-//		return whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
 		return whichMenu.menuButton.DOAnchorPos (onScreenHeader, animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
-			.OnComplete (()=> headerButtonsList.Add (whichMenu.menuButton))
 			.SetId ("Menu");
 	}
 
@@ -691,11 +689,6 @@ public class MenuManager : Singleton <MenuManager>
 	public float ButtonYPos (int i)
 	{
 		return buttonFirstButtonY - (gapBetweenButtons * i);
-	}
-
-	public float MainMenuButtonsYPos (int i)
-	{
-		return mainMenuFirstButtonY - (gapBetweenButtons * i);
 	}
 
 	public void Enable (RectTransform target)
@@ -795,7 +788,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	void BackButtons ()
 	{
-
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing 
 			&& currentMenu
 			&& currentMenu.menuComponentType != MenuComponentType.MainMenu
