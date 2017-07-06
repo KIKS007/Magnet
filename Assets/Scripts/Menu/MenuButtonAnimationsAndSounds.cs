@@ -186,7 +186,7 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		TextColorChange ();
 	}
 
-	void ShaderClick (bool duration = false)
+	public void ShaderClick (bool duration = false)
 	{
 		if (!useUIShader)
 			return;
