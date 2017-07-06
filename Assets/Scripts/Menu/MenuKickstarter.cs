@@ -10,15 +10,24 @@ public class MenuKickstarter : MonoBehaviour
 	[Header ("Bounds")]
 	public Vector2 xBounds = new Vector2 ();
 	public Vector2 yBounds = new Vector2 ();
+	public Vector2 offPosition;
+	public float widthBoundsFactor = 1.1f;
+	public float heightBoundsFactor = 1.1f;
 
 	[Header ("Spawn")]
 	public float spawnDuration = 0.2f;
 	public float spawnDelay = 0.01f;
 	public Ease spawnEase;
+	public int spawnTries = 20;
+	public int spawnFails = 0;
 
 	[Header ("Backers")]
 	public Transform backersParent;
 	public List<RectTransform> allBackers = new List<RectTransform> ();
+
+	public RectTransform rec1;
+	public RectTransform rec2;
+	public bool isOverlap;
 
 	private List<RectTransform> backersSpawned = new List<RectTransform> ();
 
@@ -31,6 +40,17 @@ public class MenuKickstarter : MonoBehaviour
 			allBackers.Add (b.GetComponent<RectTransform> ());
 	}
 
+	void Update ()
+	{
+		if(rec1 && rec2)
+		{
+			Rect rect1 = new Rect (rec1.anchoredPosition.x, rec1.anchoredPosition.y, rec1.rect.width * widthBoundsFactor, rec1.rect.height * heightBoundsFactor);
+			Rect rect2 = new Rect (rec2.anchoredPosition.x, rec2.anchoredPosition.y, rec2.rect.width * widthBoundsFactor, rec2.rect.height * heightBoundsFactor);
+			
+			isOverlap = rect1.Overlaps (rect2);
+		}
+	}
+
 	void OnEnable ()
 	{
 		StartCoroutine (SpawnBackers ());
@@ -38,25 +58,42 @@ public class MenuKickstarter : MonoBehaviour
 
 	IEnumerator SpawnBackers ()
 	{
-		yield return new WaitUntil (() => allBackers.Count == 0);
+		yield return new WaitUntil (() => allBackers.Count != 0);
 
 		foreach (var b in allBackers)
-			b.gameObject.SetActive (false);
+			b.anchoredPosition = offPosition;
 
 		backersSpawned.Clear ();
+		spawnFails = 0;
 
 		foreach(var b in allBackers)
 		{
 			bool validPosition = true;
+			Rect rect1 = new Rect ();
+			Rect rect2 = new Rect ();
+
+			int tries = 0;
 
 			do
 			{
+				tries++;
+
+				if(tries >= spawnTries)
+				{
+					spawnFails++;
+					break;
+				}
+
 				validPosition = true;
+
 				b.anchoredPosition = new Vector2 (Random.Range (xBounds.x, xBounds.y), Random.Range (yBounds.x, yBounds.y));
+				rect1 = new Rect (b.anchoredPosition.x, b.anchoredPosition.y, b.rect.width * widthBoundsFactor, b.rect.height * heightBoundsFactor);
 
 				foreach(var s in backersSpawned)
 				{
-					if(b.rect.Overlaps (s.rect))
+					rect2 = new Rect (s.anchoredPosition.x, s.anchoredPosition.y, s.rect.width * widthBoundsFactor, s.rect.height * heightBoundsFactor);
+
+					if(rect1.Overlaps (rect2))
 					{
 						validPosition = false;
 						break;
@@ -65,8 +102,11 @@ public class MenuKickstarter : MonoBehaviour
 			}
 			while (!validPosition);
 
-			backersSpawned.Add (b);
-			Spawn (b);
+			if (validPosition) {
+				backersSpawned.Add (b);
+				Spawn (b);
+			} else
+				b.gameObject.SetActive (false);
 
 			yield return new WaitForSecondsRealtime (spawnDelay);
 		}
