@@ -60,7 +60,9 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		buttonRect = GetComponent<RectTransform> ();
 		buttonComponent = GetComponent<Button> ();
-		text = transform.GetChild (0).GetComponent<Text> ();
+
+		if(textColorChange || colorChange)
+			text = transform.GetChild (0).GetComponent<Text> ();
 
 		SetupShader ();
 
