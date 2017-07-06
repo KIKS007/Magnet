@@ -49,6 +49,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	[Header ("Environement")]
 	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
+	public Material uiMaterial;
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;

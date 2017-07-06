@@ -29,8 +29,8 @@ public class MenuManager : Singleton <MenuManager>
 	public float buttonsDelay = 0.05f;
 
 	[Header ("Menus Buttons Positions")]
-	public Vector2 menuOffScreen;
-	public Vector2 menuOnScreen;
+	public Vector2 offScreenButton;
+	public Vector2 onScreenButton;
 
 //	public float menuOffScreenX = -2000;
 //	public float menuOnScreenX = -650;
@@ -41,6 +41,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Header Buttons")]
 	public bool hidePreviousHeaderButton;
+	public Vector2 offScreenHeader;
+	public Vector2 onScreenHeader;
 	public float menuHeaderY = 540;
 	public List<RectTransform> headerButtonsList;
 
@@ -412,13 +414,13 @@ public class MenuManager : Singleton <MenuManager>
 
 			//If Canceling
 			if(i != cancelButton || cancelButton == -1)
-				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (menuOffScreen.x, MenuButtonYPos (i) + GapAfterHeaderButton ());
+				whichMenu.underMenusButtons [i].anchoredPosition = new Vector2 (offScreenButton.x, MenuButtonYPos (i) + GapAfterHeaderButton ());
 
 			Enable (whichMenu.underMenusButtons [i]);
 			SetInteractable (whichMenu.underMenusButtons [i], duration + ButtonsDelay (delay));
 			
 //			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreenX, MenuButtonYPos (i) + GapAfterHeaderButton ()), duration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (menuOnScreen.x, MenuButtonYPos (i) + GapAfterHeaderButton ()), duration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			whichMenu.underMenusButtons [i].DOAnchorPos (new Vector2 (onScreenButton.x, MenuButtonYPos (i) + GapAfterHeaderButton ()), duration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 			delay++;
 		}
@@ -451,7 +453,7 @@ public class MenuManager : Singleton <MenuManager>
 		if(hidePreviousHeaderButton && whichMenu.menuButton != null)
 		{
 //			whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
-			whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreen.x, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+			whichMenu.menuButton.DOAnchorPos (new Vector2(onScreenButton.x, MenuHeaderButtonPosition ()), animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 		}
 
 		headerButtonsList.Add (whichMenu.menuButton);
@@ -555,7 +557,7 @@ public class MenuManager : Singleton <MenuManager>
 				Disable (whichMenu.underMenusButtons [i], animationDuration + ButtonsDelay (delay));
 				SetNonInteractable (whichMenu.underMenusButtons [i]);
 
-				whichMenu.underMenusButtons [i].DOAnchorPos (menuOffScreen, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underMenusButtons [i].DOAnchorPos (offScreenButton, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 				//whichMenu.underMenusButtons [i].DOAnchorPosX (menuOffScreenX, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 				delay++;
@@ -585,7 +587,7 @@ public class MenuManager : Singleton <MenuManager>
 				Disable (headerButtonsList [headerButtonsList.Count - 1], animationDuration + ButtonsDelay (delay));
 				SetNonInteractable (headerButtonsList [headerButtonsList.Count - 1]);
 
-				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPos (menuOffScreen, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				headerButtonsList [headerButtonsList.Count - 1].DOAnchorPos (offScreenHeader, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 				//headerButtonsList [headerButtonsList.Count - 1].DOAnchorPosX (menuOffScreenX, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
@@ -601,7 +603,7 @@ public class MenuManager : Singleton <MenuManager>
 		SetNonInteractable (whichMenu.underMenusButtons [submitButton]);
 
 //		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
-		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (new Vector2(menuOnScreen.x, MenuHeaderButtonPosition ()), animationDuration)
+		return whichMenu.underMenusButtons [submitButton].DOAnchorPos (onScreenHeader, animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
 			.OnComplete (()=> headerButtonsList.Add (whichMenu.underMenusButtons [submitButton]))
@@ -610,19 +612,21 @@ public class MenuManager : Singleton <MenuManager>
 
 	Tween PlaceCurrentHeader (MenuComponent whichMenu, int delay)
 	{
+		Debug.Log ("Bite");
+
 //		if (whichMenu.menuButton.anchoredPosition.x == menuOnScreenX)
-		if (whichMenu.menuButton.anchoredPosition.x == menuOnScreen.x)
+		if (whichMenu.menuButton.anchoredPosition == onScreenHeader)
 			return null;
 
 //		whichMenu.menuButton.anchoredPosition = new Vector2 (menuOffScreenX, MenuHeaderButtonPosition ());
-		whichMenu.menuButton.anchoredPosition = menuOffScreen;
+		whichMenu.menuButton.anchoredPosition = offScreenHeader;
 
 		//Place Submit Button as Header
 		Enable (whichMenu.menuButton);
 		SetNonInteractable (whichMenu.menuButton);
 
 //		return whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreenX, MenuHeaderButtonPosition ()), animationDuration)
-		return whichMenu.menuButton.DOAnchorPos (new Vector2(menuOnScreen.x, MenuHeaderButtonPosition ()), animationDuration)
+		return whichMenu.menuButton.DOAnchorPos (onScreenHeader, animationDuration)
 			.SetDelay (ButtonsDelay (delay))
 			.SetEase (easeMenu)
 			.OnComplete (()=> headerButtonsList.Add (whichMenu.menuButton))

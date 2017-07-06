@@ -4,9 +4,19 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 
+[ExecuteInEditMode]
 public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler, ISelectHandler, IPointerEnterHandler, IPointerExitHandler, IDeselectHandler, ISubmitHandler, IPointerDownHandler, IPointerUpHandler
 {
+	[PropertyOrder(-1)]
+	[ButtonAttribute ()]
+	public void UpdateShaderAll ()
+	{
+		foreach (var s in FindObjectsOfType<MenuButtonAnimationsAndSounds> ())
+			s.SetupShader ();
+	}
+
 	[Header ("Settings")]
 	public bool scaleChange = true;
 	public bool colorChange = true;
@@ -16,6 +26,9 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	[Header ("Debug")]
 	public bool selected;
+
+	[Header ("Shader")]
+	public Texture neonTexture;
 
 	private Text text;
 	private RectTransform buttonRect;
@@ -41,13 +54,15 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	void Awake	 ()
 	{
+		if (Application.isEditor)
+			return;
+
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		buttonRect = GetComponent<RectTransform> ();
 		buttonComponent = GetComponent<Button> ();
 		text = transform.GetChild (0).GetComponent<Text> ();
 
-		GetComponent<Image> ().material = new Material (GetComponent<Image> ().material);
-		material = GetComponent<Image> ().material;
+		SetupShader ();
 
 		GlobalVariables.Instance.OnEnvironementChromaChange += ShaderColorChange;
 
@@ -57,6 +72,32 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (colorChange)
 			ColorChangeSetup ();
 
+	}
+		
+	void OnEnable ()
+	{
+		SetupShader ();
+	}
+		
+	void SetupShader ()
+	{
+		if (!useUIShader)
+			return;
+
+		GlobalVariables gv = FindObjectOfType<GlobalVariables> ();
+
+		Image image = GetComponent<Image> ();
+
+		image.material = new Material (gv.uiMaterial);
+		material = image.material;
+
+		material.SetTexture ("_T_Button", image.mainTexture);
+
+		if(neonTexture != null)
+			material.SetTexture ("_T_Neon", neonTexture);
+		else
+			material.SetTexture ("_T_Neon", image.mainTexture);
+			
 	}
 
 	void ColorChangeSetup ()
@@ -78,6 +119,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	void Update ()
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if (colorChange)
 			ColorChangeUpdate ();
 
@@ -211,6 +256,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	//OnSelect Methods
 	public void OnPointerClick( PointerEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if(buttonComponent.interactable == true)
 		{
 			if(vibration)
@@ -224,6 +273,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnSelect( BaseEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		OnSelect ();
 
 		SoundsManager.Instance.MenuNavigation ();
@@ -232,6 +285,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerEnter(PointerEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if(buttonComponent.interactable == true)
 		{
 			eventSys.SetSelectedGameObject (null);
@@ -248,6 +305,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerExit( PointerEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		pointerDown = false;
 
 		//eventSys.SetSelectedGameObject (null);
@@ -259,11 +320,19 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnDeselect( BaseEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		OnDeselect ();
 	}
 
 	public void OnSubmit( BaseEventData data )
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if(buttonComponent.interactable == true)
 		{
 			if(vibration)
@@ -284,6 +353,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerDown (PointerEventData eventData)
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if(buttonComponent.interactable == true)
 		{
 			pointerDown = true;
@@ -296,6 +369,10 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 	public void OnPointerUp (PointerEventData eventData)
 	{
+		if (Application.isEditor)
+			return;
+
+
 		if(buttonComponent.interactable == true)
 		{
 			pointerDown = false;
