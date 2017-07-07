@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using Replay;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
+	public delegate void ColumnDeadly (Transform column);
+
 	public enum RandomType { Single, AllSettings, CurrentSettings };
 
 	[Header ("Random")]
@@ -25,6 +28,7 @@ public class ArenaDeadzones : MonoBehaviour
 	[Header ("Deadly State")]
 	public Color deadlyColor;
 	public float zScale = 3f;
+	public float xScale = 1.8f;
 	public float transitionDuration;
 
 	[Header ("Columns")]
@@ -33,8 +37,16 @@ public class ArenaDeadzones : MonoBehaviour
 	public Transform[] rightColumns = new Transform[17];
 	public Transform[] leftColumns = new Transform[17];
 
+	[HideInInspector]
+	public List<GameObject> deadlyColumns = new List<GameObject> ();
+
 	// Use this for initialization
 	void Start () 
+	{
+		Setup ();
+	}
+
+	public void Setup ()
 	{
 		int settingsIndex = currentSettings;
 
@@ -67,6 +79,8 @@ public class ArenaDeadzones : MonoBehaviour
 		{
 			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
+			yield return new WaitWhile (() => ReplayManager.Instance.isReplaying);
+
 			for(int j = 0; j  < indexes.Length; j++)
 			{
 				if (indexes [j] == i)
@@ -94,6 +108,8 @@ public class ArenaDeadzones : MonoBehaviour
 		{
 			yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
+			yield return new WaitWhile (() => ReplayManager.Instance.isReplaying);
+
 			Transform column = null;
 
 			do
@@ -114,15 +130,24 @@ public class ArenaDeadzones : MonoBehaviour
 
 	void SetDeadly (Transform column)
 	{
-		foreach(Transform columnChild in column)
+		for(int i = 0; i < column.childCount; i++)
 		{
-			columnChild.tag = "DeadZone";
-			columnChild.GetComponent<Collider> ().enabled = true;
-			
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration);
-			columnChild.GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration);
-			
-			columnChild.DOScaleZ (zScale, transitionDuration);
+			column.GetChild (i);
+
+			column.GetChild (i).tag = "DeadZone";
+			column.GetChild (i).GetComponent<Collider> ().enabled = true;
+
+			column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", transitionDuration).SetUpdate (false);
+			column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, transitionDuration).SetUpdate (false);
+
+			column.GetChild (i).DOScaleZ (zScale, transitionDuration).SetUpdate (false);
+
+			if(i == 0)
+				column.GetChild (i).DOScaleX (xScale, transitionDuration).SetUpdate (false);
+			else
+				column.GetChild (i).DOScaleX (1.3f, transitionDuration).SetUpdate (false);
+
+			deadlyColumns.Add (column.GetChild (i).gameObject);
 		}
 	}
 }

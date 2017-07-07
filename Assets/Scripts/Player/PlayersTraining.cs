@@ -1,18 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Replay;
 
 public class PlayersTraining : PlayersGameplay 
 {
 	[Header ("Training Settings")]
 	public float timeBetweenSpawn = 1f;
 
-	public override void Death (DeathFX deathFX, Vector3 deathPosition)
+	public override void Death (DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			OnDeathVoid ();
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+			GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+			GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 			if(holdState == HoldState.Holding)
 			{

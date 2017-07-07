@@ -14,5 +14,12 @@ public enum AIComponents
 	AIAimCube,
 	AIShoot,
 	AIAttract,
-	AIRepel
+	AIRepel,
+	AIStuck,
+	AIDash_Away,
+	AIMovement_Towards_Pool,
+	AIRepel_Flow,
+	AIMovement_Towards_Flow,
+	AIMovement_Towards_Plague,
+	AIMovement_Towards_Push
 };

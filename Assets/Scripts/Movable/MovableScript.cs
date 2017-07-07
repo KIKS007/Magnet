@@ -5,8 +5,10 @@ using System.Collections;
 using DG.Tweening;
 using System.Collections.Generic;
 using DarkTonic.MasterAudio;
+using Replay;
 
 public enum CubeColor {Neutral, Blue, Pink, Green, Yellow, Deadly};
+public enum SpeedState { Acceleration, Deceleration, Same, None };
 
 public class MovableScript : MonoBehaviour 
 {
@@ -14,32 +16,28 @@ public class MovableScript : MonoBehaviour
 	public event EventHandler OnReleaseEvent;
 
 	#region Variables
-	[Header ("Informations")]
+	[Header ("Color")]
 	public CubeColor cubeColor;
+
+	[Header ("Speed")]
 	public float higherVelocity;
 	public float currentVelocity;
 	public float limitVelocity = 80f;
+	public SpeedState speedState = SpeedState.Same;
 
 	[Header ("Cube States")]
 	public bool hold;
 	public List<GameObject> attracedBy = new List<GameObject> ();
 	public List<GameObject> repulsedBy = new List<GameObject> ();
 
-	[Header ("Deceleration")]
-	public bool decelerationShotOnly = false;
-	[Range (0, 1)]
-	public float decelerationAmount = 1;
-
-	[Header ("Gravity")]
-	public float gravity = 0;
+	[Header ("Players")]
+	public GameObject playerThatThrew;
 
 	protected bool canPlaySound = true;
 
-	protected const float toColorDuration = 0.5f;
-	protected const float toNeutralDuration = 1.5f;
-	protected const float toDeadlyDuration = 1f;
-
-	protected Rigidbody rigidbodyMovable;
+	protected const float toColorDuration = 0.25f;
+	protected const float toNeutralDuration = 0.25f;
+	protected const float toDeadlyDuration = 0.25f;
 
 	protected float massRb;
 	protected float drag;
@@ -47,19 +45,17 @@ public class MovableScript : MonoBehaviour
 
 	protected Renderer movableRenderer;
 
-	protected SlowMotionTriggerScript slowMoTrigger;
-
 	protected GameObject mainCamera;
 
 	protected ParticleSystem deadlyParticle;
 	protected ParticleSystem deadlyParticle2;
 
 	[HideInInspector]
+	public Rigidbody rigidbodyMovable;
+	[HideInInspector]
+	public SlowMotionTriggerScript slowMoTrigger;
+	[HideInInspector]
 	public Transform player;
-	[HideInInspector]
-	public GameObject playerThatThrew;
-	[HideInInspector]
-	public GameObject playerHit;
 	[HideInInspector]
 	public MeshFilter cubeMeshFilter;
 	[HideInInspector]
@@ -69,18 +65,18 @@ public class MovableScript : MonoBehaviour
 	#endregion
 
 	#region Setup
-	protected virtual void Awake () 
+	public virtual void Awake () 
 	{
 		initialScale = transform.localScale;
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 	}
 
-	protected virtual void Start () 
+	public virtual void Start () 
 	{
 		//ToNeutralColor ();
 	}
 
-	protected virtual void OnEnable ()
+	public virtual void OnEnable ()
 	{
 		hold = false;
 
@@ -104,44 +100,75 @@ public class MovableScript : MonoBehaviour
 	#region Update / FixedUpdate
 	protected virtual void Update () 
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
+		SetSpeedState ();
+
+		CurrentVelocity ();
+
+		CheckPlayerThatThrew ();
+
+		LowVelocity ();
+	}
+
+	protected virtual void SetSpeedState () 
+	{
+		if(!hold && rigidbodyMovable != null)
+		{
+			if(rigidbodyMovable.velocity.magnitude < 1)
+				speedState = SpeedState.None;
+
+			else if (currentVelocity == rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Same;
+
+			else if(currentVelocity > rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Deceleration;
+
+			else if(currentVelocity < rigidbodyMovable.velocity.magnitude)
+				speedState = SpeedState.Acceleration;
+		}
+	}
+
+	protected virtual void CurrentVelocity () 
+	{
 		if(hold == false && rigidbodyMovable != null)
 			currentVelocity = rigidbodyMovable.velocity.magnitude;
 
+		if(currentVelocity > higherVelocity)
+			higherVelocity = currentVelocity;
+	}
 
+	protected virtual void CheckPlayerThatThrew () 
+	{
+		if(currentVelocity < limitVelocity && playerThatThrew != null && gameObject.tag != "ThrownMovable")
+		{
+			if(speedState != SpeedState.Acceleration)
+				playerThatThrew = null;
+		}
+	}
+
+	protected virtual void LowVelocity () 
+	{
 		if(hold == false && currentVelocity > 0)
 		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			if(currentVelocity >= limitVelocity)
-				gameObject.tag = "ThrownMovable";
-			
-			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+			if(currentVelocity > limitVelocity)
 			{
 				if(slowMoTrigger == null)
 					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
-				slowMoTrigger.triggerEnabled = false;
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
+				slowMoTrigger.triggerEnabled = true;
 			}
-		}
-	}
 
-	protected virtual void FixedUpdate () 
-	{
-		if(rigidbodyMovable != null)
-		{
-			rigidbodyMovable.AddForce (Vector3.down * gravity, ForceMode.Acceleration);
-		}
-
-		if(rigidbodyMovable != null && currentVelocity > 5)
-		{
-			if(!decelerationShotOnly)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
-
-			else if(decelerationShotOnly && attracedBy.Count == 0 && repulsedBy.Count == 0)
-				rigidbodyMovable.velocity = new Vector3(rigidbodyMovable.velocity.x * decelerationAmount, rigidbodyMovable.velocity.y, rigidbodyMovable.velocity.z * decelerationAmount);
+			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+			{
+				if(slowMoTrigger == null)
+					slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+				
+				slowMoTrigger.triggerEnabled = false;
+				
+				gameObject.tag = "Movable";
+			}
 		}
 	}
 	#endregion
@@ -170,16 +197,16 @@ public class MovableScript : MonoBehaviour
 		switch(whichColor)
 		{
 		case CubeColor.Blue:
-			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpBLUE", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Pink:
-			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpPINK", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Green:
-			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpGREEN", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		case CubeColor.Yellow:
-			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+			cubeMaterial.DOFloat (1f, "_LerpYELLOW", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 			break;
 		}
 
@@ -198,6 +225,8 @@ public class MovableScript : MonoBehaviour
 
 			deadlyParticle.Stop ();
 			deadlyParticle2.Stop ();
+
+			//cubeColor = CubeColor.Neutral;
 
 			DisableAllColor (overrideDuration);
 
@@ -218,7 +247,7 @@ public class MovableScript : MonoBehaviour
 		deadlyParticle.Play ();
 		deadlyParticle2.Play ();
 
-		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeColor = CubeColor.Deadly;
 	}
@@ -228,22 +257,22 @@ public class MovableScript : MonoBehaviour
 		if (DOTween.IsTweening ("CubeColorTween" + gameObject.GetInstanceID ()))
 			DOTween.Kill ("CubeColorTween" + gameObject.GetInstanceID ());
 		
-		cubeMaterial.DOFloat (0f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpBLUE", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpPINK", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpGREEN", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpYELLOW", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 		
-		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (0f, "_LerpRED", duration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 	}
 
 	protected virtual IEnumerator WaitToChangeColorEnum (CubeColor whichColor, float waitTime)
 	{
 		yield return new WaitForSeconds (waitTime * 0.5f);		
 
-		if(hold)
+		if(!hold)
 			cubeColor = whichColor;
 		
 	}
@@ -252,14 +281,20 @@ public class MovableScript : MonoBehaviour
 	#region Collisions
 	protected virtual void OnCollisionEnter (Collision other)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			if(other.collider.tag != "HoldMovable")
+			if(other.collider.tag != "HoldMovable" && other.collider.tag == "Player")
 				HitPlayer (other);			
 			
-			if(other.gameObject.tag == "Movable")
+			if(!hold && other.gameObject.layer == LayerMask.NameToLayer ("Movables"))
 				HitOtherMovable (other);	
-			
+
+			if(!hold && other.collider.tag == "HoldMovable" && playerThatThrew)
+				other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = playerThatThrew.GetComponent<PlayersGameplay> ();
+
 			if(other.gameObject.layer == LayerMask.NameToLayer ("Walls"))
 				HitWall (other);			
 		}
@@ -267,18 +302,21 @@ public class MovableScript : MonoBehaviour
 
 	protected virtual void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && gameObject.tag == "ThrownMovable")
+		if(other.collider.tag == "Player" && gameObject.tag == "ThrownMovable")
 		{
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+
 			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{
-				other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
+				playerScript.StunVoid(true);
 				
-				playerHit = other.gameObject;
-
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
 
 				if(playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 			}
 		}
 	}
@@ -293,21 +331,17 @@ public class MovableScript : MonoBehaviour
 		instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
 		instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
 
+		if (playerThatThrew != null && other.collider.tag != "HoldMovable")
+			other.gameObject.GetComponent<MovableScript> ().playerThatThrew = playerThatThrew;
+
 		if(canPlaySound && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			StartCoroutine(HitSound ());
 	}
 
 	protected virtual void HitWall (Collision other)
 	{
-		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			/*if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);*/
-
-			if(canPlaySound)
-				StartCoroutine(HitSound ());
-		}
-		
+		if(canPlaySound)
+			StartCoroutine(HitSound ());
 	}
 
 	protected IEnumerator HitSound ()
@@ -323,7 +357,7 @@ public class MovableScript : MonoBehaviour
 			MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.wallHitSound, transform, soundVolume);	
 		}
 
-		yield return new WaitForSeconds (0.05f);
+		yield return new WaitForSecondsRealtime (0.05f);
 
 		canPlaySound = true;
 	}
@@ -359,6 +393,9 @@ public class MovableScript : MonoBehaviour
 	#region Hold / Release
 	public virtual void DestroyRigibody ()
 	{
+		if (rigidbodyMovable == null)
+			return;
+
 		massRb = rigidbodyMovable.mass;
 		collisionDetectionModeRb = rigidbodyMovable.collisionDetectionMode;
 		drag = rigidbodyMovable.drag;
@@ -368,8 +405,9 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void AddRigidbody ()
 	{
-		gameObject.AddComponent<Rigidbody>();
-		rigidbodyMovable = gameObject.GetComponent<Rigidbody>();
+		if (rigidbodyMovable == null)
+			rigidbodyMovable = gameObject.AddComponent<Rigidbody>();
+		
 		rigidbodyMovable.mass = massRb;
 		rigidbodyMovable.collisionDetectionMode = collisionDetectionModeRb;
 		rigidbodyMovable.drag = drag;
@@ -390,6 +428,8 @@ public class MovableScript : MonoBehaviour
 
 	public virtual void OnRelease ()
 	{
+		hold = false;
+
 		ToNeutralColor();
 
 		OnReleaseEventVoid ();

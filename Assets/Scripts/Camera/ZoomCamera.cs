@@ -66,6 +66,14 @@ public class ZoomCamera : MonoBehaviour
 			}
 		}
 
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+		{
+			if (DOTween.IsTweening ("ZoomCamera"))
+				DOTween.Kill ("ZoomCamera");
+			
+			yield break;
+		}
+
 		Tween tween = cam.DOFieldOfView (newFOV, zoomDuration).SetEase (zoomEase).SetId ("ZoomCamera");
 
 		yield return tween.WaitForCompletion ();

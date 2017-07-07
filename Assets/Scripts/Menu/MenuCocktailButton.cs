@@ -9,13 +9,7 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	public WhichMode mode;
 	public bool activate = false;
 
-	private Image imageComponent;
-	private Button buttonComponent;
-	private Sprite initialSprite;
-	private Sprite pressedSprite;
-
-	private Color initialColor;
-	private Color initialHighlightedColor;
+	public MenuButtonAnimationsAndSounds menuAnims;
 
 	private static List<MenuCocktailButton> allButtons = new List<MenuCocktailButton> ();
 
@@ -24,16 +18,7 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	{
 		allButtons.Add (this);
 
-		imageComponent = GetComponent<Image> ();
-		buttonComponent = GetComponent<Button> ();
-		initialSprite = imageComponent.sprite;
-		pressedSprite = buttonComponent.spriteState.pressedSprite;
-		initialColor = buttonComponent.colors.normalColor;
-		initialHighlightedColor = buttonComponent.colors.highlightedColor;
-
-		SpriteState spriteState = buttonComponent.spriteState;
-		spriteState.pressedSprite = null;
-		buttonComponent.spriteState = spriteState;
+		menuAnims = GetComponent<MenuButtonAnimationsAndSounds> ();
 
 		if (mode == WhichMode.Bomb || mode == WhichMode.Bounce || mode == WhichMode.Burden)
 			Enable ();
@@ -43,12 +28,7 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	{
 		activate = true;
 
-		imageComponent.sprite = pressedSprite;
-
-		ColorBlock tempColor = buttonComponent.colors;
-		tempColor.normalColor = buttonComponent.colors.pressedColor;
-		tempColor.highlightedColor = buttonComponent.colors.pressedColor;
-		buttonComponent.colors = tempColor;
+		menuAnims.ShaderClick ();
 
 		if (!GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Add (mode);
@@ -56,14 +36,9 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 	public void Disable ()
 	{
+		menuAnims.ShaderClick ();
+
 		activate = false;
-
-		imageComponent.sprite = initialSprite;
-
-		ColorBlock tempColor = buttonComponent.colors;
-		tempColor.normalColor = initialColor;
-		tempColor.highlightedColor = initialHighlightedColor;
-		buttonComponent.colors = tempColor;
 
 		if (GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Remove (mode);
@@ -91,15 +66,27 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	public void SelectAll ()
 	{
 		foreach (MenuCocktailButton button in allButtons)
-			button.Enable ();
+			if(!button.activate)
+				button.Enable ();
 	}
 
 	public void DeselectAll ()
 	{
 		foreach (MenuCocktailButton button in allButtons)
+		{
 			if(button.mode != (WhichMode)0)
-				button.Disable ();
+			{
+				if(button.activate)
+					button.Disable ();
+			}
 			else
-				button.Enable ();
+			{
+				if(!button.activate)
+					button.Enable ();
+			}
+		}
+
+		if (GlobalVariables.Instance.selectedCocktailModes.Count == 0)
+			transform.parent.GetChild (0).GetComponent<MenuCocktailButton> ().Enable ();
 	}
 }

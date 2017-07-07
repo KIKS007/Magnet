@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using GameAnalyticsSDK;
+using UnityEngine.EventSystems;
 
 public class ResolutionManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ResolutionManager : MonoBehaviour
 	public bool fullScreen = true;
 
 	[Header("Scroll View")]
+	public MenuScrollRect resolutionScrollRect;
 	public GameObject resolutionContentParent;
 	public ToggleGroup resolutionsToggleGroup;
 	public float initialYPos = -36f;
@@ -133,7 +135,8 @@ public class ResolutionManager : MonoBehaviour
 		List<Vector2> allResTemp = new List<Vector2> (allScreenRes);
 		int resCount = 0;
 
-		resolutionContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (resolutionContentParent.GetComponent<RectTransform> ().sizeDelta.x, 50 + gapHeight * allScreenRes.Count);
+		//Scroll Rect Height
+		resolutionContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (resolutionContentParent.GetComponent<RectTransform> ().sizeDelta.x, (50 + gapHeight * allScreenRes.Count) * resolutionScrollRect.heightFactor);
 
 		while(allResTemp.Count != 0)
 		{
@@ -159,6 +162,12 @@ public class ResolutionManager : MonoBehaviour
 
 			resLine.GetComponent<Toggle> ().onValueChanged.AddListener ( (bool arg0) => { if(arg0) SetResolution (new Vector2 (smallestRes.x, smallestRes.y)); } );
 
+
+			//Add EventTrigger
+			RectTransform resLineRect = resLine.GetComponent<RectTransform> ();
+			resolutionScrollRect.elements.Add (resCount, resLineRect);
+			GlobalMethods.Instance.AddEventTriggerEntry (resLine, EventTriggerType.Select, () => resolutionScrollRect.CenterButton (resLineRect));
+
 			resLine.GetComponent<RectTransform> ().anchoredPosition3D = pos;
 			resLine.transform.GetChild (1).GetComponent<Text> ().text = smallestRes.x + "x" + smallestRes.y;
 			resLine.transform.GetChild (2).GetComponent<Text> ().text = FindRatio (smallestRes);
@@ -166,6 +175,8 @@ public class ResolutionManager : MonoBehaviour
 			resCount++;
 		}
 	}
+
+
 
 	string FindRatio (Vector2 resolution)
 	{

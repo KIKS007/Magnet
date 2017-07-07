@@ -76,13 +76,13 @@ public class DeathRayMotion : MonoBehaviour
 
 		for(int i = 0; i < rightCapsules.Length; i++)
 		{
-			rightCapsules [i].transform.DOLocalMoveX (rightCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay").SetDelay (tweenDelay);
+			rightCapsules [i].transform.DOLocalMoveX (rightCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay").SetDelay (tweenDelay).SetUpdate (false);
 			//rightCapsules [i].transform.DOLocalMoveZ (rightCapsulesNewZ, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
 		}
 
 		for(int i = 0; i < leftCapsules.Length; i++)
 		{
-			leftCapsules [i].transform.DOLocalMoveX (leftCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay").SetDelay (tweenDelay);
+			leftCapsules [i].transform.DOLocalMoveX (leftCapsulesNewX, tweenDuration).SetEase (tweenEase).SetId("DeathRay").SetDelay (tweenDelay).SetUpdate (false);
 			//leftCapsules [i].transform.DOLocalMoveZ (leftCapsulesNewZ, tweenDuration).SetEase (tweenEase).SetId("DeathRay");
 		}
 	}

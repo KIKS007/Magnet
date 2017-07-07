@@ -5,6 +5,7 @@ using DG.Tweening;
 using DarkTonic.MasterAudio;
 using Rewired;
 using GameAnalyticsSDK;
+using Replay;
 
 public enum PlayerState
 {
@@ -52,11 +53,14 @@ public class PlayersGameplay : MonoBehaviour
 {
 	#region Variables
     [Header("States")]
-	public int livesCount = 0;
+	public int livesCount = 1;
 	public PlayerName playerName;
 	public PlayerState playerState = PlayerState.None;
     public DashState dashState = DashState.CanDash;
 	public HoldState holdState = HoldState.CanHold;
+
+	[Header("Life Duration")]
+	public int lifeDuration = 0;
 
     [Header("Controller Number")]
     public int controllerNumber = -1;
@@ -65,23 +69,20 @@ public class PlayersGameplay : MonoBehaviour
 
     [Header("Movement")]
     public float speed = 18;
-    public float stunnedSpeed = 8;
+    public float stunnedSpeed = 5;
     public float gravity = 100;
+	public float velocity;
 
     protected float rightJoystickDeadzone = 0.5f;
 
     [Header("Forces")]
-    public float attractionForce = 10;
+    public float attractionForce = 15;
     public float shootForce = 200;
-    public float repulsionForce = 10;
-
-    [Header("Deceleration")]
-    [Range(0, 1)]
-    public float decelerationAmount = 1;
+    public float repulsionForce = 20;
 
     [Header("Stun")]
-    public float stunnedRotation = 400;
-    public float stunnedDuration = 0.6f;
+    public float stunnedRotation = 700;
+    public float stunnedDuration = 1;
 
     [Header("Dash")]
     public float dashSpeed = 80;
@@ -89,42 +90,36 @@ public class PlayersGameplay : MonoBehaviour
     public float dashCooldown = 1f;
 	public AnimationCurve dashEase;
 
-	protected string playerDeadCubeTag;
+	[Header("Hits Taken")]
+	public PlayersGameplay playerThatHit;
 
 	[HideInInspector]
-	public List<GameObject> cubesAttracted = new List<GameObject>();
+	public List<MovableScript> cubesAttracted = new List<MovableScript>();
 	[HideInInspector]
-	public List<GameObject> cubesRepulsed = new List<GameObject>();
-
-    protected Transform movableParent;
+	public List<MovableScript> cubesRepulsed = new List<MovableScript>();
     [HideInInspector]
     public Transform magnetPoint;
-
-    protected float lerpHold = 0.05f;
-
     [HideInInspector]
     public Rigidbody playerRigidbody;
 	[HideInInspector]
 	public Vector3 movement;
-
-    protected int triggerMask;
-    protected float camRayLength = 200f;
-
-    [HideInInspector]
-    public Rigidbody holdMovableRB;
-    [HideInInspector]
-    public Transform holdMovableTransform;
+	[HideInInspector]
+	public Rigidbody holdMovableRB;
+	[HideInInspector]
+	public Transform holdMovableTransform;
 	[HideInInspector]
 	public bool gettingMovable = false;
 
-    protected bool hasAttracted;
-    protected bool hasRepulsed;
-
-    protected float startModeTime;
-
+	protected float noForcesThreshold = 3f;
+	protected string playerDeadCubeTag;
+	protected Transform movableParent;
+	protected float lerpHold = 0.05f;
+    protected int triggerMask;
+    protected float camRayLength = 200f;
+	protected bool hasAttracted;
+	protected bool hasRepulsed;
+	protected float stunnedRotationTemp;
 	protected PlayersFXAnimations playerFX;
-
-	protected GameObject mainCamera;
 
 	#endregion
 
@@ -137,11 +132,10 @@ public class PlayersGameplay : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
-		GlobalVariables.Instance.OnStartMode += StartModeTime;
-		GlobalVariables.Instance.OnRestartMode += StartModeTime;
-
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
+
+		lifeDuration = 0;
 
 		if(GameObject.FindGameObjectWithTag("MovableParent") != null)
 		{
@@ -153,9 +147,8 @@ public class PlayersGameplay : MonoBehaviour
 		}
 		
         magnetPoint = transform.GetChild(0).transform;
-        transform.GetChild(2).GetComponent<MagnetTriggerScript>().magnetPoint = magnetPoint;
+		transform.GetComponentInChildren<MagnetTriggerScript>().magnetPoint = magnetPoint;
 		playerFX = GetComponent<PlayersFXAnimations> ();
-		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
 	protected void SetPlayerName()
@@ -177,11 +170,6 @@ public class PlayersGameplay : MonoBehaviour
 		}
 	}
 
-    protected void StartModeTime()
-    {
-        startModeTime = Time.unscaledTime;
-    }
-
     protected virtual void OnEnable()
     {
         StartCoroutine(WaitTillPlayerEnabled());
@@ -189,11 +177,21 @@ public class PlayersGameplay : MonoBehaviour
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			StartCoroutine (Startup ());
 
+		cubesAttracted.Clear();
+		cubesRepulsed.Clear();
+
+		if(playerRigidbody != null)
+			playerRigidbody.velocity = Vector3.zero;
+
 		if(playerState != PlayerState.Startup)
 			playerState = PlayerState.None;
+	
+		StartCoroutine (LifeDuration ());
         
 		dashState = DashState.CanDash;
 		holdState = HoldState.CanHold;
+
+		playerThatHit = null;
 
 		if(GlobalVariables.Instance != null)
 			GlobalVariables.Instance.ListPlayers ();
@@ -212,7 +210,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		if (controllerNumber == -1)
+		if (controllerNumber == -1 && GetComponent<AIFXAnimations> () == null)
 			yield break;
 		
 		switch (GlobalVariables.Instance.Startup)
@@ -223,7 +221,8 @@ public class PlayersGameplay : MonoBehaviour
 		case StartupType.Wave:
 			yield return new WaitForSeconds (0.25f);
 			playerFX.WaveFX ();
-			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
+
+			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration - 0.25f);
 			break;
 		}
 
@@ -245,6 +244,9 @@ public class PlayersGameplay : MonoBehaviour
     protected virtual void Update()
     {
 		if (rewiredPlayer == null)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
 			return;
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
@@ -279,14 +281,31 @@ public class PlayersGameplay : MonoBehaviour
 
 			//Stunned Rotation
             if (playerState == PlayerState.Stunned)
-                transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
+				transform.Rotate(0, stunnedRotationTemp * Time.deltaTime, 0, Space.World);
+
 
 			//Reset Attraction - Repulsion State
 			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
+			{
 				playerState = PlayerState.None;
+				
+				if (OnAttractingEnd != null)
+					OnAttractingEnd ();
+			}
 
 			if (playerState == PlayerState.Repulsing && !rewiredPlayer.GetButton("Repulse"))
+			{
 				playerState = PlayerState.None;
+				
+				if (OnRepulsingEnd != null)
+					OnRepulsingEnd ();
+			}
+
+			if (rewiredPlayer.GetButton("Attract") && rewiredPlayer.GetButton("Repulse"))
+			{
+				if(playerState == PlayerState.Repulsing || playerState == PlayerState.Attracting)
+					playerState = PlayerState.None;
+			}
 
 			//Attraction - Repulsion State
 			if (playerState == PlayerState.None)
@@ -307,46 +326,52 @@ public class PlayersGameplay : MonoBehaviour
     {
 		if (rewiredPlayer == null)
 			return;
+
+		if (ReplayManager.Instance.isReplaying)
+			return;
 		
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
-        {
-			//Movement
-            if (dashState != DashState.Dashing)
-			{
-				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
-				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-			}
+		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerState == PlayerState.Startup)
+			return;
 
-			//Hold Movable
-			if (holdState == HoldState.Holding)
-            {
-                holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-                holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+		//Movement
+		if (dashState != DashState.Dashing)
+		{
+			float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
+			playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
+		}
 
-                if (OnHolding != null)
-                    OnHolding();
-            }
+		//No Forces
+		velocity = playerRigidbody.velocity.magnitude;
 
-			//Deceleration
-            playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
+		if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+			playerThatHit = null;
 
-			//Gravity
-            playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
-
-			//Attraction
-            if (cubesAttracted.Count > 0)
-            {
-                for (int i = 0; i < cubesAttracted.Count; i++)
-                    Attraction(cubesAttracted[i]);
-            }
-
-			//Repulse
-            if (cubesRepulsed.Count > 0)
-            {
-                for (int i = 0; i < cubesRepulsed.Count; i++)
-                    Repulsion(cubesRepulsed[i]);
-            }
-        }
+		//Hold Movable
+		if (holdState == HoldState.Holding)
+		{
+			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+			
+			if (OnHolding != null)
+				OnHolding();
+		}
+		
+		//Gravity
+		playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
+		
+		//Attraction
+		if (cubesAttracted.Count > 0)
+		{
+			for (int i = 0; i < cubesAttracted.Count; i++)
+				Attraction(cubesAttracted[i]);
+		}
+		
+		//Repulse
+		if (cubesRepulsed.Count > 0)
+		{
+			for (int i = 0; i < cubesRepulsed.Count; i++)
+				Repulsion(cubesRepulsed[i]);
+		}
     }
 	#endregion
 
@@ -377,19 +402,22 @@ public class PlayersGameplay : MonoBehaviour
 		holdState = HoldState.CanHold;
 		playerState = PlayerState.None;
 
-        holdMovableTransform.GetChild(0).GetComponent<SlowMotionTriggerScript>().triggerEnabled = true;
+		holdMovableTransform.gameObject.tag = "ThrownMovable";
 
-        holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+		MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript> ();
+
+		movableScript.slowMoTrigger.triggerEnabled = true;
+
+		movableScript.hold = false;
         holdMovableTransform.transform.SetParent(null);
         holdMovableTransform.transform.SetParent(movableParent);
-        holdMovableTransform.GetComponent<MovableScript>().playerThatThrew = gameObject;
-        holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-        holdMovableRB = holdMovableTransform.GetComponent<Rigidbody>();
-        holdMovableTransform.gameObject.tag = "ThrownMovable";
-		holdMovableTransform.gameObject.GetComponent<MovableScript>().OnRelease();
+		movableScript.playerThatThrew = gameObject;
+		movableScript.AddRigidbody();
+		holdMovableRB = movableScript.rigidbodyMovable;
+		movableScript.OnRelease();
 
 
-        holdMovableTransform.GetComponent<MovableScript>().currentVelocity = 250;
+		movableScript.currentVelocity = 250;
         holdMovableRB.AddForce(transform.forward * shootForce, ForceMode.VelocityChange);
 
 		playerRigidbody.AddForce(transform.forward * -holdMovableRB.mass * 5, ForceMode.VelocityChange);
@@ -399,9 +427,9 @@ public class PlayersGameplay : MonoBehaviour
 
     }
 
-	public virtual void Attraction(GameObject movable)
+	public virtual void Attraction(MovableScript movable)
 	{
-		if (movable.tag == "HoldMovable")
+		if (movable.tag == "HoldMovable" || movable.rigidbodyMovable == null)
 			cubesAttracted.Remove (movable);
 
 		playerState = PlayerState.Attracting;
@@ -409,52 +437,63 @@ public class PlayersGameplay : MonoBehaviour
 		Vector3 movableAttraction = transform.position - movable.transform.position;
 
 		movableAttraction.Normalize ();
-		movable.GetComponent<Rigidbody>().AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
+
+		if(movable.rigidbodyMovable != null)
+			movable.rigidbodyMovable.AddForce(movableAttraction * attractionForce * 10, ForceMode.Force);
 
 		if (OnAttracting != null)
 			OnAttracting();
 	}
 
-    public virtual void Repulsion(GameObject movable)
+	public virtual void Repulsion(MovableScript movable)
     {
-		if (movable.tag == "HoldMovable")
+		if (movable.tag == "HoldMovable" || movable.rigidbodyMovable == null)
+		{
+			Debug.Log ("Here");
 			cubesAttracted.Remove (movable);
+		}
 		
 		playerState = PlayerState.Repulsing;
 		
 		Vector3 movableRepulsion = movable.transform.position - transform.position;
 		movableRepulsion.Normalize ();
-		movable.GetComponent<Rigidbody>().AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
+		movable.rigidbodyMovable.AddForce(movableRepulsion * repulsionForce * 10, ForceMode.Force);
 		
 		if (OnRepulsing != null)
 			OnRepulsing();		
     }
 
-    public virtual void OnHoldMovable(GameObject movable)
+	public virtual void OnHoldMovable(GameObject movable, bool forceHold = false)
     {
+		if(!forceHold)
+		if (playerState == PlayerState.Dead || playerState == PlayerState.Stunned || holdState == HoldState.CannotHold)
+			return;
+
 		gettingMovable = true;
         
 		holdState = HoldState.Holding;
 
 		SetMagnetPointPosition (movable);
 
+		MovableScript movableScript = movable.GetComponent<MovableScript> ();
+
 		movable.tag = "HoldMovable";
-		movable.GetComponent<MovableScript>().player = transform;
-		movable.GetComponent<MovableScript>().DestroyRigibody();
-		movable.GetComponent<MovableScript>().OnHold();
+		movableScript.player = transform;
+		movableScript.DestroyRigibody();
+		movableScript.OnHold();
 
-        holdMovableTransform = movable.GetComponent<Transform>();
+		holdMovableTransform = movable.transform;
 		holdMovableTransform.SetParent (transform);
-//		holdMovableTransform.SetParent (playerFX.playerMesh);
-
 
         for (int i = 0; i < GlobalVariables.Instance.EnabledPlayersList.Count; i++)
         {
-            if (GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesAttracted.Contains(movable))
-                GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesAttracted.Remove(movable);
+			PlayersGameplay playerScript = GlobalVariables.Instance.EnabledPlayersList [i].GetComponent<PlayersGameplay> ();
 
-            if (GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesRepulsed.Contains(movable))
-                GlobalVariables.Instance.EnabledPlayersList[i].GetComponent<PlayersGameplay>().cubesRepulsed.Remove(movable);
+			if (playerScript.cubesAttracted.Contains(movableScript))
+				playerScript.cubesAttracted.Remove(movableScript);
+
+			if (playerScript.cubesRepulsed.Contains(movableScript))
+				playerScript.cubesRepulsed.Remove(movableScript);
         }
 
 		cubesAttracted.Clear();
@@ -476,6 +515,15 @@ public class PlayersGameplay : MonoBehaviour
 		v3.z = 0.5f * scaleTemp.z + 1.2f;
 		magnetPoint.localPosition = v3;
 	}
+
+	public void RemoveCubeAttractionRepulsion (MovableScript script)
+	{
+		if (cubesAttracted.Contains (script))
+			cubesAttracted.Remove (script);
+
+		if (cubesRepulsed.Contains (script))
+			cubesRepulsed.Remove (script);
+	}
 	#endregion
 
 	#region Collisions
@@ -483,43 +531,72 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnCollisionStay(Collision other)
     {
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-				Death(DeathFX.All, other.contacts[0].point);
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
 
-        if (other.collider.tag != "HoldMovable")
-            if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-            {
-                playersHit.Add(other.gameObject);
-                other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
-
-            }
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				playerScript.playerThatHit = this;
+				
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
     }
 
     protected virtual void OnCollisionEnter(Collision other)
     {
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if(playerState == PlayerState.Startup || rewiredPlayer == null)
 			return;
 
 		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-			if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-				Death(DeathFX.All, other.contacts[0].point);
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
 
 		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-            if (other.gameObject.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-            {
-                playersHit.Add(other.gameObject);
-                other.gameObject.GetComponent<PlayersGameplay>().StunVoid(false);
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.DashStun);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.DashStun);
-            }
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				playerScript.playerThatHit = this;
+
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
+
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
+		{
+			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
+//			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		}
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+		{
+			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+
+			if (script != null && script.playerThatThrew != null)
+				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
+		}
     }
 	#endregion
 
@@ -564,12 +641,20 @@ public class PlayersGameplay : MonoBehaviour
 	#region Stun
     public virtual void StunVoid(bool cubeHit)
     {
-        StartCoroutine(Stun(cubeHit));
+		if (playerState == PlayerState.Stunned)
+			return;
+
+		if(gameObject.activeSelf)
+			StartCoroutine(Stun(cubeHit));
     }
 
     protected virtual IEnumerator Stun(bool cubeHit)
     {
 		playerState = PlayerState.Stunned;
+
+		stunnedRotationTemp = stunnedRotation;
+
+		DOTween.To (()=> stunnedRotationTemp, x=> stunnedRotationTemp = x, stunnedRotationTemp * 0.3f, stunnedDuration * 0.5f).SetEase (Ease.OutQuint).SetDelay (stunnedDuration * 0.5f).SetUpdate (false);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -582,8 +667,8 @@ public class PlayersGameplay : MonoBehaviour
 
 		holdState = HoldState.CannotHold;
 
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Stun);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Stun);
 
 		if (OnStun != null)
             OnStun();
@@ -595,6 +680,10 @@ public class PlayersGameplay : MonoBehaviour
             OnDashHit();
 
         yield return new WaitForSeconds(stunnedDuration);
+
+		playerRigidbody.velocity = Vector3.zero;
+
+		playerThatHit = null;
 
         if (playerState == PlayerState.Stunned)
             playerState = PlayerState.None;
@@ -608,6 +697,8 @@ public class PlayersGameplay : MonoBehaviour
 	public virtual IEnumerator Dash()
     {
         dashState = DashState.Dashing;
+
+		playerThatHit = null;
 
         if (OnDash != null)
             OnDash();
@@ -645,8 +736,11 @@ public class PlayersGameplay : MonoBehaviour
 	#endregion
 
 	#region Death
-	public virtual void Death(DeathFX deathFX, Vector3 deathPosition)
+	public virtual void Death(DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			if(deathFX == DeathFX.Explosion || deathFX == DeathFX.All)
@@ -654,6 +748,9 @@ public class PlayersGameplay : MonoBehaviour
 
 			if(deathFX == DeathFX.Particles || deathFX == DeathFX.All)
 				playerFX.DeathParticles(deathPosition);
+
+			if (killingPlayer)
+				playerThatHit = killingPlayer.GetComponent<PlayersGameplay> ();
 
 			StartCoroutine (DeathCoroutine ());        
 		}
@@ -663,59 +760,111 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		playerState = PlayerState.Dead;
 
-		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
+
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
+
+		PlayerStats (playerThatHit);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
 			yield return new WaitWhile(() => gettingMovable == true);
 
-			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+			MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript> ();
+
+			movableScript.hold = false;
 			holdMovableTransform.tag = "Movable";
 			holdMovableTransform.SetParent(null);
 			holdMovableTransform.SetParent(movableParent);
-			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-			holdMovableTransform.GetComponent<MovableScript>().OnRelease();	
+
+			if(movableScript.rigidbodyMovable == null)
+				movableScript.AddRigidbody();
+
+			movableScript.OnRelease();	
 		}
 
 		holdState = HoldState.CannotHold;
 
 		gameObject.SetActive(false);
 
+		RemoveFromAIObjectives ();
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
+
 		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+
+		if (OnDeath != null)
+			OnDeath();
 	}
 
-	public void SpawnDeadCube ()
+	protected virtual void RemoveFromAIObjectives ()
 	{
-		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerName, controllerNumber, playerDeadCubeTag);
+		foreach(var player in GlobalVariables.Instance.AlivePlayersList)
+		{
+			if (player == gameObject)
+				continue;
+
+			AIGameplay aiScript = player.GetComponent<AIGameplay> ();
+
+			if (aiScript == null)
+				continue;
+
+			if (aiScript.objectives.Contains (gameObject))
+				aiScript.objectives.Remove (gameObject);
+
+			if (aiScript.shootTarget == transform)
+				aiScript.shootTarget = null;
+		}
+	}
+
+	protected virtual void PlayerStats (PlayersGameplay playerThatHit = null)
+	{
+		if(playerThatHit == null || playerThatHit == this)
+			StatsManager.Instance.PlayerSuicides (this);
+		
+		else if (playerThatHit != this)
+			StatsManager.Instance.PlayerKills (playerThatHit);
+		
 	}
 		
     protected virtual void OnDestroy()
     {
-        if (controllerNumber != -1 && controllerNumber != 0 && VibrationManager.Instance != null)
+        if (controllerNumber > 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration(controllerNumber);
     }
 
     protected virtual void OnDisable()
     {
-        if (playerState == PlayerState.Dead && OnDeath != null)
-            OnDeath();
-
-		if(GlobalVariables.Instance != null)
-			GlobalVariables.Instance.ListPlayers ();
-
 		if (controllerNumber == 0 && GlobalVariables.Instance != null && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			GlobalVariables.Instance.SetMouseVisibility (true);
 
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());
     }
+
+	protected virtual IEnumerator LifeDuration ()
+	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
+		yield return new WaitForSecondsRealtime (1);
+
+		if (playerState == PlayerState.Dead)
+			yield break;
+
+		lifeDuration += 1;
+
+		StartCoroutine (LifeDuration ());
+	}
 	#endregion
 
 	#region Events
 	public event EventHandler OnAttracting;
 	public event EventHandler OnAttracted;
+	public event EventHandler OnAttractingEnd;
+	public event EventHandler OnRepulsingEnd;
 	public event EventHandler OnRepulsing;
 	public event EventHandler OnRepulsed;
 	public event EventHandler OnHolding;

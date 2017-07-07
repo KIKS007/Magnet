@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using Replay;
 
 public class PlayersFXAnimations : MonoBehaviour 
 {
@@ -21,8 +22,10 @@ public class PlayersFXAnimations : MonoBehaviour
 	public Vector3 shootPosOffset;
 
 	[Header ("Stun FX Settings")]
-	public MeshRenderer[] playerMaterials = new MeshRenderer[0];
+	public Material playerColorMaterial;
 	public float[] stunFXDurations = new float[6];
+
+	protected List<Renderer> playerMaterials = new List<Renderer> ();
 
 	[Header ("Dash FX")]
 	public ParticleSystem dashFX;
@@ -39,34 +42,39 @@ public class PlayersFXAnimations : MonoBehaviour
 	[Header ("Safe FX")]
 	public float safeDurationBetween = 0.5f;
 
-	private PlayersGameplay playerScript;
-	private PlayersSounds playerSoundsScript;
-	private PlayerName playerName;
+	[Header ("Attraction Settings")]
+	public float aFactor = 0.03f;
+	public float bFactor = -0.03f;
+	public float fadeDistance = 0;
 
-	private int playerNumber = -1;
+	[Header ("Repulsion Settings")]
+	public float aFactor2 = 0.03f;
+	public float bFactor2 = -0.03f;
+	public float fadeDistance2 = 0;
 
-	private float spawnDuration = 0.2f;
-	private Vector3 initialScale;
-
-	private Color playerColor;
-
+	protected PlayersGameplay playerScript;
+	protected PlayersSounds playerSoundsScript;
+	protected PlayerName playerName;
+	protected int playerNumber = -1;
+	protected float spawnDuration = 0.2f;
+	protected Vector3 initialScale;
+	protected Color playerColor;
 	[HideInInspector]
 	public float distance;
 
 	[HideInInspector]
 	public List<GameObject> attractionRepulsionFX = new List<GameObject> ();
 
-	void Awake ()
+	protected virtual void Awake ()
 	{
 		initialScale = transform.localScale;
 	}
 
 	// Use this for initialization
-	void Start () 
+	protected virtual void Start () 
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 		playerSoundsScript = GetComponent<PlayersSounds> ();
-		playerColor = GetComponent <Renderer> ().material.color;
 
 		playerScript.OnShoot += ShootFX;
 		playerScript.OnDashAvailable += DashAvailableFX;
@@ -76,23 +84,52 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerScript.OnDeath += RemoveAttractionRepulsionFX;
 		playerScript.OnSafe += () => StartCoroutine (SafeFX ());
 
+		SetupMaterials ();
+
+		Setup ();
+	}
+
+	protected virtual void Setup ()
+	{
+		playerColor = GlobalVariables.Instance.playersColors [(int)playerScript.playerName];
+
+		SetupMaterials ();
+
 		playerName = playerScript.playerName;
 		playerNumber = (int)playerScript.playerName;
 	}
 
-	void OnEnable ()
+	protected virtual void SetupMaterials ()
 	{
-		transform.localScale = Vector3.zero;
-		transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack);
+		var renderers = playerMesh.GetComponentsInChildren<Renderer> ();
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		foreach (var r in renderers)
+			if (r.material.HasProperty ("_Color") && r.material.color == playerColorMaterial.color)
+				playerMaterials.Add (r);
+	}
+
+	protected virtual void OnEnable ()
+	{
+		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			transform.localScale = Vector3.zero;
+			transform.DOScale (initialScale, spawnDuration).SetEase (Ease.InBack).SetUpdate (false);
+		}
+
+		for (int i = 0; i < playerMaterials.Count; i++)
 			if(playerMaterials[i] != null)
 				playerMaterials [i].material.EnableKeyword ("_EMISSION");
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing || playerScript.playerState == PlayerState.Startup)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if(dashAvailableFX.isPlaying)
 		{
 			ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];
@@ -111,7 +148,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		LeanMesh ();
 	}
 
-	void LeanMesh ()
+	protected virtual void LeanMesh ()
 	{
 		Vector3 movementDirection = transform.InverseTransformDirection (playerScript.movement);
 		Vector3 newRotation = new Vector3 ();
@@ -134,7 +171,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		playerMesh.localEulerAngles = new Vector3 (ClampAngle (playerMesh.localEulerAngles.x, -leanMaxAngle, leanMaxAngle), playerMesh.localEulerAngles.y, ClampAngle (playerMesh.localEulerAngles.z, -leanMaxAngle, leanMaxAngle));
 	}
 
-	float ClampAngle(float angle, float min, float max) 
+	protected virtual float ClampAngle(float angle, float min, float max) 
 	{
 		if(angle < 90 || angle > 270)
 		{
@@ -156,24 +193,24 @@ public class PlayersFXAnimations : MonoBehaviour
 		return angle;
 	}
 
-	void EnableDashFX ()
+	protected virtual void EnableDashFX ()
 	{
 		if(dashFX != null)
 			dashFX.Play ();
 	}
 
-	void DisableDashFX ()
+	protected virtual void DisableDashFX ()
 	{
 		if(dashFX != null)
 			dashFX.Stop ();
 	}
 
-	void ShootFX ()
+	protected virtual void ShootFX ()
 	{
-		Instantiate (GlobalVariables.Instance.shootFX [playerNumber], transform.position + shootPosOffset, transform.rotation);
+		Instantiate (GlobalVariables.Instance.shootFX [playerNumber], transform.position + shootPosOffset, transform.rotation, GlobalVariables.Instance.ParticulesClonesParent);
 	}
 
-	IEnumerator StunFX ()
+	protected virtual IEnumerator StunFX ()
 	{
 		float[] stunFXDurationsTemp = stunFXDurations;
 		stunFXDurationsTemp [0] = stunFXDurations [0] + Random.Range (-0.005f, 0.005f);
@@ -185,77 +222,77 @@ public class PlayersFXAnimations : MonoBehaviour
 		stunFXDurationsTemp [4] = stunFXDurations [4] + Random.Range (-0.005f, 0.005f);
 		stunFXDurationsTemp [5] = stunFXDurations [5] + Random.Range (-0.005f, 0.005f);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[0]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[1]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[2]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[3]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[4]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[5]);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitUntil(()=> playerScript.playerState != PlayerState.Stunned);
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunEND ();
 	}
 
-	void DashAvailableFX ()
+	protected virtual void DashAvailableFX ()
 	{
 		dashAvailableFX.Play ();
 	}
 
-	void StopDashAvailable ()
+	protected virtual void StopDashAvailable ()
 	{
 		if (dashAvailableFX.isPlaying)
 			dashAvailableFX.Stop ();
 	}
 
-	IEnumerator SafeFX ()
+	protected virtual IEnumerator SafeFX ()
 	{
 		while(gameObject.layer == LayerMask.NameToLayer ("Safe"))
 		{
-			for (int i = 0; i < playerMaterials.Length; i++)
+			for (int i = 0; i < playerMaterials.Count; i++)
 				playerMaterials [i].material.DisableKeyword ("_EMISSION");
 
 			playerSoundsScript.StunOFF ();
@@ -265,7 +302,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			
 			yield return new WaitForSeconds (safeDurationBetween);
 
-			for (int i = 0; i < playerMaterials.Length; i++)
+			for (int i = 0; i < playerMaterials.Count; i++)
 				playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 			playerSoundsScript.StunON ();
@@ -273,13 +310,15 @@ public class PlayersFXAnimations : MonoBehaviour
 			yield return new WaitForSeconds (safeDurationBetween);
 		}
 
-		for (int i = 0; i < playerMaterials.Length; i++)
+		for (int i = 0; i < playerMaterials.Count; i++)
 			playerMaterials [i].material.EnableKeyword ("_EMISSION");
 
 		playerSoundsScript.StunON ();
 	}
 		
-	public IEnumerator AttractionFX (GameObject whichCube)
+
+
+	public virtual IEnumerator AttractionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.attractFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
 		attractionRepulsionFX.Add (fx);
@@ -290,7 +329,9 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		StartCoroutine (SetAttractionParticles (whichCube, fx, ps));
 
-		yield return new WaitWhile(() => playerScript.cubesAttracted.Contains (whichCube));
+		MovableScript script = whichCube.GetComponent<MovableScript> ();
+
+		yield return new WaitWhile(() => playerScript.cubesAttracted.Contains (script));
 
 		ps.Stop ();
 
@@ -298,10 +339,10 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		attractionRepulsionFX.Remove (fx);
 
-		Destroy (fx);
+		//Destroy (fx);
 	}
 
-	IEnumerator SetAttractionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
+	protected virtual IEnumerator SetAttractionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
 	{
 		while(ps != null && ps.IsAlive())
 		{
@@ -310,8 +351,9 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (transform.position.x, fx.transform.position.y, transform.position.z);
 			fx.transform.LookAt(lookPos);
 
+
 			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
+			float lifeTime = aFactor * dist + bFactor;
 
 			ps.startLifetime = lifeTime;
 
@@ -320,18 +362,24 @@ public class PlayersFXAnimations : MonoBehaviour
 
 			for (int i = 0; i < ps.particleCount; i++)
 			{
-				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime = 0.027491408934708f * dist -0.036082474226804f;
-				particlesList [i].startLifetime = lifeTime;
+				distance = Vector3.Distance (transform.position, whichCube.transform.position);
+
+				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
+				lifeTime = aFactor * dist + bFactor;
+
+				if(dist > distance + fadeDistance)
+					particlesList [i].startLifetime = 0;
+				/*else
+					particlesList [i].startLifetime = lifeTime;*/
 			}
 
 			ps.SetParticles (particlesList, particlesList.Length);
 
-			yield return null;
+			yield return new WaitForFixedUpdate ();
 		}
 	}
 
-	public IEnumerator RepulsionFX (GameObject whichCube)
+	public virtual IEnumerator RepulsionFX (GameObject whichCube)
 	{
 		GameObject fx = Instantiate (GlobalVariables.Instance.repulseFX [playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
 		attractionRepulsionFX.Add (fx);
@@ -342,18 +390,9 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		StartCoroutine (SetRepulsionParticles (whichCube, fx, ps));
 
-		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (whichCube));
+		MovableScript script = whichCube.GetComponent<MovableScript> ();
 
-		/*ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
-		ps.GetParticles (particlesList);
-
-		for (int i = 0; i < ps.particleCount; i++)
-		{
-			particlesList [i].startLifetime = -1f;
-			yield return null;
-		}
-
-		ps.SetParticles (particlesList, particlesList.Length);*/
+		yield return new WaitWhile(() => playerScript.cubesRepulsed.Contains (script));
 
 		ps.Stop ();
 
@@ -361,10 +400,10 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		attractionRepulsionFX.Remove (fx);
 
-		Destroy (fx);
+		//Destroy (fx);
 	}
 
-	IEnumerator SetRepulsionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
+	protected virtual IEnumerator SetRepulsionParticles (GameObject whichCube, GameObject fx, ParticleSystem ps)
 	{
 		while(ps.IsAlive())
 		{
@@ -373,10 +412,9 @@ public class PlayersFXAnimations : MonoBehaviour
 			Vector3 lookPos = new Vector3 (whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
 			fx.transform.LookAt(lookPos);
 
-			distance = Vector3.Distance (transform.position, whichCube.transform.position);
 
 			float dist = Vector3.Distance (transform.position, whichCube.transform.position);
-			float lifeTime = 0.027491408934708f * dist -0.036082474226804f;
+			float lifeTime = aFactor2 * dist + bFactor2;
 
 			ps.startLifetime = lifeTime;
 
@@ -385,22 +423,25 @@ public class PlayersFXAnimations : MonoBehaviour
 
 			for (int i = 0; i < ps.particleCount; i++)
 			{
-				dist = Vector3.Distance (whichCube.transform.position, ps.transform.TransformPoint(particlesList [i].position));
-				lifeTime =  0.027491408934708f * dist -0.036082474226804f;
-				particlesList [i].startLifetime = lifeTime;
+				distance = Vector3.Distance (transform.position, whichCube.transform.position);
+
+				dist = Vector3.Distance (transform.position, ps.transform.TransformPoint(particlesList [i].position));
+
+				if(dist > distance + fadeDistance2)
+					particlesList [i].startLifetime = 0;
 			}
 
 			ps.SetParticles (particlesList, particlesList.Length);
 
-			yield return null;
+			yield return new WaitForFixedUpdate ();
 		}
 	}
 
-	void RemoveAttractionRepulsionFX ()
+	protected virtual void RemoveAttractionRepulsionFX ()
 	{
 		for (int i = 0; i < attractionRepulsionFX.Count; i++)
 		{
-			Destroy(attractionRepulsionFX[i]);
+			//Destroy(attractionRepulsionFX[i]);
 		}
 	}
 
@@ -438,7 +479,8 @@ public class PlayersFXAnimations : MonoBehaviour
 				Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
 				//instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
 
-				GetComponent<PlayersVibration> ().Wave ();
+					if(GetComponent<PlayersVibration> () != null)
+						GetComponent<PlayersVibration> ().Wave ();
 			});
 		}
 

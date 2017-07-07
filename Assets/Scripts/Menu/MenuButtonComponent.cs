@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using DG.Tweening;
-using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector;
 
 public enum MenuButtonType {Basic, Static};

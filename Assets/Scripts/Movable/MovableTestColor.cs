@@ -21,7 +21,7 @@ public class MovableTestColor : MonoBehaviour
 	void OnEnable ()
 	{
 		cubeMaterial = transform.GetChild (0).GetComponent<Renderer> ().material;
-		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
+		cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.playersColors[4]);
 
 		StopCoroutine (ColorTest ());
 		StartCoroutine (ColorTest ());
@@ -31,7 +31,7 @@ public class MovableTestColor : MonoBehaviour
 	{
 		Color cubeCorrectColor = new Color ();
 
-		cubeCorrectColor = GlobalVariables.Instance.cubePlayersColor[0];
+		cubeCorrectColor = GlobalVariables.Instance.playersColors[0];
 
 		Color cubeColorTemp = cubeMaterial.GetColor("_Color");
 		float cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -46,13 +46,13 @@ public class MovableTestColor : MonoBehaviour
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.playersColors[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, tweenDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 
 
 		yield return new WaitForSeconds (timeBeforeColor);
 
-		cubeCorrectColor = GlobalVariables.Instance.cubePlayersColor[2];
+		cubeCorrectColor = GlobalVariables.Instance.playersColors[2];
 
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -67,13 +67,13 @@ public class MovableTestColor : MonoBehaviour
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.playersColors[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, tweenDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 
 
 		yield return new WaitForSeconds (timeBeforeColor);
 
-		cubeCorrectColor = GlobalVariables.Instance.cubePlayersColor[3];
+		cubeCorrectColor = GlobalVariables.Instance.playersColors[3];
 
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -88,13 +88,13 @@ public class MovableTestColor : MonoBehaviour
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.playersColors[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, tweenDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 
 
 		yield return new WaitForSeconds (timeBeforeColor);
 
-		cubeCorrectColor = GlobalVariables.Instance.cubePlayersColor[1];
+		cubeCorrectColor = GlobalVariables.Instance.playersColors[1];
 
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
@@ -109,7 +109,7 @@ public class MovableTestColor : MonoBehaviour
 		cubeColorTemp = cubeMaterial.GetColor("_Color");
 		cubeLerpTemp = cubeMaterial.GetFloat ("_Lerp");
 
-		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.cubePlayersColor[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
+		DOTween.To(()=> cubeColorTemp, x=> cubeColorTemp =x, GlobalVariables.Instance.playersColors[4], tweenDuration).OnUpdate(()=> cubeMaterial.SetColor("_Color", cubeColorTemp));
 		DOTween.To(()=> cubeLerpTemp, x=> cubeLerpTemp =x, 0, tweenDuration).OnUpdate(()=> cubeMaterial.SetFloat("_Lerp", cubeLerpTemp));
 
 

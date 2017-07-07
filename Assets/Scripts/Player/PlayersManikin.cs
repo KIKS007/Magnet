@@ -23,15 +23,8 @@ public class PlayersManikin : PlayersGameplay
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
-
 			playerRigidbody.AddForce (-Vector3.up * gravity, ForceMode.Acceleration);
 		}
-	}
-
-	public override void OnHoldMovable (GameObject movable)
-	{
-		
 	}
 
 	protected override void OnCollisionStay (Collision other)
@@ -52,7 +45,7 @@ public class PlayersManikin : PlayersGameplay
 
 			DeathExplosionFX (other.contacts[0]);
 
-			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GetComponent<Renderer> ().material.color);
+			DeathParticles (other.contacts[0], GlobalVariables.Instance.DeadParticles, GlobalVariables.Instance.playersColors [ (int)playerName]);
 		}
 	}
 
@@ -67,7 +60,7 @@ public class PlayersManikin : PlayersGameplay
 		playerState = PlayerState.None;
 	}
 
-	public override void Death (DeathFX deathFX, Vector3 deathPosition)
+	public override void Death (DeathFX deathFX, Vector3 deathPosition, GameObject killingPlayer = null)
 	{
 		if(playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
@@ -75,8 +68,8 @@ public class PlayersManikin : PlayersGameplay
 
 			OnDeathVoid ();
 
-			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+			GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+			GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 			gameObject.SetActive (false);
 		}

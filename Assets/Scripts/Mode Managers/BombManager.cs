@@ -34,6 +34,8 @@ public class BombManager : LastManManager
 	{
 		textInitialSize = timerText.fontSize;
 		textLocalPosition = timerText.transform.parent.transform.localPosition;
+
+		GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (bomb);
 	}
 
 	// Use this for initialization
@@ -54,13 +56,13 @@ public class BombManager : LastManManager
 
 		GlobalVariables.Instance.AllMovables.Remove (bomb);
 
-		livesCount = new int[GlobalVariables.Instance.NumberOfAlivePlayers];
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
-		for (int i = 0; i < livesCount.Length; i++)
-			livesCount [i] = GlobalVariables.Instance.LivesCount;
+		yield return new WaitForSecondsRealtime (0.3f);
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), 0.6f, 8f);
 	}
 
 	protected IEnumerator Setup ()
@@ -102,7 +104,7 @@ public class BombManager : LastManManager
 	{
 		timer -= Time.deltaTime;
 
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false);
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing || bomb.activeSelf == false || bombScript.changingPlayer);
 
 		if(timer > 0)
 		{
@@ -119,9 +121,13 @@ public class BombManager : LastManManager
 			timerText.text = "00";
 
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeTrackingSound, bomb.transform);
-			bombScript.StartCoroutine ("Explode");
+
+			if(bomb.activeSelf)
+				bombScript.StartCoroutine ("Explode");
 
 			yield return new WaitWhile (()=> bomb.activeSelf == true);
+
+			MasterAudio.StopSoundGroupOfTransform (bomb.transform, SoundsManager.Instance.cubeTrackingSound);
 
 			if (gameEndLoopRunning)
 				yield break;
@@ -149,6 +155,11 @@ public class BombManager : LastManManager
 
 	}
 
+	public void SpawnNewBomb ()
+	{
+		timer = -1f;
+	}
+
 	IEnumerator SpawnBomb ()
 	{
 		float timeBeforeSpawn = firstSpawn ? timeBeforeFirstSpawn : timeBetweenSpawn;
@@ -164,7 +175,7 @@ public class BombManager : LastManManager
 		timerText.transform.parent.SetParent (GameObject.FindGameObjectWithTag("MovableParent").transform);
 		timerText.fontSize = 0;
 
-		Vector3 bombPosition = GlobalVariables.Instance.currentModePosition;
+		Vector3 bombPosition =  Vector3.zero;
 		bombPosition.y = 2;
 
 		if(!Physics.CheckSphere(bombPosition, 5f, GlobalMethods.Instance.gameplayLayer))
@@ -184,20 +195,20 @@ public class BombManager : LastManManager
 		timerText.transform.parent.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
 		timerText.transform.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
 
-		DOTween.To(()=> timerText.fontSize, x=> timerText.fontSize =x, textInitialSize, 0.2f);
+		DOTween.To(()=> timerText.fontSize, x=> timerText.fontSize =x, textInitialSize, 0.2f).SetUpdate (false);
 
 		yield return new WaitForSeconds (1f);
 
 		if (gameEndLoopRunning)
 			yield break;
 
-		if(bomb.GetComponent<MovableBomb>().playerHolding == null && bomb.GetComponent<MovableScript>().hold == false)
+		if(bombScript.playerHolding == null && bombScript.hold == false)
 		{
-			if(bomb.GetComponent<MovableScript>().attracedBy.Count == 0)
+			if(bombScript.attracedBy.Count == 0)
 				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 
-			else if(bomb.GetComponent<MovableScript>().attracedBy.Count > 0)
-				bomb.GetComponent<MovableScript>().attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
+			else if(bombScript.attracedBy.Count > 0)
+				bombScript.attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
 		}
 	}
 

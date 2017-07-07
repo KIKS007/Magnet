@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GameAnalyticsSDK;
+using Replay;
 
 public class PlayersTutorial : PlayersGameplay 
 {
@@ -45,6 +46,9 @@ public class PlayersTutorial : PlayersGameplay
 	protected override void Update ()
 	{
 		if (rewiredPlayer == null)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
 			return;
 
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
@@ -105,7 +109,8 @@ public class PlayersTutorial : PlayersGameplay
 
 
 		//////
-		hitsCount = StatsManager.Instance.playerStatsList [(int)playerName].frags;
+		if(!StatsManager.Instance.settingUp)
+			hitsCount = StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.HitsGiven.ToString ()];
 
 		if(playerState != PlayerState.Dead && playerState != PlayerState.Stunned && playerState != PlayerState.Startup)
 		{
@@ -130,6 +135,9 @@ public class PlayersTutorial : PlayersGameplay
 		if (rewiredPlayer == null)
 			return;
 
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
 		{
 			//Movement
@@ -139,6 +147,12 @@ public class PlayersTutorial : PlayersGameplay
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
 			}
 
+			//No Forces
+			velocity = playerRigidbody.velocity.magnitude;
+
+			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+				playerThatHit = null;
+
 			//Hold Movable
 			if (holdState == HoldState.Holding)
 			{
@@ -147,9 +161,6 @@ public class PlayersTutorial : PlayersGameplay
 
 				OnHoldingVoid ();
 			}
-
-			//Deceleration
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
 			//Gravity
 			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
@@ -184,19 +195,95 @@ public class PlayersTutorial : PlayersGameplay
 		}
 	}
 
-	public override void OnHoldMovable (GameObject movable)
+	protected override void OnCollisionStay(Collision other)
+	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+		
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				if ((tutorialManager.tutorialState & TutorialState.DashHit) != TutorialState.DashHit)
+					return;
+				
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
+	}
+
+	protected override void OnCollisionEnter(Collision other)
+	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+		
+		if(playerState == PlayerState.Startup || rewiredPlayer == null)
+			return;
+
+		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
+		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+			Death(DeathFX.All, other.contacts[0].point);
+
+		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+		{
+			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+		
+			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+			{
+				if ((tutorialManager.tutorialState & TutorialState.DashHit) != TutorialState.DashHit)
+					return;
+				
+				playersHit.Add(other.gameObject);
+				playerScript.StunVoid(false);
+				
+				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+			}
+		}
+
+		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
+		{
+			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
+//			other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+		}
+
+		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
+		{
+			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+
+			if (script != null && script.playerThatThrew != null)
+				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
+		}
+	}
+
+	public override void OnHoldMovable (GameObject movable, bool forceHold = false)
 	{
 		if((tutorialManager.tutorialState & TutorialState.Shoot) == TutorialState.Shoot)
-			base.OnHoldMovable (movable);
+			base.OnHoldMovable (movable, forceHold);
 	}
 
 	protected override IEnumerator DeathCoroutine ()
 	{
 		playerState = PlayerState.Dead;
 
-		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", (int)(Time.unscaledTime - startModeTime));
-		mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Death);
-		mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Death);
+		GameAnalytics.NewDesignEvent("Player:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
+		
+		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
 		if(gettingMovable || holdState == HoldState.Holding)
 		{
@@ -214,6 +301,11 @@ public class PlayersTutorial : PlayersGameplay
 
 		gameObject.SetActive(false);
 
-		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
+		FindObjectOfType<TutorialManager> () .PlayerDeath (playerName, gameObject);
+
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.ListPlayers ();
+		
+//		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
 	}
 }

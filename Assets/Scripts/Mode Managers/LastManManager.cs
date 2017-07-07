@@ -9,17 +9,17 @@ public class LastManManager : MonoBehaviour
 {
 	[Header ("Settings")]
 	public WhichMode whichMode;
-	public float timeBeforeEndGame = 2;
+	public float endGameDelay = 2;
+	public float endGameDelayInstantRestart = 3;
 
 	[Header ("Death Count")]
-	public int[] livesCount = new int[4];
 	public float timeBeforePlayerRespawn = 2;
 
 	[Header ("Cubes Spawn")]
 	public bool spawnCubes = true;
-	public float durationBetweenSpawn = 0.1f;
 
 	[Header ("Dead Cube")]
+	public MovableScript movableExampleScript;
 	public bool playerDeadCube = true;
 
 	protected bool gameEndLoopRunning = false;
@@ -37,20 +37,13 @@ public class LastManManager : MonoBehaviour
 		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
 			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
 
-		livesCount = new int[GlobalVariables.Instance.NumberOfPlayers];
-
-		for (int i = 0; i < livesCount.Length; i++)
-			livesCount [i] = GlobalVariables.Instance.LivesCount;
-		
 		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
 	}
 
 	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
 	{
 		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
-
-		livesCount [(int)playerName]--;
 
 		playerScript.livesCount--;
 		
@@ -58,21 +51,19 @@ public class LastManManager : MonoBehaviour
 
 		//Check Game End
 		int playersCount = 0;
-		int lastPlayer = 0;
+		GameObject lastPlayer = null;
 
-		for (int i = 0; i < livesCount.Length; i++)
-		{
-			if (livesCount [i] != 0)
+		foreach(GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			if(g.GetComponent<PlayersGameplay> ().livesCount != 0)
 			{
 				playersCount++;
-				lastPlayer = i;
+				lastPlayer = g;
 			}
-		}
 
 		if(playersCount == 1 && gameEndLoopRunning == false)
 		{
 			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(GlobalVariables.Instance.Players [lastPlayer].GetComponent<PlayersGameplay> ().playerName);
+			StatsManager.Instance.Winner(lastPlayer.GetComponent<PlayersGameplay> ().playerName);
 
 			StartCoroutine (GameEnd ());
 			return;
@@ -88,13 +79,18 @@ public class LastManManager : MonoBehaviour
 		}
 
 		//Spawn Play if has lives left
-		if(playerScript.livesCount != 0 && !gameEndLoopRunning)
+		if (playerScript.livesCount != 0 && !gameEndLoopRunning) 
 		{
 			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
-		}
-		else if(playerDeadCube && !gameEndLoopRunning)
-			playerScript.SpawnDeadCube ();
+		} 
+		else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations> () == null)
+			PlayerDeadCube (playerScript);
+	}
+
+	public virtual void PlayerDeadCube (PlayersGameplay playerScript)
+	{
+		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
 	}
 
 	protected virtual IEnumerator GameEnd ()
@@ -109,14 +105,14 @@ public class LastManManager : MonoBehaviour
 
 		if(SceneManager.GetActiveScene().name == "Scene Testing")
 		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+			yield return new WaitForSecondsRealtime (endGameDelay);
 
 			LoadModeManager.Instance.RestartSceneVoid (false);
 		}
 
 		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
 		{
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame * 1.5f);
+			yield return new WaitForSecondsRealtime (endGameDelayInstantRestart);
 
 			LoadModeManager.Instance.RestartSceneVoid (true);
 		}
@@ -124,9 +120,10 @@ public class LastManManager : MonoBehaviour
 		{
 			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
-			yield return new WaitForSecondsRealtime (timeBeforeEndGame);
+			yield return new WaitForSecondsRealtime (endGameDelay);
 
-			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+//			MenuManager.Instance.endModeMenu.EndMode (whichMode);
+			MenuManager.Instance.ShowEndMode ();
 		}
 	}
 }

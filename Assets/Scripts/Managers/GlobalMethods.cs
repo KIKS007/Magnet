@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GlobalMethods : Singleton<GlobalMethods> 
 {
@@ -19,6 +20,10 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public GameObject deathTextPrefab;
 	public Vector2 deathTextPositions;
 	public float deathTextDuration;
+
+	[Header ("Explosion")]
+	public float explosionForce;
+	public float explosionRadius;
 
 	[HideInInspector]
 	public float safeDuration = 1.5f;
@@ -44,8 +49,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		xLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (0).transform.position.x;
 		zLimits.y = GameObject.FindGameObjectWithTag ("CubesSpawnLimits").transform.GetChild (1).transform.position.z;
 
-		xLimits.x = GlobalVariables.Instance.currentModePosition.x - (xLimits.y - GlobalVariables.Instance.currentModePosition.x);
-		zLimits.x = GlobalVariables.Instance.currentModePosition.z - (zLimits.y - GlobalVariables.Instance.currentModePosition.z);
+		xLimits.x = -xLimits.y;
+		zLimits.x = -zLimits.y;
 	}
 
 	public void SpawnDeathText (PlayerName playerName, GameObject player, int count)
@@ -54,15 +59,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		GameObject text = Instantiate (deathTextPrefab, position, deathTextPrefab.transform.rotation);
 		//text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
-		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName].color;
+		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName];
 
 		if(count != 1)
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " lives";
 		else
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " life";
 
-		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad);
-		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text));
+		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad).SetUpdate (false);
+		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text)).SetUpdate (false);
 	}
 
 	public void SpawnExistingPlayerRandomVoid (GameObject player, float timeBeforeSpawn = 0, bool waveAtSpawn = false)
@@ -94,7 +99,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		DOVirtual.DelayedCall (safeDuration, ()=> 
 		{
 			player.layer = LayerMask.NameToLayer ("Player");
-		});
+			}).SetUpdate (false);
 
 		player.transform.position = newPos;
 		//SpawnParticles (player);
@@ -110,15 +115,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, player.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 	
 		instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = player.gameObject.GetComponent<Renderer>().material.color;
+		instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors [ (int)player.gameObject.GetComponent<PlayersGameplay>().playerName];
 	}
 
-	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, string tag)
+	public void SpawnPlayerDeadCubeVoid (PlayerName playerName, int controllerNumber, MovableScript script, float scaleDuration = defaultScaleDuration)
 	{
-		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, tag));
+		StartCoroutine (SpawnPlayerDeadCube (playerName, controllerNumber, script, scaleDuration));
 	}
 
-	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, string tag, float scaleDuration = defaultScaleDuration)
+	IEnumerator SpawnPlayerDeadCube (PlayerName playerName, int controllerNumber, MovableScript script, float scaleDuration = defaultScaleDuration)
 	{
 		Vector3 newPos = new Vector3();
 		int randomCube = Random.Range (0, GlobalVariables.Instance.deadCubesPrefabs.Length);
@@ -141,41 +146,48 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
 			deadCube.GetComponent<PlayersDeadCube> ().controllerNumber = controllerNumber;
 			deadCube.GetComponent<PlayersDeadCube> ().playerName = playerName;
-			deadCube.GetComponent<MovablePlayer> ().CubeColor (tag);
-			
+
+			//
+			var clonedScript = CopyComponent (script, deadCube);
+
+			//Physic Material
+			if (script.gameObject.GetComponent<Collider> ().material != null)
+				deadCube.GetComponent<Collider> ().material = script.gameObject.GetComponent<Collider> ().material;
+
+			clonedScript.Awake ();
+			clonedScript.Start ();
+			clonedScript.OnEnable ();
+
 			Vector3 scale = deadCube.transform.lossyScale;
 			deadCube.transform.localScale = Vector3.zero;
 			
-			deadCube.tag = "Untagged";
-
-			if (tag != "Movable")
-				deadCube.GetComponent<MovablePlayer> ().basicMovable = false;
-
-			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
-			StartCoroutine (ChangeMovableTag (deadCube, tag, scaleDuration));
-
+			deadCube.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic).SetUpdate (false);
+			StartCoroutine (ChangeMovableTag (deadCube, deadCube.tag, scaleDuration));
 
 			GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 
 			instantiatedParticles.transform.SetParent (GlobalVariables.Instance.ParticulesClonesParent);
-			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.Players [(int)playerName].gameObject.GetComponent<Renderer> ().material.color;
+			instantiatedParticles.GetComponent<ParticleSystemRenderer> ().material.color = GlobalVariables.Instance.playersColors [ (int)playerName];
 
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<DynamicCamera> ().otherTargetsList.Add (deadCube);
+
+			GlobalVariables.Instance.AllMovables.Add (deadCube);
 
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, deadCube.transform);
 		}
 	}
 
-	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
+	public void RandomPositionMovablesVoid (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration, float sphereRadius = checkSphereRadius)
 	{
-		StartCoroutine (RandomPositionMovables (allMovables, durationBetweenSpawn, scaleDuration));
+		StartCoroutine (RandomPositionMovables (allMovables, scaleDuration, sphereRadius));
 	}
 
-	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float durationBetweenSpawn = defaultDurationBetweenSpawn, float scaleDuration = defaultScaleDuration)
+	public IEnumerator RandomPositionMovables (GameObject[] allMovables = null, float scaleDuration = defaultScaleDuration, float sphereRadius = checkSphereRadius)
 	{
 		Vector3[] allScales = new Vector3[allMovables.Length];
 		string[] allTags = new string[allMovables.Length];
 		int loopCount = 0;
+		float durationBetweenSpawn = (GlobalVariables.Instance.delayedStartupDuration - scaleDuration) / allMovables.Length;
 
 		for(int i = 0; i < allMovables.Length; i++)
 		{
@@ -199,7 +211,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 				loopCount++;
 				newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
 			}
-			while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+			while(Physics.CheckSphere(newPos, sphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
 
 			yield return new WaitForSeconds (durationBetweenSpawn);
 
@@ -307,6 +319,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		EnableGameObject (clone, newPos);
 		ScaleGameObect (clone, tagTemp, movableScale, scaleDuration);
+
+		GlobalVariables.Instance.AllMovables.Add (clone);
 	}
 
 	void EnableGameObject (GameObject target, Vector3 position)
@@ -322,13 +336,30 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public void ScaleGameObect (GameObject target, string tag, Vector3 scale, float scaleDuration)
 	{
 		target.transform.localScale = Vector3.zero;
-		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic);
+		target.transform.DOScale (scale, scaleDuration).SetEase (Ease.OutElastic).SetUpdate (false);
 		StartCoroutine (ChangeMovableTag (target, tag, scaleDuration));
 
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, target.transform);
 	}
 
 	public void Explosion (Vector3 explosionPosition, float explosionForce, float explosionRadius)
+	{
+		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
+		{
+			Vector3 repulseDirection = other.transform.position - explosionPosition;
+			repulseDirection.Normalize ();
+
+			float explosionImpactZone = 1 - (Vector3.Distance (explosionPosition, other.transform.position) / explosionRadius);
+
+			if(explosionImpactZone > 0)
+			{
+				if(other.GetComponent<Rigidbody>() != null)
+					other.GetComponent<Rigidbody> ().AddForce (repulseDirection * explosionImpactZone * explosionForce, ForceMode.Impulse);
+			}
+		}
+	}
+
+	public void Explosion (Vector3 explosionPosition)
 	{
 		foreach(Collider other in Physics.OverlapSphere(explosionPosition, explosionRadius, explosionMask))
 		{
@@ -363,5 +394,40 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
 		if(movable != null)
 			movable.tag = tagTemp;
+	}
+
+	public T CopyComponent<T>(T original, GameObject destination) where T : Component
+	{
+		System.Type type = original.GetType();
+		Component copy = destination.AddComponent(type);
+		System.Reflection.FieldInfo[] fields = type.GetFields();
+		foreach (System.Reflection.FieldInfo field in fields)
+		{
+			field.SetValue(copy, field.GetValue(original));
+		}
+		return copy as T;
+	}
+
+	public void AddEventTriggerEntry (GameObject g, EventTriggerType type, System.Action action)
+	{
+		if(g.GetComponent<EventTrigger> () == null)
+		{
+			Debug.LogWarning ("No Event Trigger Component : " + g.name);
+			return;
+		}
+
+		EventTrigger.Entry entry = new EventTrigger.Entry ();
+		entry.eventID = type;
+		entry.callback.AddListener ((arg0) => action());
+
+		g.GetComponent<EventTrigger> ().triggers.Add (entry);
+	}
+
+	public void ReplaceInText (Text textComponent, string newValue, string oldValue = "$")
+	{
+		if(textComponent.text.Contains (oldValue))
+			textComponent.text = textComponent.text.Replace (oldValue, newValue);
+		else
+			textComponent.text = newValue;
 	}
 }

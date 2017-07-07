@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using DarkTonic.MasterAudio;
+using DG.Tweening;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Demos;
+using Replay;
 
-public class ArenaVisualizer : MonoBehaviour 
+public class ArenaVisualizer : SerializedMonoBehaviour
 {
+	public enum Bounce { Bounce, Wait, Reset }
+
+	[Space (20)]
+
 	public AudioSpectrum.LevelsType levelsType = AudioSpectrum.LevelsType.Mean;
 	public bool normalizedValues = true;
 
@@ -32,6 +40,14 @@ public class ArenaVisualizer : MonoBehaviour
 	public int currentSettings = 0;
 	public List<ArenaSettings> allSettings = new List<ArenaSettings> ();
 
+	[Header ("Color Bounce")]
+	public List<BounceSettings> bounceSettings;
+
+	[Header ("Single Color Bounce")]
+	public float singleColorBounceDuration = 0.2f;
+	public float singleColorBounceResetDuration = 0.1f;
+
+	private Renderer[] columnsRenderers = new Renderer[0];
 	private bool wrongSettings = false;
 	private Color columnInitialColor;
 	private Color columnDeadlyColor;
@@ -45,6 +61,10 @@ public class ArenaVisualizer : MonoBehaviour
 	{
 		columnInitialColor = frontColumns [0].GetChild (0).GetComponent<Renderer> ().material.color;
 		columnDeadlyColor = GetComponent<ArenaDeadzones> ().deadlyColor;
+
+		columnsRenderers = transform.GetComponentsInChildren<Renderer> ();
+
+		GlobalVariables.Instance.OnEndMode += DoColorBounce;
 
 		foreach(ArenaSettings arena in allSettings)
 		{
@@ -93,6 +113,12 @@ public class ArenaVisualizer : MonoBehaviour
 		}
 
 		GetMaterials ();
+	}
+
+	void OnDestroy ()
+	{
+		if(GlobalVariables.Instance)
+			GlobalVariables.Instance.OnEndMode -= DoColorBounce;
 	}
 
 	void GetMaterials ()
@@ -154,6 +180,9 @@ public class ArenaVisualizer : MonoBehaviour
 	void Update () 
 	{
 		if (AudioSpectrum.Instance == null || wrongSettings)
+			return;
+
+		if (ReplayManager.Instance.isReplaying)
 			return;
 
 		if (currentSettings >= allSettings.Count)
@@ -271,6 +300,82 @@ public class ArenaVisualizer : MonoBehaviour
 //				c.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", columnDeadlyColor * emissionIntensity);
 //		}
 	}
+
+	[PropertyOrder (-1)]
+	[Button]
+	public void DoColorBounce ()
+	{
+		StartCoroutine (ColorBounce ());
+	}
+
+	IEnumerator ColorBounce ()
+	{
+		if (StatsManager.Instance.winnerName == WhichPlayer.Draw || StatsManager.Instance.winnerName == WhichPlayer.None)
+			yield break;
+
+		if (ReplayManager.Instance.isReplaying)
+			yield break;
+
+		foreach(var b in bounceSettings)
+		{
+			switch (b.bounceType)
+			{
+			case Bounce.Bounce:
+				foreach(Renderer r in columnsRenderers)
+				{
+					r.material.DOColor (GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.winnerName], b.duration).SetEase (Ease.OutQuad);
+					r.material.DOColor (GlobalVariables.Instance.playersColors [(int)StatsManager.Instance.winnerName], "_EmissionColor", b.duration).SetEase (Ease.OutQuad);
+				}
+				if(b.wait)
+					yield return new WaitForSecondsRealtime (b.duration);
+				break;
+			case Bounce.Wait:
+				yield return new WaitForSecondsRealtime (b.duration);
+				break;
+			case Bounce.Reset:
+				foreach(Renderer r in columnsRenderers)
+				{
+					r.material.DOColor (columnInitialColor, b.duration).SetEase (Ease.OutQuad);
+					r.material.DOColor (columnInitialColor, "_EmissionColor", b.duration).SetEase (Ease.OutQuad);
+				}
+				if(b.wait)
+					yield return new WaitForSecondsRealtime (b.duration);
+				break;
+			}
+		}
+
+		yield return 0;
+	}
+
+	[PropertyOrder (-1)]
+	[Button ("Do Single Color Bounce")]
+	public void SingleColorBounce ()
+	{
+		StartCoroutine (SingleColorBounceCoroutine ());
+	}
+
+	public IEnumerator SingleColorBounceCoroutine (PlayerName player = PlayerName.Player3)
+	{
+		foreach(Renderer r in columnsRenderers)
+		{
+			if(r.material.color == columnInitialColor)
+			{
+				r.material.DOColor (GlobalVariables.Instance.playersColors [(int)player], singleColorBounceDuration).SetEase (Ease.OutQuad);
+				r.material.DOColor (GlobalVariables.Instance.playersColors [(int)player], "_EmissionColor", singleColorBounceDuration).SetEase (Ease.OutQuad);
+			}
+		}
+
+		yield return new WaitForSecondsRealtime (singleColorBounceDuration);
+
+		foreach(Renderer r in columnsRenderers)
+		{
+			if(r.material.color == GlobalVariables.Instance.playersColors [(int)player])
+			{
+				r.material.DOColor (columnInitialColor, singleColorBounceResetDuration).SetEase (Ease.OutQuad);
+				r.material.DOColor (columnInitialColor, "_EmissionColor", singleColorBounceResetDuration).SetEase (Ease.OutQuad);
+			}
+		}
+	}
 }
 
 [Serializable]
@@ -286,4 +391,12 @@ public class ArenaSettings
 public class ColumnMaterial 
 {
 	public List<Material> materials = new List<Material> ();
+}
+
+[Serializable]
+public class BounceSettings 
+{
+	public ArenaVisualizer.Bounce bounceType;
+	public float duration;
+	public bool wait = true;
 }

@@ -11,14 +11,12 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	public event EventHandler OnLevelUnloaded;
 
 	private Transform mainCamera;
-	private SlowMotionCamera slowMo;
 	private MenuCameraMovement cameraMovement;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
-		slowMo = mainCamera.GetComponent<SlowMotionCamera> ();
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		StartCoroutine (FirstLoadedScene (GlobalVariables.Instance.firstSceneToLoad));
@@ -45,7 +43,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(SceneManager.GetSceneByName(sceneToLoad.ToString ()).isLoaded)
 			yield return SceneManager.UnloadSceneAsync (sceneToLoad.ToString ());
 
-		StatsManager.Instance.ResetStats (true);
 
 		if(SceneManager.GetActiveScene ().name != "Scene Testing")
 		{
@@ -117,14 +114,13 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
-		StopSlowMotion ();
-
-		if(resetStats)
-			StatsManager.Instance.ResetStats (true);
 
 		yield return SceneManager.LoadSceneAsync (sceneToLoad.ToString (), LoadSceneMode.Additive);
 
 		LevelWasLoaded (sceneToLoad, gameState);
+
+		if(resetStats)
+			StatsManager.Instance.ResetStats ();
 	}
 		
 	public void RestartSceneVoid (bool instantly = false)
@@ -169,10 +165,10 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			yield return SceneManager.UnloadSceneAsync (GlobalVariables.Instance.CurrentModeLoaded.ToString ());
 
 		DestroyParticules ();
-		StopSlowMotion ();
-		StatsManager.Instance.ResetStats (true);
-	
+
 		LevelWasUnloaded (GameStateEnum.Menu);
+	
+		StatsManager.Instance.ResetStats ();
 	}
 
 
@@ -192,15 +188,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 			OnLevelUnloaded ();
 	}
 
-	void StopSlowMotion ()
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			slowMo.StopPauseSlowMotion ();
-		else
-			slowMo.StopEndGameSlowMotion ();
-	}
-
-	void DestroyParticules ()
+	public void DestroyParticules ()
 	{
 		if(GlobalVariables.Instance.ParticulesClonesParent.childCount != 0)
 		{

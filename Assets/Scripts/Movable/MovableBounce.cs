@@ -5,17 +5,8 @@ using DG.Tweening;
 
 public class MovableBounce : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-	public LayerMask explosionMask = (1 << 9) | (1 << 12);
-
-	protected override void Update () 
+	protected override void LowVelocity () 
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
@@ -29,7 +20,12 @@ public class MovableBounce : MovableScript
 					
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
+				}
+
+				else if(gameObject.tag == "ThrownMovable")
+				{
+					slowMoTrigger.triggerEnabled = false;
+					gameObject.tag = "Movable";
 				}
 			}
 		}
@@ -37,54 +33,55 @@ public class MovableBounce : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(other.collider.tag == "Player" && tag == "ThrownMovable")
 		{
-			if(tag == "ThrownMovable")
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+
+			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{
-				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
-				{
-					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
-
-					playerHit = other.gameObject;
-
-					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
-
-					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-				}				
-			}
+				playerScript.StunVoid(true);
+				
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
+				
+				if(playerThatThrew != null)
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+			}				
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
+		if(other.collider.tag == "Player" && tag == "DeadCube")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+
+			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+			if (playerThatThrew != null)
+				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 
 	protected override void HitWall (Collision other)
 	{
-		if(other.gameObject.tag == "Wall" && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			/*if(currentVelocity > (limitVelocity * 0.5f))
-				InstantiateImpactFX (other.contacts [0]);*/
-
-			if(canPlaySound)
-				StartCoroutine(HitSound ());
-
-			if(currentVelocity > limitVelocity)
-				StartCoroutine (DeadlyTransition ());
-		}
+		if(canPlaySound)
+			StartCoroutine(HitSound ());
+		
+		if (tag != "ThrownMovable")
+			return;
+		DeadlyTransition ();
 	}
 
-	IEnumerator DeadlyTransition ()
+	void DeadlyTransition ()
 	{
-		ToDeadlyColor (0.15f);
-
-		yield return new WaitForSecondsRealtime (0);
+		ToDeadlyColor (0.1f);
 
 		tag = "DeadCube";
 	}

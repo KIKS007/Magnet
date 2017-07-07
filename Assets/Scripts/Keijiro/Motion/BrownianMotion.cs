@@ -134,7 +134,7 @@ namespace Klak.Motion
 
         void Update()
         {
-            var dt = Time.deltaTime;
+			var dt = Time.unscaledDeltaTime;
 
             if (_enablePositionNoise)
             {

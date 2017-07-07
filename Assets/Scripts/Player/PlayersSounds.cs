@@ -4,36 +4,30 @@ using DarkTonic.MasterAudio;
 
 public class PlayersSounds : MonoBehaviour 
 {
+	public enum SoundState { NotPlaying, Playing, TransitionToPlaying, TransitionToNotPlaying }
+
 	public float fadeDuration = 1;
 
-	[SoundGroupAttribute]
-	public string attractingSound;
-	[SoundGroupAttribute]
-	public string repulsingSound;
+	[Header ("Attraction Sound")]
+	public SoundState attractingSoundState = SoundState.NotPlaying;
+
+	[Header ("Repulsing Sound")]
+	public SoundState repulsingSoundState = SoundState.NotPlaying;
 
 	private PlayersGameplay playerScript;
-
-	static float initialAttractingVolume = -1;
-	static float initialRepulsingVolume = -1;
 
 	// Use this for initialization
 	void Start () 
 	{
 		playerScript = GetComponent<PlayersGameplay> ();
 
-		if(initialAttractingVolume == -1)
-		{
-			initialAttractingVolume = MasterAudio.GetGroupVolume (attractingSound);
-			initialRepulsingVolume = MasterAudio.GetGroupVolume (repulsingSound);
-		}
-			
-		MasterAudio.SetGroupVolume (attractingSound, 0);
-		MasterAudio.SetGroupVolume (repulsingSound, 0);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], transform);
+		MasterAudio.PlaySound3DFollowTransformAndForget (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], transform);
 
-		playerScript.OnPlayerstateChange += Attracting;
+		/*playerScript.OnPlayerstateChange += Attracting;
 		playerScript.OnPlayerstateChange += Repulsing;
 		playerScript.OnAttracting += Attracting;
-		playerScript.OnRepulsing += Repulsing;
+		playerScript.OnRepulsing += Repulsing;*/
 
 		playerScript.OnHold += OnHold;
 		playerScript.OnShoot += Shoot;
@@ -47,34 +41,54 @@ public class PlayersSounds : MonoBehaviour
 		GlobalVariables.Instance.OnPause += FadeSounds;
 	}
 
-	private bool fadeInAttraction = false;
-	private bool fadeOutAttraction = false;
+	void Update ()
+	{
+		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			return;
+
+		Attracting ();
+
+		Repulsing ();
+	}
 
 	void Attracting ()
 	{
-		if(playerScript.cubesAttracted.Count > 0 && MasterAudio.GetGroupVolume(attractingSound) != initialAttractingVolume && !fadeInAttraction)
+		if(playerScript.cubesAttracted.Count != 0 && playerScript.playerState == PlayerState.Attracting)
 		{
-			MasterAudio.PlaySound3DFollowTransformAndForget (attractingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, initialAttractingVolume, fadeDuration, ()=> fadeInAttraction = false);
+			if(attractingSoundState != SoundState.Playing && attractingSoundState != SoundState.TransitionToPlaying)
+			{
+				attractingSoundState = SoundState.TransitionToPlaying;
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], SoundsManager.Instance.initialAttractingVolume, fadeDuration, ()=> attractingSoundState = SoundState.Playing);
+			}
 		}
-
-		if(playerScript.cubesAttracted.Count == 0 && MasterAudio.GetGroupVolume(attractingSound) != 0 && !fadeOutAttraction)
-			MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration, ()=> fadeOutAttraction = false);		
+		else 
+		{
+			if(attractingSoundState != SoundState.NotPlaying && attractingSoundState != SoundState.TransitionToNotPlaying)
+			{
+				attractingSoundState = SoundState.TransitionToNotPlaying;
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], 0, fadeDuration, ()=> attractingSoundState = SoundState.NotPlaying);
+			}
+		}
 	}
-
-	private bool fadeInRepulsion = false;
-	private bool fadeOutRepulsion = false;
 
 	void Repulsing ()
 	{
-		if(playerScript.cubesRepulsed.Count > 0 && MasterAudio.GetGroupVolume(repulsingSound) != initialRepulsingVolume && !fadeInRepulsion)
+		if(playerScript.cubesRepulsed.Count != 0 && playerScript.playerState == PlayerState.Repulsing)
 		{
-			MasterAudio.PlaySound3DFollowTransformAndForget (repulsingSound, transform);
-			MasterAudio.FadeSoundGroupToVolume (repulsingSound, initialRepulsingVolume, fadeDuration, ()=> fadeInRepulsion = false);
+			if(repulsingSoundState != SoundState.Playing && repulsingSoundState != SoundState.TransitionToPlaying)
+			{
+				repulsingSoundState = SoundState.TransitionToPlaying;
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], SoundsManager.Instance.initialRepulsingVolume, fadeDuration, ()=> repulsingSoundState = SoundState.Playing);
+			}
 		}
-
-		if(playerScript.cubesRepulsed.Count == 0 && MasterAudio.GetGroupVolume(repulsingSound) != 0 && !fadeOutRepulsion)
-			MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration, ()=> fadeOutRepulsion = false);
+		else 
+		{
+			if(repulsingSoundState != SoundState.NotPlaying && repulsingSoundState != SoundState.TransitionToNotPlaying)
+			{
+				repulsingSoundState = SoundState.TransitionToNotPlaying;
+				MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], 0, fadeDuration, ()=> repulsingSoundState = SoundState.NotPlaying);
+			}	
+		}
 	}
 
 	void OnHold ()
@@ -124,12 +138,15 @@ public class PlayersSounds : MonoBehaviour
 
 	void OnDisable ()
 	{
-		//FadeSounds ();
+		FadeSounds ();
 	}
 
 	void FadeSounds ()
 	{
-		MasterAudio.FadeSoundGroupToVolume (attractingSound, 0, fadeDuration);
-		MasterAudio.FadeSoundGroupToVolume (repulsingSound, 0, fadeDuration);
+		if (GlobalVariables.applicationIsQuitting || !playerScript)
+			return;
+		
+		MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.attractingSounds [(int)playerScript.playerName], 0, fadeDuration);
+		MasterAudio.FadeSoundGroupToVolume (SoundsManager.Instance.repulsingSounds [(int)playerScript.playerName], 0, fadeDuration);
 	}
 }

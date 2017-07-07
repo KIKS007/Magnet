@@ -5,16 +5,11 @@ using DG.Tweening;
 
 public class MovableStar : MovableScript 
 {
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
-
 	[Header ("Trail")]
 	public Color trailNormalColor;
-
 	public Color trailDeadlyColor;
 
-	protected override void Awake ()
+	public override void Awake ()
 	{
 		base.Awake ();
 
@@ -22,7 +17,7 @@ public class MovableStar : MovableScript
 		trailDeadlyColor = deadlyParticle2.main.startColor.color;
 	}
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		hold = false;
 
@@ -41,19 +36,15 @@ public class MovableStar : MovableScript
 		var main = deadlyParticle2.main;
 		main.startColor = trailNormalColor;
 
-		cubeMaterial.DOColor (trailNormalColor, "_EmissionNEUTRAL", 0.1f).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOColor (trailNormalColor, "_EmissionNEUTRAL", 0.1f).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
 
-	protected override void Update () 
+	protected override void LowVelocity () 
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
 		if(hold == false && currentVelocity > 0)
 		{
 			if(currentVelocity > higherVelocity)
@@ -67,7 +58,6 @@ public class MovableStar : MovableScript
 
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
-					playerThatThrew = null;
 				}
 			}
 		}
@@ -75,31 +65,42 @@ public class MovableStar : MovableScript
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(other.collider.tag == "Player")
 		{
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+
 			if(tag == "ThrownMovable")
 			{
 				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 				{
 					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
 
-					playerHit = other.gameObject;
-
-					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
+					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
 
 					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
+						StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 				}				
 			}
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
+		if(other.collider.tag == "Player" && tag == "DeadCube")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+
+			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+			if (playerThatThrew != null)
+				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 
@@ -113,8 +114,7 @@ public class MovableStar : MovableScript
 			if(canPlaySound)
 				StartCoroutine(HitSound ());
 
-			if(currentVelocity > limitVelocity)
-				StartCoroutine (DeadlyTransition ());
+			DeadlyTransition ();
 		}
 	}
 
@@ -163,16 +163,14 @@ public class MovableStar : MovableScript
 		var main = deadlyParticle2.main;
 		main.startColor = trailDeadlyColor;
 
-		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ());
+		cubeMaterial.DOFloat (1f, "_LerpRED", overrideDuration).SetId("CubeColorTween" + gameObject.GetInstanceID ()).SetUpdate (false);
 
 		cubeColor = CubeColor.Deadly;
 	}
 
-	IEnumerator DeadlyTransition ()
+	void DeadlyTransition ()
 	{
-		ToDeadlyColor (0.15f);
-
-		yield return new WaitForSeconds (0.01f);
+		ToDeadlyColor (0.1f);
 
 		tag = "DeadCube";
 	}

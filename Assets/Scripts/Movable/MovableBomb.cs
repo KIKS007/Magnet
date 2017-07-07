@@ -2,6 +2,7 @@
 using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
+using UnityEngine.PostProcessing;
 
 public class MovableBomb : MovableScript 
 {
@@ -12,14 +13,13 @@ public class MovableBomb : MovableScript
 
 	public bool trackingPlayer = false;
 
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
+	[HideInInspector]
+	public bool changingPlayer = false;
 
 	private float speedAddedCooldown = 0.5f;
 	private float trackSpeedTemp;
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		hold = false;
 		trackingPlayer = false;
@@ -31,120 +31,74 @@ public class MovableBomb : MovableScript
 		deadlyParticle = transform.GetChild (3).GetComponent<ParticleSystem> ();
 		deadlyParticle2 = transform.GetChild (4).GetComponent<ParticleSystem> ();
 
+		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
+
+		tag = "Movable";
+
 		deadlyParticle.Stop ();
 		deadlyParticle2.Stop ();
+
+		changingPlayer = false;
 
 		if(playerHolding == null)
 		{
 			cubeMaterial.SetFloat ("_Lerp", 0);
-			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.cubePlayersColor[4]);
+			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.playersColors[4]);
 		}
 
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
-
-	protected override void Update () 
-	{
-		if(hold == false)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-
-		if(hold == false && currentVelocity > 0 && !trackingPlayer)
-		{
-			if(currentVelocity > higherVelocity)
-			{
-				higherVelocity = currentVelocity;
-			}
-
-			if(currentVelocity >= limitVelocity)
-			{
-				gameObject.tag = "ThrownMovable";
-			}
-			else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
-			{
-				gameObject.tag = "Movable";
-				playerThatThrew = null;
-			}
-		}
-	}
 		
 	protected override void HitPlayer (Collision other)
 	{
+		PlayersGameplay playerScript = null;
+
+		if (other.gameObject.tag == "Player")
+			playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+
 		if(tag == "Movable" && other.gameObject.tag == "Player" 
 			|| tag == "ThrownMovable" && other.gameObject.tag == "Player" && !trackingPlayer)
 		{
-			if(playerThatThrew == null && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+			if(playerThatThrew == null || playerThatThrew != other.gameObject)
 			{
 				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
+				playerScript.OnHoldMovable (gameObject, true);
 				playerHolding = other.gameObject;
-
-				playerHit = other.gameObject;
 
 				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-			}
-
-			else if(other.collider.GetComponent<PlayersGameplay>().playerState == PlayerState.Stunned && playerThatThrew != other.gameObject)
-			{
-				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
-
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
-				playerHolding = other.gameObject;
-
-				playerHit = other.gameObject;
-
-				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
-
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
-			}
-
-			else if(playerThatThrew != other.gameObject && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
-			{
-				if(!trackingPlayer && playerThatThrew != null)
-					StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, other.gameObject);
-
-				other.gameObject.GetComponent<PlayersGameplay> ().OnHoldMovable (gameObject);
-				playerHolding = other.gameObject;
-
-				playerHit = other.gameObject;
-
-				mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
-				mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
-
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 			}
 		}
 
-		if(tag == "ThrownMovable" && other.gameObject.tag == "Player" && trackingPlayer && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(tag == "DeadCube" && other.gameObject.tag == "Player" && trackingPlayer && playerScript.playerState != PlayerState.Dead)
 		{
 			hold = true;
 			playerHolding = other.gameObject;
 
-			playerHit = other.gameObject;
-
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
 			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
 			mainCamera.GetComponent<ZoomCamera>().Zoom(FeedbackType.Stun);
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [ (int)playerScript.playerName]);
 		}
-
 	}
 
 	public override void OnHold ()
 	{
 		base.OnHold ();
 
+		if (playerHolding != null)
+			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
+
 		playerHolding = player.gameObject;
+
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath += ChooseAnotherPlayer;
 	}
 
 	public override void OnRelease ()
@@ -183,12 +137,14 @@ public class MovableBomb : MovableScript
 
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+		GlobalMethods.Instance.Explosion (transform.position);
 
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
 		MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
 
 		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
+
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
 
 		playerHolding.GetComponent<PlayersGameplay> ().Death (DeathFX.All, explosionPos);
 
@@ -203,13 +159,18 @@ public class MovableBomb : MovableScript
 
 	IEnumerator GetToPlayerPosition ()
 	{
-		transform.DORotate (Vector3.zero, 0.5f);
-		transform.DOLocalMoveY (1.5f, 0.5f);
+		transform.DORotate (Vector3.zero, 0.5f).SetUpdate (false);
+		transform.DOLocalMoveY (1.5f, 0.5f).SetUpdate (false);
 
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
 		trackSpeedTemp = trackSpeed;
+
+		tag = "DeadCube";
+
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().RemoveCubeAttractionRepulsion (this);
 
 		StartCoroutine (AddSpeed ());
 
@@ -222,9 +183,11 @@ public class MovableBomb : MovableScript
 
 				//float distance = Vector3.Distance (playerHolding.transform.position, transform.position) + distanceFactor;
 				//rigidbodyMovable.MovePosition (transform.position + direction * distance * getToPlayerForce * Time.deltaTime);
+
 				rigidbodyMovable.AddForce(direction * trackSpeedTemp, ForceMode.Impulse);
 
-				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+				if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+					yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 				yield return new WaitForFixedUpdate();
 			}
@@ -242,10 +205,31 @@ public class MovableBomb : MovableScript
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
 
-		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeedTemp += trackSpeedAdded;
 
-		StartCoroutine (AddSpeed ());
+		if (!hold)
+			StartCoroutine (AddSpeed ());
+	}
+
+	void ChooseAnotherPlayer ()
+	{
+		if (tag == "DeadCube")
+			return;
+
+		playerHolding = null;
+		trackingPlayer = false;
+		hold = false;
+
+		Vector3 scale = transform.localScale;
+
+		transform.DOScale (0, 0.5f).OnComplete (()=> 
+			{
+				gameObject.SetActive (false);
+				transform.localScale = scale;
+				FindObjectOfType<BombManager> ().timer = -1f;
+			});
 	}
 }

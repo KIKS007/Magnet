@@ -31,7 +31,7 @@ public class PlayersDeadCube : MonoBehaviour
 
 	protected Vector3 movement;
 
-	private MovablePlayer movableScript;
+	private MovableScript movableScript;
 
 	private Vector3 rightMovePos;
 	private Vector3 leftMovePos;
@@ -45,7 +45,7 @@ public class PlayersDeadCube : MonoBehaviour
 	void Start () 
 	{
 		rigidBody = GetComponent<Rigidbody> ();
-		movableScript = GetComponent<MovablePlayer> ();
+		movableScript = GetComponent<MovableScript> ();
 
 		movableScript.OnReleaseEvent += () => rigidBody = GetComponent<Rigidbody> ();
 

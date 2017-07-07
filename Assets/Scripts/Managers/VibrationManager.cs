@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 public class VibrationManager : Singleton<VibrationManager> 
 {
+	public bool vibrationEnabled = true;
 	public List<VibrationSettings> vibrationList = new List<VibrationSettings>();
 
 	[Header ("Vibration Debug")]
@@ -23,8 +24,7 @@ public class VibrationManager : Singleton<VibrationManager>
 	public bool test = false;
 	public FeedbackType whichFeedbackTest = FeedbackType.Default;
 
-	private float timeToStopVibration = 2;
-	private bool applicationIsQuitting = false;
+	private float timeToStopVibration = 1;
 
 	// Use this for initialization
 	void Start () 
@@ -44,6 +44,9 @@ public class VibrationManager : Singleton<VibrationManager>
 	{
 		for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		{
+			if (!vibrationEnabled)
+				return;
+
 			if (GlobalVariables.Instance.rewiredPlayers [i] == null)
 				continue;
 
@@ -60,6 +63,9 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	public void Vibrate (int whichPlayer, FeedbackType whichVibration)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		float leftMotorForce = 0;
 		float rightMotorForce = 0;
 		float vibrationDuration = 0;
@@ -90,16 +96,25 @@ public class VibrationManager : Singleton<VibrationManager>
 
 	public void Vibrate (int whichPlayer, float leftMotor, float rightMotor, float duration)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (Vibration (whichPlayer, leftMotor, rightMotor, duration));
 	}
 
 	public void Vibrate (int whichPlayer, float leftMotor, float rightMotor, float duration, float startDuration, float stopDuration, Ease easeType = Ease.Linear)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (Vibration (whichPlayer, leftMotor, rightMotor, duration, startDuration, stopDuration, easeType));
 	}
 
 	public void VibrateBurst (int whichPlayer, int burstNumber, float leftMotor, float rightMotor, float burstDuration, float durationBetweenBurst)
 	{
+		if (!vibrationEnabled)
+			return;
+		
 		StartCoroutine (VibrationBurst (whichPlayer, burstNumber, leftMotor, rightMotor, burstDuration, durationBetweenBurst));
 	}
 
@@ -127,8 +142,8 @@ public class VibrationManager : Singleton<VibrationManager>
 	{
 		DOTween.Kill ("Vibration" + whichPlayer);
 
-		Tween myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, leftMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
-		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, rightMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
+		Tween myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, leftMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer).SetUpdate (false);
+		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, rightMotor, startDuration).SetEase(easeType).SetId("Vibration" + whichPlayer).SetUpdate (false);
 
 		playersVibrationCount [whichPlayer]++;
 
@@ -137,8 +152,8 @@ public class VibrationManager : Singleton<VibrationManager>
 		if(duration > 0)
 			yield return new WaitForSecondsRealtime (duration);
 
-		myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
-		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer);
+		myTween = DOTween.To(()=> playersLeftMotor [whichPlayer], x=> playersLeftMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer).SetUpdate (false);
+		DOTween.To(()=> playersRightMotor [whichPlayer], x=> playersRightMotor [whichPlayer] = x, 0, stopDuration).SetEase(easeType).SetId("Vibration" + whichPlayer).SetUpdate (false);
 
 		yield return myTween.WaitForCompletion ();
 
@@ -176,7 +191,7 @@ public class VibrationManager : Singleton<VibrationManager>
 		
 	public void StopVibration (int whichPlayer)
 	{
-		if(!applicationIsQuitting)
+		if(!GlobalVariables.applicationIsQuitting)
 		{
 			playersLeftMotor [whichPlayer] = 0;
 			playersRightMotor [whichPlayer] = 0;
@@ -254,24 +269,22 @@ public class VibrationManager : Singleton<VibrationManager>
 		DOTween.Kill ("Vibration2");
 		DOTween.Kill ("Vibration3");
 
-		DOTween.To(()=> playersLeftMotor [0], x=> playersLeftMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
+		DOTween.To (() => playersLeftMotor [0], x => playersLeftMotor [0] = x, 0, timeToStopVibration).SetId ("Vibration" + 0);
 		DOTween.To(()=> playersRightMotor [0], x=> playersRightMotor [0] = x, 0, timeToStopVibration).SetId("Vibration" + 0);
 
-		DOTween.To(()=> playersLeftMotor [1], x=> playersLeftMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 1);
-		DOTween.To(()=> playersRightMotor [1], x=> playersRightMotor [1] = x, 0, timeToStopVibration).SetId("Vibration" + 1);
+		DOTween.To (() => playersLeftMotor [1], x => playersLeftMotor [1] = x, 0, timeToStopVibration).SetId ("Vibration" + 1);
+		DOTween.To (() => playersRightMotor [1], x => playersRightMotor [1] = x, 0, timeToStopVibration).SetId ("Vibration" + 1);
 
-		DOTween.To(()=> playersLeftMotor [2], x=> playersLeftMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 2);
-		DOTween.To(()=> playersRightMotor [2], x=> playersRightMotor [2] = x, 0, timeToStopVibration).SetId("Vibration" + 2);
+		DOTween.To (() => playersLeftMotor [2], x => playersLeftMotor [2] = x, 0, timeToStopVibration).SetId ("Vibration" + 2);
+		DOTween.To (() => playersRightMotor [2], x => playersRightMotor [2] = x, 0, timeToStopVibration).SetId ("Vibration" + 2);
 
-		DOTween.To(()=> playersLeftMotor [3], x=> playersLeftMotor [3] = x, 0, timeToStopVibration).SetId("Vibration" + 3);
-		DOTween.To(()=> playersRightMotor [3], x=> playersRightMotor[3] = x, 0, timeToStopVibration).SetId("Vibration" + 3);
+		DOTween.To (() => playersLeftMotor [3], x => playersLeftMotor [3] = x, 0, timeToStopVibration).SetId ("Vibration" + 3);
+		DOTween.To (() => playersRightMotor [3], x => playersRightMotor [3] = x, 0, timeToStopVibration).SetId ("Vibration" + 3);
 
 	}
 
 	void OnApplicationQuit ()
 	{
-		applicationIsQuitting = true;
-
 		StopAllVibration ();
 	}
 }

@@ -5,36 +5,33 @@ using DarkTonic.MasterAudio;
 
 public class MovableSuggestible : MovableScript 
 {
-	[Header ("SUGGESTIBLE")]
-	public float explosionForce = 20;
-	public float explosionRadius = 50;
-
-	protected override void Start ()
+	public override void Start ()
 	{
 		gameObject.tag = "Suggestible";
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 		ToDeadlyColor ();
 	}
 
-	protected override void Update ()
-	{
-		if(rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
-
-		if (currentVelocity >= limitVelocity && !slowMoTrigger.triggerEnabled)
-			slowMoTrigger.triggerEnabled = true;
-	}
-
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(other.collider.tag == "Player")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			playerScript.Death (DeathFX.All, other.contacts [0].point);
+
+			foreach (GameObject g in attracedBy)
+				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+
+			foreach (GameObject g in repulsedBy)
+				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 }

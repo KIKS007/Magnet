@@ -3,196 +3,350 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using GameAnalyticsSDK;
+using Sirenix.OdinInspector;
+using System.Linq;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
-public enum WhichStat {Frags, Hits, Death, Dash, Shots, AimAccuracy, Wins};
+public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides, Stun };
 
-public class StatsManager : Singleton<StatsManager> 
+public class StatsManager : SerializedMonoBehaviour
 {
-	public List<PlayerStats> playerStatsList = new List<PlayerStats> ();
+	[PropertyOrder (-1)]
+	[Button("Update Stats")] 
+	void UpdateStatsButton ()
+	{
+		UpdateStats ();
+	}
 
-	[Header ("Total")]
-	public int totalFrags = 0;
-	public int totalHits = 0;
-	public int totalDeath = 0;
-	public int totalDash = 0;
-	public int totalShots = 0;
+	public bool settingUp = false;
 
-	[Header ("Player With Most")]
-	public List<MostStats> mostStatsList = new List<MostStats> ();
+	[Header ("Stats Text")]
+	public Dictionary<string, WhichStat> statsText = new Dictionary<string, WhichStat> ();
+
+	[Header ("Player Stats")]
+	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
+
+	[Header ("Total Stats")]
+	public List<WhichStat> totalExcludeStats = new List<WhichStat> ();
+	public Dictionary<string, int> totalStats = new Dictionary<string, int> ();
+
+	[Header ("Most Stats")]
+	public Dictionary<string, Stats> mostStats = new Dictionary<string, Stats> ();
+
+	[Header ("Least Stats")]
+	public Dictionary<string, Stats> leastStats = new Dictionary<string, Stats> ();
+
+	[Header ("Reset Exclude Stats")]
+	public List<WhichStat> resetExcludeStats = new List<WhichStat> ();
 
 	[Header ("Winner")]
+	public WhichPlayer winnerName = WhichPlayer.None;
 	public string winner;
 
 	[Header ("Wins In A Row")]
-	public WhichPlayer mostWinsInARow = WhichPlayer.None;
+	public WhichPlayer mostWinsInARowPlayer = WhichPlayer.None;
 	public int winsInARowNumber = 0;
 
 	[Header ("Game Duration")]
-	public string gameDuration;
-	private float timerDuration;
+	public string allRoundsDuration;
+	public string roundDuration;
 
+	private float roundsDurationValue;
+	private float allRoundsDurationValue;
 	private WhichPlayer previousWinner = WhichPlayer.None;
+
+	public static StatsManager Instance;
+
+	void Awake ()
+	{
+		if (Instance == null)
+			Instance = this;
+		else
+			Destroy (gameObject);
+	}
 
 	void Start ()
 	{
-		GlobalVariables.Instance.OnEndMode += UpdateTotalStats;
+		GlobalVariables.Instance.OnStartMode += SetupStats;
+		GlobalVariables.Instance.OnRestartMode += GetPlayersEvents;
 
-		SetupLists ();
+		GlobalVariables.Instance.OnStartMode += () => 
+		{
+			StopAllCoroutines ();
+			StartCoroutine (StartTimer ());
+		};
+		GlobalVariables.Instance.OnRestartMode += () => 
+		{
+			StopAllCoroutines ();
+			StartCoroutine (StartTimer ());
+		};
 
-		StartCoroutine (StartTimer ());
+		GlobalVariables.Instance.OnMenu += ()=> ResetStats(true);
+
+		SetupStats ();
 	}
 
-	void SetupLists ()
+	void SetupStats ()
 	{
-		for (int i = 0; i < 4; i++)
-			playerStatsList.Add (new PlayerStats ());
+		settingUp = true;
 
-		playerStatsList[0].whichPlayer = WhichPlayer.Player1;
-		playerStatsList[1].whichPlayer = WhichPlayer.Player2;
-		playerStatsList[2].whichPlayer = WhichPlayer.Player3;
-		playerStatsList[3].whichPlayer = WhichPlayer.Player4;
+		//Players Stats
+		playersStats.Clear ();
 
-		for (int i = 0; i < playerStatsList.Count; i++)
+		foreach(GameObject g in GlobalVariables.Instance.Players)
 		{
-			for (int j = 0; j < 4; j++)
+			if (g == null)
+				break;
+
+			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
+
+			if (!GlobalVariables.Instance.EnabledPlayersList.Contains (g))
+				continue;
+
+			playersStats.Add ( playerScript.playerName.ToString (), new PlayerStats () );
+			
+			for(int i = 0; i < Enum.GetValues (typeof (WhichStat)).Cast<int> ().Max () + 1; i++)
+				playersStats [ playerScript.playerName.ToString () ].playersStats.Add (((WhichStat)i).ToString (), 0);
+		}
+
+		//Total Stats
+		totalStats.Clear ();
+
+		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
+			if(!totalExcludeStats.Contains ( (WhichStat)i ))
+				totalStats.Add ( ((WhichStat)i).ToString (), 0);
+
+		//Most Stats
+		mostStats.Clear ();
+
+		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
+		{
+			mostStats.Add ( ((WhichStat)i).ToString (), new Stats ());
+			mostStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
+		}
+
+		//Least Stats
+		leastStats.Clear ();
+
+		for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
+		{
+			leastStats.Add ( ((WhichStat)i).ToString (), new Stats ());
+			leastStats [((WhichStat)i).ToString ()].whichPlayer = WhichPlayer.None;
+		}
+
+		GetPlayersEvents ();
+
+		settingUp = false;
+	}
+
+	void UpdateStats ()
+	{
+		//Most Values
+		foreach(KeyValuePair<string, Stats> d in mostStats)
+		{
+			int mostValue = -5;
+			WhichPlayer player = WhichPlayer.None;
+			bool severalMost = false;
+
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 			{
-				playerStatsList [i].HitByPlayersList.Add (new HitByWhichPlayer ());
-				playerStatsList [i].HitByPlayersList [j].hitBy = (WhichPlayer)j;
+				if(p.Value.playersStats [d.Key] > mostValue)
+				{
+					mostValue = p.Value.playersStats [d.Key];
+					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
+				}
+				else if(p.Value.playersStats [d.Key] == mostValue)
+					severalMost = true;
+			}
+
+			if(mostValue != 0 && !severalMost)
+			{
+				d.Value.value = mostValue;
+				d.Value.whichPlayer = player;
 			}
 		}
 
-		for (int i = 0; i < 7; i++)
+		//Least Values
+		foreach(KeyValuePair<string, Stats> d in leastStats)
 		{
-			mostStatsList.Add (new MostStats ());
-			mostStatsList [i].whichStat = (WhichStat)i;
-			mostStatsList [i].whichPlayer = WhichPlayer.None;
+			int leastValue = playersStats [PlayerName.Player1.ToString ()].playersStats [d.Key];
+			WhichPlayer player = WhichPlayer.Player1;
+			bool severalLeast = false;
+
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+			{
+				if(p.Value.playersStats [d.Key] < leastValue)
+				{
+					leastValue = p.Value.playersStats [d.Key];
+					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
+				}
+
+				else if(p.Value.playersStats [d.Key] == leastValue && p.Key != PlayerName.Player1.ToString ())
+					severalLeast = true;
+			}
+
+			if(!severalLeast)
+			{
+				d.Value.value = leastValue;
+				d.Value.whichPlayer = player;
+			}
+			else
+			{
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
+			}
 		}
 	}
 
 	public void GetPlayersEvents ()
 	{
-		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(0);
-		GlobalVariables.Instance.Players[1].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(1);
-		GlobalVariables.Instance.Players[2].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(2);
-		GlobalVariables.Instance.Players[3].GetComponent<PlayersGameplay> ().OnDash += ()=> DashPlayer(3);
+		foreach(GameObject g in GlobalVariables.Instance.Players)
+		{
+			if (g == null)
+				continue;
 
-		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(0);
-		GlobalVariables.Instance.Players[1].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(1);
-		GlobalVariables.Instance.Players[2].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(2);
-		GlobalVariables.Instance.Players[3].GetComponent<PlayersGameplay> ().OnShoot += ()=> ShotPlayer(3);
+			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
 
-		GlobalVariables.Instance.Players[0].GetComponent<PlayersGameplay> ().OnDeath += ()=> DeathPlayer(0);
-		GlobalVariables.Instance.Players[1].GetComponent<PlayersGameplay> ().OnDeath += ()=> DeathPlayer(1);
-		GlobalVariables.Instance.Players[2].GetComponent<PlayersGameplay> ().OnDeath += ()=> DeathPlayer(2);
-		GlobalVariables.Instance.Players[3].GetComponent<PlayersGameplay> ().OnDeath += ()=> DeathPlayer(3);
+			playerScript.OnDash += () => 
+			{
+				playersStats [playerScript.playerName.ToString ()].playersStats [WhichStat.Dash.ToString ()]++;
+				totalStats [WhichStat.Dash.ToString ()]++;
+			};
+
+			playerScript.OnShoot += () =>
+			{
+				playersStats [playerScript.playerName.ToString ()].playersStats [WhichStat.Shots.ToString ()]++;
+				totalStats [WhichStat.Shots.ToString ()]++;
+
+				AimPrecision ();
+			};
+				
+
+			playerScript.OnDeath += () => 
+			{
+				playersStats [ playerScript.playerName.ToString () ].playersStats [WhichStat.Death.ToString ()]++;
+				totalStats [WhichStat.Death.ToString ()]++;
+			};
+
+			playerScript.OnStun += () => 
+			{
+				playersStats [ playerScript.playerName.ToString () ].playersStats [WhichStat.Stun.ToString ()]++;
+				totalStats [WhichStat.Stun.ToString ()]++;
+			};
+		}
 	}
 
-	public void PlayersFragsAndHits (GameObject playerThatThrew, GameObject playerHit)
+	public void PlayersHits (GameObject playerThatThrew, GameObject playerHit)
 	{
-		totalFrags++;
-		totalHits++;
+		playersStats [ playerThatThrew.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.HitsGiven.ToString ()]++;
+		playersStats [ playerHit.GetComponent<PlayersGameplay> ().playerName.ToString () ].playersStats [WhichStat.HitsTaken.ToString ()]++;
 
-		PlayerName playerThatThrewName = playerThatThrew.GetComponent<PlayersGameplay> ().playerName;
-		PlayerName playerHitName = playerHit.GetComponent<PlayersGameplay> ().playerName;
-
-		playerStatsList [(int)playerThatThrewName].frags++;
-		playerStatsList [(int)playerHitName].hits++;
-
-		playerStatsList [(int)playerHitName].HitByPlayersList [(int)playerThatThrewName].hitsCount++;
+		totalStats [WhichStat.HitsGiven.ToString ()]++;
+		totalStats [WhichStat.HitsTaken.ToString ()]++;
 
 		AimPrecision ();
 
-		MostStatsUpdate ();
+		UpdateStats ();
 	}
 
-	void DashPlayer (int whichPlayer)
+	public void PlayerKills (PlayersGameplay playerThatKilled)
 	{
-		totalDash++;
-		playerStatsList [whichPlayer].dash++;
-
-		MostStatsUpdate ();
+		playersStats [ playerThatKilled.playerName.ToString () ].playersStats [WhichStat.Kills.ToString ()]++;
+		totalStats [WhichStat.Kills.ToString ()]++;
 	}
 
-	void ShotPlayer (int whichPlayer)
+	public void PlayerSuicides (PlayersGameplay player)
 	{
-		totalShots++;
-		playerStatsList [whichPlayer].shots++;
-
-		AimPrecision ();
-
-		MostStatsUpdate ();
+		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
+		totalStats [WhichStat.Suicides.ToString ()]++;
 	}
 
-	void DeathPlayer (int whichPlayer)
+	public void PlayersLifeDuration ()
 	{
-		totalDeath++;
-		playerStatsList [whichPlayer].death++;
+		foreach(var p in GlobalVariables.Instance.EnabledPlayersList)
+		{
+			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
 
-		MostStatsUpdate ();
+			playersStats [script.playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] += script.lifeDuration;
+		}
 	}
 
 	public void Winner (WhichPlayer whichPlayerWon)
 	{
+		winnerName = whichPlayerWon;
+		WinsInARow (whichPlayerWon);
+
+		playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
+
+		SetAllRoundsDuration ();
+		PlayersLifeDuration ();
+
+		UpdateStats ();
+
 		switch (whichPlayerWon)
 		{
 		case WhichPlayer.Player1:
-			playerStatsList [0].wins++;
-			WinsInARow (whichPlayerWon);
 			winner = "Player 1";
 			break;
 		case WhichPlayer.Player2:
-			playerStatsList [1].wins++;
-			WinsInARow (whichPlayerWon);
 			winner = "Player 2";
 			break;
 		case WhichPlayer.Player3:
-			playerStatsList [2].wins++;
-			WinsInARow (whichPlayerWon);
 			winner = "Player 3";
 			break;
 		case WhichPlayer.Player4:
-			playerStatsList [3].wins++;
-			WinsInARow (whichPlayerWon);
 			winner = "Player 4";
 			break;
 		case WhichPlayer.Draw:
-			WinsInARow (whichPlayerWon);
 			winner = "Draw";
 			break;
 		case WhichPlayer.None:
-			WinsInARow (whichPlayerWon);
 			winner = "None";
 			break;
 		}
+
+		StopAllCoroutines ();
 	}
 
 	public void Winner (PlayerName playerName)
 	{
-		WhichPlayer whichPlayerTemp = WhichPlayer.None;
+		winnerName = (WhichPlayer)(int)playerName;
+		WinsInARow ((WhichPlayer)(int)playerName);
+
+		playersStats [ playerName.ToString () ].playersStats [WhichStat.Wins.ToString ()]++;
+
+		SetAllRoundsDuration ();
+		PlayersLifeDuration ();
+
+		UpdateStats ();
 
 		switch (playerName)
 		{
 		case PlayerName.Player1:
-			whichPlayerTemp = WhichPlayer.Player1;
 			winner = "Player 1";
 			break;
 		case PlayerName.Player2:
-			whichPlayerTemp = WhichPlayer.Player2;
 			winner = "Player 2";
 			break;
 		case PlayerName.Player3:
-			whichPlayerTemp = WhichPlayer.Player3;
 			winner = "Player 3";
 			break;
 		case PlayerName.Player4:
-			whichPlayerTemp = WhichPlayer.Player4;
 			winner = "Player 4";
 			break;
 		}
 
-		playerStatsList [(int)playerName].wins++;
-		WinsInARow (whichPlayerTemp);
+		StopAllCoroutines ();
+	}
+
+	void SetAllRoundsDuration ()
+	{
+		allRoundsDurationValue += roundsDurationValue;
+
+		string minutes = Mathf.Floor(allRoundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(allRoundsDurationValue % 60).ToString("00");
+
+		allRoundsDuration = minutes + ":" + seconds;
 	}
 
 	void WinsInARow (WhichPlayer whichPlayerWon)
@@ -201,12 +355,10 @@ public class StatsManager : Singleton<StatsManager>
 		{
 			previousWinner = WhichPlayer.None;
 
-			for(int i = 0; i < playerStatsList.Count; i++)
-			{
-				playerStatsList [i].winsInARow = 0;
-			}
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+				p.Value.playersStats [WhichStat.WinsInARow.ToString ()] = 0;
 
-			mostWinsInARow = whichPlayerWon;
+			mostWinsInARowPlayer = whichPlayerWon;
 			winsInARowNumber = 0;
 		}
 		else
@@ -214,164 +366,114 @@ public class StatsManager : Singleton<StatsManager>
 			if (previousWinner == WhichPlayer.None)
 			{
 				previousWinner = whichPlayerWon;
-				
-				playerStatsList [(int)whichPlayerWon].winsInARow = 1;
+
+				playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.WinsInARow.ToString ()] = 1;
 			}
 			
 			else if(previousWinner == whichPlayerWon)
 			{
-				for(int i = 0; i < playerStatsList.Count; i++)
+				foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 				{
-					if (playerStatsList [i].whichPlayer != whichPlayerWon)
-						playerStatsList [i].winsInARow = 0;
+					if(p.Key != whichPlayerWon.ToString ())
+						p.Value.playersStats ["WinsInARow"] = 0;
 				}
-				
-				if (playerStatsList [(int)whichPlayerWon].winsInARow == 0)
-					playerStatsList [(int)whichPlayerWon].winsInARow = 2;
+
+				if (playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"] == 0)
+					playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"] = 2;
 				else
-					playerStatsList [(int)whichPlayerWon].winsInARow++;
+					playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"]++;
+			
 			}
 			
 			else if(previousWinner != whichPlayerWon)
 			{
 				previousWinner = whichPlayerWon;
 				
-				for(int i = 0; i < playerStatsList.Count; i++)
+				foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 				{
-					if (playerStatsList [i].whichPlayer != whichPlayerWon)
-						playerStatsList [i].winsInARow = 0;
+					if(p.Key != whichPlayerWon.ToString ())
+						p.Value.playersStats ["WinsInARow"] = 0;
 				}
 				
-				playerStatsList [(int)whichPlayerWon].winsInARow++;
+				playersStats [ whichPlayerWon.ToString () ].playersStats ["WinsInARow"]++;
 			}
 			
-			mostWinsInARow = whichPlayerWon;
-			winsInARowNumber = playerStatsList [(int)whichPlayerWon].winsInARow;			
+			mostWinsInARowPlayer = whichPlayerWon;
+			winsInARowNumber = playersStats [ whichPlayerWon.ToString () ].playersStats [WhichStat.WinsInARow.ToString ()];			
 		}
 	}
 
 	public void AimPrecision ()
 	{
-		for(int i = 0; i < playerStatsList.Count; i++)
+		foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 		{
-			if(playerStatsList [i].shots > 0)
-			{
-				float temp = ((float)playerStatsList [i].frags / (float)playerStatsList [i].shots) * 100f;
-				if (temp > 100)
-					temp = 100;
-				playerStatsList [i].aimAccuracy = (int)temp;
-			}
+			if (p.Value.playersStats [WhichStat.Shots.ToString ()] == 0)
+				continue;
+
+			float temp = (float)p.Value.playersStats [WhichStat.HitsGiven.ToString ()] / (float)p.Value.playersStats [WhichStat.Shots.ToString ()] * 100f;
+
+			p.Value.playersStats [WhichStat.AimAccuracy.ToString ()] = (int) Mathf.Round (temp);
 		}
 	}
 
-	public void MostStatsUpdate  ()
+	public void ResetStats (bool resetAll = false)
 	{
-		int frags = 0;
-		int hits = 0;
-		int deaths = 0;
-		int dashs = 0;
-		int shots = 0;
-		int accuracy = 0;
-		int wins = 0;
+		settingUp = true;
 
-		for(int i = 0; i < playerStatsList.Count; i++)
+		roundsDurationValue = 0;
+		winnerName = WhichPlayer.None;
+		roundDuration = "";
+		winner = "";
+
+		if(resetAll)
 		{
-			if (playerStatsList [i].frags > frags)
-			{
-				frags = playerStatsList [i].frags;
-
-				mostStatsList [0].statNumber = playerStatsList [i].frags;
-				mostStatsList [0].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].hits > hits)
-			{
-				hits = playerStatsList [i].hits;
-
-				mostStatsList [1].statNumber = playerStatsList [i].hits;
-				mostStatsList [1].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].death > deaths)
-			{
-				deaths = playerStatsList [i].death;
-
-				mostStatsList [2].statNumber = playerStatsList [i].death;
-				mostStatsList [2].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].dash > dashs)
-			{
-				dashs = playerStatsList [i].dash;
-
-				mostStatsList [3].statNumber = playerStatsList [i].dash;
-				mostStatsList [3].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].shots > shots)
-			{
-				shots = playerStatsList [i].shots;
-
-				mostStatsList [4].statNumber = playerStatsList [i].shots;
-				mostStatsList [4].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].aimAccuracy > accuracy)
-			{
-				accuracy = playerStatsList [i].aimAccuracy;
-
-				mostStatsList [5].statNumber = playerStatsList [i].aimAccuracy;
-				mostStatsList [5].whichPlayer = (WhichPlayer)i;
-			}
-
-			if (playerStatsList [i].wins > wins)
-			{
-				wins = playerStatsList [i].wins;
-
-				mostStatsList [6].statNumber = playerStatsList [i].wins;
-				mostStatsList [6].whichPlayer = (WhichPlayer)i;
-			}
+			SetupStats ();
+			previousWinner = WhichPlayer.None;
+			allRoundsDurationValue = 0;
+			allRoundsDuration = "";
 		}
-	}
-
-	public void ResetStats (bool resetWins = false)
-	{
-		for(int i = 0; i < playerStatsList.Count; i++)
+		else
 		{
-			playerStatsList [i].frags = 0;
-			playerStatsList [i].hits = 0;
-			playerStatsList [i].death = 0;
-			playerStatsList [i].dash = 0;
-			playerStatsList [i].shots = 0;
-
-			playerStatsList [i].aimAccuracy = 0;
-
-			if(resetWins)
+			//Players
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 			{
-				playerStatsList [i].wins = 0;
-				playerStatsList [i].winsInARow = 0;
-				previousWinner = WhichPlayer.None;
+				foreach(var key in p.Value.playersStats.Keys.ToList ())
+				{
+					if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), key)))
+						continue;
+					
+					p.Value.playersStats [key] = 0;
+				}
 			}
-		}
 
-		totalFrags = 0;
-		totalHits = 0;
-		totalDeath = 0;
-		totalDash = 0;
-		totalShots = 0;
+			//Total Stats
+			foreach(var key in totalStats.Keys.ToList ())
+			{
+				if(resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), key)))
+					continue;
 
-		timerDuration = 0;
+				totalStats [key] = 0;
+			}
+			
+			//Most Stats
+			foreach(KeyValuePair<string, Stats> d in mostStats)
+			{
+				if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), d.Key)))
+					continue;
+				
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
+			}
 
-		for(int i = 0; i < mostStatsList.Count; i++)
-		{
-			mostStatsList [i].statNumber = 0;
-			mostStatsList [i].whichPlayer = WhichPlayer.None;
-		}
+			//Least Stats
+			foreach(KeyValuePair<string, Stats> d in leastStats)
+			{
+				if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), d.Key)))
+					continue;
 
-		for (int i = 0; i < playerStatsList.Count; i++)
-		{
-			for (int j = 0; j < 3; j++)
-				playerStatsList [i].HitByPlayersList[j].hitsCount = 0;
+				d.Value.value = 0;
+				d.Value.whichPlayer = WhichPlayer.None;
+			}
 		}
 	}
 
@@ -379,216 +481,38 @@ public class StatsManager : Singleton<StatsManager>
 	{
 		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		timerDuration = 0;
+		roundsDurationValue = 0;
 
 		StartCoroutine (Timer ());
 	}
 
 	IEnumerator Timer ()
 	{
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+
 		yield return new WaitForSecondsRealtime (1);
 
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
-	
-		timerDuration += 1;
+		roundsDurationValue += 1;
 
-		string minutes = Mathf.Floor(timerDuration / 60).ToString("0");
-		string seconds = Mathf.Floor(timerDuration % 60).ToString("00");
+		string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
 
-		gameDuration = minutes + ":" + seconds;
+		roundDuration = minutes + ":" + seconds;
 
 		StartCoroutine (Timer ());
 	}
-
-	private int totalScorePlayer1 = -1;
-	private int totalDashPlayer1 = -1;
-	private int totalShotPlayer1 = -1;
-	private int totalHitPlayer1 = -1;
-
-	private int totalScorePlayer2 = -1;
-	private int totalDashPlayer2 = -1;
-	private int totalShotPlayer2 = -1;
-	private int totalHitPlayer2 = -1;
-
-	private int totalScorePlayer3 = -1;
-	private int totalDashPlayer3 = -1;
-	private int totalShotPlayer3 = -1;
-	private int totalHitPlayer3 = -1;
-
-	private int totalScorePlayer4 = -1;
-	private int totalDashPlayer4 = -1;
-	private int totalShotPlayer4 = -1;
-	private int totalHitPlayer4 = -1;
-
-	void UpdateTotalStats ()
-	{
-		if(GlobalVariables.Instance.PlayersControllerNumber[0] != -1)
-		{
-			if (totalScorePlayer1 == -1)
-				totalScorePlayer1 = 0;
-
-			if (totalDashPlayer1 == -1)
-				totalDashPlayer1 = 0;
-
-			if (totalShotPlayer1 == -1)
-				totalShotPlayer1 = 0;
-
-			if (totalHitPlayer1 == -1)
-				totalHitPlayer1 = 0;
-
-			totalScorePlayer1 += playerStatsList [0].wins;
-			totalDashPlayer1 += playerStatsList [0].dash;
-			totalShotPlayer1 += playerStatsList [0].shots;
-			totalHitPlayer1 += playerStatsList [0].frags;
-		}
-		if(GlobalVariables.Instance.PlayersControllerNumber[1] != -1)
-		{
-			if (totalScorePlayer2 == -1)
-				totalScorePlayer2 = 0;
-
-			if (totalDashPlayer2 == -1)
-				totalDashPlayer2 = 0;
-
-			if (totalShotPlayer2 == -1)
-				totalShotPlayer2 = 0;
-
-			if (totalHitPlayer2 == -1)
-				totalHitPlayer2 = 0;
-
-			totalScorePlayer2 += playerStatsList [1].wins;
-			totalDashPlayer2 += playerStatsList [1].dash;
-			totalShotPlayer2 += playerStatsList [1].shots;
-			totalHitPlayer2 += playerStatsList [1].frags;
-		}
-		if(GlobalVariables.Instance.PlayersControllerNumber[2] != -1)
-		{
-			if (totalScorePlayer3 == -1)
-				totalScorePlayer3 = 0;
-
-			if (totalDashPlayer3 == -1)
-				totalDashPlayer3 = 0;
-
-			if (totalShotPlayer3 == -1)
-				totalShotPlayer3 = 0;
-
-			if (totalHitPlayer3 == -1)
-				totalHitPlayer3 = 0;
-
-			totalScorePlayer3 += playerStatsList [2].wins;
-			totalDashPlayer3 += playerStatsList [2].dash;
-			totalShotPlayer3 += playerStatsList [2].shots;
-			totalHitPlayer3 += playerStatsList [2].frags;
-		}
-		if(GlobalVariables.Instance.PlayersControllerNumber[3] != -1)
-		{
-			if (totalScorePlayer4 == -1)
-				totalScorePlayer4 = 0;
-
-			if (totalDashPlayer4 == -1)
-				totalDashPlayer4 = 0;
-
-			if (totalShotPlayer4 == -1)
-				totalShotPlayer4 = 0;
-
-			if (totalHitPlayer4 == -1)
-				totalHitPlayer4 = 0;
-
-			totalScorePlayer4 += playerStatsList [3].wins;
-			totalDashPlayer4 += playerStatsList [3].dash;
-			totalShotPlayer4 += playerStatsList [3].shots;
-			totalHitPlayer4 += playerStatsList [3].frags;
-		}
-	}
-
-	void SendStats ()
-	{
-		if(GlobalVariables.Instance.PlayersControllerNumber[0] != -1)
-		{
-			if(totalShotPlayer1 != -1)
-				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString () + ":Score", totalScorePlayer1);
-			if(totalDashPlayer1 != -1)
-				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer1);
-			if(totalHitPlayer1 != -1)
-				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer1);
-			if(totalShotPlayer1 != -1)
-				GameAnalytics.NewDesignEvent ("Player:" + "Player 1" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer1);
-		}
-
-		if(GlobalVariables.Instance.PlayersControllerNumber[1] != -1)
-		{
-			if(totalScorePlayer2 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer2);
-			if(totalDashPlayer2 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer2);
-			if(totalHitPlayer2 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer2);
-			if(totalShotPlayer2 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 2" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer2);
-		}
-
-		if(GlobalVariables.Instance.PlayersControllerNumber[2] != -1)
-		{
-			if(totalScorePlayer3 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer3);
-			if(totalDashPlayer3 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer3);
-			if(totalHitPlayer3 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer3);
-			if(totalShotPlayer3 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 3" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer3);
-		}
-
-		if(GlobalVariables.Instance.PlayersControllerNumber[3] != -1)
-		{
-			if(totalScorePlayer4 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":Score", totalScorePlayer4);
-			if(totalDashPlayer4 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":DashCount", totalDashPlayer4);
-			if(totalHitPlayer4 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":HitCount", totalHitPlayer4);
-			if(totalShotPlayer4 != -1)
-			GameAnalytics.NewDesignEvent ("Player:" + "Player 4" + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":ShotCount", totalShotPlayer4);
-		}
-	}
-
-	void OnApplicationQuit ()
-	{
-		SendStats ();
-	}
 }
 
 [Serializable]
-public class PlayerStats 
+public class PlayerStats
+{
+	public Dictionary<string, int> playersStats = new Dictionary<string, int> ();
+}
+
+[Serializable]
+public class Stats
 {
 	public WhichPlayer whichPlayer;
-
-	public int frags = 0;
-	public int hits = 0;
-	public int death = 0;
-	public int dash = 0;
-	public int shots = 0;
-
-	public List<HitByWhichPlayer> HitByPlayersList = new List<HitByWhichPlayer> ();
-
-	[Range (0, 100)]
-	public int aimAccuracy = 0;
-
-	public int wins = 0;
-
-	public int winsInARow = 0;
+	public int value = 0;
 }
-
-[Serializable]
-public class MostStats 
-{
-	public WhichStat whichStat;
-	public int statNumber = 0;
-	public WhichPlayer whichPlayer;
-}
-
-[Serializable]
-public class HitByWhichPlayer
-{
-	public WhichPlayer hitBy;
-	public int hitsCount = 0;
-}
+	

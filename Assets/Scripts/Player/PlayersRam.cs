@@ -1,31 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Replay;
 
 public class PlayersRam : PlayersGameplay 
 {
-	[Header("RAM")]
-	public float currentRamVelocity;
-	public float maxRamVelocity;
-
 	protected override void FixedUpdate ()
 	{
+		if (ReplayManager.Instance.isReplaying)
+			return;
+
 		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
+			//No Forces
+			velocity = playerRigidbody.velocity.magnitude;
+
+			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+				playerThatHit = null;
+
 			if (dashState != DashState.Dashing)
 			{
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
 
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-
-				//playerRigidbody.AddForce(movement * speedTemp);		
-
-				if(playerState != PlayerState.Stunned)
-				{
-					currentRamVelocity = playerRigidbody.velocity.magnitude;
-					
-					if (playerRigidbody.velocity.magnitude > maxRamVelocity)
-						playerRigidbody.velocity = playerRigidbody.velocity.normalized * maxRamVelocity;					
-				}
 			}
 
 
@@ -36,8 +32,6 @@ public class PlayersRam : PlayersGameplay
 
 				OnHoldingVoid ();
 			}
-
-			playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x * decelerationAmount, playerRigidbody.velocity.y, playerRigidbody.velocity.z * decelerationAmount);
 
 			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 

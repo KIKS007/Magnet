@@ -8,101 +8,84 @@ public class MovablePlague : MovableScript
 	[Header ("PLAGUE")]
 	public float deadlyCubeTransitionDuration = 0.5f;
 	public float deadlyCubeMass = 50;
-	public float deadlyCubeMaxVelocity = 2;
-	[Range (0, 1)]
-	public float deadlyCubeDeceleration = 0.97f;
 
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
+	private bool deadlyTransition = false;
 
-	protected override void Start ()
+	public override void Start ()
 	{
 		base.Start ();
 
-		ToNeutralColor ();
+		ToNeutralColor (0);
 	}
 
-	protected override void Update ()
+	protected override void LowVelocity ()
 	{
-		if(hold == false && rigidbodyMovable != null)
-			currentVelocity = rigidbodyMovable.velocity.magnitude;
+		base.LowVelocity ();
 
-
-		if(hold == false && currentVelocity > 0)
-		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			if(tag != "DeadCube")
-			{
-				if(currentVelocity >= limitVelocity)
-					gameObject.tag = "ThrownMovable";
-				
-				else if(currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
-				{
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-					playerThatThrew = null;
-				}				
-			}
-		}
+		if(currentVelocity < limitVelocity && gameObject.tag == "DeadCube" && rigidbodyMovable.mass != deadlyCubeMass)
+			rigidbodyMovable.mass = deadlyCubeMass;
 	}
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" && other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Stunned)
+		if(other.collider.tag == "Player" && tag == "ThrownMovable")
 		{
-			if(tag == "ThrownMovable")
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Stunned)
+				return;
+			
+			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
 			{
-				if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
-				{
-					StartCoroutine (DeadlyTransition ());
-
-					other.gameObject.GetComponent<PlayersGameplay>().StunVoid(true);
-					
-					playerHit = other.gameObject;
-
-					InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);	
-					
-					if(playerThatThrew != null)
-						StatsManager.Instance.PlayersFragsAndHits (playerThatThrew, playerHit);
-
-				}				
-			}
+				//StartCoroutine (DeadlyTransition ());
+				
+				playerScript.StunVoid(true);
+				
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
+				
+				if(playerThatThrew != null)
+					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+				
+			}				
 		}
 
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead && tag == "DeadCube")
+		if(other.collider.tag == "Player" && tag == "DeadCube")
 		{
-			other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
 
-			GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+			
+			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+
+			if (playerThatThrew != null)
+				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
+			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+
+			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}
 
-	IEnumerator DeadlyTransition ()
+	protected override void HitOtherMovable (Collision other)
 	{
+		base.HitOtherMovable (other);
+
+		if(other.gameObject.tag == "DeadCube" && !deadlyTransition && currentVelocity > limitVelocity)
+			DeadlyTransition ();
+	}
+
+	void DeadlyTransition ()
+	{
+		deadlyTransition = true;
+
 		cubeColor = CubeColor.Neutral;
 
-		GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
-
-		tag = "Untagged";
-
-		ToDeadlyColor ();
-
-		while (rigidbodyMovable.velocity.magnitude > deadlyCubeMaxVelocity)
-		{
-			rigidbodyMovable.velocity = rigidbodyMovable.velocity.normalized * deadlyCubeDeceleration;
-
-			yield return new WaitForFixedUpdate ();
-		}
-
-		yield return new WaitForSeconds (deadlyCubeTransitionDuration);
+		if(GetComponent<PlayersDeadCube> () == null)
+			GlobalMethods.Instance.SpawnNewMovableRandomVoid (gameObject, 2);
 
 		tag = "DeadCube";
 
-		rigidbodyMovable.mass = deadlyCubeMass;
+		ToDeadlyColor (0.1f);
 	}
 }

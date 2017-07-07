@@ -11,30 +11,28 @@ public class MovableBurden : MovableScript
 	public GameObject targetPlayer = null;
 	public float trackSpeed = 1.2f;
 	public float trackSpeedAdded = 0.001f;
+	public Transform deadlyTrails;
 
 	private float speedAddedCooldown = 0.5f;
-
-	[Header ("Explosion")]
-	public float explosionForce = 50;
-	public float explosionRadius = 50;
 
 	private List<MovableBurden> otherMovables = new List<MovableBurden>();
 
 	private float initialTrackSpeed;
 
-	protected override void Awake ()
+	public override void Awake ()
 	{
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera");
 		initialTrackSpeed = trackSpeed;
 		GlobalVariables.Instance.OnEndMode += ()=> targetPlayer = null;
 	}
 
-	protected override void OnEnable ()
+	public override void OnEnable ()
 	{
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
 		cubeMeshFilter = transform.GetChild (2).GetComponent<MeshFilter> ();
 		cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
+
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 
 		cubeMeshFilter.mesh = GlobalVariables.Instance.cubesStripes [Random.Range (0, GlobalVariables.Instance.cubesStripes.Length)];
@@ -71,6 +69,8 @@ public class MovableBurden : MovableScript
 	{
 		ToColor (targetPlayer);
 
+		deadlyTrails.GetChild ((int)targetPlayerName).gameObject.SetActive (true);
+
 		yield return new WaitForSeconds (1f);
 
 		ToDeadlyColor ();
@@ -81,6 +81,8 @@ public class MovableBurden : MovableScript
 		rigidbodyMovable.velocity = Vector3.zero;
 		rigidbodyMovable.angularVelocity = Vector3.zero;
 
+		yield return new WaitWhile (()=> targetPlayer && targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
+
 		while(targetPlayer != null && Vector3.Distance(targetPlayer.transform.position, transform.position) > 0.5f)
 		{
 			Vector3 direction = (targetPlayer.transform.position - transform.position);
@@ -88,7 +90,8 @@ public class MovableBurden : MovableScript
 			
 			rigidbodyMovable.AddForce(direction * trackSpeed, ForceMode.Impulse);
 
-			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+			if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 			yield return new WaitForFixedUpdate();
 		}
@@ -98,30 +101,36 @@ public class MovableBurden : MovableScript
 	{
 		yield return new WaitForSeconds (speedAddedCooldown);
 
-		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+			yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		trackSpeed += trackSpeedAdded;
 
-		StartCoroutine (AddSpeed ());
+		if (!hold)
+			StartCoroutine (AddSpeed ());
 	}
 
 	protected override void HitPlayer (Collision other)
 	{
-		if(other.collider.tag == "Player" 
-			&& other.collider.GetComponent<PlayersGameplay>().playerState != PlayerState.Dead)
+		if(other.collider.tag == "Player")
 		{
+			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+
+			if (playerScript.playerState == PlayerState.Dead)
+				return;
+
 			if(other.gameObject == targetPlayer)
 			{
-				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				playerScript.Death (DeathFX.All, other.contacts [0].point);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
 				StopTrackingPlayer ();
 			}
 
 			else
 			{
-				other.collider.GetComponent<PlayersGameplay> ().Death (DeathFX.All, other.contacts [0].point);
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, other.gameObject.GetComponent<Renderer>().material.color);
+				playerScript.Death (DeathFX.All, other.contacts [0].point);
+				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
 
 				for (int i = 0; i < otherMovables.Count; i++)
@@ -135,7 +144,7 @@ public class MovableBurden : MovableScript
 	{
 		mainCamera.GetComponent<SlowMotionCamera>().StartSlowMotion();
 
-		GlobalMethods.Instance.Explosion (transform.position, explosionForce, explosionRadius);
+		GlobalMethods.Instance.Explosion (transform.position);
 		MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.explosionSound, transform);
 		//gameObject.SetActive (false);	
 	}
@@ -154,7 +163,10 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		yield return new WaitWhile (() => targetPlayer.activeSelf == false);
+		yield return new WaitWhile (() => targetPlayer == null || targetPlayer.activeSelf);
+
+		if (targetPlayer == null)
+			yield break;
 
 		yield return new WaitForSeconds (1f);
 
