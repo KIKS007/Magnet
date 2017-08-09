@@ -40,16 +40,11 @@ namespace Replay
 				StartCoroutine (RecordingRate ());
 		}
 
-		protected virtual void Update ()
-		{
-			if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
-				Replay (ReplayManager.Instance.GetReplayTime ());
-		}
-
 		public virtual void OnRecordingStart ()
 		{
 			StartCoroutine (RecordingRate ());
 		}
+
 
 		protected virtual IEnumerator RecordingRate ()
 		{
@@ -79,6 +74,18 @@ namespace Replay
 
 		public virtual void OnReplayStart ()
 		{
+			StartCoroutine (Replaying ());
+		}
+
+		protected virtual IEnumerator Replaying ()
+		{
+			while(ReplayManager.Instance.isReplaying)
+			{
+				if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
+					Replay (ReplayManager.Instance.GetReplayTime ());
+
+				yield return new WaitForEndOfFrame ();
+			}
 		}
 
 		public virtual void Replay (float t)
