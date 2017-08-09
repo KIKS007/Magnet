@@ -113,13 +113,14 @@ public class PlayersGameplay : MonoBehaviour
 	protected float noForcesThreshold = 3f;
 	protected string playerDeadCubeTag;
 	protected Transform movableParent;
-	protected float lerpHold = 0.05f;
+	protected float lerpHold = 10f;
     protected int triggerMask;
     protected float camRayLength = 200f;
 	protected bool hasAttracted;
 	protected bool hasRepulsed;
 	protected float stunnedRotationTemp;
 	protected PlayersFXAnimations playerFX;
+	protected float dashFactor;
 
 	#endregion
 
@@ -134,6 +135,8 @@ public class PlayersGameplay : MonoBehaviour
     {
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
+
+		dashFactor = 1 / GlobalVariables.Instance.slowMotionCamera.initialFixedDelta;
 
 		lifeDuration = 0;
 
@@ -349,8 +352,8 @@ public class PlayersGameplay : MonoBehaviour
 		//Hold Movable
 		if (holdState == HoldState.Holding)
 		{
-			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+			holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+			holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
 			
 			if (OnHolding != null)
 				OnHolding();
@@ -715,7 +718,7 @@ public class PlayersGameplay : MonoBehaviour
         while (Time.time <= futureTime)
         {
             dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-            playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1 / Time.timeScale;
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * dashFactor * 1 / Time.timeScale;
 
             yield return new WaitForFixedUpdate();
         }

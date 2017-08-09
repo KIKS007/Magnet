@@ -24,6 +24,7 @@ public class DynamicCamera : MonoBehaviour
 	public float yPos;
 
 	private Vector3 centerPos = new Vector3(0, 0, 0);
+	private float lerpFactor;
 
 	public List<GameObject> targetsList = new List<GameObject>();	
 
@@ -122,14 +123,14 @@ public class DynamicCamera : MonoBehaviour
 		if(centerPos != Vector3.zero)
 		{
 			//Movements Lerp
-			transform.position = Vector3.Lerp(transform.position, centerPos, cameraMovementLerp);
+			transform.position = Vector3.Lerp(transform.position, centerPos, cameraMovementLerp * Time.fixedDeltaTime);
 
 
 			Vector3 newPos = transform.position;
 			newPos.y = cameraYMin + yPos + cameraOffset.y;
 
 			//Zoom Lerp
-			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp);
+			transform.position = Vector3.Lerp(transform.position, newPos, cameraZoomLerp * Time.fixedDeltaTime);
 		}
 	}
 }

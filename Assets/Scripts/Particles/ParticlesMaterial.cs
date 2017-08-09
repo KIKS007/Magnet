@@ -11,10 +11,10 @@ public class ParticlesMaterial : MonoBehaviour
 		rend = GetComponent<ParticleSystemRenderer> ();
 		rend.material.SetColor("_EmissionColor", rend.material.color);
 	}
-	
+/*	
 	// Update is called once per frame
 	void Update () 
 	{
 		rend.material.SetColor("_EmissionColor", rend.material.color);
-	}
+	}*/
 }

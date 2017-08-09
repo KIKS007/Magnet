@@ -134,6 +134,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public GameObject mainCamera;
 	public ScreenShakeCamera screenShakeCamera;
+	public SlowMotionCamera slowMotionCamera;
 	public ZoomCamera zoomCamera;
 	public DynamicCamera dynamicCamera;
 	public MenuCameraMovement menuCameraMovement;
@@ -167,6 +168,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		zoomCamera = mainCamera.GetComponent<ZoomCamera>();
 		dynamicCamera = mainCamera.GetComponent<DynamicCamera>();
 		menuCameraMovement = mainCamera.GetComponent<MenuCameraMovement>();
+		slowMotionCamera = mainCamera.GetComponent<SlowMotionCamera>();
 	}
 		
 	void Update ()

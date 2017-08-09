@@ -36,7 +36,8 @@ namespace Replay
 
 		protected virtual void OnEnable ()
 		{
-			StartCoroutine (RecordingRate ());
+			if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
+				StartCoroutine (RecordingRate ());
 		}
 
 		protected virtual void Update ()
@@ -47,12 +48,12 @@ namespace Replay
 
 		public virtual void OnRecordingStart ()
 		{
-			
+			StartCoroutine (RecordingRate ());
 		}
 
 		protected virtual IEnumerator RecordingRate ()
 		{
-			while (true) 
+			while (ReplayManager.Instance.isRecording) 
 			{
 				int recordRate = ReplayManager.Instance.recordRate;
 

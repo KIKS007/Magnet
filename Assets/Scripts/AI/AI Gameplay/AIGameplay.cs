@@ -302,8 +302,8 @@ public class AIGameplay : PlayersGameplay
 			//Hold Movable
 			if (holdState == HoldState.Holding)
 			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
 
 				OnHoldingVoid ();
 			}
@@ -361,7 +361,7 @@ public class AIGameplay : PlayersGameplay
 		while (Time.time <= futureTime)
 		{
 			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * 200 * 1 / Time.timeScale;
+			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * dashFactor * 1 / Time.timeScale;
 
 			yield return new WaitForFixedUpdate();
 		}

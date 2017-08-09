@@ -86,6 +86,15 @@ public class PlayersTutorial : PlayersGameplay
 			if (playerState == PlayerState.Stunned)
 				transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
 
+			//Hold Movable
+			if (holdState == HoldState.Holding)
+			{
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+
+				OnHoldingVoid ();
+			}
+
 			//Reset Attraction - Repulsion State
 			if (playerState == PlayerState.Attracting && !rewiredPlayer.GetButton("Attract"))
 				playerState = PlayerState.None;
@@ -156,8 +165,8 @@ public class PlayersTutorial : PlayersGameplay
 			//Hold Movable
 			if (holdState == HoldState.Holding)
 			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
 
 				OnHoldingVoid ();
 			}
