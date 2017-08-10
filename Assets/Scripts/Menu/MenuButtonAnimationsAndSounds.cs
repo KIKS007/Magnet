@@ -48,7 +48,6 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 	private float clickDuration = 0.2f;
 
 	private string [] chromas = new string[] {"_PURPLECHROMA", "_BLUECHROMA", "_GREENCHROMA", "_ORANGECHROMA" };
-	private string idle = "Idle";
 	private string highlight = "Highlight";
 	private string click = "Selection";
 

@@ -112,65 +112,10 @@ public class AudioSpectrum : Singleton<AudioSpectrum>
 		playlistController.SongChanged += OnSongChanged;
 
         CheckBuffers ();
-
-		StartCoroutine (Spectrum ());
     }
-
-	IEnumerator Spectrum ()
-	{
-		while(true)
-		{
-			CheckBuffers ();
-			
-			audioSource.GetSpectrumData (rawSpectrum, 0, FFTWindow.BlackmanHarris);
-			
-			float[] middlefrequencies = middleFrequenciesForBands [(int)bandType];
-			var bandwidth = bandwidthForBands [(int)bandType];
-			
-			var falldown = fallSpeed * Time.unscaledDeltaTime;
-			var filter = Mathf.Exp (-sensibility * Time.unscaledDeltaTime);
-			
-			for (var bi = 0; bi < levels.Length; bi++) 
-			{
-				int imin = FrequencyToSpectrumIndex (middlefrequencies [bi] / bandwidth);
-				int imax = FrequencyToSpectrumIndex (middlefrequencies [bi] * bandwidth);
-				
-				var bandMax = 0.0f;
-				for (var fi = imin; fi <= imax; fi++) 
-				{
-					bandMax = Mathf.Max (bandMax, rawSpectrum [fi]);
-				}
-				
-				levels [bi] = bandMax;
-				peakLevels [bi] = Mathf.Max (peakLevels [bi] - falldown, bandMax);
-				meanLevels [bi] = bandMax - (bandMax - meanLevels [bi]) * filter;
-				
-				//Highest
-				if (levels [bi] > levelsHighest [bi])
-					levelsHighest [bi] = levels [bi];
-				
-				if (peakLevels [bi] > peakLevelsHighest [bi])
-					peakLevelsHighest [bi] = peakLevels [bi];
-				
-				if (meanLevels [bi] > meanLevelsHighest [bi])
-					meanLevelsHighest [bi] = meanLevels [bi];
-				
-				//Normalized Levels
-				levelsNormalized [bi] = levels [bi] / levelsHighest [bi];
-				peakLevelsNormalized [bi] = peakLevels [bi] / peakLevelsHighest [bi];
-				meanLevelsNormalized [bi] = meanLevels [bi] / meanLevelsHighest [bi];
-			}
-
-			yield return new WaitForEndOfFrame ();
-			//yield return new WaitForEndOfFrame ();
-		}
-
-	}
 
     void Update ()
     {
-		return;
-		
         CheckBuffers ();
 
 		audioSource.GetSpectrumData (rawSpectrum, 0, FFTWindow.BlackmanHarris);
