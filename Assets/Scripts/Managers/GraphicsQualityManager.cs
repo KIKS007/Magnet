@@ -204,7 +204,7 @@ public class GraphicsQualityManager : MonoBehaviour
 	
 	public void HighQuality ()
 	{
-		QualitySettings.SetQualityLevel (5, true);
+		QualitySettings.SetQualityLevel (2, true);
 		PlayerPrefs.SetInt ("QualityLevel", 2);
 		Shadows (shadowsSlider.value);
 
@@ -217,7 +217,7 @@ public class GraphicsQualityManager : MonoBehaviour
 
 	public void MediumQuality ()
 	{
-		QualitySettings.SetQualityLevel (4, true);
+		QualitySettings.SetQualityLevel (1, true);
 		PlayerPrefs.SetInt ("QualityLevel", 1);
 		Shadows (shadowsSlider.value);
 
@@ -230,7 +230,7 @@ public class GraphicsQualityManager : MonoBehaviour
 
 	public void LowQuality ()
 	{
-		QualitySettings.SetQualityLevel (3, true);
+		QualitySettings.SetQualityLevel (0, true);
 		PlayerPrefs.SetInt ("QualityLevel", 0);
 		Shadows (shadowsSlider.value);
 
