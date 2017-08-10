@@ -132,12 +132,22 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public Player[] rewiredPlayers = new Player[5];
 
+	[HideInInspector]
 	public GameObject mainCamera;
+	[HideInInspector]
 	public ScreenShakeCamera screenShakeCamera;
+	[HideInInspector]
 	public SlowMotionCamera slowMotionCamera;
+	[HideInInspector]
 	public ZoomCamera zoomCamera;
+	[HideInInspector]
 	public DynamicCamera dynamicCamera;
+	[HideInInspector]
 	public MenuCameraMovement menuCameraMovement;
+	[HideInInspector]
+	public GraphicsQualityManager graphicsQualityManager;
+	[HideInInspector]
+	public float fixedDeltaTime;
 
 	void Awake ()
 	{
@@ -169,6 +179,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		dynamicCamera = mainCamera.GetComponent<DynamicCamera>();
 		menuCameraMovement = mainCamera.GetComponent<MenuCameraMovement>();
 		slowMotionCamera = mainCamera.GetComponent<SlowMotionCamera>();
+		graphicsQualityManager = FindObjectOfType<GraphicsQualityManager> ();
+
+		fixedDeltaTime = Time.fixedDeltaTime;
+
+		graphicsQualityManager.OnFixedDeltaTimeChange += (x) => fixedDeltaTime = x;
 	}
 		
 	void Update ()

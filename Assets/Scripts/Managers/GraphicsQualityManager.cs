@@ -6,9 +6,16 @@ using UnityEngine.PostProcessing;
 using UnityStandardAssets.ImageEffects;
 using UnityEngine.SceneManagement;
 using Klak.Motion;
+using System;
 
 public class GraphicsQualityManager : MonoBehaviour 
 {
+	public Action<float> OnFixedDeltaTimeChange;
+
+	[Header ("Fixed Delta Times")]
+	public float[] fixedDeltaTimes = new float[] { 0.02f, 0.01f, 0.005f };
+	public float currentFixedDeltaTime;
+
 	[Header ("Quality")]
 	public Toggle[] qualityToggles = new Toggle[3];
 
@@ -200,6 +207,12 @@ public class GraphicsQualityManager : MonoBehaviour
 		QualitySettings.SetQualityLevel (5, true);
 		PlayerPrefs.SetInt ("QualityLevel", 2);
 		Shadows (shadowsSlider.value);
+
+		Time.fixedDeltaTime = fixedDeltaTimes [2];
+		currentFixedDeltaTime = fixedDeltaTimes [2];
+
+		if (OnFixedDeltaTimeChange != null)
+			OnFixedDeltaTimeChange (currentFixedDeltaTime);
 	}
 
 	public void MediumQuality ()
@@ -207,6 +220,12 @@ public class GraphicsQualityManager : MonoBehaviour
 		QualitySettings.SetQualityLevel (4, true);
 		PlayerPrefs.SetInt ("QualityLevel", 1);
 		Shadows (shadowsSlider.value);
+
+		Time.fixedDeltaTime = fixedDeltaTimes [1];
+		currentFixedDeltaTime = fixedDeltaTimes [1];
+
+		if (OnFixedDeltaTimeChange != null)
+			OnFixedDeltaTimeChange (currentFixedDeltaTime);
 	}
 
 	public void LowQuality ()
@@ -214,6 +233,12 @@ public class GraphicsQualityManager : MonoBehaviour
 		QualitySettings.SetQualityLevel (3, true);
 		PlayerPrefs.SetInt ("QualityLevel", 0);
 		Shadows (shadowsSlider.value);
+
+		Time.fixedDeltaTime = fixedDeltaTimes [0];
+		currentFixedDeltaTime = fixedDeltaTimes [0];
+
+		if (OnFixedDeltaTimeChange != null)
+			OnFixedDeltaTimeChange (currentFixedDeltaTime);
 	}
 
 	void Brightness (float value)

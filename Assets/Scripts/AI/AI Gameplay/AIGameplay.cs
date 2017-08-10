@@ -361,7 +361,7 @@ public class AIGameplay : PlayersGameplay
 		while (Time.time <= futureTime)
 		{
 			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * dashFactor * 1 / Time.timeScale;
+			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * fixedDeltaFactor * 1 / Time.timeScale;
 
 			yield return new WaitForFixedUpdate();
 		}

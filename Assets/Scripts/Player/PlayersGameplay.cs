@@ -120,7 +120,7 @@ public class PlayersGameplay : MonoBehaviour
 	protected bool hasRepulsed;
 	protected float stunnedRotationTemp;
 	protected PlayersFXAnimations playerFX;
-	protected float dashFactor;
+	protected float fixedDeltaFactor;
 
 	#endregion
 
@@ -136,7 +136,9 @@ public class PlayersGameplay : MonoBehaviour
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
 
-		dashFactor = 1 / GlobalVariables.Instance.slowMotionCamera.initialFixedDelta;
+		fixedDeltaFactor = 1 / GlobalVariables.Instance.fixedDeltaTime;
+
+		GlobalVariables.Instance.graphicsQualityManager.OnFixedDeltaTimeChange += OnFixedDeltaChange;
 
 		lifeDuration = 0;
 
@@ -718,7 +720,7 @@ public class PlayersGameplay : MonoBehaviour
         while (Time.time <= futureTime)
         {
             dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * dashFactor * 1 / Time.timeScale;
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * fixedDeltaFactor * 1 / Time.timeScale;
 
             yield return new WaitForFixedUpdate();
         }
@@ -835,6 +837,9 @@ public class PlayersGameplay : MonoBehaviour
 		
     protected virtual void OnDestroy()
     {
+		if(GlobalVariables.Instance != null)
+			GlobalVariables.Instance.graphicsQualityManager.OnFixedDeltaTimeChange += OnFixedDeltaChange;
+
         if (controllerNumber > 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration(controllerNumber);
     }
@@ -965,6 +970,11 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnDash != null)
 			OnDash();
+	}
+
+	protected void OnFixedDeltaChange (float fixedDelta)
+	{
+		fixedDeltaFactor = 1 / fixedDelta;
 	}
 	#endregion
 }

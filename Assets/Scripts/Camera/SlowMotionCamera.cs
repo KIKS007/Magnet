@@ -101,7 +101,7 @@ public class SlowMotionCamera : MonoBehaviour
 	// Called when this script starts
 	void Start()
 	{
-		
+		GlobalVariables.Instance.graphicsQualityManager.OnFixedDeltaTimeChange += (x) => initialFixedDelta = x;
 	}
 	
 	// Update is called once per frame
