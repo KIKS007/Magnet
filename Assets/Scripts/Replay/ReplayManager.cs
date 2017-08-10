@@ -13,7 +13,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using Sirenix.OdinInspector;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 namespace Replay
 {
@@ -396,11 +398,13 @@ namespace Replay
 
 		public void SetCurveConstant (AnimationCurve curve)
 		{
+			#if UNITY_EDITOR
 			for(int i = 0; i < curve.keys.Length; i++)
 			{
 				AnimationUtility.SetKeyLeftTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
 				AnimationUtility.SetKeyRightTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
 			}
+			#endif
 		}
 	}
 }

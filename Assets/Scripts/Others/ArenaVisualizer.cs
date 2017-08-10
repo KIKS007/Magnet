@@ -8,7 +8,7 @@ using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Demos;
 using Replay;
 
-public class ArenaVisualizer : SerializedMonoBehaviour
+public class ArenaVisualizer : MonoBehaviour
 {
 	public enum Bounce { Bounce, Wait, Reset }
 

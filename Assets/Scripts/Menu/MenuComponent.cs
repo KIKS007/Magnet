@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
-using NUnit.Framework;
 
 public enum MenuComponentType { BasicMenu, MainMenu, RootMenu };
 
