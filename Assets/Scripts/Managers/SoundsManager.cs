@@ -48,6 +48,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
+
 	[Header ("Low Pass")]
 	public bool lowPassEnabled = true;
 	public Toggle lowPassToggle;
@@ -84,7 +85,6 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	[Header ("Player Sounds")]
 	public string[] attractingSounds = new string[4];
-	[SoundGroupAttribute]
 	public string[] repulsingSounds = new string[4];
 	[SoundGroupAttribute]
 	public string onHoldSound;
