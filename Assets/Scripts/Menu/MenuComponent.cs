@@ -50,9 +50,6 @@ public class MenuComponent : MonoBehaviour
 				aboveMenuScript = transform.GetComponentInParent <MenuComponent> ();
 		}
 
-		if (name == "CubeMenu")
-			Debug.Log ("menuComponentType: " + menuComponentType.ToString ());
-
 		//CLEAR ALL
 		underMenus.Clear ();
 		underMenusButtons.Clear ();

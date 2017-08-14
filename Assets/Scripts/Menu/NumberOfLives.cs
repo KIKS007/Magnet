@@ -75,6 +75,8 @@ public class NumberOfLives : MonoBehaviour
 
 	void SaveData ()
 	{
+		input = GetComponent<InputField> ();
+
 		int value = 0;
 
 		if (!int.TryParse (input.text, out value) || value == 0)
