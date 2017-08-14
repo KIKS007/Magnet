@@ -38,7 +38,6 @@ Shader "Shader Forge/ButtonTest" {
         _ORANGECHROMANeon1 ("ORANGE CHROMA Neon1", Color) = (1,0.2689655,0,1)
         _ORANGECHROMANeon2 ("ORANGE CHROMA Neon2", Color) = (1,0.7754057,0.6838235,1)
         [HideInInspector]_Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
-        [HideInInspector]_Stencil ("Stencil ID", Float) = 1
     }
     SubShader {
         Tags {
