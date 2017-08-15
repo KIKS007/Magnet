@@ -11,29 +11,35 @@ public class MenuChoosePlayer : MonoBehaviour
 	public float tweenDuration = 0.2f;
 	public Ease tweenEase = Ease.OutQuad;
 
-	[Header ("Scale")]
-	public float punchScale = 0.5f;
-
-	[Header ("Rects")]
-	public RectTransform[] playersLogos = new RectTransform[0];
-	public RectTransform[] controllers = new RectTransform[0];
-
-	[Header ("Positions")]
-	public float controllersOffPositionGap;
-
 	[Header ("Play Button")] 
 	public RectTransform playButton; 
 	public Vector2 playButtonYPos; 
+
+	[Header ("Players")]
+	public RectTransform[] playersPanel = new RectTransform[4];
+
+	[Header ("Controllers")]
+	public Vector2 controllersPosition = new Vector2 ();
+	public RectTransform[] controllersRect = new RectTransform [4];
+
+	[Header ("No Controllers Text")]
+	public CanvasGroup[] noControllersTexts = new CanvasGroup[4];
+	public CanvasGroup[] noControllersPluggedTexts = new CanvasGroup[4];
+
+	[Header ("AI")]
+	public Transform[] aiButtonsParent = new Transform[4];
+	public bool[] aiHasJoined = new bool[4];
+
 
 	private List<List<Button>> aiButtons = new List<List<Button>> ();
 	private float controllersOnPosition;
 	private float[] playersLogosInitialPos = new float[4];
 	private bool[] hasJoined = new bool[5];
-	public bool[] aiHasJoined = new bool[4];
 	private float playerChangeMovement;
 	private bool noInput = false;
 	private bool canPlay = false;
 	private Button playButtonComponent;
+	private float mouseInitialXPos;
 
 	public event EventHandler OnControllerChange; 
 
@@ -45,15 +51,14 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		playButtonComponent = playButton.GetComponent<Button> ();
 
-		controllersOnPosition = controllers [0].anchoredPosition.y;
-		playerChangeMovement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
+		mouseInitialXPos = controllersRect [0].anchoredPosition.x;
 
 		SetupAIButtons ();
 
-		for (int i = 0; i < playersLogos.Length; i++)
-			playersLogosInitialPos [i] = playersLogos [i].anchoredPosition.x;
+		for(int i = 1; i < 4; i++)
+			noControllersTexts [i].DOFade (0, tweenDuration);
 
-		for (int i = 1; i < controllers.Length; i++)
+		for (int i = 1; i < controllersRect.Length; i++)
 			Leave (i);
 
 		if (ReInput.controllers.Joysticks.Count < 2)
@@ -108,11 +113,11 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		aiButtons.Clear ();
 
-		foreach(RectTransform t in playersLogos)
+		foreach(RectTransform t in aiButtonsParent)
 		{
 			aiButtons.Add (new List<Button> ());
 
-			foreach(Transform child in t.GetChild (1))
+			foreach(Transform child in t)
 				aiButtons [aiButtons.Count - 1].Add (child.GetComponent<Button> ());
 		}
 
@@ -166,6 +171,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	void UpdateSettings ()
 	{
 		ChangePlayersPosition ();
+		UpdateNoControllerTexts ();
 		UpdateControllerNumber ();
 		UpdatePlayersControllers ();
 		GlobalVariables.Instance.UpdateGamepadList ();
@@ -221,13 +227,15 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		if(!hasJoined [0])
 		{
-			for(int i = 0; i < playersLogos.Length; i++)
-				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i] + playerChangeMovement, tweenDuration).SetEase (tweenEase);
+			for(int i = 1; i < controllersRect.Length; i++)
+				controllersRect [i].DOAnchorPosX (playersPanel [i - 1].anchoredPosition.x, tweenDuration).SetEase (tweenEase);
 		}
 		else
 		{
-			for(int i = 0; i < playersLogos.Length; i++)
-				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i], tweenDuration).SetEase (tweenEase);
+			for(int i = 1; i < controllersRect.Length - 1; i++)
+				controllersRect [i].DOAnchorPosX (playersPanel [i].anchoredPosition.x, tweenDuration).SetEase (tweenEase);
+
+			controllersRect [4].DOAnchorPosX (playersPanel [3].anchoredPosition.x + (playersPanel [3].anchoredPosition.x - playersPanel [2].anchoredPosition.x), tweenDuration).SetEase (tweenEase);
 		}
 	}
 
@@ -258,8 +266,10 @@ public class MenuChoosePlayer : MonoBehaviour
 
 			playButton.gameObject.SetActive (true);
 			playButton.GetComponent<Button> ().interactable = true; 
-			MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
-			playButton.GetComponent<Button> ().Select (); 
+
+			/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+			playButton.GetComponent<Button> ().Select (); */
+
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
@@ -275,14 +285,6 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		yield return 0;
 	} 
-
-	void PunchPlayersScale (int controller)
-	{
-//		if(hasJoined [0])
-//			playersLogos [controller].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-//		else
-//			playersLogos [controller - 1].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-	}
 
 	void AIJoin (int player, int level)
 	{
@@ -340,10 +342,17 @@ public class MenuChoosePlayer : MonoBehaviour
 	void Join (int controller)
 	{
 		hasJoined [controller] = true;
-		controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+		//controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+
+		if(controller != 0)
+			controllersRect [controller].DOAnchorPosY (controllersPosition.y, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+		else
+		{
+			controllersRect [controller].DOAnchorPosX (playersPanel [0].anchoredPosition.x, tweenDuration * 0.5f).SetEase (tweenEase);
+			controllersRect [controller].DOAnchorPosY (controllersPosition.y, tweenDuration * 0.5f).SetEase (tweenEase).OnComplete (CheckCanPlay).SetDelay (tweenDuration * 0.5f);
+		}
 
 		UpdateSettings ();
-		PunchPlayersScale (controller);
 
 		if (hasJoined [0])
 			AILeave (controller);
@@ -357,7 +366,15 @@ public class MenuChoosePlayer : MonoBehaviour
 	void Leave (int controller)
 	{
 		hasJoined [controller] = false;
-		controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+		//controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+
+		if(controller != 0)
+			controllersRect [controller].DOAnchorPosY (controllersPosition.x, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+		else
+		{
+			controllersRect [controller].DOAnchorPosY (controllersPosition.x, tweenDuration * 0.5f).SetEase (tweenEase);
+			controllersRect [controller].DOAnchorPosX (mouseInitialXPos, tweenDuration * 0.5f).SetEase (tweenEase).OnComplete (CheckCanPlay).SetDelay (tweenDuration * 0.5f);
+		}
 
 		UpdateSettings ();
 	}
@@ -367,7 +384,10 @@ public class MenuChoosePlayer : MonoBehaviour
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
 			return;
 		
-		controllers [gamepad + 1].GetComponent<Button> ().interactable = true;
+		//controllers [gamepad + 1].GetComponent<Button> ().interactable = true;
+
+		controllersRect [gamepad + 1].GetComponent<Button> ().interactable = true;
+		controllersRect [gamepad + 1].gameObject.SetActive (true);
 
 		if (hasJoined [0] && gamepad == 3)
 			Leave (0);
@@ -380,10 +400,72 @@ public class MenuChoosePlayer : MonoBehaviour
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
 			return;
-		
+
 		Leave (gamepad + 1);
 
-		controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
+		controllersRect [gamepad + 1].GetComponent<Button> ().interactable = false;
+		controllersRect [gamepad + 1].gameObject.SetActive (false);
+
+		//controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
+	}
+
+	void UpdateNoControllerTexts ()
+	{
+		if(hasJoined [0])
+		{
+			noControllersTexts [0].DOFade (0, tweenDuration);
+			noControllersPluggedTexts [0].DOFade (0, tweenDuration);
+
+			for(int i = 1; i < 4; i ++)
+			{
+				if(hasJoined [i] || aiHasJoined [i])
+				{
+					noControllersTexts [i].DOFade (0, tweenDuration);
+					noControllersPluggedTexts [i].DOFade (0, tweenDuration);
+				}
+				else
+				{
+					if(ReInput.controllers.joystickCount >= i)
+					{
+						noControllersTexts [i].DOFade (1, tweenDuration);
+						noControllersPluggedTexts [i].DOFade (0, tweenDuration);
+					}
+
+					else
+					{
+						noControllersTexts [i].DOFade (0, tweenDuration);
+						noControllersPluggedTexts [i].DOFade (1, tweenDuration);
+					}
+				}
+			}
+		}
+		else
+		{
+			for(int i = 1; i < 5; i ++)
+			{
+				if(hasJoined [i] || aiHasJoined [i - 1])
+				{
+					noControllersTexts [i - 1].DOFade (0, tweenDuration);
+					noControllersPluggedTexts [i - 1].DOFade (0, tweenDuration);
+				}
+				else
+				{
+					if(ReInput.controllers.joystickCount >= i)
+					{
+						noControllersTexts [i - 1].DOFade (1, tweenDuration);
+						noControllersPluggedTexts [i - 1].DOFade (0, tweenDuration);
+					}
+
+					else
+					{
+						noControllersTexts [i - 1].DOFade (0, tweenDuration);
+						noControllersPluggedTexts [i - 1].DOFade (1, tweenDuration);
+					}
+				}
+
+			}			
+		}
+
 	}
 
 	public void NoInput ()
