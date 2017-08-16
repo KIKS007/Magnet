@@ -4,16 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class NumberOfLives : MonoBehaviour 
 {
-	public GameObject increaseButton;
-	public GameObject decreaseButton;
+	public Button increaseButton;
+	public Button decreaseButton;
 
 	[MinMaxSliderAttribute (1, 99)]
 	public Vector2 livesCountBounds;
 
 	private InputField input;
+	private float disabledButtonScale = 0.5f;
 
 	// Use this for initialization
 	void Start ()
@@ -62,15 +64,26 @@ public class NumberOfLives : MonoBehaviour
 	void CheckBounds ()
 	{
 		if (GlobalVariables.Instance.LivesCount <= livesCountBounds.x)
-			decreaseButton.SetActive (false);
+			DisableButton (decreaseButton);
 		else
-			decreaseButton.SetActive (true);
+			EnableButton (decreaseButton);
 
 		if (GlobalVariables.Instance.LivesCount >= livesCountBounds.y)
-			increaseButton.SetActive (false);
-
+			DisableButton (increaseButton);
 		else
-			increaseButton.SetActive (true);
+			EnableButton (increaseButton);
+	}
+
+	void EnableButton (Button button)
+	{
+		button.gameObject.SetActive (true);
+		button.interactable = true;
+	}
+
+	void DisableButton (Button button)
+	{
+		button.gameObject.SetActive (false);
+		button.interactable = false;
 	}
 
 	void SaveData ()

@@ -4,17 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GamesCountInput : MonoBehaviour 
 {
-	public GameObject increaseButton;
-	public GameObject decreaseButton;
+	public Button increaseButton;
+	public Button decreaseButton;
 
 	private InputField input;
 	private Vector2 bounds = new Vector2 (1, 99);
 	private Vector2 initialbounds = new Vector2 (1, 99);
 
 	private ModeSequenceType previousModeSequence;
+	private float disabledButtonScale = 0.5f;
 
 	// Use this for initialization
 	void Start () 
@@ -113,15 +115,26 @@ public class GamesCountInput : MonoBehaviour
 	void CheckBounds ()
 	{
 		if (GlobalVariables.Instance.GamesCount <= bounds.x)
-			decreaseButton.SetActive (false);
+			DisableButton (decreaseButton);
 		else
-			decreaseButton.SetActive (true);
+			EnableButton (decreaseButton);
 		
 		if (GlobalVariables.Instance.GamesCount >= bounds.y)
-			increaseButton.SetActive (false);
-
+			DisableButton (increaseButton);
 		else
-			increaseButton.SetActive (true);
+			EnableButton (increaseButton);
+	}
+
+	void EnableButton (Button button)
+	{
+		button.gameObject.SetActive (true);
+		button.interactable = true;
+	}
+
+	void DisableButton (Button button)
+	{
+		button.gameObject.SetActive (false);
+		button.interactable = false;
 	}
 
 	void SaveData ()
