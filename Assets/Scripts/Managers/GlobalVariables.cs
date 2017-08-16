@@ -50,6 +50,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Environement")]
 	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 	public Material uiMaterial;
+	public Renderer skyboxLoadingRenderer;
+	public Text environementChromaText;
+	public string[] environementChromaNames = new string[4];
+	public Scene[] environementScenes = new Scene[0];
+	public GameObject[] environementSkyboxes = new GameObject[0];
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
@@ -151,6 +156,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[HideInInspector]
 	public float fixedDeltaFactor = 0;
 
+	private Scene currentEnvironementScene;
+
 	void Awake ()
 	{
 		StartCoroutine (OnGameStateChange (GameState));
@@ -160,6 +167,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnEnvironementChromaChangement (environementChroma));
 
 		SetupRewiredPlayers ();
+
+		LoadEnvironementChroma ();
 
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
@@ -240,6 +249,85 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if (OnLivesCountChange != null)
 			OnLivesCountChange ();
+	}
+
+	public void NextEnvironementChroma ()
+	{
+		int newChromaIndex = (int)environementChroma;
+		newChromaIndex++;
+
+		if (newChromaIndex == System.Enum.GetValues (typeof(EnvironementChroma)).Length)
+			newChromaIndex = 0;
+
+		StartCoroutine (NewEnvironementChroma (newChromaIndex));
+	}
+
+	public void PreviousEnvironementChroma ()
+	{
+		int newChromaIndex = (int)environementChroma;
+		newChromaIndex--;
+
+		if (newChromaIndex < 0)
+			newChromaIndex = System.Enum.GetValues (typeof(EnvironementChroma)).Length - 1;
+
+		StartCoroutine (NewEnvironementChroma (newChromaIndex));
+	}
+
+	void LoadEnvironementChroma ()
+	{
+		if (!PlayerPrefs.HasKey ("EnvironementChromaIndex"))
+			return;
+		
+		int environementChroma = PlayerPrefs.GetInt ("EnvironementChromaIndex");
+
+		StartCoroutine (NewEnvironementChroma (environementChroma, true));
+	}
+
+	void SaveEnvironementChroma ()
+	{
+		PlayerPrefs.SetInt ("EnvironementChromaIndex", (int)environementChroma);
+	}
+
+	IEnumerator NewEnvironementChroma (int newChromaIndex, bool setup = false)
+	{
+		environementChromaText.text = environementChromaNames [newChromaIndex];
+
+		EnvironementChroma newChroma = (EnvironementChroma)newChromaIndex;
+		Color color = skyboxLoadingRenderer.material.color;
+
+		if(!setup)
+		{
+			//Fade To Black
+			color.a = 1;
+			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration);
+			
+			yield return new WaitForSeconds (MenuManager.Instance.animationDuration);
+
+			if (currentEnvironementScene.isLoaded)
+				yield return SceneManager.UnloadSceneAsync (currentEnvironementScene);
+		}
+
+		if(environementScenes.Length != 0)
+		{
+			yield return SceneManager.LoadSceneAsync (environementScenes [newChromaIndex].name, LoadSceneMode.Additive);
+			currentEnvironementScene = environementScenes [newChromaIndex];
+		}
+
+		if(environementSkyboxes.Length != 0)
+		{
+			foreach (var s in environementSkyboxes)
+				s.SetActive (false);
+
+			environementSkyboxes [newChromaIndex].SetActive (true);
+		}
+
+		environementChroma = newChroma;
+
+		if(!setup)
+		{
+			color.a = 0;
+			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration);
+		}
 	}
 
 	void GetMovables ()
@@ -475,6 +563,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if (oneGamepadUnplugged && OnGamepadDisconnected != null)
 			OnGamepadDisconnected ();
 	}
+
+	public override void OnDestroy ()
+	{
+		SaveEnvironementChroma ();
+		base.OnDestroy ();
+	}
+
 
 	public event EventHandler OnGamepadDisconnected;
 
