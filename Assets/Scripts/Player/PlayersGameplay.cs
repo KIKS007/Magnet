@@ -88,7 +88,8 @@ public class PlayersGameplay : MonoBehaviour
     public float dashSpeed = 80;
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
-	public AnimationCurve dashEase;
+
+	public Ease dashEase = Ease.OutQuad;
 
 	[Header("Hits Taken")]
 	public PlayersGameplay playerThatHit;
@@ -120,7 +121,6 @@ public class PlayersGameplay : MonoBehaviour
 	protected bool hasRepulsed;
 	protected float stunnedRotationTemp;
 	protected PlayersFXAnimations playerFX;
-	protected float fixedDeltaFactor;
 
 	#endregion
 
@@ -135,10 +135,6 @@ public class PlayersGameplay : MonoBehaviour
     {
         triggerMask = LayerMask.GetMask("FloorMask");
         playerRigidbody = GetComponent<Rigidbody>();
-
-		fixedDeltaFactor = 1 / GlobalVariables.Instance.fixedDeltaTime;
-
-		GlobalVariables.Instance.graphicsQualityManager.OnFixedDeltaTimeChange += OnFixedDeltaChange;
 
 		lifeDuration = 0;
 
@@ -711,19 +707,28 @@ public class PlayersGameplay : MonoBehaviour
         Vector3 movementTemp = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movementTemp = movementTemp.normalized;
 
-        float dashSpeedTemp = dashSpeed;
-        float futureTime = Time.time + dashDuration;
-        float start = futureTime - Time.time;
+        float dashSpeedTemp = dashSpeed * 200;
+      //  float futureTime = Time.time + dashDuration;
+       // float start = futureTime - Time.time;
 
         StartCoroutine(DashEnd());
 
-        while (Time.time <= futureTime)
+		DOTween.To (()=> dashSpeedTemp, x=> dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetUpdate (false);
+
+		while (dashSpeedTemp > 0)
+		{
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime;
+
+			yield return new WaitForFixedUpdate();
+		}
+
+		/*  while (Time.time <= futureTime)
         {
             dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * fixedDeltaFactor * 1 / Time.timeScale;
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor * 1 / Time.timeScale;
 
             yield return new WaitForFixedUpdate();
-        }
+        }*/
     }
 
 	public virtual IEnumerator DashEnd()
@@ -837,9 +842,6 @@ public class PlayersGameplay : MonoBehaviour
 		
     protected virtual void OnDestroy()
     {
-		if(GlobalVariables.Instance != null)
-			GlobalVariables.Instance.graphicsQualityManager.OnFixedDeltaTimeChange += OnFixedDeltaChange;
-
         if (controllerNumber > 0 && VibrationManager.Instance != null)
 			VibrationManager.Instance.StopVibration(controllerNumber);
     }
@@ -970,11 +972,6 @@ public class PlayersGameplay : MonoBehaviour
 	{
 		if (OnDash != null)
 			OnDash();
-	}
-
-	protected void OnFixedDeltaChange (float fixedDelta)
-	{
-		fixedDeltaFactor = 1 / fixedDelta;
 	}
 	#endregion
 }

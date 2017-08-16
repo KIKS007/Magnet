@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using System;
 
 public class EventSystemScript : MonoBehaviour 
 {
+	public static Action<GameObject> OnNewSelectedGameObject;
+
 	public GameObject buttonCurrentlySelected = null;
 
 	private EventSystem eventSystem;
@@ -17,6 +20,12 @@ public class EventSystemScript : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		buttonCurrentlySelected = eventSystem.currentSelectedGameObject;
+		if(buttonCurrentlySelected != eventSystem.currentSelectedGameObject)
+		{
+			buttonCurrentlySelected = eventSystem.currentSelectedGameObject;
+
+			if (OnNewSelectedGameObject != null)
+				OnNewSelectedGameObject (buttonCurrentlySelected);
+		}
 	}
 }

@@ -60,6 +60,12 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		buttonRect = GetComponent<RectTransform> ();
 		buttonComponent = GetComponent<Button> ();
 
+		EventSystemScript.OnNewSelectedGameObject += (arg) => 
+		{
+			if(arg != gameObject && selected)
+				OnDeselect ();
+		};
+
 		if(textColorChange || colorChange)
 			text = transform.GetChild (0).GetComponent<Text> ();
 
@@ -72,7 +78,6 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 
 		if (colorChange)
 			ColorChangeSetup ();
-
 	}
 		
 	void OnEnable ()
@@ -337,7 +342,6 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		if (!Application.isPlaying)
 			return;
 
-
 		OnDeselect ();
 	}
 
@@ -352,8 +356,6 @@ public class MenuButtonAnimationsAndSounds : MonoBehaviour, IPointerClickHandler
 		
 		if(vibration)
 			VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
-		
-		OnDeselect ();
 		
 		SoundsManager.Instance.MenuSubmit ();
 		

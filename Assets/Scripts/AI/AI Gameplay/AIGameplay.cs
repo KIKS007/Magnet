@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
 using Replay;
+using DG.Tweening;
 
 public enum AILevel { Easy, Normal , Hard};
 
@@ -352,19 +353,28 @@ public class AIGameplay : PlayersGameplay
 
 		dashMovement.Normalize ();
 
-		float dashSpeedTemp = dashSpeed;
-		float futureTime = Time.time + dashDuration;
-		float start = futureTime - Time.time;
+		float dashSpeedTemp = dashSpeed * 200;
+		//float futureTime = Time.time + dashDuration;
+		//float start = futureTime - Time.time;
 
 		StartCoroutine(DashEnd());
 
-		while (Time.time <= futureTime)
+		DOTween.To (()=> dashSpeedTemp, x=> dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetUpdate (false);
+
+		while (dashSpeedTemp > 0)
 		{
-			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * fixedDeltaFactor * 1 / Time.timeScale;
+			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime;
 
 			yield return new WaitForFixedUpdate();
 		}
+
+		/*while (Time.time <= futureTime)
+		{
+			dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
+			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor * 1 / Time.timeScale;
+
+			yield return new WaitForFixedUpdate();
+		}*/
 
 		dashMovement = Vector3.zero;
 	}

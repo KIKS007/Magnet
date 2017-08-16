@@ -148,6 +148,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public GraphicsQualityManager graphicsQualityManager;
 	[HideInInspector]
 	public float fixedDeltaTime;
+	[HideInInspector]
+	public float fixedDeltaFactor = 0;
 
 	void Awake ()
 	{
@@ -182,8 +184,13 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		graphicsQualityManager = FindObjectOfType<GraphicsQualityManager> ();
 
 		fixedDeltaTime = Time.fixedDeltaTime;
+		fixedDeltaFactor = 1 / fixedDeltaTime;
 
-		graphicsQualityManager.OnFixedDeltaTimeChange += (x) => fixedDeltaTime = x;
+		graphicsQualityManager.OnFixedDeltaTimeChange += (x) =>
+		{
+			fixedDeltaTime = x;
+			fixedDeltaFactor = 1 / fixedDeltaTime;
+		};
 	}
 		
 	void Update ()
