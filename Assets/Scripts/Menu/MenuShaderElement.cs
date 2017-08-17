@@ -49,7 +49,7 @@ public class MenuShaderElement : MonoBehaviour
 	public bool useEnvironementChroma = true;
 
 	[ShowIf("UsePlayerColor")]
-	public bool usePlayerColor = false;
+	public bool usePlayerColor = true;
 
 	[ShowIf("PlayerColor")]
 	public PlayerName playerColor = PlayerName.Player1;

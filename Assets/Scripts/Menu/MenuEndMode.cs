@@ -10,9 +10,7 @@ using System;
 public class MenuEndMode : SerializedMonoBehaviour 
 {
 	[Header ("Scoreboard")]
-	public List<ScoreboardPosition> scoreboardPosition = new List<ScoreboardPosition> ();
 	public List<Text> scoreboardPlayers = new List<Text> ();
-	public List<float> scoreScales = new List<float> ();
 
 	[Header ("Panels")]
 	public List<RectTransform> playersPanels = new List<RectTransform> ();
