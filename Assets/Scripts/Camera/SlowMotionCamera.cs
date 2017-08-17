@@ -153,7 +153,7 @@ public class SlowMotionCamera : MonoBehaviour
 		if (OnAllSlowMotionStart != null)
 			OnAllSlowMotionStart ();
 
-		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, GlobalVariables.Instance.fixedDeltaTime/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
+		DOTween.To(()=> Time.timeScale, x=> Time.timeScale =x, initialTimeScale/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		DOTween.To(()=> Time.fixedDeltaTime, x=> Time.fixedDeltaTime =x, GlobalVariables.Instance.fixedDeltaTime/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 		//DOTween.To(()=> Time.maximumDeltaTime, x=> Time.maximumDeltaTime =x, initialMaximumDelta/slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 
