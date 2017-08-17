@@ -86,6 +86,12 @@ public class MenuShaderElement : MonoBehaviour
 
 	public virtual void ShaderColorChange ()
 	{
+		if (material == null)
+		{
+			image = GetComponent<Image> ();
+			material = image.material;
+		}
+
 		if(globalVariables == null)
 			globalVariables = Application.isPlaying ? GlobalVariables.Instance : FindObjectOfType<GlobalVariables> ();
 
