@@ -16,6 +16,7 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public List<RectTransform> playersPanels = new List<RectTransform> ();
 	public List<ScoreboardPosition> playersPanelsPosition = new List<ScoreboardPosition> ();
 	public List<float> playersPanelsYPos = new List<float> ();
+	public List<Transform> statsLinesParent = new List<Transform> ();
 
 	[Header ("Player Position")]
 	public List<GameObjectList> playersPositions = new List<GameObjectList> ();
@@ -154,23 +155,23 @@ public class MenuEndMode : SerializedMonoBehaviour
 			}
 		}
 
+		//Remove Previous Stats
+		foreach (Transform t in statsLinesParent)
+		{
+			if(t.childCount > 0)
+				foreach (Transform c in t)
+					Destroy (c.gameObject);
+		}
+
 		foreach(RectTransform r in enabledPanels)
 		{
-			//Remove Previous Stats
-			List<Transform> children = new List<Transform> ();
-
-			foreach (Transform child in r.transform.GetChild (0))
-				children.Add (child);
-			
-			children.ForEach (child => Destroy (child.gameObject));
-
 			int playerIndex = playersPanels.FindIndex (x => x == r);
 
 			for(int i = 0; i < modesStats [modesStatsIndex].modesStats.Count; i++)
 			{
 				Vector3 position = new Vector3 (statsPrefab.GetComponent<RectTransform> ().anchoredPosition.x, initialYPos - statsGapHeight * i, 0);
 
-				GameObject statsClone = Instantiate (statsPrefab, statsPrefab.transform.position, statsPrefab.transform.rotation, r.transform.GetChild (0));
+				GameObject statsClone = Instantiate (statsPrefab, statsPrefab.transform.position, statsPrefab.transform.rotation, statsLinesParent [playerIndex]);
 				statsClone.GetComponent<RectTransform> ().anchoredPosition3D = position;
 
 				string text = StatsManager.Instance.statsText.FirstOrDefault (x=> x.Value == modesStats [modesStatsIndex].modesStats [i]).Key;

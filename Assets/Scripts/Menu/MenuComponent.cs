@@ -269,9 +269,6 @@ public class MenuComponent : MonoBehaviour
 		foreach (var m in menuManager.mainMenu.transform.GetComponentsInChildren<MenuComponent> ())
 			m.HideMenuEditor ();
 
-		menuManager.mainMenu.transform.parent.gameObject.SetActive (true);
-		menuManager.mainMenu.transform.GetChild (0).gameObject.SetActive (true);
-
 		//GET ABOVE MENU
 		if(menuComponentType == MenuComponentType.BasicMenu)
 		{
@@ -362,6 +359,9 @@ public class MenuComponent : MonoBehaviour
 
 		EnableUnderMenus ();
 		EnableSecondaryContentParent ();
+
+		menuManager.mainMenu.transform.parent.gameObject.SetActive (true);
+		menuManager.mainMenu.transform.GetChild (0).gameObject.SetActive (true);
 	}
 
 	[ButtonGroupAttribute ("Group A")]
