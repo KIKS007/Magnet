@@ -116,6 +116,9 @@ public class MenuManager : Singleton <MenuManager>
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
+		foreach (var m in Resources.FindObjectsOfTypeAll<MenuComponent> ())
+			m.SetupMenu ();
+
 		SetupLogo ();
 
 		for (int i = 0; i < elementsToEnable.Count; i++)

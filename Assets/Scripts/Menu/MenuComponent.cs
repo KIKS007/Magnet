@@ -35,7 +35,7 @@ public class MenuComponent : MonoBehaviour
 
 	void Awake ()
 	{
-		SetupMenu ();
+		//SetupMenu ();
 	}
 
 	#region Setup
@@ -266,6 +266,12 @@ public class MenuComponent : MonoBehaviour
 	{
 		MenuManager menuManager = FindObjectOfType<MenuManager> ();
 
+		foreach (var m in menuManager.mainMenu.transform.GetComponentsInChildren<MenuComponent> ())
+			m.HideMenuEditor ();
+
+		menuManager.mainMenu.transform.parent.gameObject.SetActive (true);
+		menuManager.mainMenu.transform.GetChild (0).gameObject.SetActive (true);
+
 		//GET ABOVE MENU
 		if(menuComponentType == MenuComponentType.BasicMenu)
 		{
@@ -446,6 +452,10 @@ public class MenuComponent : MonoBehaviour
 		menuButton = null;
 		menusParent = null;
 		mainContent = null;
+
+		MenuManager menuManager = FindObjectOfType<MenuManager> ();
+		menuManager.mainMenu.transform.parent.gameObject.SetActive (true);
+		menuManager.mainMenu.transform.GetChild (0).gameObject.SetActive (true);
 	}
 	#endregion
 }

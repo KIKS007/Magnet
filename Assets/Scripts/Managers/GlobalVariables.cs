@@ -135,6 +135,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Color secondaryButtonHighlightedColorText;
 	public Color secondaryClickedColorText;
 
+	[Header ("GraphicsQualityManager")]
+	public GraphicsQualityManager graphicsQualityManager;
+
 	public Player[] rewiredPlayers = new Player[5];
 
 	[HideInInspector]
@@ -149,8 +152,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public DynamicCamera dynamicCamera;
 	[HideInInspector]
 	public MenuCameraMovement menuCameraMovement;
-	[HideInInspector]
-	public GraphicsQualityManager graphicsQualityManager;
 	[HideInInspector]
 	public float fixedDeltaTime;
 	[HideInInspector]
@@ -190,7 +191,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		dynamicCamera = mainCamera.GetComponent<DynamicCamera>();
 		menuCameraMovement = mainCamera.GetComponent<MenuCameraMovement>();
 		slowMotionCamera = mainCamera.GetComponent<SlowMotionCamera>();
-		graphicsQualityManager = FindObjectOfType<GraphicsQualityManager> ();
 
 		fixedDeltaTime = Time.fixedDeltaTime;
 		fixedDeltaFactor = 1 / fixedDeltaTime;
@@ -297,6 +297,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if(!setup)
 		{
+			skyboxLoadingRenderer.gameObject.SetActive (true);
+
 			//Fade To Black
 			color.a = 1;
 			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration);
@@ -326,7 +328,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		if(!setup)
 		{
 			color.a = 0;
-			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration);
+			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration).OnComplete (()=> skyboxLoadingRenderer.gameObject.SetActive (false));
 		}
 	}
 

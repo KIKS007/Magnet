@@ -66,6 +66,8 @@ public class MenuKickstarter : MonoBehaviour
 		backersSpawned.Clear ();
 		spawnFails = 0;
 
+		yield return new WaitUntil (() => !MenuManager.Instance.isTweening);
+
 		foreach(var b in allBackers)
 		{
 			bool validPosition = true;
@@ -76,6 +78,9 @@ public class MenuKickstarter : MonoBehaviour
 
 			do
 			{
+				if(MenuManager.Instance.isTweening)
+					yield break;
+
 				tries++;
 
 				if(tries >= spawnTries)

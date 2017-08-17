@@ -19,6 +19,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	public RectTransform[] playersPanel = new RectTransform[4];
 
 	[Header ("Controllers")]
+	public bool usePlayerColor = true;
 	public Vector2 controllersPosition = new Vector2 ();
 	public RectTransform[] controllersRect = new RectTransform [4];
 
@@ -86,6 +87,8 @@ public class MenuChoosePlayer : MonoBehaviour
 		}
 
 		CheckCanPlay ();
+
+		SetupControllersColors ();
 	}
 
 	void OnEnable ()
@@ -229,6 +232,8 @@ public class MenuChoosePlayer : MonoBehaviour
 		{
 			for(int i = 1; i < controllersRect.Length; i++)
 				controllersRect [i].DOAnchorPosX (playersPanel [i - 1].anchoredPosition.x, tweenDuration).SetEase (tweenEase);
+
+			DOVirtual.DelayedCall (tweenDuration * 0.5f, SetupControllersColors);
 		}
 		else
 		{
@@ -236,6 +241,8 @@ public class MenuChoosePlayer : MonoBehaviour
 				controllersRect [i].DOAnchorPosX (playersPanel [i].anchoredPosition.x, tweenDuration).SetEase (tweenEase);
 
 			controllersRect [4].DOAnchorPosX (playersPanel [3].anchoredPosition.x + (playersPanel [3].anchoredPosition.x - playersPanel [2].anchoredPosition.x), tweenDuration).SetEase (tweenEase);
+
+			DOVirtual.DelayedCall (tweenDuration * 0.5f, SetupControllersColors);
 		}
 	}
 
@@ -466,6 +473,22 @@ public class MenuChoosePlayer : MonoBehaviour
 			}			
 		}
 
+	}
+
+	void SetupControllersColors ()
+	{
+		if (!usePlayerColor)
+			return;
+
+		for(int i = 1; i < controllersRect.Length; i++)
+		{
+			MenuShaderElement menuShaderElement = controllersRect [i].GetComponent<MenuShaderElement> ();
+
+			int playerColor = hasJoined [0] ? i : i - 1;
+
+			menuShaderElement.playerColor = (PlayerName)playerColor;
+			menuShaderElement.ShaderColorChange ();
+		}
 	}
 
 	public void NoInput ()
