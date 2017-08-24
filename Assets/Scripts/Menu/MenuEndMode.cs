@@ -18,6 +18,10 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public List<float> playersPanelsYPos = new List<float> ();
 	public List<Transform> statsLinesParent = new List<Transform> ();
 
+	[Header ("Player Crowns")]
+	public Ease playersCrownsEase = Ease.OutQuad;
+	public List<RectTransform> playersCrowns = new List<RectTransform> ();
+
 	[Header ("Player Position")]
 	public List<GameObjectList> playersPositions = new List<GameObjectList> ();
 
@@ -65,6 +69,9 @@ public class MenuEndMode : SerializedMonoBehaviour
 			yield break;
 
 		enabledPanels.Clear ();
+
+		foreach (var r in playersCrowns)
+			r.gameObject.SetActive (false);
 
 		foreach (RectTransform panel in playersPanels)
 		{
@@ -119,6 +126,14 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 		scores.Clear ();
 		previousScales.Clear ();
+
+		if(GlobalVariables.Instance.GamesCount == 1)
+		if(StatsManager.Instance.winnerName != WhichPlayer.Draw && StatsManager.Instance.winnerName != WhichPlayer.None)
+		{
+			playersCrowns [(int)StatsManager.Instance.winnerName].gameObject.SetActive (true);
+			playersCrowns [(int)StatsManager.Instance.winnerName].transform.localScale = Vector3.zero;
+			playersCrowns [(int)StatsManager.Instance.winnerName].DOScale (1, 0.5f).SetEase (playersCrownsEase).SetDelay (0.2f);
+		}
 
 		for (int i = 0; i < keys.Count; i++)
 			scores.Add (playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()]);

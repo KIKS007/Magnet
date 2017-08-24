@@ -479,27 +479,22 @@ public class StatsManager : SerializedMonoBehaviour
 
 	IEnumerator StartTimer ()
 	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
-
 		roundsDurationValue = 0;
 
-		StartCoroutine (Timer ());
-	}
+		while (true)
+		{
+			yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-	IEnumerator Timer ()
-	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+			roundsDurationValue += Time.unscaledDeltaTime;
 
-		yield return new WaitForSecondsRealtime (1);
+			//roundsDurationValue += 1;
 
-		roundsDurationValue += 1;
+			string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
+			string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
+			string milliseconds = Mathf.Floor (roundsDurationValue * 1000f % 1000).ToString ("000");
 
-		string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
-		string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
-
-		roundDuration = minutes + ":" + seconds;
-
-		StartCoroutine (Timer ());
+			roundDuration = minutes + ":" + seconds + ":" + milliseconds;
+		}
 	}
 }
 
