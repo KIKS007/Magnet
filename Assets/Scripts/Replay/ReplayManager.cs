@@ -108,6 +108,10 @@ namespace Replay
 		[Header ("No Record States")]
 		public List<GameStateEnum> noRecordStates = new List<GameStateEnum> ();
 
+		[Header ("Replay Entities")]
+		public bool useAnimationCurves = false;
+		public float listRecordEpsilon = 0.008f;
+
 		public Action<float> OnReplayTimeChange;
 		public Action OnReplayStart;
 		public Action OnReplayStop;

@@ -25,6 +25,7 @@ namespace Replay
 
 		[Header ("Data")]
 		public RecordData data = new RecordData ();
+		public List<EntityData> entityData = new List<EntityData> ();
 
 		private Rigidbody rigidBody;
 		private NavMeshAgent agent;
@@ -63,23 +64,35 @@ namespace Replay
 		{
 			base.Recording ();
 
-			if(recordPosition)
-				data.position.Add (transform.position);
-
-			if(recordRotation)
-				data.rotation.Add (transform.rotation);
-
-			if(recordScale)
-				data.scale.Add (transform.localScale);
+			if(ReplayManager.Instance.useAnimationCurves)
+			{
+				if(recordPosition)
+					data.position.Add (transform.position);
+				
+				if(recordRotation)
+					data.rotation.Add (transform.rotation);
+				
+				if(recordScale)
+					data.scale.Add (transform.localScale);
+			}
+			
+			else
+				entityData.Add (new EntityData (transform, this));
 		}
 
 		public override void OnReplayStart ()
 		{
 			base.OnReplayStart ();
 
-			data.AddEnable (true);
+			if(ReplayManager.Instance.useAnimationCurves)
+			{
+				data.AddEnable (true);
+				
+				ReplayManager.Instance.SetCurveConstant (data.enabled);
+			}
+			else
+				entityData.Add (new EntityData (transform, this));
 
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
 
 			rigidBody = GetComponent<Rigidbody> ();
 
@@ -113,19 +126,72 @@ namespace Replay
 		{
 			base.Replay (t);
 
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
+			if(ReplayManager.Instance.useAnimationCurves)
+			{
+				ReplayManager.Instance.SetCurveConstant (data.enabled);
+				
+				if(recordPosition && data.position.x.keys.Length > 0)
+					transform.position = data.position.Get (t);
+				
+				if(recordRotation && data.rotation.x.keys.Length > 0)
+					transform.rotation = data.rotation.Get (t);
+				
+				if(recordScale && data.scale.x.keys.Length > 0)
+					transform.localScale = data.scale.Get (t);
+				
+				if(recordEnable && data.enabled.keys.Length > 0)
+					data.SetEnable (t, transform.gameObject);
+			}
+			else
+			{
+				foreach(var d in entityData)
+				{
+					if(Mathf.Abs (d.time - t) < ReplayManager.Instance.listRecordEpsilon)
+					{
+						if(recordPosition)
+							transform.position = d.position;
+						
+						if(recordRotation)
+							transform.rotation = d.rotation;
+						
+						if(recordScale)
+							transform.localScale = d.scale;
+						
+						if(recordEnable)
+							gameObject.SetActive (d.enabled);
+						
+						break;
+					}
+				}
+			}
+		}
+	}
 
-			if(recordPosition && data.position.x.keys.Length > 0)
-				transform.position = data.position.Get (t);
-			
-			if(recordRotation && data.rotation.x.keys.Length > 0)
-				transform.rotation = data.rotation.Get (t);
-			
-			if(recordScale && data.scale.x.keys.Length > 0)
-				transform.localScale = data.scale.Get (t);
+	[Serializable]
+	public class EntityData
+	{
+		public float time;
 
-			if(recordEnable && data.enabled.keys.Length > 0)
-				data.SetEnable (t, transform.gameObject);
+		public Vector3 position;
+		public Quaternion rotation;
+		public Vector3 scale;
+		public bool enabled;
+
+		public EntityData (Transform t, ReplayEntity entity)
+		{
+			time = ReplayManager.Instance.GetCurrentTime ();
+
+			if(entity.recordPosition)
+				position = t.position;
+			
+			if(entity.recordRotation)
+				rotation = t.rotation;
+			
+			if(entity.recordScale)
+				scale = t.localScale;
+			
+			if(entity.recordEnable)
+				enabled = t.gameObject.activeSelf;
 		}
 	}
 

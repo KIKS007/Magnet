@@ -77,7 +77,7 @@ namespace Replay
 
 			foreach(var p in particles)
 			{
-				if(Mathf.Abs (p.time - t) < 0.008f)
+				if(Mathf.Abs (p.time - t) < ReplayManager.Instance.listRecordEpsilon)
 				{
 					particleSys.SetParticles (p.particles, p.particles.Length);
 					break;
