@@ -144,7 +144,7 @@ public class MenuComponent : MonoBehaviour
 	void HideAll ()
 	{
 		//MENU BUTTON
-		if(menuComponentType == MenuComponentType.BasicMenu)
+		if(menuButton != null)
 			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenButton.x, menuButton.anchoredPosition.y);
 //			menuButton.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, menuButton.anchoredPosition.y);
 
@@ -167,7 +167,7 @@ public class MenuComponent : MonoBehaviour
 	void DisableAll ()
 	{
 		//MENU BUTTON
-		if(menuComponentType == MenuComponentType.BasicMenu)
+		if(menuButton != null)
 			menuButton.gameObject.SetActive (false);
 
 		//UNDER MENUS BUTTONS

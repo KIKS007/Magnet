@@ -6,7 +6,7 @@ using System;
 
 public class StatsFeedback : MonoBehaviour 
 {
-	public enum WhichStatType {Player, Most, Least, Total, Winner, RoundDuration, AllRoundDuration};
+	public enum WhichStatType {Player, Most, Least, Total, Winner, RoundDuration, AllRoundDuration };
 
 	public WhichStatType whichStatType;
 
@@ -137,12 +137,13 @@ public class StatsFeedback : MonoBehaviour
 
 	void LifeDuration ()
 	{
-		int duration = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()];
+		float duration = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playerLifeDuration;
 
 		string minutes = Mathf.Floor(duration / 60).ToString("00");
 		string seconds = Mathf.Floor(duration % 60).ToString("00");
+		string milliseconds = Mathf.Floor (duration * 1000f % 1000).ToString ("000");
 
-		string durationText = minutes + ":" + seconds;
+		string durationText = minutes + ":" + seconds + ":" + milliseconds;
 
 		GlobalMethods.Instance.ReplaceInText (textComponent, durationText);
 	}

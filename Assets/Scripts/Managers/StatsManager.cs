@@ -267,7 +267,8 @@ public class StatsManager : SerializedMonoBehaviour
 		{
 			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
 
-			playersStats [script.playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] += script.lifeDuration;
+			//playersStats [script.playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()] += script.lifeDuration;
+			playersStats [script.playerName.ToString ()].playerLifeDuration += script.lifeDuration;
 		}
 	}
 
@@ -343,10 +344,11 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		allRoundsDurationValue += roundsDurationValue;
 
-		string minutes = Mathf.Floor(allRoundsDurationValue / 60).ToString("00");
-		string seconds = Mathf.Floor(allRoundsDurationValue % 60).ToString("00");
+		string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
+		string milliseconds = Mathf.Floor (roundsDurationValue * 1000f % 1000).ToString ("000");
 
-		allRoundsDuration = minutes + ":" + seconds;
+		allRoundsDuration = minutes + ":" + seconds + ":" + milliseconds;
 	}
 
 	void WinsInARow (WhichPlayer whichPlayerWon)
@@ -501,6 +503,7 @@ public class StatsManager : SerializedMonoBehaviour
 [Serializable]
 public class PlayerStats
 {
+	public float playerLifeDuration = 0;
 	public Dictionary<string, int> playersStats = new Dictionary<string, int> ();
 }
 

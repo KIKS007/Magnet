@@ -60,7 +60,7 @@ public class PlayersGameplay : MonoBehaviour
 	public HoldState holdState = HoldState.CanHold;
 
 	[Header("Life Duration")]
-	public int lifeDuration = 0;
+	public float lifeDuration = 0;
 
     [Header("Controller Number")]
     public int controllerNumber = -1;
@@ -857,16 +857,12 @@ public class PlayersGameplay : MonoBehaviour
 
 	protected virtual IEnumerator LifeDuration ()
 	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+		while (true)
+		{
+			yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		yield return new WaitForSecondsRealtime (1);
-
-		if (playerState == PlayerState.Dead)
-			yield break;
-
-		lifeDuration += 1;
-
-		StartCoroutine (LifeDuration ());
+			lifeDuration += Time.unscaledDeltaTime;
+		}
 	}
 	#endregion
 
