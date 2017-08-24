@@ -17,14 +17,7 @@ namespace Replay
 		{
 			particleSys = GetComponent<ParticleSystem> ();
 
-			foreach (Transform child in transform)
-				if (child.GetComponent<ParticleSystem> () != null)
-					child.gameObject.AddComponent<ReplayParticles> ();
-
 			base.Start ();
-
-			if (GetComponent<ParticlesAutoDestroy> () != null)
-				Destroy (GetComponent<ParticlesAutoDestroy> ());
 		}
 
 		public override void OnClear ()

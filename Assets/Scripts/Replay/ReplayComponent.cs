@@ -14,13 +14,12 @@ namespace Replay
 
 		protected virtual void Start ()
 		{
-			ReplayManager.Instance.OnClear += OnClear;
 			SetEvents ();
 		}
 
 		public virtual void OnClear ()
 		{
-			SetEvents ();
+			
 		}
 
 		public virtual void SetEvents ()
@@ -32,6 +31,8 @@ namespace Replay
 
 			ReplayManager.Instance.OnReplayStart += OnReplayStart;
 			ReplayManager.Instance.OnReplayStop += OnReplayStop;
+
+			ReplayManager.Instance.OnClear += OnClear;
 		}
 
 		protected virtual void OnEnable ()
