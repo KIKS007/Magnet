@@ -55,7 +55,7 @@ public class MenuComponent : MonoBehaviour
 		underMenusButtons.Clear ();
 
 		//MENU BUTTON
-		if(menuComponentType == MenuComponentType.BasicMenu)
+		if(menuComponentType == MenuComponentType.BasicMenu || menuComponentType == MenuComponentType.RootMenu && transform.GetChild (0).GetComponent<MenuButtonComponent> () != null)
 		{
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.GetComponent<MenuButtonComponent> ().menuComponentParent = this;
@@ -286,7 +286,7 @@ public class MenuComponent : MonoBehaviour
 		underMenusButtons.Clear ();
 
 		//MENU BUTTON
-		if(menuComponentType == MenuComponentType.BasicMenu)
+		if(menuComponentType == MenuComponentType.BasicMenu || menuComponentType == MenuComponentType.RootMenu && transform.GetChild (0).GetComponent<MenuButtonComponent> () != null)
 		{
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
 			menuButton.gameObject.SetActive (true);
