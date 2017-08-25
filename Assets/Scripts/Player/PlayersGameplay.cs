@@ -707,7 +707,8 @@ public class PlayersGameplay : MonoBehaviour
         Vector3 movementTemp = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movementTemp = movementTemp.normalized;
 
-        float dashSpeedTemp = dashSpeed * 200;
+		//float dashSpeedTemp = dashSpeed * 200;
+        float dashSpeedTemp = dashSpeed;
       //  float futureTime = Time.time + dashDuration;
        // float start = futureTime - Time.time;
 
@@ -717,7 +718,7 @@ public class PlayersGameplay : MonoBehaviour
 
 		while (dashSpeedTemp > 0)
 		{
-			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime;
+			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor;
 
 			yield return new WaitForFixedUpdate();
 		}

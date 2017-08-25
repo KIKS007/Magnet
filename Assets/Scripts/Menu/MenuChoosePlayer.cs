@@ -27,6 +27,11 @@ public class MenuChoosePlayer : MonoBehaviour
 	public CanvasGroup[] noControllersTexts = new CanvasGroup[4];
 	public CanvasGroup[] noControllersPluggedTexts = new CanvasGroup[4];
 
+	[Header ("Options")]
+	public GameObject gamesCout;
+	public GameObject environementChroma;
+	public GameObject livesCount;
+
 	[Header ("AI")]
 	public Transform[] aiButtonsParent = new Transform[4];
 	public bool[] aiHasJoined = new bool[4];
@@ -107,6 +112,27 @@ public class MenuChoosePlayer : MonoBehaviour
 				GamepadOn (i);
 			else
 				GamepadOff (i);
+		}
+
+		if(GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+		{
+			for (int i = 0; i < aiHasJoined.Length; i++)
+				if (aiHasJoined [i])
+					AILeave (i);
+
+			foreach (var t in aiButtonsParent)
+				t.gameObject.SetActive (false);
+
+			gamesCout.SetActive (false);
+			livesCount.SetActive (false);
+		}
+		else
+		{
+			foreach (var t in aiButtonsParent)
+				t.gameObject.SetActive (true);
+
+			gamesCout.SetActive (true);
+			livesCount.SetActive (true);
 		}
 
 		CheckCanPlay ();
@@ -265,6 +291,7 @@ public class MenuChoosePlayer : MonoBehaviour
 
 		playersCount += GlobalVariables.Instance.NumberOfBots;
 
+		if(GlobalVariables.Instance.CurrentModeLoaded != WhichMode.Tutorial)
 		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
 		{ 
 			canPlay = true;
@@ -280,7 +307,35 @@ public class MenuChoosePlayer : MonoBehaviour
 			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
 		} 
 
+		if(GlobalVariables.Instance.CurrentModeLoaded != WhichMode.Tutorial)
 		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
+		{ 
+			canPlay = false;
+
+			DOTween.Kill ("PlayButton");
+
+			playButton.GetComponent<Button> ().interactable = false; 
+			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
+		} 
+
+		if(GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+		if(playersCount == 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
+		{ 
+			canPlay = true;
+
+			DOTween.Kill ("PlayButton");
+
+			playButton.gameObject.SetActive (true);
+			playButton.GetComponent<Button> ().interactable = true; 
+
+			/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+			playButton.GetComponent<Button> ().Select (); */
+
+			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+		} 
+
+		if(GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+		if(playersCount == 0 && playButton.anchoredPosition.y != playButtonYPos.x) 
 		{ 
 			canPlay = false;
 
