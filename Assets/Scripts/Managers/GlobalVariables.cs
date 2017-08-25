@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using Replay;
 
-public enum GameStateEnum { Menu, Playing, Paused, EndMode, Loading };
+public enum GameStateEnum { Menu, Playing, Paused, EndMode };
 
 public enum StartupType {Delayed, Wave, Done};
 
@@ -541,7 +541,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 			PlayersGameplay script = p.GetComponent<PlayersGameplay> ();
 
-			if (script.GetType () == typeof(AIGameplay))
+			if (script.GetType () == typeof(AIGameplay) || script.GetType ().IsSubclassOf (typeof(AIGameplay)))
 				continue;
 
 			//Unplugged

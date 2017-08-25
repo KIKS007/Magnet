@@ -174,6 +174,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			GlobalVariables.Instance.AllMovables.Add (deadCube);
 
 			MasterAudio.PlaySound3DAtTransformAndForget (SoundsManager.Instance.cubeSpawnSound, deadCube.transform);
+
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_FIRST_REINCARNATION);
 		}
 	}
 

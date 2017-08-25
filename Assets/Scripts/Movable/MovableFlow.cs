@@ -24,6 +24,8 @@ public class MovableFlow : MovableScript
 			playerScript.Death (DeathFX.All, other.contacts [0].point);
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 
+			PlayerKilled ();
+
 			GlobalMethods.Instance.Explosion (transform.position);
 		}
 	}

@@ -23,6 +23,8 @@ public class MovableSuggestible : MovableScript
 
 			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
+			PlayerKilled ();
+
 			foreach (GameObject g in attracedBy)
 				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
 

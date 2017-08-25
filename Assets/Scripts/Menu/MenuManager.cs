@@ -90,6 +90,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	protected Callback<GameOverlayActivated_t> GameOverlayActivated;
 
+	public Action OnQuitGame;
+
 	#endregion
 
 	#region Setup
@@ -811,6 +813,9 @@ public class MenuManager : Singleton <MenuManager>
 
 	public void QuitGame ()
 	{
+		if (OnQuitGame != null)
+			OnQuitGame ();
+
 		Application.Quit ();
 	}
 	#endregion

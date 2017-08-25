@@ -58,6 +58,8 @@ public class MovablePlague : MovableScript
 			
 			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
 
+			PlayerKilled ();
+
 			if (playerThatThrew != null)
 				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 

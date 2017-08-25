@@ -361,6 +361,12 @@ public class MovableScript : MonoBehaviour
 
 		canPlaySound = true;
 	}
+
+	protected virtual void PlayerKilled ()
+	{
+		if (gameObject.GetComponent<PlayersDeadCube> () != null)
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_KILL_REINCARNATED_PLAYER);
+	}
 	#endregion
 
 	#region Particles / FX

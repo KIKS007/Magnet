@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 using System.Linq;
 
 public enum WhichPlayer {Player1, Player2, Player3, Player4, None, Draw};
-public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides, Stun };
+public enum WhichStat { HitsGiven, HitsTaken, Death, Dash, Shots, AimAccuracy, Wins, WinsInARow, LifeDuration, Kills, Suicides, Stun, RoundKills };
 
 public class StatsManager : SerializedMonoBehaviour
 {
@@ -57,6 +57,8 @@ public class StatsManager : SerializedMonoBehaviour
 
 	public static StatsManager Instance;
 
+	public Action<PlayersGameplay> OnPlayerSuicide;
+
 	void Awake ()
 	{
 		if (Instance == null)
@@ -79,6 +81,12 @@ public class StatsManager : SerializedMonoBehaviour
 		{
 			StopAllCoroutines ();
 			StartCoroutine (StartTimer ());
+		};
+
+		GlobalVariables.Instance.OnRestartMode += () => 
+		{
+			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
+				p.Value.playersStats [WhichStat.RoundKills.ToString ()] = 0;
 		};
 
 		GlobalVariables.Instance.OnMenu += ()=> ResetStats(true);
@@ -107,6 +115,9 @@ public class StatsManager : SerializedMonoBehaviour
 			
 			for(int i = 0; i < Enum.GetValues (typeof (WhichStat)).Cast<int> ().Max () + 1; i++)
 				playersStats [ playerScript.playerName.ToString () ].playersStats.Add (((WhichStat)i).ToString (), 0);
+
+			if(playerScript.GetType () == typeof(AIGameplay) || playerScript.GetType ().IsSubclassOf (typeof(AIGameplay)))
+				playersStats [playerScript.playerName.ToString ()].isBot = true;
 		}
 
 		//Total Stats
@@ -253,12 +264,17 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		playersStats [ playerThatKilled.playerName.ToString () ].playersStats [WhichStat.Kills.ToString ()]++;
 		totalStats [WhichStat.Kills.ToString ()]++;
+
+		playersStats [ playerThatKilled.playerName.ToString () ].playersStats [WhichStat.RoundKills.ToString ()]++;
 	}
 
 	public void PlayerSuicides (PlayersGameplay player)
 	{
 		playersStats [ player.playerName.ToString () ].playersStats [WhichStat.Suicides.ToString ()]++;
 		totalStats [WhichStat.Suicides.ToString ()]++;
+
+		if (OnPlayerSuicide != null)
+			OnPlayerSuicide (player);
 	}
 
 	public void PlayersLifeDuration ()
@@ -506,6 +522,7 @@ public class StatsManager : SerializedMonoBehaviour
 public class PlayerStats
 {
 	public float playerLifeDuration = 0;
+	public bool isBot = false;
 	public Dictionary<string, int> playersStats = new Dictionary<string, int> ();
 }
 

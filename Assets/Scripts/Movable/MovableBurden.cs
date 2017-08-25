@@ -125,6 +125,9 @@ public class MovableBurden : MovableScript
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
 				StopTrackingPlayer ();
+
+				PlayerKilled ();
+
 			}
 
 			else
@@ -132,6 +135,9 @@ public class MovableBurden : MovableScript
 				playerScript.Death (DeathFX.All, other.contacts [0].point);
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
+
+				PlayerKilled ();
+
 
 				for (int i = 0; i < otherMovables.Count; i++)
 					if (otherMovables [i].targetPlayer == other.gameObject)
