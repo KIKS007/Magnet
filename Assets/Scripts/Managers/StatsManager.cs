@@ -344,9 +344,9 @@ public class StatsManager : SerializedMonoBehaviour
 	{
 		allRoundsDurationValue += roundsDurationValue;
 
-		string minutes = Mathf.Floor(roundsDurationValue / 60).ToString("00");
-		string seconds = Mathf.Floor(roundsDurationValue % 60).ToString("00");
-		string milliseconds = Mathf.Floor (roundsDurationValue * 1000f % 1000).ToString ("000");
+		string minutes = Mathf.Floor(allRoundsDurationValue / 60).ToString("00");
+		string seconds = Mathf.Floor(allRoundsDurationValue % 60).ToString("00");
+		string milliseconds = Mathf.Floor (allRoundsDurationValue * 1000f % 1000).ToString ("000");
 
 		allRoundsDuration = minutes + ":" + seconds + ":" + milliseconds;
 	}
@@ -439,6 +439,8 @@ public class StatsManager : SerializedMonoBehaviour
 			//Players
 			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
 			{
+				p.Value.playerLifeDuration = 0;
+
 				foreach(var key in p.Value.playersStats.Keys.ToList ())
 				{
 					if (resetExcludeStats.Contains ((WhichStat)Enum.Parse (typeof(WhichStat), key)))

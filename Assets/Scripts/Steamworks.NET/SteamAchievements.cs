@@ -8,16 +8,8 @@ using System;
 
 public class SteamAchievements : Singleton<SteamAchievements>
 {
-	[PropertyOrder(-2)]
-	[ButtonAttribute]
-	public void UpdateAchievementsEnum ()
-	{
-		File.WriteAllText ("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \n \t", AchievementsIDs.ToArray ()) +" \n };" );
-	}
-
 	[HideInEditorMode]
-	[ValueDropdown ("AchievementsIDs")]
-	public string achievementToUnlock;
+	public AchievementID achievementToUnlock;
 	[PropertyOrder(-1)]
 	[ButtonGroup("1", -1)]
 	[HideInEditorMode]
@@ -35,12 +27,11 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		SteamUserStats.RequestCurrentStats ();
 	}
 
-	[Header ("Achievements IDs")]
+	[Header ("Achievements File")]
 	public TextAsset AchievementsIDFile;
-	public List<string> AchievementsIDs = new List<string> ();
 
-	[Header ("Achievements List")]
-	[HideInEditorMode]
+	[Header ("Achievements")]
+	//[HideInEditorMode]
 	public List<Achievement> Achievements = new List<Achievement> ();
 
 	// Our GameID
@@ -62,22 +53,32 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		Debug.Log (name);
 
 		LoadAchievementsID ();
+	}
 
-		UpdateAchievementsEnum ();
+	[PropertyOrder(-2)]
+	[ButtonAttribute]
+	void UpdateAchievementsID ()
+	{
+		var text = AchievementsIDFile.text;
+		var IDs = new List<string> ();
+
+		foreach (var line in text.Split ("\n"[0]))
+			IDs.Add (line);
+
+		File.WriteAllText ("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \n \t", IDs.ToArray ()) +" \n };" );
 	}
 
 	void LoadAchievementsID ()
 	{
 		var text = AchievementsIDFile.text;
-
-		AchievementsIDs.Clear ();
-
-		foreach (var line in text.Split ("\n"[0]))
-			AchievementsIDs.Add (line);
+		var IDs = new List<string> ();
 
 		Achievements.Clear ();
 
-		foreach(string s in AchievementsIDs)
+		foreach (var line in text.Split ("\n"[0]))
+			IDs.Add (line);
+
+		foreach(string s in IDs)
 			Achievements.Add (new Achievement (s));
 	}
 
@@ -124,8 +125,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	{
 		achievementsEventSetup = true;
 
-		if (!Achieved (AchievementID.ACH_WIN_ONE_GAME))
-			GlobalVariables.Instance.OnStartMode += () => UnlockAchievement (AchievementID.ACH_WIN_ONE_GAME);
+		/*if (!Achieved (AchievementID.ACH_WIN_ONE_GAME))
+			GlobalVariables.Instance.OnStartMode += () => UnlockAchievement (AchievementID.ACH_WIN_ONE_GAME);*/
 	}
 
 	public bool Achieved (AchievementID id)
