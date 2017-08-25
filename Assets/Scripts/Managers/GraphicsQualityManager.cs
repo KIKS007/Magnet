@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using Klak.Motion;
 using System;
 
-public class GraphicsQualityManager : MonoBehaviour 
+public class GraphicsQualityManager : Singleton<GraphicsQualityManager> 
 {
 	public Action<float> OnFixedDeltaTimeChange;
 

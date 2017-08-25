@@ -36,6 +36,7 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	}
 
 	[Header ("Achievements IDs")]
+	public TextAsset AchievementsIDFile;
 	public List<string> AchievementsIDs = new List<string> ();
 
 	[Header ("Achievements List")]
@@ -57,10 +58,22 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		if (!SteamManager.Initialized)
 			return;
 
-		UpdateAchievementsEnum ();
-
 		string name = SteamFriends.GetPersonaName ();
 		Debug.Log (name);
+
+		LoadAchievementsID ();
+
+		UpdateAchievementsEnum ();
+	}
+
+	void LoadAchievementsID ()
+	{
+		var text = AchievementsIDFile.text;
+
+		AchievementsIDs.Clear ();
+
+		foreach (var line in text.Split ("\n"[0]))
+			AchievementsIDs.Add (line);
 
 		Achievements.Clear ();
 

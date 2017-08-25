@@ -6,7 +6,7 @@ using System.Linq;
 using GameAnalyticsSDK;
 using UnityEngine.EventSystems;
 
-public class ResolutionManager : MonoBehaviour
+public class ResolutionManager : Singleton<ResolutionManager>
 {
 	[Header("Fullscreen")]
 	public bool fullScreen = true;

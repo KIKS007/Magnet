@@ -195,7 +195,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		fixedDeltaTime = Time.fixedDeltaTime;
 		fixedDeltaFactor = 1 / fixedDeltaTime;
 
-		graphicsQualityManager.OnFixedDeltaTimeChange += (x) =>
+		GraphicsQualityManager.Instance.OnFixedDeltaTimeChange += (x) =>
 		{
 			fixedDeltaTime = x;
 			fixedDeltaFactor = 1 / fixedDeltaTime;
