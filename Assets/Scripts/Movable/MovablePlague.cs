@@ -11,6 +11,8 @@ public class MovablePlague : MovableScript
 
 	private bool deadlyTransition = false;
 
+	public static int deadlyMovablesCount = 0;
+
 	public override void Start ()
 	{
 		base.Start ();
@@ -89,5 +91,10 @@ public class MovablePlague : MovableScript
 		tag = "DeadCube";
 
 		ToDeadlyColor (0.1f);
+
+		deadlyMovablesCount++;
+
+		if (deadlyMovablesCount > 9 && !SteamAchievements.Instance.Achieved (AchievementID.ACH_PLAGUE))
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_PLAGUE);
 	}
 }

@@ -89,6 +89,9 @@ public class ArenaDeadzones : MonoBehaviour
 
 			yield return new WaitForSeconds (waitTime);
 		}
+
+		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Crush)
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_CRUSH);
 	}
 
 	IEnumerator SingleDeadzone ()

@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class MovableBounce : MovableScript 
 {
+	private int wallBounces = 0;
+
 	protected override void LowVelocity () 
 	{
 		if(hold == false && currentVelocity > 0)
@@ -20,6 +22,8 @@ public class MovableBounce : MovableScript
 					
 					slowMoTrigger.triggerEnabled = false;
 					gameObject.tag = "Movable";
+
+					wallBounces = 0;
 				}
 
 				else if(gameObject.tag == "ThrownMovable")
@@ -58,6 +62,9 @@ public class MovableBounce : MovableScript
 			if (playerScript.playerState == PlayerState.Dead)
 				return;
 
+			if (wallBounces > 1)
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_BOUNCE);
+
 			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
 
 			PlayerKilled ();
@@ -73,12 +80,16 @@ public class MovableBounce : MovableScript
 
 	protected override void HitWall (Collision other)
 	{
+		wallBounces++;
+
 		if(canPlaySound)
 			StartCoroutine(HitSound ());
 		
 		if (tag != "ThrownMovable")
 			return;
+		
 		DeadlyTransition ();
+
 	}
 
 	void DeadlyTransition ()

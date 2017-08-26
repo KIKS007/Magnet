@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class MovableStandoff : MovableScript 
 {
+	public Vector3 shooterPosition;
+
 	protected override void LowVelocity () 
 	{
 		if(hold == false && currentVelocity > 0)
@@ -67,7 +69,12 @@ public class MovableStandoff : MovableScript
 				PlayerKilled ();
 
 				if (playerThatThrew != null)
+				{
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+
+					if (!SteamAchievements.Instance.Achieved (AchievementID.ACH_STANDOFF) && Vector3.Distance (other.transform.position, shooterPosition) > 30f)
+						SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_STANDOFF);
+				}
 
 				GlobalMethods.Instance.Explosion (transform.position);
 			}
@@ -88,6 +95,8 @@ public class MovableStandoff : MovableScript
 
 	public override void OnRelease ()
 	{
+		shooterPosition = playerThatThrew.transform.position;
+
 		OnReleaseEventVoid ();
 
 		StartCoroutine (DeadlyTransition ());

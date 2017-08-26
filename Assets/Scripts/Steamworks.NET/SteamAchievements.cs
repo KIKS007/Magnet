@@ -82,7 +82,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		Achievements.Clear ();
 
 		foreach (var line in text.Split ("\n"[0]))
-			IDs.Add (line);
+			if(line != "")
+				IDs.Add (line);
 
 		foreach(string s in IDs)
 			Achievements.Add (new Achievement (s));
@@ -141,6 +142,24 @@ public class SteamAchievements : Singleton<SteamAchievements>
 				UnlockAchievement (AchievementID.ACH_LAUNCH_RANDOM);
 				break;
 			}
+
+			string mode = GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ();
+			UnlockAchievement ("ACH_LAUNCH_" + mode);
+
+
+			bool allUnlocked = true;
+
+			foreach (string value in Enum.GetNames(typeof(WhichMode)))
+			{
+				if (value == WhichMode.Default.ToString () || value == WhichMode.None.ToString () || value == WhichMode.Tutorial.ToString ())
+					continue;
+
+				if (!Achieved ("ACH_LAUNCH_" + value.ToUpper ()))
+					allUnlocked = false;
+			}
+
+			if (allUnlocked && !Achieved (AchievementID.ACH_LAUNCH_EACH_MODE))
+				UnlockAchievement (AchievementID.ACH_LAUNCH_EACH_MODE);
 		}
 
 		if (GlobalVariables.Instance.NumberOfBots == 4)
@@ -226,6 +245,21 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		return false;
 	}
 
+	public bool Achieved (string id)
+	{
+		foreach(var a in Achievements)
+		{
+			if(a.achievementID.ToString () == id)
+			{
+				if(a.achieved)
+					return true;
+				else
+					return false;
+			}
+		}
+		return false;
+	}
+
 	public void UnlockAchievement(Achievement achievement) 
 	{
 		if (!SteamManager.Initialized)
@@ -246,10 +280,14 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	{
 		if (!SteamManager.Initialized && !debugMode)
 			return;
-		
+
+		bool achivementFound = false;
+
 		foreach (var a in Achievements)
 			if (a.achievementID.ToString () == achievementID)
 			{
+				achivementFound = true;
+
 				if (a.achieved)
 				{
 					if (debugMode)
@@ -266,6 +304,12 @@ public class SteamAchievements : Singleton<SteamAchievements>
 				}
 				break;
 			}
+
+		if(!achivementFound)
+		{
+			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
+			return;
+		}
 
 		// mark it down
 		SteamUserStats.SetAchievement(achievementID);
@@ -277,10 +321,14 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	{
 		if (!SteamManager.Initialized && !debugMode)
 			return;
-		
+
+		bool achivementFound = false;
+
 		foreach (var a in Achievements)
 			if (a.achievementID == achievementID)
 			{
+				achivementFound = true;
+
 				if (a.achieved)
 				{
 					if (debugMode)
@@ -297,6 +345,12 @@ public class SteamAchievements : Singleton<SteamAchievements>
 				}
 				break;
 			}
+
+		if(!achivementFound)
+		{
+			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
+			return;
+		}
 
 		// mark it down
 		SteamUserStats.SetAchievement(achievementID.ToString ());

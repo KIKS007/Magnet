@@ -707,10 +707,7 @@ public class PlayersGameplay : MonoBehaviour
         Vector3 movementTemp = new Vector3(rewiredPlayer.GetAxisRaw("Move Horizontal"), 0f, rewiredPlayer.GetAxisRaw("Move Vertical"));
         movementTemp = movementTemp.normalized;
 
-		//float dashSpeedTemp = dashSpeed * 200;
         float dashSpeedTemp = dashSpeed;
-      //  float futureTime = Time.time + dashDuration;
-       // float start = futureTime - Time.time;
 
         StartCoroutine(DashEnd());
 
@@ -722,14 +719,6 @@ public class PlayersGameplay : MonoBehaviour
 
 			yield return new WaitForFixedUpdate();
 		}
-
-		/*  while (Time.time <= futureTime)
-        {
-            dashSpeedTemp = dashEase.Evaluate((futureTime - Time.time) / start) * dashSpeed;
-			playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor * 1 / Time.timeScale;
-
-            yield return new WaitForFixedUpdate();
-        }*/
     }
 
 	public virtual IEnumerator DashEnd()

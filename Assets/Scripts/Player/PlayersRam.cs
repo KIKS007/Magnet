@@ -48,4 +48,23 @@ public class PlayersRam : PlayersGameplay
 			}
 		}
 	}
+
+	public override void StunVoid (bool cubeHit)
+	{
+		base.StunVoid (cubeHit);
+
+		if(!SteamAchievements.Instance.Achieved (AchievementID.ACH_RAM))
+		{
+			int playersCount = 0; 
+
+			foreach (var p in GlobalVariables.Instance.Players)
+				if (p.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+					return;
+				else
+					playersCount++;
+
+			if (playersCount > 2)
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_RAM);
+		}
+	}
 }

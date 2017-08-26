@@ -65,6 +65,11 @@ public class MovableBomb : MovableScript
 				if(!trackingPlayer && playerThatThrew != null)
 					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
+				BombManager manager = (BombManager)GlobalVariables.Instance.lastManManager;
+
+				if (manager.timer < 1 && !trackingPlayer && playerThatThrew != null)
+					SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_BOMB);
+
 				playerScript.OnHoldMovable (gameObject, true);
 				playerHolding = other.gameObject;
 

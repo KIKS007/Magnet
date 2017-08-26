@@ -4,6 +4,7 @@ using DarkTonic.MasterAudio;
 
 public class MovableFlow : MovableScript 
 {
+
 	public override void Start ()
 	{
 		gameObject.tag = "Suggestible";

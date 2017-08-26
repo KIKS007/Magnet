@@ -88,7 +88,7 @@ public class MovableBurden : MovableScript
 			Vector3 direction = (targetPlayer.transform.position - transform.position);
 			direction.Normalize ();
 			
-			rigidbodyMovable.AddForce(direction * trackSpeed, ForceMode.Impulse);
+			rigidbodyMovable.AddForce(direction * trackSpeed * 200 * Time.fixedDeltaTime, ForceMode.Impulse);
 
 			if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
@@ -128,6 +128,7 @@ public class MovableBurden : MovableScript
 
 				PlayerKilled ();
 
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_BURDEN);
 			}
 
 			else

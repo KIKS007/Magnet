@@ -8,6 +8,7 @@ public class MovablePush : MovableScript
 	private float deadlyDelay = 0.01f;
 
 	private GameObject playerThatThrewTemp;
+	public static List<PlayersGameplay> dashingPlayers = new List<PlayersGameplay> ();
 
 	protected override void LowVelocity () 
 	{
@@ -49,6 +50,9 @@ public class MovablePush : MovableScript
 			if (playerScript.dashState != DashState.Dashing)
 				return;
 
+			if(!SteamAchievements.Instance.Achieved (AchievementID.ACH_PUSH))
+			StartCoroutine (DashingPlayerCoroutine (playerScript));
+
 			playerThatThrew = other.gameObject;
 			playerThatThrewTemp = other.gameObject;
 
@@ -78,6 +82,21 @@ public class MovablePush : MovableScript
 
 			GlobalMethods.Instance.Explosion (transform.position);
 		}
+	}
+
+	IEnumerator DashingPlayerCoroutine (PlayersGameplay p)
+	{
+		if(!dashingPlayers.Contains (p))
+			dashingPlayers.Add (p);
+		else
+		{
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_PUSH);
+			yield break;
+		}
+
+		yield return new WaitWhile (()=> p.dashState == DashState.Dashing);
+
+		dashingPlayers.Remove (p);
 	}
 
 	void DeadlyTransition ()
