@@ -225,7 +225,10 @@ public class ResolutionManager : Singleton<ResolutionManager>
 		if (QualitySettings.vSyncCount == 0)
 			QualitySettings.vSyncCount = 1;
 		else
+		{
+			SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_DISABLE_VSYNC);
 			QualitySettings.vSyncCount = 0;
+		}
 
 		PlayerPrefs.SetInt ("Vsync", QualitySettings.vSyncCount);
 	}

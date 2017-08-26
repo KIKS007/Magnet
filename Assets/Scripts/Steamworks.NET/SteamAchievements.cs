@@ -109,6 +109,11 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		GlobalVariables.Instance.OnEndMode += EndMode;
 
 		MenuManager.Instance.OnQuitGame += ()=> UnlockAchievement (AchievementID.ACH_QUIT_GAME);
+		GlobalVariables.Instance.OnEnvironementChromaChange += () => 
+		{
+			if(GlobalVariables.Instance.environementChroma != EnvironementChroma.Purple)
+				UnlockAchievement (AchievementID.ACH_CHROMA);
+		};
 
 		StatsManager.Instance.OnPlayerSuicide += (PlayersGameplay obj) => 
 		{
@@ -239,16 +244,26 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 	public void UnlockAchievement(string achievementID) 
 	{
-		if (!SteamManager.Initialized)
+		if (!SteamManager.Initialized && !debugMode)
 			return;
 		
 		foreach (var a in Achievements)
 			if (a.achievementID.ToString () == achievementID)
 			{
 				if (a.achieved)
+				{
+					if (debugMode)
+						Debug.Log ("Already unlocked: " + a.achievementID.ToString ());
 					return;
+				}
 
 				a.achieved = true;
+
+				if (debugMode)
+				{
+					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
+					return;
+				}
 				break;
 			}
 

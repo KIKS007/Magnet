@@ -279,6 +279,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		SetGamePlaylist ();
 
 		CreateLoadedMusicsSongTitle ();
+
+		SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_PERSONNAL_MUSICS);
 	}
 	
 	bool IsValidFileType (string fileName)
