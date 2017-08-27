@@ -173,7 +173,7 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	{
 		Kills ();
 
-		if (GlobalVariables.Instance.NumberOfBots > 0 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == true)
+		if (GlobalVariables.Instance.NumberOfBots > 0 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == true && GlobalVariables.Instance.NumberOfBots != GlobalVariables.Instance.NumberOfPlayers)
 			UnlockAchievement (AchievementID.ACH_LOOSE_BOTS);
 
 		if (GlobalVariables.Instance.NumberOfBots == 3 && GlobalVariables.Instance.NumberOfPlayers == 4 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == false)
