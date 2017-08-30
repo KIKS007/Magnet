@@ -70,6 +70,13 @@ public class MenuManager : Singleton <MenuManager>
 	[Header ("End Mode Menu")]
 	public MenuComponent endModeMenu;
 
+	[Header ("Modes Logos")]
+	public Transform modesLogosCanvas;
+	public float modesLogoDelay;
+	public float modesLogoDuration;
+	public float modesLogoDuration2;
+	public Ease modesLogoEase;
+
 	[HideInInspector]
 	public Ease easeMenu = Ease.OutQuad;
 	private MenuComponent mainMenuScript;
@@ -84,6 +91,7 @@ public class MenuManager : Singleton <MenuManager>
 	private MenuCameraMovement cameraMovement;
 	private bool isWaitingToSelect = false;
 	private BackButtonsFeedback[] backButtonsScript = new BackButtonsFeedback[0];
+	private float modesLogoScale;
 
 	[HideInInspector]
 	public bool startScreen = true;
@@ -106,6 +114,8 @@ public class MenuManager : Singleton <MenuManager>
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
 
 		GlobalVariables.Instance.OnGamepadDisconnected += GamepadDisconnected;
+		GlobalVariables.Instance.OnStartMode += ModeLogo;
+		GlobalVariables.Instance.OnRestartMode += ModeLogo;
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
@@ -117,6 +127,11 @@ public class MenuManager : Singleton <MenuManager>
 		backButtonsScript = backButtons.transform.GetComponentsInChildren<BackButtonsFeedback> ();
 
 		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
+
+		modesLogoScale = modesLogosCanvas.localScale.x;
+		modesLogosCanvas.localScale = Vector3.zero;
+		modesLogosCanvas.gameObject.SetActive (false);
+
 
 		foreach (var m in Resources.FindObjectsOfTypeAll<MenuComponent> ())
 			m.SetupMenu ();
@@ -865,6 +880,40 @@ public class MenuManager : Singleton <MenuManager>
 	public void StartMode ()
 	{
 		StartCoroutine (StartModeCoroutine ());
+	}
+
+	void ModeLogo ()
+	{
+		foreach (Transform t in modesLogosCanvas)
+			t.gameObject.SetActive (false);
+
+		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Default || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.None || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+			return;
+
+		modesLogosCanvas.GetChild ((int)GlobalVariables.Instance.CurrentModeLoaded).gameObject.SetActive (true);
+
+		modesLogosCanvas.gameObject.SetActive (true);
+
+		float scale = modesLogoScale * 0.7f;
+		modesLogosCanvas.localScale = Vector3.zero;
+
+
+
+		DOVirtual.DelayedCall (modesLogoDelay, ()=> 
+			{
+				modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
+					{
+						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad);
+
+						modesLogosCanvas.DOScale (0, modesLogoDuration).SetEase (Ease.OutQuad).OnComplete (()=> 
+							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2);
+					});
+
+				/*modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
+					modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).OnComplete (()=> 
+						modesLogosCanvas.gameObject.SetActive (false) ));*/
+			});
+		
 	}
 
 	IEnumerator StartModeCoroutine ()
