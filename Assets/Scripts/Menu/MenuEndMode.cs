@@ -39,6 +39,10 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public Ease scoreTweenEase;
 	public Ease panelTweenEase;
 
+	[Header ("Buttons")]
+	public GameObject restartButton;
+	public GameObject nextButton;
+
 	private List<int> scores = new List<int> ();
 	private Dictionary<int, int> previousScales = new Dictionary<int, int> ();
 	private List<RectTransform> enabledPanels = new List<RectTransform> ();
@@ -67,6 +71,9 @@ public class MenuEndMode : SerializedMonoBehaviour
 	{
 		if(GlobalVariables.Instance.NumberOfPlayers == 0)
 			yield break;
+
+		restartButton.SetActive (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection);
+		nextButton.SetActive (GlobalVariables.Instance.ModeSequenceType != ModeSequenceType.Selection);
 
 		enabledPanels.Clear ();
 
@@ -121,6 +128,11 @@ public class MenuEndMode : SerializedMonoBehaviour
 		yield return new WaitWhile (()=> DOTween.IsTweening ("MenuCamera"));
 
 		yield return new WaitWhile (()=> MenuManager.Instance.isTweening);
+
+		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection)
+			restartButton.GetComponent<Button> ().Select ();
+		else
+			nextButton.GetComponent<Button> ().Select ();
 
 		List<string> keys = playersStats.Keys.ToList ();
 
