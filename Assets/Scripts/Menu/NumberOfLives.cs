@@ -25,7 +25,7 @@ public class NumberOfLives : MonoBehaviour
 		input = GetComponent<InputField> ();
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void GetValue ()
@@ -40,25 +40,31 @@ public class NumberOfLives : MonoBehaviour
 
 		GlobalVariables.Instance.LivesCountChange (value);
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Increase ()
 	{
 		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount + 1);
 
+		if(GlobalVariables.Instance.LivesCount > livesCountBounds.y)
+			GlobalVariables.Instance.LivesCountChange ((int)livesCountBounds.x);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Decrease ()
 	{
 		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount - 1);
 
+		if(GlobalVariables.Instance.LivesCount < livesCountBounds.x)
+			GlobalVariables.Instance.LivesCountChange ((int)livesCountBounds.y);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void CheckBounds ()

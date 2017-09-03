@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 
-public class MenuShaderElement : MonoBehaviour 
+public class MenuShaderElement : Selectable 
 {
 	[ButtonGroup ("a", -1)]
 	public void UpdateShaderAll ()
@@ -72,12 +72,14 @@ public class MenuShaderElement : MonoBehaviour
 	protected static GlobalVariables globalVariables;
 
 	// Use this for initialization
-	protected virtual void Awake ()
+	protected override void Awake ()
 	{
+		base.Awake ();
+
 		image = GetComponent<Image> ();
 		material = image.material;
 
-		if (useUIShader && useEnvironementChroma)
+		if (useUIShader && useEnvironementChroma && GlobalVariables.Instance)
 			GlobalVariables.Instance.OnEnvironementChromaChange += ShaderColorChange;
 
 		if(useUIShader)

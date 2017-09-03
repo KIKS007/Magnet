@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
@@ -13,6 +14,17 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	public bool colorChange = false;
 	public bool vibration = true;
 	public bool textColorChange = true;
+
+	[Header ("Debug")]
+	public bool overrideNavigation = false;
+	[ShowIf ("overrideNavigation")]
+	public List<Selectable> selectOnUp = new List<Selectable> ();
+	[ShowIf ("overrideNavigation")]
+	public List<Selectable> selectOnDown = new List<Selectable> ();
+	[ShowIf ("overrideNavigation")]
+	public List<Selectable> selectOnLeft = new List<Selectable> ();
+	[ShowIf ("overrideNavigation")]
+	public List<Selectable> selectOnRight = new List<Selectable> ();
 
 	[Header ("Debug")]
 	public bool selected;
@@ -46,6 +58,13 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		if (colorChange)
 			ColorChangeSetup ();
+
+		if(overrideNavigation)
+		{
+			var nav = buttonComponent.navigation;
+			nav.mode = Navigation.Mode.None;
+			buttonComponent.navigation = nav;
+		}
 	}
 
 	void ColorChangeSetup ()
@@ -276,7 +295,6 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	}
 
 
-
 	public void OnDeselect( BaseEventData data )
 	{
 		if (!Application.isPlaying)
@@ -333,5 +351,82 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		pointerDown = false;
 		
 		ShaderClick ();
+	}
+
+
+	void SelectOnUp ()
+	{
+		if (!overrideNavigation)
+			return;
+
+		if (selectOnUp.Count == 0)
+			return;
+
+		foreach(var g in selectOnUp)
+		{
+			if (!g.interactable || !g.gameObject.activeSelf)
+				continue;
+
+			g.Select ();
+
+			return;
+		}
+	}
+
+	void SelectOnDown ()
+	{
+		if (!overrideNavigation)
+			return;
+
+		if (selectOnDown.Count == 0)
+			return;
+
+		foreach(var g in selectOnDown)
+		{
+			if (!g.interactable || !g.gameObject.activeSelf)
+				continue;
+
+			g.Select ();
+
+			return;
+		}
+	}
+
+	void SelectOnLeft ()
+	{
+		if (!overrideNavigation)
+			return;
+
+		if (selectOnLeft.Count == 0)
+			return;
+
+		foreach(var g in selectOnLeft)
+		{
+			if (!g.interactable || !g.gameObject.activeSelf)
+				continue;
+
+			g.Select ();
+
+			return;
+		}
+	}
+
+	void SelectOnRight ()
+	{
+		if (!overrideNavigation)
+			return;
+
+		if (selectOnRight.Count == 0)
+			return;
+
+		foreach(var g in selectOnRight)
+		{
+			if (!g.interactable || !g.gameObject.activeSelf)
+				continue;
+
+			g.Select ();
+
+			return;
+		}
 	}
 }

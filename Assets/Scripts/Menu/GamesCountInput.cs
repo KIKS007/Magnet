@@ -53,7 +53,7 @@ public class GamesCountInput : MonoBehaviour
 			previousModeSequence = GlobalVariables.Instance.ModeSequenceType;
 		};
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void OnEnable ()
@@ -93,23 +93,31 @@ public class GamesCountInput : MonoBehaviour
 
 		GlobalVariables.Instance.GamesCount = value;
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Increase ()
 	{
 		GlobalVariables.Instance.GamesCount++;
+		
+		if (GlobalVariables.Instance.GamesCount > bounds.y)
+			GlobalVariables.Instance.GamesCount = (int)bounds.x;
+
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Decrease ()
 	{
 		GlobalVariables.Instance.GamesCount--;
+
+		if (GlobalVariables.Instance.GamesCount < bounds.x)
+			GlobalVariables.Instance.GamesCount = (int)bounds.y;
+		
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void CheckBounds ()

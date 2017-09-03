@@ -196,8 +196,10 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 		}
 	}
 
-	void OnDestroy ()
+	public override void OnDestroy ()
 	{
+		base.OnDestroy ();
+
 		if(SceneManager.GetActiveScene().name != "Scene Testing")
 			SaveData ();
 	}
