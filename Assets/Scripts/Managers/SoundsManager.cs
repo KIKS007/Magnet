@@ -146,6 +146,14 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void Start ()
 	{
+		if (Application.isEditor)
+			loadedMusicsPath = editorLoadedMusicsPath;
+		else
+			loadedMusicsPath = Application.dataPath + loadedMusicsPath;
+
+		if(!Directory.Exists (loadedMusicsPath))
+			Directory.CreateDirectory (loadedMusicsPath);
+
 		//LoadMusics ();
 		SetGamePlaylist ();
 
