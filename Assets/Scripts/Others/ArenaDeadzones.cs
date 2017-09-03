@@ -4,24 +4,26 @@ using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 using Replay;
+using Sirenix.OdinInspector;
 
 public class ArenaDeadzones : MonoBehaviour 
 {
 	public delegate void ColumnDeadly (Transform column);
 
-	public enum RandomType { Single, AllSettings, CurrentSettings };
+	public enum RandomType { Single, AllSettings };
 
 	[Header ("Random")]
-	public RandomType randomType = RandomType.Single;
+	public List<WhichMode> allSettingsModes = new List<WhichMode> ();
+
+	private RandomType randomType = RandomType.Single;
 
 	[Header ("Settings")]
 	public Ease ease = Ease.OutQuad;
-	public int currentSettings = 0;
 	public List<ArenaDeadzonesSettings> deadzonesSettings = new List<ArenaDeadzonesSettings> ();
 
 	[Header ("Single")]
-	public float singleDelay = 0;
 	public float currentInterval;
+	public float singleDelay = 0;
 	public Vector2 intervalLimits = new Vector2 (10, 1);
 	public float reducedTime = 1f;
 
@@ -40,15 +42,43 @@ public class ArenaDeadzones : MonoBehaviour
 	[HideInInspector]
 	public List<GameObject> deadlyColumns = new List<GameObject> ();
 
+	private List<Transform> allColumns = new List<Transform> ();
+	private Color initialColor;
+	private string initialTag;
+	private Vector3 initialScale;
+	private Vector3 initialScale2;
+
 	// Use this for initialization
 	void Start () 
 	{
+		initialColor = frontColumns [0].GetChild (0).GetComponent<Renderer> ().material.color;
+		initialTag = frontColumns [0].GetChild (0).tag;
+		initialScale = frontColumns [0].GetChild (0).localScale;
+		initialScale2 = frontColumns [0].GetChild (1).localScale;
+
+		allColumns.AddRange (frontColumns);
+		allColumns.AddRange (backColumns);
+		allColumns.AddRange (rightColumns);
+		allColumns.AddRange (leftColumns);
+
+		GlobalVariables.Instance.OnStartMode += Setup;
+		GlobalVariables.Instance.OnRestartMode += Setup;
+
 		Setup ();
 	}
 
 	public void Setup ()
 	{
-		int settingsIndex = currentSettings;
+		StopAllCoroutines ();
+
+		Reset ();
+
+		int settingsIndex = 0;
+
+		if (allSettingsModes.Contains (GlobalVariables.Instance.CurrentModeLoaded))
+			randomType = RandomType.AllSettings;
+		else
+			randomType = RandomType.Single;
 
 		switch (randomType)
 		{
@@ -66,6 +96,33 @@ public class ArenaDeadzones : MonoBehaviour
 			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].backDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].backIndex, backColumns));
 			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].rightDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].rightIndex, rightColumns));
 			StartCoroutine (Deadzones (deadzonesSettings [settingsIndex].leftDelay, deadzonesSettings [settingsIndex].duration, deadzonesSettings [settingsIndex].leftIndex, leftColumns));
+		}
+	}
+
+	[ButtonAttribute]
+	public void Reset ()
+	{
+		deadlyColumns.Clear ();
+
+		foreach(var column in allColumns)
+		{
+			for(int i = 0; i < column.childCount; i++)
+			{
+				column.GetChild (i);
+
+				column.GetChild (i).tag = initialTag;
+				column.GetChild (i).GetComponent<Collider> ().enabled = false;
+
+				column.GetChild (i).GetComponent<Renderer> ().material.SetColor ("_EmissionColor", initialColor);
+				column.GetChild (i).GetComponent<Renderer> ().material.color = initialColor;
+
+				column.GetChild (i).localScale = initialScale;
+
+				if(i == 0)
+					column.GetChild (i).localScale = initialScale;
+				else
+					column.GetChild (i).localScale = initialScale2;
+			}
 		}
 	}
 
@@ -98,14 +155,9 @@ public class ArenaDeadzones : MonoBehaviour
 	{
 		currentInterval = intervalLimits.x;
 
-		List<Transform> allColumns = new List<Transform> (frontColumns);
-		allColumns.AddRange (backColumns);
-		allColumns.AddRange (rightColumns);
-		allColumns.AddRange (leftColumns);
-
 		yield return new WaitForSeconds (singleDelay);
 
-		int columnsCount = frontColumns.Length + backColumns.Length + rightColumns.Length + leftColumns.Length;
+		int columnsCount = allColumns.Count;
 
 		for(int i = 0; i < columnsCount; i++)
 		{
@@ -126,6 +178,7 @@ public class ArenaDeadzones : MonoBehaviour
 			yield return new WaitForSeconds (currentInterval);
 
 			currentInterval -= reducedTime;
+
 			if (currentInterval < intervalLimits.y)
 				currentInterval = intervalLimits.y;
 		}

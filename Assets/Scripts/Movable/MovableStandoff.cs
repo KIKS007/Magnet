@@ -95,7 +95,8 @@ public class MovableStandoff : MovableScript
 
 	public override void OnRelease ()
 	{
-		shooterPosition = playerThatThrew.transform.position;
+		if(playerThatThrew != null)
+			shooterPosition = playerThatThrew.transform.position;
 
 		OnReleaseEventVoid ();
 
