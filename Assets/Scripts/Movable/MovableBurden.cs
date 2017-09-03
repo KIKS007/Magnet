@@ -83,7 +83,7 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> targetPlayer && targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
 
-		while(targetPlayer != null && Vector3.Distance(targetPlayer.transform.position, transform.position) > 0.5f)
+		while(targetPlayer != null)
 		{
 			Vector3 direction = (targetPlayer.transform.position - transform.position);
 			direction.Normalize ();
@@ -170,7 +170,7 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		yield return new WaitWhile (() => targetPlayer == null || targetPlayer.activeSelf);
+		yield return new WaitWhile (() => targetPlayer == null || !targetPlayer.activeSelf);
 
 		if (targetPlayer == null)
 			yield break;
