@@ -75,7 +75,6 @@ public class SlowMotionCamera : MonoBehaviour
 
 	public float bloomInitialIntensity;
 
-	[HideInInspector]
 	public MirrorReflection mirrorScript;
 
 	void Awake ()
@@ -91,8 +90,6 @@ public class SlowMotionCamera : MonoBehaviour
 		GlobalVariables.Instance.OnEndMode += () => slowMoNumber = 0;
 		GlobalVariables.Instance.OnMenu += () => slowMoNumber = 0;
 		LoadModeManager.Instance.OnLevelLoaded += StopSlowMotion;
-
-		LoadModeManager.Instance.OnLevelLoaded += () => mirrorScript = GameObject.FindGameObjectWithTag("Environment").transform.GetComponentInChildren<MirrorReflection>();
 	}
 
 	// Update is called once per frame
