@@ -96,6 +96,8 @@ namespace Replay
 
 		#endregion
 
+		public bool replayEnabled = false;
+
 		[Header ("Record Rate")]
 		public int recordRate = 120;
 		public int particlesRecordRate = 60;

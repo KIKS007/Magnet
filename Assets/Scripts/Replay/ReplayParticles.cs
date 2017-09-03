@@ -15,6 +15,12 @@ namespace Replay
 
 		protected override void Start ()
 		{
+			if (!ReplayManager.Instance.replayEnabled)
+				return;
+
+			if (GetComponent<ParticlesAutoDestroy> ())
+				Destroy (GetComponent<ParticlesAutoDestroy> ());
+
 			particleSys = GetComponent<ParticleSystem> ();
 
 			base.Start ();
