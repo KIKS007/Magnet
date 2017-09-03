@@ -16,7 +16,6 @@ public class GamesCountInput : MonoBehaviour
 	private Vector2 initialbounds = new Vector2 (1, 99);
 
 	private ModeSequenceType previousModeSequence;
-	private float disabledButtonScale = 0.5f;
 
 	// Use this for initialization
 	void Start () 

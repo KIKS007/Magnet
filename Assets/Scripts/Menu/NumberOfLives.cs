@@ -15,7 +15,6 @@ public class NumberOfLives : MonoBehaviour
 	public Vector2 livesCountBounds;
 
 	private InputField input;
-	private float disabledButtonScale = 0.5f;
 
 	// Use this for initialization
 	void Start ()

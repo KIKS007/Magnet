@@ -39,7 +39,6 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	private List<List<Button>> aiButtons = new List<List<Button>> ();
 	private float controllersOnPosition;
-	private float[] playersLogosInitialPos = new float[4];
 	private bool[] hasJoined = new bool[5];
 	private float playerChangeMovement;
 	private bool noInput = false;
