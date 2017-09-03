@@ -28,7 +28,12 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	{
 		activate = true;
 
-		menuAnims.ShaderClick ();
+		menuAnims.selected = true;
+		menuAnims.ShaderHighlight ();
+		menuAnims.OnSelect ();
+		menuAnims.buttonComponent.interactable = false;
+
+		//menuAnims.ShaderClick ();
 
 		if (!GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Add (mode);
@@ -36,7 +41,11 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 	public void Disable ()
 	{
-		menuAnims.ShaderClick ();
+		menuAnims.selected = false;
+		menuAnims.ShaderHighlight ();
+		menuAnims.buttonComponent.interactable = true;
+
+		//menuAnims.ShaderClick ();
 
 		activate = false;
 

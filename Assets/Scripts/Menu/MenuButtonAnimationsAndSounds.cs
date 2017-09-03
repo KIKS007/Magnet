@@ -37,7 +37,8 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 	private float scaleOnSelected = 1.1f;
 	private float scaleOnDuration = 0.25f;
-	private Button buttonComponent;
+	[HideInInspector]
+	public Button buttonComponent;
 
 	protected override void Awake ()
 	{
@@ -141,7 +142,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		TextColorChange ();
 	}
 
-	void ShaderHighlight ()
+	public void ShaderHighlight ()
 	{
 		if (!useUIShader)
 			return;
