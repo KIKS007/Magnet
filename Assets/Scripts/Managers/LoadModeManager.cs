@@ -12,10 +12,19 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
 	private Transform mainCamera;
 	private MenuCameraMovement cameraMovement;
+	private List<WhichMode> modesEnum = new List<WhichMode> ();
 
 	// Use this for initialization
 	void Awake () 
 	{
+		modesEnum = new List<WhichMode> ();
+
+		foreach (WhichMode e in Enum.GetValues(typeof(WhichMode)))
+			if (e == WhichMode.Tutorial || e == WhichMode.None || e == WhichMode.Default)
+				continue;
+			else
+				modesEnum.Add (e);
+
 		mainCamera = GameObject.FindGameObjectWithTag ("MainCamera").transform;
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
@@ -69,12 +78,11 @@ public class LoadModeManager : Singleton<LoadModeManager>
 	WhichMode RandomScene ()
 	{
 		WhichMode randomScene = WhichMode.Bomb;
-
 		do
 		{
-			randomScene = (WhichMode)UnityEngine.Random.Range (0, (int)Enum.GetNames (typeof(WhichMode)).Length - 2);
+			randomScene = (WhichMode) modesEnum [UnityEngine.Random.Range (0, modesEnum.Count)];
 		}
-		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene) || randomScene == WhichMode.Tutorial || randomScene == WhichMode.None || randomScene == WhichMode.Default);
+		while (GlobalVariables.Instance.lastPlayedModes.Contains (randomScene));
 
 		return randomScene;
 	}

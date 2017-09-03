@@ -223,10 +223,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager> ();
 
 		CurrentModeLoaded = levelLoaded;
-		GameState = gameState;
 
 		if(gameState == GameStateEnum.Playing)
 			CreateAIs ();
+		
+		GameState = gameState;
 	}
 
 	public void LevelWasUnloaded (GameStateEnum gameState)

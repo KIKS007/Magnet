@@ -890,7 +890,12 @@ public class MenuManager : Singleton <MenuManager>
 		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Default || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.None || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
 			return;
 
-		modesLogosCanvas.GetChild ((int)GlobalVariables.Instance.CurrentModeLoaded).gameObject.SetActive (true);
+		foreach (Transform t in modesLogosCanvas)
+			if(t.name == GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ())
+			{
+				t.gameObject.SetActive (true);
+				break;
+			}
 
 		modesLogosCanvas.gameObject.SetActive (true);
 
