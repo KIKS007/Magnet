@@ -44,6 +44,7 @@ public class SoundsManager : Singleton<SoundsManager>
 	[Header ("Loaded Musics")]
 	public Text loadButtonText;
 	public GameObject canTakeTime;
+	public GameObject nothingToLoad;
 	public bool loadingMusics = false;
 	public bool playLoadedMusics;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
@@ -64,6 +65,10 @@ public class SoundsManager : Singleton<SoundsManager>
 	public float highPassTweenDuration;
 	[Range (10, 22000)]
 	public float sloMoHighPass;
+
+	[Header ("Playlists Buttons")]
+	public Button gameMusicButton;
+	public Button personalMusicButton;
 
 	[Header ("Menu Sounds")]
 	[SoundGroupAttribute]
@@ -144,6 +149,11 @@ public class SoundsManager : Singleton<SoundsManager>
 	public event EventHandler OnSoundsVolumeChange;
 	public event EventHandler OnMasterVolumeChange;
 
+	private List<MusicSetting> musicsClip;
+	private List<MusicSetting> loadedMusicsClip;
+	public List<bool> musicsSelection = new List<bool> ();
+	public List<bool> loadedMusicsSelection = new List<bool> ();
+
 	void Start ()
 	{
 		if (Application.isEditor)
@@ -165,7 +175,13 @@ public class SoundsManager : Singleton<SoundsManager>
 		if(canTakeTime != null)
 			canTakeTime.SetActive (false);
 
+		if(nothingToLoad != null)
+			nothingToLoad.SetActive (false);
+
 		slowMo = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<SlowMotionCamera> ();
+
+		if (SceneManager.GetActiveScene().name != "Scene Testing")
+			CreateMusicsSongTitle ();
 
 		if (PlayerPrefs.HasKey ("LowPassEnabled") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
@@ -196,12 +212,25 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		playlistCont.SongChanged += (newSongName) => currentSong.text = newSongName;
 
+		gameMusicButton.onClick.AddListener (()=> {
+			playLoadedMusics = false;
+			SetGamePlaylist ();
+		});
+
+		personalMusicButton.onClick.AddListener (()=> {
+			playLoadedMusics = true;
+			SetGamePlaylist ();
+		});
+
 		UpdateAudioSettings ();
 
 		LowPass (pauseLowPass, 0.5f);
 
-		if (SceneManager.GetActiveScene().name != "Scene Testing")
-			CreateMusicsSongTitle ();
+		musicsClip = new List<MusicSetting> (MasterAudio.GrabPlaylist ("Game", false).MusicSettings);
+
+		MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Clear ();
+
+		MasterAudio.GrabPlaylist ("Game", false).MusicSettings = new List<MusicSetting> (musicsClip);
 
 		//MasterAudio.StartPlaylist ("Game");
 		//MasterAudio.TriggerRandomPlaylistClip ();
@@ -235,6 +264,8 @@ public class SoundsManager : Singleton<SoundsManager>
 		loadingMusics = true;
 
 		loadButtonText.text = "Loading...";
+
+		nothingToLoad.SetActive (false);
 		canTakeTime.SetActive (true);
 
 		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
@@ -264,6 +295,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			SetGamePlaylist ();
 			loadButtonText.text = "Load";
 			canTakeTime.SetActive (false);
+			nothingToLoad.SetActive (true);
 			yield break;
 		}
 
@@ -391,6 +423,8 @@ public class SoundsManager : Singleton<SoundsManager>
 				((int) (MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length / 60)).ToString ("D")
 				+ ":" + 
 				((int)(MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.length % 60)).ToString ("D2");
+
+			//songTitle.transform.GetChild (3).GetComponent<Toggle> ();
 		}
 
 		songTitleContentParent.GetComponent<RectTransform> ().sizeDelta = new Vector2 (songTitleContentParent.GetComponent<RectTransform> ().sizeDelta.x, MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count * gapHeight * musicsScrollRect.heightFactor);
@@ -512,6 +546,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
 			playlistCont.PlayRandomSong ();
 		}
+
+		personalMusicButton.interactable = !playLoadedMusics && loadedMusics.Count > 0;
+		gameMusicButton.interactable = playLoadedMusics;
 	}
 
 	public void SetMenuPlaylist ()
@@ -539,6 +576,11 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		masterVolume = masterBar.value;
 
+		if (masterBar.value != 0)
+			masterMute = false;
+		else
+			masterMute = true;
+
 		SetSoundsVolume ();
 		SetPlaylistVolume ();
 	}
@@ -554,6 +596,11 @@ public class SoundsManager : Singleton<SoundsManager>
 				MasterAudio.PlaySound3DAtVector3 (soundsVolumeTest, Vector3.zero);
 				StartCoroutine (PlaySoundWait ());
 			}
+
+			if (soundsBar.value != 0)
+				soundsMute = false;
+			else
+				soundsMute = true;
 		}		
 	}
 
@@ -599,7 +646,14 @@ public class SoundsManager : Singleton<SoundsManager>
 	public void SetPlaylistVolume ()
 	{
 		if(!loading)
+		{
 			MasterAudio.PlaylistMasterVolume = playlistBar.value * masterVolume;		
+
+			if (playlistBar.value != 0)
+				musicMute = false;
+			else
+				musicMute = true;
+		}
 	}
 
 	public void ToggleMuteMaster ()
@@ -883,6 +937,16 @@ public class SoundsManager : Singleton<SoundsManager>
 			musicMute = false;
 			musicMuteToggle.isOn = false;
 		}
+
+		musicsSelection.Clear ();
+		loadedMusicsSelection.Clear ();
+
+		for (int i = 0; i < songTitleContentParent.transform.childCount; i++)
+			if(PlayerPrefs.HasKey ("GameMusicsSelection" + i))
+			{
+				musicsSelection.Add (PlayerPrefs.GetInt ("GameMusicsSelection" + i) == 1 ? true : false);
+				songTitleContentParent.transform.GetChild (i).transform.GetChild (3).GetComponent<Toggle> ().isOn = PlayerPrefs.GetInt ("GameMusicsSelection" + i) == 1 ? true : false;
+			}
 
 		loading = false;
 	}
