@@ -995,7 +995,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	void ShowPassFightButton ()
 	{
-		passFightButton.GetComponent<Button> ().interactable = true;
 		passFightButton.gameObject.SetActive (true);
 		passFightButton.localScale = Vector3.zero;
 
@@ -1004,8 +1003,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	void HidePassFightButton ()
 	{
-		passFightButton.GetComponent<Button> ().interactable = false;
-
 		passFightButton.DOScale (0, animationDuration).SetEase (easeMenu).OnComplete (()=> passFightButton.gameObject.SetActive (false));
 	}
 	#endregion

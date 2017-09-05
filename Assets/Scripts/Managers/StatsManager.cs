@@ -25,6 +25,7 @@ public class StatsManager : SerializedMonoBehaviour
 
 	[Header ("Player Stats")]
 	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
+	public Dictionary<string, PlayerStats> playersTotalStats = new Dictionary<string, PlayerStats> ();
 
 	[Header ("Total Stats")]
 	public List<WhichStat> totalExcludeStats = new List<WhichStat> ();
