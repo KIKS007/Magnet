@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using DG.Tweening;
+using UnityEngine.UI;
 
 [Flags]
 public enum TutorialState 
@@ -49,10 +51,18 @@ public class TutorialManager : MonoBehaviour
 		}
 	}
 
-	public TutorialState tutorialState = TutorialState.Movement;
+	public TutorialState tutorialState = TutorialState.DeadlyWall;
 
 	[Header ("Players")]
 	public List<PlayerTutorialStats> PlayerStats = new List<PlayerTutorialStats> ();
+
+	[Header ("Infos")]
+	public float tweenDuration = 0.5f;
+	public float delayDuration = 0.2f;
+	public List<TutorialInfos> tutorialInfos = new List<TutorialInfos> ();
+
+	[Header ("Intro")]
+	public float introWaitDuration;
 
 	[Header ("MOVEMENT")]
 	public float movingTime = 6;
@@ -64,7 +74,6 @@ public class TutorialManager : MonoBehaviour
 	public int dashHitCount = 3;
 
 	[Header ("ATTRACT / REPEL")]
-	public float durationBetweenSpawn = 0.1f;
 	public float attractTime = 4;
 	public float repelTime = 3;
 
@@ -85,11 +94,25 @@ public class TutorialManager : MonoBehaviour
 	private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations> ();
 
 	private ZoomCamera zoomCamera;
+	public int tutorialInfosIndex = 0;
+	private Transform previousPanel = null;
 
 	// Use this for initialization
 	void Start () 
 	{
+		arena = FindObjectOfType<ArenaDeadzones> ();
+
 		zoomCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<ZoomCamera> ();
+
+		foreach(var t in tutorialInfos)
+		{
+			foreach(var p in t.panels)
+			{
+				p.localScale = Vector3.zero;
+				p.gameObject.SetActive (true);
+			}
+		}
+
 		StartCoroutine (WaitPlaying ());
 	}
 
@@ -108,9 +131,65 @@ public class TutorialManager : MonoBehaviour
 		}
 	}
 
+	IEnumerator ShowInfos ()
+	{
+		if(previousPanel != null && previousPanel.localScale == Vector3.one)
+		{
+			previousPanel.DOScale (0, tweenDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
+			yield return new WaitForSeconds (tweenDuration);
+		}
+
+		for(int i = 0; i < tutorialInfos [tutorialInfosIndex].panels.Count; i++)
+		{
+			tutorialInfos [tutorialInfosIndex].panels [i].localScale = Vector3.zero;
+			tutorialInfos [tutorialInfosIndex].panels [i].DOScale (1, tweenDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
+
+			yield return new WaitForSeconds (MenuManager.Instance.animationDuration + tutorialInfos [tutorialInfosIndex].durations [i]);
+
+			if(i != tutorialInfos [tutorialInfosIndex].panels.Count - 1)
+			{
+				tutorialInfos [tutorialInfosIndex].panels [i].DOScale (0, tweenDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
+				
+				yield return new WaitForSeconds (delayDuration);
+			}
+			else
+			{
+				previousPanel = tutorialInfos [tutorialInfosIndex].panels [i];
+			}
+		}
+
+		/*if(tutorialInfosButton.localScale != Vector3.zero)
+		{
+			tutorialInfosButton.DOScale (0, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false).OnComplete (()=> {
+				
+				tutorialInfosButton.GetChild (0).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].title;
+				tutorialInfosButton.GetChild (1).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].description;
+
+				tutorialInfosButton.DOScale (1, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
+			});
+			
+		}
+		else
+		{
+			tutorialInfosButton.GetChild (0).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].title;
+			tutorialInfosButton.GetChild (1).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].description;
+
+			tutorialInfosButton.DOScale (1, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
+		}
+*/
+		tutorialInfosIndex++;
+
+		yield return 0;
+	}
+
 	IEnumerator WaitPlaying ()
 	{
 		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+
+		DOVirtual.DelayedCall (0.01f, ()=> {
+			arena.StopAllCoroutines ();
+			arena.Reset ();
+		});
 
 		playersScript.Clear ();
 
@@ -124,11 +203,17 @@ public class TutorialManager : MonoBehaviour
 		foreach (PlayersTutorial p in playersScript)
 			p.livesCount = livesCount;
 
+		yield return StartCoroutine (ShowInfos ());
+
+		yield return new WaitForSeconds (introWaitDuration);
+
 		StartCoroutine (MovementStep ());
 	}
 
 	IEnumerator MovementStep ()
 	{
+		StartCoroutine (ShowInfos ());
+
 		tutorialState = TutorialState.Movement;
 
 		yield return new WaitUntil (()=>
@@ -147,6 +232,8 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator DashStep ()
 	{
+		StartCoroutine (ShowInfos ());
+
 		tutorialState |= TutorialState.Dash;
 
 		zoomCamera.Zoom (FeedbackType.Startup);
@@ -168,6 +255,18 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator DashHitStep ()
 	{
+		if(playersScript.Count == 1)
+		{
+			tutorialState |= TutorialState.DashHit;
+			tutorialInfosIndex++;
+
+			StartCoroutine (AttractRepelStep ());
+
+			yield break;
+		}
+
+		StartCoroutine (ShowInfos ());
+
 		tutorialState |= TutorialState.DashHit;
 
 		zoomCamera.Zoom (FeedbackType.Startup);
@@ -181,6 +280,9 @@ public class TutorialManager : MonoBehaviour
 					if(p.dashHitCount < dashHitCount)
 						pass = false;
 
+				if(playersScript.Count == 1)
+					pass = true;
+
 				return pass;
 			});
 		
@@ -189,10 +291,12 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator AttractRepelStep ()
 	{
+		StartCoroutine (ShowInfos ());
+
 		tutorialState |= TutorialState.AttractRepel;
 
 		if(GlobalVariables.Instance.AllMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
 
 		zoomCamera.Zoom (FeedbackType.Startup);
 		Waves ();
@@ -213,6 +317,8 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator ShootStep ()
 	{
+		StartCoroutine (ShowInfos ());
+
 		tutorialState |= TutorialState.Shoot;
 
 		zoomCamera.Zoom (FeedbackType.Startup);
@@ -234,7 +340,8 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator DeadlyWallStep ()
 	{
-		arena.enabled = true;
+		StartCoroutine (ShowInfos ());
+
 		arena.Setup ();
 
 		tutorialState |= TutorialState.DeadlyWall;
@@ -274,29 +381,38 @@ public class TutorialManager : MonoBehaviour
 				oneDeadCube = true;
 			}
 		}
+
+		StartCoroutine (ShowInfos ());
 	}
-}
 
-[System.Serializable]
-public class PlayerTutorialStats
-{
-	[Header ("MOVEMENT")]
-	public float movingTime = 0;
-
-	[Header ("DASH")]
-	public int dashCount = 0;
-
-	[Header ("DASH Hit")]
-	public int dashHitCount = 0;
-
-	[Header ("ATTRACT / REPEL")]
-	public float attractTime = 0;
-	public float repelTime = 0;
-
-	[Header ("SHOOTS")]
-	public int shootsCount = 0;
-	public int hitsCount = 0;
-
-	[Header ("DEADLY WALLS")]
-	public int deathCount = 0;
+	[System.Serializable]
+	public class TutorialInfos
+	{
+		public List<float> durations = new List<float> ();
+		public List<Transform> panels = new List<Transform> ();
+	}
+	
+	[System.Serializable]
+	public class PlayerTutorialStats
+	{
+		[Header ("MOVEMENT")]
+		public float movingTime = 0;
+		
+		[Header ("DASH")]
+		public int dashCount = 0;
+		
+		[Header ("DASH Hit")]
+		public int dashHitCount = 0;
+		
+		[Header ("ATTRACT / REPEL")]
+		public float attractTime = 0;
+		public float repelTime = 0;
+		
+		[Header ("SHOOTS")]
+		public int shootsCount = 0;
+		public int hitsCount = 0;
+		
+		[Header ("DEADLY WALLS")]
+		public int deathCount = 0;
+	}
 }

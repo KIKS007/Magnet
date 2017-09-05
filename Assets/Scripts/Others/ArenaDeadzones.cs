@@ -63,6 +63,11 @@ public class ArenaDeadzones : MonoBehaviour
 
 		GlobalVariables.Instance.OnStartMode += Setup;
 		GlobalVariables.Instance.OnRestartMode += Setup;
+		GlobalVariables.Instance.OnMenu += ()=> 
+		{
+			StopAllCoroutines ();
+			Reset ();
+		};
 
 		Setup ();
 	}

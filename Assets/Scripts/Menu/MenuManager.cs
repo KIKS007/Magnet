@@ -922,16 +922,16 @@ public class MenuManager : Singleton <MenuManager>
 			{
 				modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
 					{
-						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).SetUpdate (true);
+						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).SetUpdate (false);
 
 						modesLogosCanvas.DOScale (0, modesLogoDuration).SetEase (Ease.OutQuad).OnComplete (()=> 
-							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2).SetUpdate (true);
-					}).SetUpdate (true);
+							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2).SetUpdate (false);
+					}).SetUpdate (false);
 
 				/*modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
 					modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).OnComplete (()=> 
 						modesLogosCanvas.gameObject.SetActive (false) ));*/
-			}).SetUpdate (true);
+			}).SetUpdate (false);
 		
 	}
 
