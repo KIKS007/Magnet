@@ -42,4 +42,6 @@ public enum AchievementID
 , 	ACH_BACKERS_MENU
 , 	ACH_CHROMA
 , 	ACH_INSTRUCTIONS
+,	ACH_42
+
  };

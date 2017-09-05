@@ -270,6 +270,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 		achievement.achieved = true;
 
+		LastAchievement ();
+
 		// mark it down
 		SteamUserStats.SetAchievement(achievement.achievementID.ToString ());
 
@@ -296,6 +298,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 				}
 
 				a.achieved = true;
+
+				LastAchievement ();
 
 				if (debugMode)
 				{
@@ -338,6 +342,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 				a.achieved = true;
 
+				LastAchievement ();
+
 				if (debugMode)
 				{
 					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
@@ -356,6 +362,20 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		SteamUserStats.SetAchievement(achievementID.ToString ());
 
 		StartCoroutine (StoreSteamData ());
+	}
+
+	void LastAchievement ()
+	{
+		int count = 0;
+
+		foreach (var a in Achievements)
+			if (a.achieved)
+				count++;
+
+		Debug.Log (count);
+
+		if (count == 42 && !Achieved (AchievementID.ACH_42))
+			UnlockAchievement (AchievementID.ACH_42);
 	}
 
 	//-----------------------------------------------------------------------------
