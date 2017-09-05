@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using Klak.Motion;
+using Sirenix.OdinInspector;
 
 public class MenuCameraMovement : MonoBehaviour 
 {
@@ -129,7 +130,7 @@ public class MenuCameraMovement : MonoBehaviour
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
 
-		transform.rotation = Quaternion.Euler (new Vector3 (90f, 0f, 0f));
+		transform.rotation = Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f));
 
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.FastBeyond360).SetEase (cameraEaseMovement).SetId ("MenuCamera");
@@ -149,7 +150,7 @@ public class MenuCameraMovement : MonoBehaviour
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
 		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (new Vector3 (90f, 0f, 0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3 (90.0f, 0.0f, 0.0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 	}
@@ -163,7 +164,7 @@ public class MenuCameraMovement : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
-		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (new Vector3 (90.0f, 0.0f, 0.0f), 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 	}
 
 	void StopSlowMotion ()
@@ -206,14 +207,27 @@ public class MenuCameraMovement : MonoBehaviour
 		DOTween.To (()=> browianMotion.positionFrequency, x=> browianMotion.positionFrequency =x, 0, newMovementDuration);
 	}
 
-	[ContextMenu ("Menu Position")]
+	[ButtonGroupAttribute ("a", -1)]
+	public void MenuPosition ()
+	{
+		StartCoroutine (NewMenuPosition ());
+	}
+
+	[ButtonGroupAttribute ("a", -1)]
+	public void PlayPosition ()
+	{
+		StartCoroutine (NewPlayPosition ());
+	}
+
+
+	[ButtonGroupAttribute ("b", -1)]
 	public void EditorMenuPosition ()
 	{
 		transform.position = newMenuPosition;
 		transform.rotation = Quaternion.Euler (Vector3.zero);
 	}
 
-	[ContextMenu ("Play Position")]
+	[ButtonGroupAttribute ("b", -1)]
 	public void EditorPlayPosition ()
 	{
 		transform.position = newPlayPosition;

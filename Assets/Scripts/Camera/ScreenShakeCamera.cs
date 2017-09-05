@@ -74,7 +74,7 @@ public class ScreenShakeCamera : MonoBehaviour
 			return;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			transform.DORotate(new Vector3 (90f, 0f, 0f), 1f, RotateMode.Fast).SetId("ScreenShake").SetUpdate (false);
+			transform.DORotate(new Vector3 (90.0f, 0.0f, 0.0f), 1f, RotateMode.Fast).SetId("ScreenShake").SetUpdate (false);
 	}
 	
 }
