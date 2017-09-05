@@ -56,6 +56,9 @@ public class MenuManager : Singleton <MenuManager>
 	[Header ("Selectable")]
 	public bool selectPreviousElement = true;
 
+	[Header ("Pass Fight Button")]
+	public RectTransform passFightButton;
+
 	[Header ("Menu Elements To Enable")]
 	public List<GameObject> elementsToEnable;
 
@@ -116,6 +119,12 @@ public class MenuManager : Singleton <MenuManager>
 		GlobalVariables.Instance.OnGamepadDisconnected += GamepadDisconnected;
 		GlobalVariables.Instance.OnStartMode += ModeLogo;
 		GlobalVariables.Instance.OnRestartMode += ModeLogo;
+		GlobalVariables.Instance.OnPlayerDeath += OnPlayerDeath;
+		GlobalVariables.Instance.OnEndMode += ()=> {
+			HidePassFightButton ();
+			StopCoroutine (PassFight ());
+		};
+
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
@@ -273,7 +282,12 @@ public class MenuManager : Singleton <MenuManager>
 			}
 			
 			if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start"))
-				PauseResumeGame ();				
+			{
+				if (!passFightButton.gameObject.activeSelf)
+					PauseResumeGame ();
+				else
+					StartCoroutine (PassFight ());
+			}
 		}			
 	}
 		
@@ -908,16 +922,16 @@ public class MenuManager : Singleton <MenuManager>
 			{
 				modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
 					{
-						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad);
+						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).SetUpdate (true);
 
 						modesLogosCanvas.DOScale (0, modesLogoDuration).SetEase (Ease.OutQuad).OnComplete (()=> 
-							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2);
-					});
+							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2).SetUpdate (true);
+					}).SetUpdate (true);
 
 				/*modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
 					modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).OnComplete (()=> 
 						modesLogosCanvas.gameObject.SetActive (false) ));*/
-			});
+			}).SetUpdate (true);
 		
 	}
 
@@ -948,6 +962,51 @@ public class MenuManager : Singleton <MenuManager>
 					r.gameObject.SetActive (false);
 				});
 		}
+	}
+
+	void OnPlayerDeath ()
+	{
+		if(GlobalVariables.Instance.NumberOfPlayers > 0)
+		{
+			foreach(var p in GlobalVariables.Instance.AlivePlayersList)
+			{
+				PlayersGameplay s = p.GetComponent<PlayersGameplay> ();
+
+				if (s.GetType () != typeof(AIGameplay) && !s.GetType ().IsSubclassOf (typeof(AIGameplay)))
+					return;
+			}
+
+			ShowPassFightButton ();
+		}
+	}
+
+	IEnumerator PassFight ()
+	{
+		HidePassFightButton ();
+
+		while (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+		{
+			GameObject player = GlobalVariables.Instance.AlivePlayersList [UnityEngine.Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)];
+			player.GetComponent<PlayersGameplay> ().Death (DeathFX.All, player.transform.position);
+
+			yield return new WaitForSeconds (0.1f);
+		}
+	}
+
+	void ShowPassFightButton ()
+	{
+		passFightButton.GetComponent<Button> ().interactable = true;
+		passFightButton.gameObject.SetActive (true);
+		passFightButton.localScale = Vector3.zero;
+
+		passFightButton.DOScale (1, animationDuration).SetEase (easeMenu);
+	}
+
+	void HidePassFightButton ()
+	{
+		passFightButton.GetComponent<Button> ().interactable = false;
+
+		passFightButton.DOScale (0, animationDuration).SetEase (easeMenu).OnComplete (()=> passFightButton.gameObject.SetActive (false));
 	}
 	#endregion
 

@@ -585,6 +585,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public event EventHandler OnPause;
 	public event EventHandler OnResume;
 	public event EventHandler OnMenu;
+	public event EventHandler OnPlayerDeath;
 
 	public event EventHandler OnStartupDone;
 	public event EventHandler OnLivesCountChange;
@@ -672,6 +673,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		yield return new WaitUntil (() => color != environementChroma);
 
 		StartCoroutine (OnEnvironementChromaChangement (environementChroma));
+	}
+
+	public void OnPlayerDeathEvent ()
+	{
+		if (OnPlayerDeath != null)
+			OnPlayerDeath ();
 	}
 }
 

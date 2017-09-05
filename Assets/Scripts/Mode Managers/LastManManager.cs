@@ -86,6 +86,8 @@ public class LastManManager : MonoBehaviour
 		} 
 		else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations> () == null)
 			PlayerDeadCube (playerScript);
+
+		GlobalVariables.Instance.OnPlayerDeathEvent ();
 	}
 
 	public virtual void PlayerDeadCube (PlayersGameplay playerScript)
