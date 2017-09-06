@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using System;
+using System.Linq;
 
 public class StatsFeedback : MonoBehaviour 
 {
@@ -64,12 +65,20 @@ public class StatsFeedback : MonoBehaviour
 	private string valueText;
 
 	private string initialString = "xxx";
+	private MenuEndMode menuEndMode;
+	private int modesStatsIndex = 0;
 
 	void OnEnable ()
 	{
 		if (StatsManager.Instance == null)
 			return;
 
+		if (menuEndMode == null)
+			menuEndMode = MenuManager.Instance.endModeMenu.GetComponent<MenuEndMode> ();
+
+		if (!StatsManager.Instance.statsFeedback.Contains (this))
+			StatsManager.Instance.statsFeedback.Add (this);
+		
 		if(textComponent == null)
 			textComponent = GetComponent<Text> ();
 
@@ -84,8 +93,20 @@ public class StatsFeedback : MonoBehaviour
 			textComponent.text = initialString;
 	}
 
-	void UpdateText ()
+	public void UpdateText ()
 	{
+		for(int i = 0; i < menuEndMode.modesStats.Count; i++)
+		{
+			foreach(WhichMode m in menuEndMode.modesStats [i].modes)
+			{
+				if (m == GlobalVariables.Instance.CurrentModeLoaded)
+				{
+					modesStatsIndex = i;
+					break;
+				}
+			}
+		}
+
 		switch (whichStatType)
 		{
 		case WhichStatType.Player:
@@ -110,11 +131,6 @@ public class StatsFeedback : MonoBehaviour
 			AllRoundsDuration ();
 			break;
 		}
-
-		if(textComponent.text == "")
-			textComponent.text = "0";
-
-		CheckVisibility ();
 	}
 
 	void PlayerStats ()
@@ -122,22 +138,29 @@ public class StatsFeedback : MonoBehaviour
 		if (StatsManager.Instance.playersStats.Count == 0 || !StatsManager.Instance.playersStats.ContainsKey (whichPlayer.ToString ()) || StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats.Count == 0)
 			return;
 
-		value = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()];
+		var statsDictionnary = StatsManager.Instance.overallStats ? StatsManager.Instance.playersTotalStats : StatsManager.Instance.playersStats;
 
 		if(changeColor)
 			textComponent.color = GlobalVariables.Instance.playersColors [(int)whichPlayer];
 
 		if (whichStat != WhichStat.LifeDuration)
-			GlobalMethods.Instance.ReplaceInText (textComponent, StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		{
+			string text = StatsManager.Instance.statsText.FirstOrDefault (x=> x.Value == whichStat).Key;
+			textComponent.text = text;
+
+			GlobalMethods.Instance.ReplaceInText (textComponent, 
+				statsDictionnary [((WhichPlayer)whichPlayer).ToString ()].playersStats [whichStat.ToString ()].ToString ());
+		}
 		else
 			LifeDuration ();
 		
-		valueText = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playersStats [whichStat.ToString ()].ToString ();
 	}
 
 	void LifeDuration ()
 	{
-		float duration = StatsManager.Instance.playersStats [whichPlayer.ToString ()].playerLifeDuration;
+		var statsDictionnary = StatsManager.Instance.overallStats ? StatsManager.Instance.playersTotalStats : StatsManager.Instance.playersStats;
+
+		float duration = statsDictionnary [whichPlayer.ToString ()].playerLifeDuration;
 
 		string minutes = Mathf.Floor(duration / 60).ToString("00");
 		string seconds = Mathf.Floor(duration % 60).ToString("00");
@@ -253,5 +276,11 @@ public class StatsFeedback : MonoBehaviour
 				textComponent.enabled = true;
 
 		}
+	}
+
+	void OnDestroy ()
+	{
+		if (StatsManager.Instance.statsFeedback.Contains (this))
+			StatsManager.Instance.statsFeedback.Remove (this);
 	}
 }

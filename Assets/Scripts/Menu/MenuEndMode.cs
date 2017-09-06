@@ -206,6 +206,9 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 				GlobalMethods.Instance.ReplaceInText (statsClone.GetComponent<Text> (), 
 					StatsManager.Instance.playersStats [((WhichPlayer)playerIndex).ToString ()].playersStats [modesStats [modesStatsIndex].modesStats [i].ToString ()].ToString ());
+
+				statsClone.GetComponent<StatsFeedback> ().whichStat = modesStats [modesStatsIndex].modesStats [i];
+				statsClone.GetComponent<StatsFeedback> ().whichPlayer = (WhichPlayer)playerIndex;
 			}
 		}
 	}

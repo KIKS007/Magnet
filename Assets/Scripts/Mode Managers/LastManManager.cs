@@ -124,6 +124,8 @@ public class LastManManager : MonoBehaviour
 
 			yield return new WaitForSecondsRealtime (endGameDelay);
 
+			StatsManager.Instance.UpdatePlayerTotalStats ();
+
 //			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 			MenuManager.Instance.ShowEndMode ();
 		}

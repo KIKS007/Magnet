@@ -24,6 +24,7 @@ public class StatsManager : SerializedMonoBehaviour
 	public Dictionary<string, WhichStat> statsText = new Dictionary<string, WhichStat> ();
 
 	[Header ("Player Stats")]
+	public bool overallStats = false;
 	public Dictionary<string, PlayerStats> playersStats = new Dictionary<string, PlayerStats> ();
 	public Dictionary<string, PlayerStats> playersTotalStats = new Dictionary<string, PlayerStats> ();
 
@@ -55,10 +56,12 @@ public class StatsManager : SerializedMonoBehaviour
 	private float roundsDurationValue;
 	private float allRoundsDurationValue;
 	private WhichPlayer previousWinner = WhichPlayer.None;
+	[HideInInspector]
+	public List<StatsFeedback> statsFeedback = new List<StatsFeedback> ();
+	[HideInInspector]
+	public Action<PlayersGameplay> OnPlayerSuicide;
 
 	public static StatsManager Instance;
-
-	public Action<PlayersGameplay> OnPlayerSuicide;
 
 	void Awake ()
 	{
@@ -121,6 +124,29 @@ public class StatsManager : SerializedMonoBehaviour
 				playersStats [playerScript.playerName.ToString ()].isBot = true;
 		}
 
+		//Total Players Stats
+		playersTotalStats.Clear ();
+
+		foreach(GameObject g in GlobalVariables.Instance.Players)
+		{
+			if (g == null)
+				break;
+
+			PlayersGameplay playerScript = g.GetComponent<PlayersGameplay> ();
+
+			if (!GlobalVariables.Instance.EnabledPlayersList.Contains (g))
+				continue;
+
+			playersTotalStats.Add ( playerScript.playerName.ToString (), new PlayerStats () );
+
+			for(int i = 0; i < Enum.GetValues (typeof (WhichStat)).Cast<int> ().Max () + 1; i++)
+				playersTotalStats [ playerScript.playerName.ToString () ].playersStats.Add (((WhichStat)i).ToString (), 0);
+
+			if(playerScript.GetType () == typeof(AIGameplay) || playerScript.GetType ().IsSubclassOf (typeof(AIGameplay)))
+				playersTotalStats [playerScript.playerName.ToString ()].isBot = true;
+		}
+
+
 		//Total Stats
 		totalStats.Clear ();
 
@@ -154,60 +180,66 @@ public class StatsManager : SerializedMonoBehaviour
 	void UpdateStats ()
 	{
 		//Most Values
-		foreach(KeyValuePair<string, Stats> d in mostStats)
-		{
+		foreach (KeyValuePair<string, Stats> d in mostStats) {
 			int mostValue = -5;
 			WhichPlayer player = WhichPlayer.None;
 			bool severalMost = false;
 
-			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
-			{
-				if(p.Value.playersStats [d.Key] > mostValue)
-				{
+			foreach (KeyValuePair<string, PlayerStats> p in playersStats) {
+				if (p.Value.playersStats [d.Key] > mostValue) {
 					mostValue = p.Value.playersStats [d.Key];
-					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
-				}
-				else if(p.Value.playersStats [d.Key] == mostValue)
+					player = (WhichPlayer)Enum.Parse (typeof(WhichPlayer), p.Key);
+				} else if (p.Value.playersStats [d.Key] == mostValue)
 					severalMost = true;
 			}
 
-			if(mostValue != 0 && !severalMost)
-			{
+			if (mostValue != 0 && !severalMost) {
 				d.Value.value = mostValue;
 				d.Value.whichPlayer = player;
 			}
 		}
 
 		//Least Values
-		foreach(KeyValuePair<string, Stats> d in leastStats)
-		{
+		foreach (KeyValuePair<string, Stats> d in leastStats) {
 			int leastValue = playersStats [PlayerName.Player1.ToString ()].playersStats [d.Key];
 			WhichPlayer player = WhichPlayer.Player1;
 			bool severalLeast = false;
 
-			foreach(KeyValuePair<string, PlayerStats> p in playersStats)
-			{
-				if(p.Value.playersStats [d.Key] < leastValue)
-				{
+			foreach (KeyValuePair<string, PlayerStats> p in playersStats) {
+				if (p.Value.playersStats [d.Key] < leastValue) {
 					leastValue = p.Value.playersStats [d.Key];
-					player = (WhichPlayer) Enum.Parse (typeof (WhichPlayer), p.Key);
-				}
-
-				else if(p.Value.playersStats [d.Key] == leastValue && p.Key != PlayerName.Player1.ToString ())
+					player = (WhichPlayer)Enum.Parse (typeof(WhichPlayer), p.Key);
+				} else if (p.Value.playersStats [d.Key] == leastValue && p.Key != PlayerName.Player1.ToString ())
 					severalLeast = true;
 			}
 
-			if(!severalLeast)
-			{
+			if (!severalLeast) {
 				d.Value.value = leastValue;
 				d.Value.whichPlayer = player;
-			}
-			else
-			{
+			} else {
 				d.Value.value = 0;
 				d.Value.whichPlayer = WhichPlayer.None;
 			}
 		}
+	}
+
+	public void UpdatePlayerTotalStats ()
+	{
+		foreach (KeyValuePair<string, PlayerStats> p in playersStats)
+		{
+			playersTotalStats [p.Key].playerLifeDuration += playersStats [p.Key].playerLifeDuration;
+
+			for (int i = 0; i < Enum.GetValues (typeof(WhichStat)).Cast<int> ().Max () + 1; i++)
+				playersTotalStats [p.Key].playersStats [((WhichStat)i).ToString ()] += playersStats [p.Key].playersStats [((WhichStat)i).ToString ()];
+		}
+	}
+		
+	public void UpdateStatsFeedback (bool o)
+	{
+		overallStats = o;
+
+		foreach (var s in statsFeedback)
+			s.UpdateText ();
 	}
 
 	public void GetPlayersEvents ()
