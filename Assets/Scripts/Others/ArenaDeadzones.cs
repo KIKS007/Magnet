@@ -74,7 +74,8 @@ public class ArenaDeadzones : MonoBehaviour
 
 	public void Setup ()
 	{
-		StopAllCoroutines ();
+		if(gameObject.activeSelf)
+			StopAllCoroutines ();
 
 		Reset ();
 

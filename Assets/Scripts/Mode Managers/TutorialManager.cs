@@ -12,15 +12,26 @@ public enum TutorialState
 	Movement = 1, 
 	Dash = 2, 
 	DashHit = 4, 
-	AttractRepel = 8, 
-	Shoot = 16, 
-	DeadlyWall = 32,
+	Aim = 8, 
+	AttractRepel = 16, 
+	Shoot = 32, 
+	DeadlyWall = 64,
+	ReincarnatedCube = 128,
 
-	DashStep = Movement | Dash,
-	DashHitStep = Movement | Dash | DashHit,
-	AttractRepelStep = Movement | Dash | DashHit | AttractRepel,
-	ShootStep = Movement | Dash | DashHit | AttractRepel | Shoot,
-	DeadlyWallStep = Movement | Dash | DashHit | AttractRepel | Shoot | DeadlyWall
+	DashStep = 
+		Movement | Dash,
+	DashHitStep = 
+		Movement | Dash | DashHit,
+	AimStep = 
+		Movement | Dash | DashHit | Aim,
+	AttractRepelStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel,
+	ShootStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot,
+	DeadlyWallStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot | DeadlyWall,
+	ReincarnatedCubeStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot | DeadlyWall | ReincarnatedCube
 }
 
 public class TutorialManager : MonoBehaviour 
@@ -40,6 +51,9 @@ public class TutorialManager : MonoBehaviour
 			StartCoroutine (DashHitStep ());
 			break;
 		case TutorialState.DashHitStep:
+			StartCoroutine (AimStep ());
+			break;
+		case TutorialState.AimStep:
 			StartCoroutine (AttractRepelStep ());
 			break;
 		case TutorialState.AttractRepelStep:
@@ -47,6 +61,9 @@ public class TutorialManager : MonoBehaviour
 			break;
 		case TutorialState.ShootStep:
 			StartCoroutine (DeadlyWallStep ());
+			break;
+		case TutorialState.DeadlyWallStep:
+			StartCoroutine (ReincarnatedCubeStep ());
 			break;
 		}
 	}
@@ -94,7 +111,7 @@ public class TutorialManager : MonoBehaviour
 	private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations> ();
 
 	private ZoomCamera zoomCamera;
-	public int tutorialInfosIndex = 0;
+	private int tutorialInfosIndex = -1;
 	private Transform previousPanel = null;
 
 	// Use this for initialization
@@ -133,6 +150,8 @@ public class TutorialManager : MonoBehaviour
 
 	IEnumerator ShowInfos ()
 	{
+		tutorialInfosIndex++;
+
 		if(previousPanel != null && previousPanel.localScale == Vector3.one)
 		{
 			previousPanel.DOScale (0, tweenDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
@@ -141,6 +160,10 @@ public class TutorialManager : MonoBehaviour
 
 		for(int i = 0; i < tutorialInfos [tutorialInfosIndex].panels.Count; i++)
 		{
+			if(i == tutorialInfos [tutorialInfosIndex].panels.Count - 1)
+				previousPanel = tutorialInfos [tutorialInfosIndex].panels [i];
+
+
 			tutorialInfos [tutorialInfosIndex].panels [i].localScale = Vector3.zero;
 			tutorialInfos [tutorialInfosIndex].panels [i].DOScale (1, tweenDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
 
@@ -152,32 +175,7 @@ public class TutorialManager : MonoBehaviour
 				
 				yield return new WaitForSeconds (delayDuration);
 			}
-			else
-			{
-				previousPanel = tutorialInfos [tutorialInfosIndex].panels [i];
-			}
 		}
-
-		/*if(tutorialInfosButton.localScale != Vector3.zero)
-		{
-			tutorialInfosButton.DOScale (0, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false).OnComplete (()=> {
-				
-				tutorialInfosButton.GetChild (0).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].title;
-				tutorialInfosButton.GetChild (1).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].description;
-
-				tutorialInfosButton.DOScale (1, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
-			});
-			
-		}
-		else
-		{
-			tutorialInfosButton.GetChild (0).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].title;
-			tutorialInfosButton.GetChild (1).GetComponent<Text> ().text = tutorialInfos [tutorialInfosIndex].description;
-
-			tutorialInfosButton.DOScale (1, MenuManager.Instance.animationDuration).SetEase (MenuManager.Instance.easeMenu).SetUpdate (false);
-		}
-*/
-		tutorialInfosIndex++;
 
 		yield return 0;
 	}
@@ -260,7 +258,7 @@ public class TutorialManager : MonoBehaviour
 			tutorialState |= TutorialState.DashHit;
 			tutorialInfosIndex++;
 
-			StartCoroutine (AttractRepelStep ());
+			StartCoroutine (AimStep ());
 
 			yield break;
 		}
@@ -286,6 +284,20 @@ public class TutorialManager : MonoBehaviour
 				return pass;
 			});
 		
+		StartCoroutine (AimStep ());
+	}
+
+	IEnumerator AimStep ()
+	{
+		StartCoroutine (ShowInfos ());
+
+		tutorialState |= TutorialState.Aim;
+
+		zoomCamera.Zoom (FeedbackType.Startup);
+		Waves ();
+
+		yield return new WaitForSeconds (5);
+
 		StartCoroutine (AttractRepelStep ());
 	}
 
@@ -352,6 +364,18 @@ public class TutorialManager : MonoBehaviour
 		yield return 0;
 	}
 
+	IEnumerator ReincarnatedCubeStep ()
+	{
+		StartCoroutine (ShowInfos ());
+
+		tutorialState |= TutorialState.ReincarnatedCube;
+
+		zoomCamera.Zoom (FeedbackType.Startup);
+		Waves ();
+
+		yield return 0;
+	}
+
 	void Waves ()
 	{
 		foreach (PlayersFXAnimations f in playersFX)
@@ -379,10 +403,15 @@ public class TutorialManager : MonoBehaviour
 			if(!oneDeadCube)
 			{
 				oneDeadCube = true;
+				StartCoroutine (ReincarnatedCubeStep ());
 			}
 		}
 
-		StartCoroutine (ShowInfos ());
+	}
+
+	void OnDestroy ()
+	{
+		arena.Setup ();
 	}
 
 	[System.Serializable]
