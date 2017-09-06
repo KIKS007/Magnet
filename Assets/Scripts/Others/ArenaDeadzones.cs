@@ -33,6 +33,9 @@ public class ArenaDeadzones : MonoBehaviour
 	public float xScale = 1.8f;
 	public float transitionDuration;
 
+	[Header ("Deadly Transition")]
+	public List<DeadlyTransition> deadlyTransition = new List<DeadlyTransition> ();
+
 	[Header ("Columns")]
 	public Transform[] frontColumns = new Transform[27];
 	public Transform[] backColumns = new Transform[27];
@@ -147,7 +150,7 @@ public class ArenaDeadzones : MonoBehaviour
 			for(int j = 0; j  < indexes.Length; j++)
 			{
 				if (indexes [j] == i)
-					SetDeadly (columns [j]);
+					StartCoroutine (SetDeadly (columns [j]));
 			}
 
 			yield return new WaitForSeconds (waitTime);
@@ -179,7 +182,7 @@ public class ArenaDeadzones : MonoBehaviour
 			}
 			while(column.GetChild (0).tag == "DeadZone");
 
-			SetDeadly (column);
+			StartCoroutine (SetDeadly (column));
 
 			yield return new WaitForSeconds (currentInterval);
 
@@ -190,8 +193,41 @@ public class ArenaDeadzones : MonoBehaviour
 		}
 	}
 
-	void SetDeadly (Transform column)
+	IEnumerator SetDeadly (Transform column)
 	{
+		foreach(var d in deadlyTransition)
+		{
+			if(d.toRed)
+			{
+				for(int i = 0; i < column.childCount; i++)
+				{
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, "_EmissionColor", d.duration).SetUpdate (false);
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (deadlyColor, d.duration).SetUpdate (false);
+
+					/*	if(i == 0)
+						column.GetChild (i).DOScaleX (xScale, d.duration).SetUpdate (false);
+					else
+						column.GetChild (i).DOScaleX (1.3f, d.duration).SetUpdate (false);*/
+				}
+			}
+			else
+			{
+				for(int i = 0; i < column.childCount; i++)
+				{
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (initialColor, "_EmissionColor", d.duration).SetUpdate (false);
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (initialColor, d.duration).SetUpdate (false);
+					
+					/*if(i == 0)
+						column.GetChild (i).DOScale (initialScale, d.duration).SetUpdate (false);
+					else
+						column.GetChild (i).DOScale (initialScale2, d.duration).SetUpdate (false);*/
+				}
+			}
+
+			float wait = d.waitDuration > 0 ? d.waitDuration : d.duration;
+			yield return new WaitForSeconds (wait);
+		}
+
 		for(int i = 0; i < column.childCount; i++)
 		{
 			column.GetChild (i);
@@ -211,6 +247,14 @@ public class ArenaDeadzones : MonoBehaviour
 
 			deadlyColumns.Add (column.GetChild (i).gameObject);
 		}
+	}
+
+	[System.Serializable]
+	public class DeadlyTransition
+	{
+		public bool toRed = true;
+		public float duration;
+		public float waitDuration;
 	}
 }
 

@@ -61,10 +61,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		//text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
 		text.transform.GetChild (0).GetComponent<Outline> ().effectColor = GlobalVariables.Instance.playersColors [(int) playerName];
 
-		if(count != 1)
+		if(count == 0)
+			text.transform.GetChild (0).GetComponent<Text> ().text = "Dead!";
+		
+		else if(count != 1)
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " lives";
+		
 		else
 			text.transform.GetChild (0).GetComponent<Text> ().text = count + " life";
+		
 
 		text.transform.DOMoveY (deathTextPositions.y, deathTextDuration).SetEase (Ease.OutQuad).SetUpdate (false);
 		text.transform.DOScale (0, 1f).SetEase (Ease.OutQuad).SetDelay (deathTextDuration * 0.9f).OnComplete (()=> Destroy (text)).SetUpdate (false);

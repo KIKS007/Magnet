@@ -420,8 +420,14 @@ public class MenuChoosePlayer : MonoBehaviour
 		else
 			AILeave (controller - 1);
 
-		if(controller == 0 && aiHasJoined [1] && hasJoined [1])
-			AILeave (1);
+		if(controller == 0)
+		{
+			for(int i = 1; i < 4; i++)
+			{
+				if(controller == 0 && aiHasJoined [i] && hasJoined [i])
+					AILeave (i);
+			}
+		}
 	}
 
 	void Leave (int controller)

@@ -46,14 +46,22 @@ public class MenuEndMode : SerializedMonoBehaviour
 	private List<int> scores = new List<int> ();
 	private Dictionary<int, int> previousScales = new Dictionary<int, int> ();
 	private List<RectTransform> enabledPanels = new List<RectTransform> ();
+	private MenuComponent menuComponent;
 
 	// Use this for initialization
 	void Start () 
 	{
+		menuComponent = GetComponent<MenuComponent> ();
+
 		GlobalVariables.Instance.OnEndMode += ()=> {
 
 			if(GlobalVariables.Instance.CurrentGamesCount == GlobalVariables.Instance.GamesCount)
 				StartCoroutine (PlayersPanels ());
+
+			if(GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection)
+				menuComponent.selectable = restartButton;
+			else
+				menuComponent.selectable = nextButton;
 		};
 
 		GlobalVariables.Instance.OnMenu += ()=> 
