@@ -21,6 +21,9 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	public Vector2 deathTextPositions;
 	public float deathTextDuration;
 
+	[Header ("Spawn Feedback")]
+	public GameObject[] spawnFeedbacks = new GameObject[3];
+
 	[Header ("Explosion")]
 	public float explosionForce;
 	public float explosionRadius;
@@ -37,6 +40,11 @@ public class GlobalMethods : Singleton<GlobalMethods>
 	private const float defaultScaleDuration = 0.8f;
 
 	private const float defaultDurationBetweenSpawn = 0.1f;
+
+	private const float defaultfeedbackDuration = 0.5f;
+
+	private const float defaultfeedbackWaitDuration = 0.5f;
+
 
 	void Awake ()
 	{
@@ -328,6 +336,65 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		ScaleGameObect (clone, tagTemp, movableScale, scaleDuration);
 
 		GlobalVariables.Instance.AllMovables.Add (clone);
+	}
+
+	public void SpawnNewMovableRandomFeedbackVoid (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius, float feedbackDuration = defaultfeedbackDuration, float feedbackWaitDuration = defaultfeedbackWaitDuration)
+	{
+		StartCoroutine (SpawnNewMovableRandomFeedback (movable, delay, scaleDuration, checkSphere, feedbackDuration, feedbackWaitDuration));
+	}
+
+	IEnumerator SpawnNewMovableRandomFeedback (GameObject movable = null, float delay = 0, float scaleDuration = defaultScaleDuration, float checkSphere = checkSphereRadius, float feedbackDuration = defaultfeedbackDuration, float feedbackWaitDuration = defaultfeedbackWaitDuration)
+	{
+		if (movable == null)
+			movable = GlobalVariables.Instance.cubesPrefabs [Random.Range (0, GlobalVariables.Instance.cubesPrefabs.Length)];
+
+		Vector3 movableScale = movable.transform.lossyScale;
+		Vector3 newPos = new Vector3 ();
+		string tagTemp = movable.tag;
+		int loopCount = 0;
+
+		GameObject clone = Instantiate (movable, newPos, Quaternion.Euler (Vector3.zero), movable.transform.parent) as GameObject;
+		clone.gameObject.SetActive(false);
+
+		yield return new WaitForSeconds (delay);
+
+		do
+		{
+			newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
+			loopCount++;
+		}
+		while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer) && loopCount < maxWhileLoop);
+
+		newPos.y = cubeYPosition;
+		clone.tag = "Untagged";
+
+		GameObject feedbackPrefab = null;
+
+		if (movable.transform.localScale.x == 1.25f)
+			feedbackPrefab = spawnFeedbacks [0];
+		else if(movable.transform.localScale.x == 2f)
+			feedbackPrefab = spawnFeedbacks [1];
+		else if(movable.transform.localScale.x == 3f)
+			feedbackPrefab = spawnFeedbacks [2];
+		
+		GameObject feedback = Instantiate (feedbackPrefab, new Vector3 (newPos.x, 0.1f, newPos.z), feedbackPrefab.transform.rotation) as GameObject;
+		Vector3 scale = feedback.transform.localScale;
+		feedback.transform.localScale = Vector3.zero;
+
+		feedback.transform.DOScale (scale, feedbackDuration).SetEase (Ease.OutElastic).SetUpdate (false);
+
+		yield return new WaitForSeconds (feedbackDuration + feedbackWaitDuration * 0.5f);
+
+		feedback.transform.DOScale (0, feedbackDuration).SetEase (Ease.OutQuad).SetUpdate (false).OnComplete (()=> Destroy (feedback));
+
+		yield return new WaitForSeconds (feedbackWaitDuration * 0.5f);
+
+		EnableGameObject (clone, newPos);
+		ScaleGameObect (clone, tagTemp, movableScale, scaleDuration);
+
+		GlobalVariables.Instance.AllMovables.Add (clone);
+
+		yield return 0;
 	}
 
 	void EnableGameObject (GameObject target, Vector3 position)
