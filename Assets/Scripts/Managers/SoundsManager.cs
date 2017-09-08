@@ -257,6 +257,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void LoadMusics ()
 	{
+		personalMusicButton.onClick.Invoke ();
+
 		StartCoroutine (LoadMusicsCoroutine ());
 	}
 
