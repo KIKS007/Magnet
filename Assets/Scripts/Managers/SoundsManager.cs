@@ -206,7 +206,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			Directory.CreateDirectory (loadedMusicsPath);
 
 		if(PlayerPrefs.HasKey ("LoadedMusicsCount"))
-			LoadMusics ();
+			LoadMusics (true);
 		
 		SetGamePlaylist ();
 
@@ -228,7 +228,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		if (PlayerPrefs.HasKey ("LowPassEnabled") && SceneManager.GetActiveScene().name != "Scene Testing")
 			LoadPlayersPrefs ();
 		
-
 		UpdateAudioSettings ();
 
 		LowPass (pauseLowPass, 0.5f);
@@ -255,9 +254,10 @@ public class SoundsManager : Singleton<SoundsManager>
 		}
 	}
 
-	public void LoadMusics ()
+	public void LoadMusics (bool firstLoading = false)
 	{
-		personalMusicButton.onClick.Invoke ();
+		if(!firstLoading)
+			personalMusicButton.onClick.Invoke ();
 
 		StartCoroutine (LoadMusicsCoroutine ());
 	}
@@ -266,10 +266,15 @@ public class SoundsManager : Singleton<SoundsManager>
 	{
 		loadingMusics = true;
 
-		loadButtonText.text = "Loading...";
+		//loadButtonText.text = "Loading...";
 
 		nothingToLoad.SetActive (false);
 		canTakeTime.SetActive (true);
+
+		foreach (Transform t in loadedSongTitleContentParent.transform)
+			Destroy (t.gameObject);
+
+		yield return new WaitForEndOfFrame ();
 
 		MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Clear ();
 
@@ -296,7 +301,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		{
 			Debug.LogWarning ("No (valid) Musics in folder!");
 			SetGamePlaylist ();
-			loadButtonText.text = "Load";
+			//loadButtonText.text = "Load";
 			canTakeTime.SetActive (false);
 			nothingToLoad.SetActive (true);
 			yield break;
@@ -316,7 +321,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		loadingMusics = false;
 
-		loadButtonText.text = "Load";
+		//loadButtonText.text = "Load";
 		canTakeTime.SetActive (false);
 
 		SetGamePlaylist ();
@@ -404,7 +409,9 @@ public class SoundsManager : Singleton<SoundsManager>
 	void CreateMusicsSongTitle ()
 	{
 		foreach (Transform t in songTitleContentParent.transform)
-			Destroy (t.gameObject, 0.05f);
+			Destroy (t.gameObject);
+
+		musicsScrollRect.elements.Clear ();
 
 		for(int i = 0; i < MasterAudio.GrabPlaylist ("Game", false).MusicSettings.Count; i++)
 		{
@@ -435,7 +442,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			songTitle.transform.GetChild (3).GetComponent<Toggle> ().onValueChanged.AddListener ((arg0) => 
 				{
 					UpdateMusicsSelection (arg0, index)	;
-					buttonSong.interactable = arg0;
+					//buttonSong.interactable = arg0;
 				});
 		}
 
@@ -460,7 +467,9 @@ public class SoundsManager : Singleton<SoundsManager>
 	void CreateLoadedMusicsSongTitle ()
 	{
 		foreach (Transform t in loadedSongTitleContentParent.transform)
-			Destroy (t.gameObject, 0.05f);
+			Destroy (t.gameObject);
+
+		loadedMusicsScrollRect.elements.Clear ();
 
 		for(int i = 0; i < MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings.Count; i++)
 		{
@@ -491,7 +500,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			songTitle.transform.GetChild (3).GetComponent<Toggle> ().onValueChanged.AddListener ((arg0) => 
 				{
 					UpdateLoadedMusicsSelection (arg0, index)	;
-					buttonSong.interactable = arg0;
+					//buttonSong.interactable = arg0;
 				});
 		}
 
@@ -517,16 +526,28 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	public void PlayGameSong (string song)
 	{
-		PlayPlaylist ("Game");
+		foreach(var m in MasterAudio.GrabPlaylist ("Game").MusicSettings)
+			if(m.clip.name == song)
+			{
+				PlayPlaylist ("Game");
+				
+				playlistCont.TriggerPlaylistClip (song);
 
-		playlistCont.TriggerPlaylistClip (song);
+				break;
+			}
 	}
 
 	public void PlayLoadedSong (string song)
 	{
-		PlayPlaylist ("Loaded Musics");
+		foreach(var m in MasterAudio.GrabPlaylist ("Loaded Musics").MusicSettings)
+			if(m.clip.name == song)
+			{
+				PlayPlaylist ("Loaded Musics");
 
-		playlistCont.TriggerPlaylistClip (song);
+				playlistCont.TriggerPlaylistClip (song);
+
+				break;
+			}
 	}
 
 	public void UpdateMusicsSelection (bool isOn, int index)
@@ -702,21 +723,6 @@ public class SoundsManager : Singleton<SoundsManager>
 		if (SceneManager.GetActiveScene ().name == "Scene Testing")
 			return;
 
-		if (masterVolume == 0)
-			masterMuteToggle.isOn = true;
-		else
-			masterMuteToggle.isOn = false;
-
-		if (MasterAudio.MasterVolumeLevel == 0)
-			soundsMuteToggle.isOn = true;
-		else
-			soundsMuteToggle.isOn = false;
-
-		if (MasterAudio.PlaylistMasterVolume == 0)
-			musicMuteToggle.isOn = true;
-		else
-			musicMuteToggle.isOn = false;
-
 		masterBar.value = masterVolume;
 
 		if(masterVolume != 0)
@@ -724,6 +730,24 @@ public class SoundsManager : Singleton<SoundsManager>
 			playlistBar.value = MasterAudio.PlaylistMasterVolume / masterVolume;
 			
 			soundsBar.value = MasterAudio.MasterVolumeLevel / masterVolume;
+		}
+
+		if(!DOTween.IsTweening ("SoundsVolumes"))
+		{
+			if (masterVolume != 0)
+				masterMuteToggle.isOn = true;
+			else
+				masterMuteToggle.isOn = false;
+			
+			if (MasterAudio.MasterVolumeLevel != 0)
+				soundsMuteToggle.isOn = true;
+			else
+				soundsMuteToggle.isOn = false;
+			
+			if (MasterAudio.PlaylistMasterVolume != 0)
+				musicMuteToggle.isOn = true;
+			else
+				musicMuteToggle.isOn = false;
 		}
 	}
 
@@ -750,7 +774,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			soundsMuteToggle.interactable = false;
 
 			previousMasterVolume = masterVolume;
-			DOTween.To(()=> masterVolume, x=> masterVolume =x, 0, 0.2f);
+			DOTween.To(()=> masterVolume, x=> masterVolume =x, 0, 0.2f).SetId ("SoundsVolumes");
 		}
 		else
 		{
@@ -760,9 +784,9 @@ public class SoundsManager : Singleton<SoundsManager>
 			soundsMuteToggle.interactable = true;
 
 			if(previousVolumePlaylist != 0)
-				DOTween.To(()=> masterVolume, x=> masterVolume =x, previousMasterVolume, 0.2f);
+				DOTween.To(()=> masterVolume, x=> masterVolume =x, previousMasterVolume, 0.2f).SetId ("SoundsVolumes");
 			else
-				DOTween.To(()=> masterVolume, x=> masterVolume =x, 1, 0.2f);
+				DOTween.To(()=> masterVolume, x=> masterVolume =x, 1, 0.2f).SetId ("SoundsVolumes");
 		}
 	}
 
@@ -777,16 +801,16 @@ public class SoundsManager : Singleton<SoundsManager>
 			soundsMute = true;
 
 			previousVolumeSounds = MasterAudio.MasterVolumeLevel;
-			DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, 0, 0.2f);
+			DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, 0, 0.2f).SetId ("SoundsVolumes");
 		}
 		else
 		{
 			soundsMute = false;
 
 			if(previousVolumeSounds != 0)
-				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, previousVolumeSounds, 0.2f);
+				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, previousVolumeSounds, 0.2f).SetId ("SoundsVolumes");
 			else
-				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, MasterAudio.MasterVolumeLevel * masterVolume, 0.2f);
+				DOTween.To(()=> MasterAudio.MasterVolumeLevel, x=> MasterAudio.MasterVolumeLevel =x, MasterAudio.MasterVolumeLevel * masterVolume, 0.2f).SetId ("SoundsVolumes");
 		}
 	}
 
@@ -800,16 +824,16 @@ public class SoundsManager : Singleton<SoundsManager>
 			musicMute = true;
 
 			previousVolumePlaylist = MasterAudio.PlaylistMasterVolume;
-			DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, 0, 0.2f);
+			DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, 0, 0.2f).SetId ("SoundsVolumes");
 		}
 		else
 		{
 			musicMute = false;
 
 			if(previousVolumePlaylist != 0)
-				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, previousVolumePlaylist, 0.2f);
+				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, previousVolumePlaylist, 0.2f).SetId ("SoundsVolumes");
 			else
-				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, MasterAudio.PlaylistMasterVolume * masterVolume, 0.2f);
+				DOTween.To(()=> MasterAudio.PlaylistMasterVolume, x=> MasterAudio.PlaylistMasterVolume =x, MasterAudio.PlaylistMasterVolume * masterVolume, 0.2f).SetId ("SoundsVolumes");
 		}
 	}
 
@@ -978,13 +1002,13 @@ public class SoundsManager : Singleton<SoundsManager>
 			masterMute = true;
 			masterBar.value = 0;
 			masterVolume = 0;
-			masterMuteToggle.isOn = true;
+			masterMuteToggle.isOn = false;
 
 			musicMuteToggle.interactable = false;
 			soundsMuteToggle.interactable = false;
 		}
 		else
-			masterMuteToggle.isOn = false;
+			masterMuteToggle.isOn = true;
 
 		previousVolumeSounds = PlayerPrefs.GetFloat("PreviousVolumeSounds");
 
@@ -1000,12 +1024,12 @@ public class SoundsManager : Singleton<SoundsManager>
 			soundsMute = true;
 			soundsBar.value = 0;
 			MasterAudio.MasterVolumeLevel = 0;
-			soundsMuteToggle.isOn = true;
+			soundsMuteToggle.isOn = false;
 		}
 		else
 		{
 			soundsMute = false;
-			soundsMuteToggle.isOn = false;
+			soundsMuteToggle.isOn = true;
 		}
 
 		previousVolumePlaylist = PlayerPrefs.GetFloat("PreviousVolumePlaylist");
@@ -1022,14 +1046,13 @@ public class SoundsManager : Singleton<SoundsManager>
 			musicMute = true;
 			playlistBar.value = 0;
 			MasterAudio.PlaylistMasterVolume = 0;
-			musicMuteToggle.isOn = true;
+			musicMuteToggle.isOn = false;
 		}
 		else
 		{
 			musicMute = false;
-			musicMuteToggle.isOn = false;
+			musicMuteToggle.isOn = true;
 		}
-			
 
 		LoadPersonalMusicsPrefs ();
 
