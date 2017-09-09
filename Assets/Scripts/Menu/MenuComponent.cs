@@ -155,7 +155,7 @@ public class MenuComponent : MonoBehaviour
 
 		//CONTENT
 		if(mainContent != null)
-			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenButton.x, mainContent.anchoredPosition.y);
+			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.offScreenContent.x, MenuManager.Instance.offScreenContent.y);
 //			mainContent.anchoredPosition = new Vector2 (MenuManager.Instance.menuOffScreenX, mainContent.anchoredPosition.y);
 
 		//SECONDARY CONTENT

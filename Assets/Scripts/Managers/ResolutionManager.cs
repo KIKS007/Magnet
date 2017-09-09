@@ -66,6 +66,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 			fullscreenToggle.isOn = fullScreen;
 		}
 
+		Debug.Log (PlayerPrefs.HasKey ("Vsync") + " : " + PlayerPrefs.GetInt ("Vsync"));
+
 		if (PlayerPrefs.HasKey ("Vsync"))
 		{
 			QualitySettings.vSyncCount = PlayerPrefs.GetInt ("Vsync");
@@ -240,6 +242,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
 		QualitySettings.vSyncCount = 1;
 		vsyncToggle.isOn = true;
+
+		PlayerPrefs.SetInt ("Vsync", QualitySettings.vSyncCount);
 
 		FindResolution ();
 
