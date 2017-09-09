@@ -50,6 +50,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[Header ("Environement")]
 	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 	public Material uiMaterial;
+	public Material uiMaterialScrollRect;
 	public Renderer skyboxLoadingRenderer;
 	public Text environementChromaText;
 	public string[] environementChromaNames = new string[4];

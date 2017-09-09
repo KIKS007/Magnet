@@ -54,11 +54,20 @@ public class MenuShaderElement : MonoBehaviour
 	[ShowIf("PlayerColor")]
 	public PlayerName playerColor = PlayerName.Player1;
 
+
 	[ShowIf("useUIShader")]
 	public Texture neonTexture;
 
+	[Header ("UI Shader")]
+	public bool useShaderOnChildren;
+	[ShowIf("useShaderOnChildren")]
+	public List<Image> imagesComponent = new List<Image> ();
+
+
 	protected Material material;
-	protected Image image;
+	protected List<Material> materials = new List<Material> ();
+
+	protected Image imageComponent;
 
 	protected string[] chromasToggles = new string[] {"_BlueChroma", "_GreenChroma", "_OrangeChroma" };
 	protected string highlightToggle = "_Highlighting";
@@ -74,23 +83,51 @@ public class MenuShaderElement : MonoBehaviour
 	// Use this for initialization
 	protected virtual void Awake ()
 	{
-		image = GetComponent<Image> ();
-		material = image.material;
+		if (!useShaderOnChildren && GetComponent<Image> ().material == null )
+			NewMaterial ();
+		else
+		{
+			foreach(var i in imagesComponent)
+				if(i.material == null || !i.material.HasProperty ("_PURPLECHROMAIdle"))
+				{
+					NewMaterial ();
+					break;
+				}
+		}
+
+		if(!useShaderOnChildren)
+		{
+			imageComponent = GetComponent<Image> ();
+			material = imageComponent.material;
+		}
+		else
+		{
+			materials.Clear ();
+
+			foreach(var i in imagesComponent)
+				materials.Add (i.material);
+		}
 
 		if (useUIShader && useEnvironementChroma && GlobalVariables.Instance)
 			GlobalVariables.Instance.OnEnvironementChromaChange += ShaderColorChange;
 
 		if(useUIShader)
 			ShaderColorChange ();
-		
 	}
 
 	public virtual void ShaderColorChange ()
 	{
-		if (material == null)
+		if(!useShaderOnChildren)
 		{
-			image = GetComponent<Image> ();
-			material = image.material;
+			imageComponent = GetComponent<Image> ();
+			material = imageComponent.material;
+		}
+		else
+		{
+			materials.Clear ();
+
+			foreach(var i in imagesComponent)
+				materials.Add (i.material);
 		}
 
 		if(globalVariables == null)
@@ -100,41 +137,123 @@ public class MenuShaderElement : MonoBehaviour
 			return;
 
 		if(!useEnvironementChroma && usePlayerColor)
-			material.SetColor ("_PURPLECHROMAIdle", globalVariables.playersColors [(int)playerColor]);
+		{
+			if(!useShaderOnChildren)
+				material.SetColor ("_PURPLECHROMAIdle", globalVariables.playersColors [(int)playerColor]);
+			else
+				foreach(var m in materials)
+					m.SetColor ("_PURPLECHROMAIdle", globalVariables.playersColors [(int)playerColor]);
+		}
 
 		if (!useEnvironementChroma)
 			return;
 
 		foreach(string s in chromasToggles)
-			material.SetInt (s, 0);
+		{
+			if(!useShaderOnChildren)
+				material.SetInt (s, 0);
+			else
+				foreach(var m in materials)
+					m.SetInt (s, 0);
+		}
 
 		if(globalVariables.environementChroma != EnvironementChroma.Purple)
-			material.SetInt (chromasToggles [(int)globalVariables.environementChroma - 1], 1);
+		{
+			if(!useShaderOnChildren)
+				material.SetInt (chromasToggles [(int)globalVariables.environementChroma - 1], 1);
+			else
+				foreach(var m in materials)
+					m.SetInt (chromasToggles [(int)globalVariables.environementChroma - 1], 1);
+		}
 	}
 
 	public void NewMaterial (bool forceReset = false)
 	{
+		if (!useShaderOnChildren && GetComponent<Image> ().material == null)
+		{
+			if(GetComponent<MenuScrollRect> () == null)
+				imageComponent.material = new Material (globalVariables.uiMaterial);
+			else
+				imageComponent.material = new Material (globalVariables.uiMaterialScrollRect);
+		}
+		else
+		{
+			foreach(var i in imagesComponent)
+				if(i.material == null || !i.material.HasProperty ("_PURPLECHROMAIdle"))
+				{
+					if(i.GetComponent<MenuScrollRect> () == null)
+						i.material = new Material (globalVariables.uiMaterial);
+					else
+						i.material = new Material (globalVariables.uiMaterialScrollRect);
+				}
+		}
+
 		if(globalVariables == null)
 			globalVariables = Application.isPlaying ? GlobalVariables.Instance : FindObjectOfType<GlobalVariables> ();
 
 		if (!useUIShader)
 			return;
 
-		image = GetComponent<Image> ();
-		Color mainColor = image.material.GetColor ("_PURPLECHROMAIdle");
+		if(!useShaderOnChildren)
+		{
+			imageComponent = GetComponent<Image> ();
+			material = imageComponent.material;
 
-		image.material = new Material (globalVariables.uiMaterial);
+			Color mainColor = new Color ();
 
-		image.material.SetTexture ("_T_Button", image.mainTexture);
+			if(imageComponent.material && imageComponent.material.HasProperty ("_PURPLECHROMAIdle"))
+				mainColor = imageComponent.material.GetColor ("_PURPLECHROMAIdle");
 
-		if(neonTexture != null)
-			image.material.SetTexture ("_T_Neon", neonTexture);
+			if(GetComponent<MenuScrollRect> () == null)
+				imageComponent.material = new Material (globalVariables.uiMaterial);
+			else
+				imageComponent.material = new Material (globalVariables.uiMaterialScrollRect);
+
+			imageComponent.material.SetTexture ("_T_Button", imageComponent.mainTexture);
+
+			if(neonTexture != null)
+				imageComponent.material.SetTexture ("_T_Neon", neonTexture);
+			else
+				imageComponent.material.SetTexture ("_T_Neon", imageComponent.mainTexture);
+
+			if(!forceReset && mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") || mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
+				imageComponent.material.SetColor ("_PURPLECHROMAIdle", mainColor);
+
+			material = imageComponent.material;
+		}
 		else
-			image.material.SetTexture ("_T_Neon", image.mainTexture);
+		{
+			materials.Clear ();
 
-		if(!forceReset && mainColor != image.material.GetColor ("_PURPLECHROMAIdle") || mainColor != image.material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
-			image.material.SetColor ("_PURPLECHROMAIdle", mainColor);
-		
-		material = image.material;
+			foreach(var i in imagesComponent)
+				materials.Add (i.material);
+
+			for(int i = 0; i < imagesComponent.Count; i++)
+			{
+				Color mainColor = new Color ();
+
+				if(materials [i] && materials [i].HasProperty ("_PURPLECHROMAIdle"))
+					mainColor = materials [i].GetColor ("_PURPLECHROMAIdle");
+
+				if(imagesComponent [i].GetComponent<MenuScrollRect> () == null)
+					imagesComponent [i].material = new Material (globalVariables.uiMaterial);
+				else
+					imagesComponent [i].material = new Material (globalVariables.uiMaterialScrollRect);
+
+				materials [i] = new Material (globalVariables.uiMaterial);
+
+				materials [i].SetTexture ("_T_Button", imagesComponent [i].mainTexture);
+
+				if(neonTexture != null)
+					materials [i].SetTexture ("_T_Neon", neonTexture);
+				else
+					materials [i].SetTexture ("_T_Neon", imagesComponent [i].mainTexture);
+
+				if(!forceReset && mainColor != materials [i].GetColor ("_PURPLECHROMAIdle") || mainColor != materials [i].GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
+					materials [i].SetColor ("_PURPLECHROMAIdle", mainColor);
+
+				materials [i] = imagesComponent [i].material;
+			}
+		}
 	}
 }

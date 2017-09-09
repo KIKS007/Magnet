@@ -431,6 +431,8 @@ public class SoundsManager : Singleton<SoundsManager>
 			musicsScrollRect.elements.Add (i, songTitleRect);
 			GlobalMethods.Instance.AddEventTriggerEntry (songTitle, EventTriggerType.Select, () => musicsScrollRect.CenterButton (songTitleRect));
 
+			GlobalMethods.Instance.AddEventTriggerEntry (songTitle.transform.GetChild (3).gameObject, EventTriggerType.Select, () => musicsScrollRect.CenterButton (songTitleRect));
+
 			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Game", false).MusicSettings [i].clip.name;
 			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";
 			songTitle.transform.GetChild (2).GetComponent<Text> ().text = 
@@ -488,6 +490,8 @@ public class SoundsManager : Singleton<SoundsManager>
 			RectTransform songTitleRect = songTitle.GetComponent<RectTransform> ();
 			loadedMusicsScrollRect.elements.Add (i, songTitleRect);
 			GlobalMethods.Instance.AddEventTriggerEntry (songTitle, EventTriggerType.Select, () => loadedMusicsScrollRect.CenterButton (songTitleRect));
+
+			GlobalMethods.Instance.AddEventTriggerEntry (songTitle.transform.GetChild (3).gameObject, EventTriggerType.Select, () => musicsScrollRect.CenterButton (songTitleRect));
 
 			songTitle.transform.GetChild (0).GetComponent<Text> ().text = MasterAudio.GrabPlaylist ("Loaded Musics", false).MusicSettings [i].clip.name;
 			songTitle.transform.GetChild (1).GetComponent<Text> ().text = (i + 1).ToString () + ".";

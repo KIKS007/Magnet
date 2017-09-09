@@ -16,17 +16,6 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	public bool textColorChange = true;
 
 	[Header ("Debug")]
-	public bool overrideNavigation = false;
-	[ShowIf ("overrideNavigation")]
-	public List<Selectable> selectOnUp = new List<Selectable> ();
-	[ShowIf ("overrideNavigation")]
-	public List<Selectable> selectOnDown = new List<Selectable> ();
-	[ShowIf ("overrideNavigation")]
-	public List<Selectable> selectOnLeft = new List<Selectable> ();
-	[ShowIf ("overrideNavigation")]
-	public List<Selectable> selectOnRight = new List<Selectable> ();
-
-	[Header ("Debug")]
 	public bool selected;
 
 	private Text text;
@@ -38,7 +27,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	private float scaleOnSelected = 1.1f;
 	private float scaleOnDuration = 0.25f;
 	[HideInInspector]
-	public Button buttonComponent;
+	public Selectable selectableComponent;
 
 	protected override void Awake ()
 	{
@@ -46,7 +35,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		eventSys = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
 		buttonRect = GetComponent<RectTransform> ();
-		buttonComponent = GetComponent<Button> ();
+		selectableComponent = GetComponent<Selectable> ();
 
 		EventSystemScript.OnNewSelectedGameObject += (arg) => 
 		{
@@ -59,13 +48,6 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		if (colorChange)
 			ColorChangeSetup ();
-
-		if(overrideNavigation)
-		{
-			var nav = buttonComponent.navigation;
-			nav.mode = Navigation.Mode.None;
-			buttonComponent.navigation = nav;
-		}
 	}
 
 	void ColorChangeSetup ()
@@ -81,7 +63,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 			text.color = GlobalVariables.Instance.secondaryButtonIdleColorText;
 		}
 
-		if(buttonComponent.interactable == false)
+		if(selectableComponent && selectableComponent.interactable == false)
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonHighlightedColorText : GlobalVariables.Instance.secondaryButtonIdleColorText;
 	}
 
@@ -90,23 +72,30 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-
 		if (colorChange)
 			ColorChangeUpdate ();
 
 		if(scaleChange)
 		{
-			if (buttonComponent && buttonComponent.interactable == false)
+			if (selectableComponent && selectableComponent.interactable == false)
 				return;
 			
 			if(eventSys.currentSelectedGameObject != gameObject && buttonRect.localScale != Vector3.one && !DOTween.IsTweening ("ResetScale" + GetInstanceID ()))
-				buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
+			{
+				if(!useShaderOnChildren)
+					buttonRect.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
+				else
+				{
+					foreach(var i in imagesComponent)
+						i.rectTransform.DOScale(1, scaleOnDuration).SetId ("ResetScale" + GetInstanceID ());
+				}
+			}
 		}
 	}
 
 	void ColorChangeUpdate ()
 	{
-		if(buttonComponent.interactable == true)
+		if(selectableComponent && selectableComponent.interactable == true)
 		{
 			if(!pointerDown)
 			{
@@ -146,11 +135,22 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	{
 		if (!useUIShader)
 			return;
-		
-		if(selected)
-			material.SetInt (highlightToggle, 1);
+
+		if(!useShaderOnChildren)
+		{
+			if(selected)
+				material.SetInt (highlightToggle, 1);
+			else
+				material.SetInt (highlightToggle, 0);
+		}
 		else
-			material.SetInt (highlightToggle, 0);
+		{
+			foreach(var m in materials)
+				if(selected)
+					m.SetInt (highlightToggle, 1);
+				else
+					m.SetInt (highlightToggle, 0);
+		}
 
 		TextColorChange ();
 	}
@@ -162,22 +162,43 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		if(!duration)
 		{
-			if(material.GetInt (clickToggle) == 0)
-				material.SetInt (clickToggle, 1);
+			if(!useShaderOnChildren)
+			{
+				if(material.GetInt (clickToggle) == 0)
+					material.SetInt (clickToggle, 1);
+				else
+					material.SetInt (clickToggle, 0);
+			}
 			else
-				material.SetInt (clickToggle, 0);
+			{
+				foreach(var m in materials)
+					if(m.GetInt (clickToggle) == 0)
+						m.SetInt (clickToggle, 1);
+					else
+						m.SetInt (clickToggle, 0);
+			}
 			
 			TextColorChange ();
 		}
 		else
 		{
-			material.SetInt (clickToggle, 1);
-
+			if(!useShaderOnChildren)
+				material.SetInt (clickToggle, 1);
+			else
+				foreach(var m in materials)
+					m.SetInt (clickToggle, 1);
+			
 			TextColorChange ();
 
 			DOVirtual.DelayedCall (clickDuration, ()=> 
 				{
-					material.SetInt (clickToggle, 0);
+					if(!useShaderOnChildren)
+						material.SetInt (clickToggle, 0);
+
+					else
+						foreach(var m in materials)
+							m.SetInt (clickToggle, 0);
+
 					TextColorChange ();
 				});
 		}
@@ -187,10 +208,10 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	{
 		string color = chromas [(int)globalVariables.environementChroma];
 
-		if(material.GetInt (clickToggle) == 1)
-			color += this.click;
+		if(!useShaderOnChildren && material && material.GetInt (clickToggle) == 1 || useShaderOnChildren && materials [0] && materials [0].GetInt (clickToggle) == 1)
+			color += click;
 
-		else if(material.GetInt (highlightToggle) == 1)
+		else if(!useShaderOnChildren && material.GetInt (highlightToggle) == 1 || useShaderOnChildren && materials [0] && materials [0].GetInt (highlightToggle) == 1)
 			color += highlight;
 
 		else if (text && textColorChange)
@@ -200,7 +221,12 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		}
 
 		if (text && textColorChange)
-			text.color = material.GetColor (color);
+		{
+			if(!useShaderOnChildren)
+				text.color = material.GetColor (color);
+			else
+				text.color = materials [0].GetColor (color);
+		}
 	}
 
 	public void OnSelect () 
@@ -208,7 +234,15 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		selected = true;
 			
 		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
-			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+		{
+			if(!useShaderOnChildren)
+				buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+			else
+			{
+				foreach(var i in imagesComponent)
+					i.rectTransform.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+			}
+		}
 
 		ShaderHighlight ();
 	}
@@ -219,10 +253,16 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		if(scaleChange && !DOTween.IsTweening ("Deselect" + GetInstanceID ()))
 		{
-			if (buttonComponent && buttonComponent.interactable == false)
+			if (selectableComponent && selectableComponent.interactable == false)
 				return;
-			
-			buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
+
+			if(!useShaderOnChildren)
+				buttonRect.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
+			else
+			{
+				foreach(var i in imagesComponent)
+					i.rectTransform.DOScale(1, scaleOnDuration).SetId ("Deselect" + GetInstanceID ());
+			}
 		}
 
 		ShaderHighlight ();
@@ -234,7 +274,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-		if (buttonComponent && buttonComponent.interactable == false)
+		if (selectableComponent && selectableComponent.interactable == false)
 			return;
 
 			if(vibration)
@@ -262,7 +302,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-		if (buttonComponent && buttonComponent.interactable == false)
+		if (selectableComponent && selectableComponent.interactable == false)
 			return;
 
 
@@ -273,10 +313,16 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		if(scaleChange && !DOTween.IsTweening ("Select" + GetInstanceID ()))
 		{
-			if (buttonComponent && buttonComponent.interactable == false)
+			if (selectableComponent && selectableComponent.interactable == false)
 				return;
 			
-			buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+			if(!useShaderOnChildren)
+				buttonRect.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+			else
+			{
+				foreach(var i in imagesComponent)
+					i.rectTransform.DOScale(scaleOnSelected, scaleOnDuration).SetId ("Select" + GetInstanceID ());
+			}
 		}
 		
 		SoundsManager.Instance.MenuNavigation ();
@@ -310,7 +356,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 			return;
 
 		
-		if (buttonComponent && buttonComponent.interactable == false)
+		if (selectableComponent && selectableComponent.interactable == false)
 			return;
 		
 		if(vibration)
@@ -331,7 +377,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-		if (buttonComponent && buttonComponent.interactable == false)
+		if (selectableComponent && selectableComponent.interactable == false)
 			return;
 		
 		pointerDown = true;
@@ -346,88 +392,11 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-		if (buttonComponent && buttonComponent.interactable == false)
+		if (selectableComponent && selectableComponent.interactable == false)
 			return;
 		
 		pointerDown = false;
 		
 		ShaderClick ();
-	}
-
-
-	void SelectOnUp ()
-	{
-		if (!overrideNavigation)
-			return;
-
-		if (selectOnUp.Count == 0)
-			return;
-
-		foreach(var g in selectOnUp)
-		{
-			if (!g.interactable || !g.gameObject.activeSelf)
-				continue;
-
-			g.Select ();
-
-			return;
-		}
-	}
-
-	void SelectOnDown ()
-	{
-		if (!overrideNavigation)
-			return;
-
-		if (selectOnDown.Count == 0)
-			return;
-
-		foreach(var g in selectOnDown)
-		{
-			if (!g.interactable || !g.gameObject.activeSelf)
-				continue;
-
-			g.Select ();
-
-			return;
-		}
-	}
-
-	void SelectOnLeft ()
-	{
-		if (!overrideNavigation)
-			return;
-
-		if (selectOnLeft.Count == 0)
-			return;
-
-		foreach(var g in selectOnLeft)
-		{
-			if (!g.interactable || !g.gameObject.activeSelf)
-				continue;
-
-			g.Select ();
-
-			return;
-		}
-	}
-
-	void SelectOnRight ()
-	{
-		if (!overrideNavigation)
-			return;
-
-		if (selectOnRight.Count == 0)
-			return;
-
-		foreach(var g in selectOnRight)
-		{
-			if (!g.interactable || !g.gameObject.activeSelf)
-				continue;
-
-			g.Select ();
-
-			return;
-		}
 	}
 }
