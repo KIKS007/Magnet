@@ -132,7 +132,7 @@ public class MenuShaderElement : MonoBehaviour
 		else
 			image.material.SetTexture ("_T_Neon", image.mainTexture);
 
-		if(!forceReset && mainColor != image.material.GetColor ("_PURPLECHROMAIdle"))
+		if(!forceReset && mainColor != image.material.GetColor ("_PURPLECHROMAIdle") || mainColor != image.material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
 			image.material.SetColor ("_PURPLECHROMAIdle", mainColor);
 		
 		material = image.material;
