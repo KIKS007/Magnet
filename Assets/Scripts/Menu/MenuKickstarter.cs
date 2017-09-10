@@ -4,6 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
 
 public class MenuKickstarter : MonoBehaviour 
 {
@@ -40,6 +41,17 @@ public class MenuKickstarter : MonoBehaviour
 			allBackers.Add (b.GetComponent<RectTransform> ());
 	}
 
+	[Button]
+	void Sort ()
+	{
+		var backersText = backersParent.GetComponentsInChildren<Text> ().ToList ();
+
+		backersText = backersText.OrderBy (x => x.text).ToList ();
+
+		for (int i = 0; i < backersText.Count; i++)
+			backersText [i].transform.SetSiblingIndex (i);
+	}
+
 	void Update ()
 	{
 		if(rec1 && rec2)
@@ -68,8 +80,13 @@ public class MenuKickstarter : MonoBehaviour
 
 		yield return new WaitUntil (() => !MenuManager.Instance.isTweening);
 
-		foreach(var b in allBackers)
+		while(backersSpawned.Count != allBackers.Count)
 		{
+			RectTransform b = allBackers [Random.Range (0, allBackers.Count)];
+
+			while(backersSpawned.Contains (b))
+				b = allBackers [Random.Range (0, allBackers.Count)];
+
 			bool validPosition = true;
 			Rect rect1 = new Rect ();
 			Rect rect2 = new Rect ();
@@ -107,10 +124,12 @@ public class MenuKickstarter : MonoBehaviour
 			}
 			while (!validPosition);
 
-			if (validPosition) {
+			if (validPosition) 
+			{
 				backersSpawned.Add (b);
 				Spawn (b);
-			} else
+			} 
+			else
 				b.gameObject.SetActive (false);
 
 			yield return new WaitForSecondsRealtime (spawnDelay);
