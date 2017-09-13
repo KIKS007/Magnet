@@ -23,6 +23,7 @@ public class MovableBomb : MovableScript
 	{
 		hold = false;
 		trackingPlayer = false;
+		playerHolding = null;
 
 		rigidbodyMovable = GetComponent<Rigidbody>();
 		movableRenderer = GetComponent<Renderer> ();
@@ -223,6 +224,9 @@ public class MovableBomb : MovableScript
 	{
 		if (tag == "DeadCube")
 			return;
+
+		if(playerHolding)
+			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
 
 		playerHolding = null;
 		trackingPlayer = false;

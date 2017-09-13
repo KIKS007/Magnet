@@ -202,14 +202,15 @@ public class BombManager : LastManManager
 		if (gameEndLoopRunning)
 			yield break;
 
-		if(bombScript.playerHolding == null && bombScript.hold == false)
+		if(bombScript.playerHolding == null)
 		{
-			if(bombScript.attracedBy.Count == 0)
-				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
-
-			else if(bombScript.attracedBy.Count > 0)
+			if(bombScript.attracedBy.Count > 0)
 				bombScript.attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
+			else
+				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 		}
+		else
+			Debug.LogError("Bite");
 	}
 
 	protected override IEnumerator GameEnd ()

@@ -984,6 +984,9 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		HidePassFightButton ();
 
+		foreach (var p in GlobalVariables.Instance.AlivePlayersList)
+			p.GetComponent<PlayersGameplay> ().livesCount = 1;
+
 		while (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 		{
 			GameObject player = GlobalVariables.Instance.AlivePlayersList [UnityEngine.Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)];
