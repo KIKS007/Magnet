@@ -204,6 +204,21 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		}
 	}
 
+	public void ShaderClickStop ()
+	{
+		if (!useUIShader)
+			return;
+
+		if(!useShaderOnChildren)
+			material.SetInt (clickToggle, 0);
+		else
+			foreach(var m in materials)
+				m.SetInt (clickToggle, 0);
+
+			TextColorChange ();
+
+	}
+
 	void TextColorChange ()
 	{
 		string color = chromas [(int)globalVariables.environementChroma];

@@ -57,168 +57,140 @@ public class FeedbackInputs : MonoBehaviour
 	void OnEnable ()
 	{
 		//mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+		ResetFeedback ();
+		keyPressed = false;
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(whichbutton == WhichButton.KeyboardOrMouseButton)
+		switch (whichbutton)
 		{
-			if(Input.GetKey(keycode) || Input.GetKeyDown(keycode))
-			{
-				keyPressed = true;
+		case WhichButton.GamepadButton:
+			GamepadButton ();
+			break;
+		case WhichButton.KeyboardOrMouseButton:
+			KeyboardOrMouse ();
+			break;
+		case WhichButton.LeftJoystick:
+			LeftJoystick ();
+			break;
+		case WhichButton.RightJoystick:
+			RightJoystick ();
+			break;
+		case WhichButton.Mouse:
+			Mouse ();
+			break;
+		}
+	}
 
-				//GetComponent<Image> ().sprite = modifiedSprite;
-
-				if(menuButton)
-					menuButton.ShaderClick ();
-
-				transform.DOScale (modifiedScale, 0.2f);
-
-				if(descriptionText != null)
-				{
-					descriptionText.DOScale (modifiedScaleText, 0.2f);
-					descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
-				}
-			}
-			
-			if(Input.GetKeyUp(keycode))
-			{
-				keyPressed = false;
-
-				GetComponent<Image> ().sprite = initialSprite;
-
-				transform.DOScale (originScale, 0.2f);
-
-				if(descriptionText != null)
-				{
-					descriptionText.DOScale (originScale, 0.2f);
-					descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
-
-				}
-			}
-
-			if(keycodeAlternate != KeyCode.None)
-			{
-				if(Input.GetKey(keycodeAlternate) || Input.GetKeyDown(keycodeAlternate))
-				{
-					keyPressed = true;
-
-					//GetComponent<Image> ().sprite = modifiedAlternateSprite;
-
-					if(menuButton)
-						menuButton.ShaderClick ();
-
-					transform.DOScale (modifiedScale, 0.2f);
-
-					if(descriptionText != null)
-					{
-						descriptionText.DOScale (modifiedScaleText, 0.2f);
-						descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
-					}
-				}
-				
-				if(Input.GetKeyUp(keycodeAlternate))
-				{
-					keyPressed = false;
-
-					GetComponent<Image> ().sprite = alternateSprite;
-
-					transform.DOScale (originScale, 0.2f);
-
-					if(descriptionText != null)
-					{
-						descriptionText.DOScale (originScale, 0.2f);
-						descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
-
-					}
-
-					if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
-						transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
-
-					if(transform.gameObject.GetComponent<Image> () != null)
-						transform.gameObject.GetComponent<Image> ().color = Color.white;
-				}				
-			}
+	void GamepadButton ()
+	{
+		if(gamepad1.GetButtonDown(whichAction) && !keyPressed)
+		{
+			Feedback ();
+			keyPressed = true;
 		}
 
-		if(whichbutton == WhichButton.GamepadButton)
+		if(gamepad1.GetButtonUp(whichAction) && keyPressed)
 		{
-			if(gamepad1.GetButtonDown(whichAction))
+			ResetFeedback ();
+			keyPressed = false;
+		}
+	}
+
+	void KeyboardOrMouse ()
+	{
+		if(Input.GetKeyDown(keycode) && !keyPressed)
+		{
+			Feedback ();
+			keyPressed = true;
+		}
+
+		if(Input.GetKeyUp(keycode) && keyPressed)
+		{
+			ResetFeedback ();
+			keyPressed = false;
+		}
+
+		if(keycodeAlternate != KeyCode.None)
+		{
+			if(Input.GetKeyDown(keycodeAlternate) && !keyPressed)
 			{
 				Feedback ();
 				keyPressed = true;
 			}
 
-			if(gamepad1.GetButtonUp(whichAction))
+			if(Input.GetKeyUp(keycodeAlternate) && keyPressed)
 			{
 				ResetFeedback ();
 				keyPressed = false;
-			}
+			}				
 		}
+	}
 
-		if(whichbutton == WhichButton.LeftJoystick)
+	void LeftJoystick ()
+	{
+		Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
+
+		if(joystickMovement.magnitude != 0 && !keyPressed)
 		{
-			Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
-
-			if(joystickMovement.magnitude != 0 && !keyPressed)
-			{
-				Feedback ();
-				keyPressed = true;
-			}
-
-			if(joystickMovement.magnitude == 0 && keyPressed)
-			{
-				ResetFeedback ();
-				keyPressed = false;
-			}
-
-
-			rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+			Feedback ();
+			keyPressed = true;
 		}
 
-		if(whichbutton == WhichButton.RightJoystick)
+		if(joystickMovement.magnitude == 0 && keyPressed)
 		{
-			Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
-
-			if(joystickMovement.magnitude != 0 && !keyPressed)
-			{
-				Feedback ();
-				keyPressed = true;
-			}
-
-			if(joystickMovement.magnitude == 0 && keyPressed)
-			{
-				ResetFeedback ();
-				keyPressed = false;
-			}
-
-
-			rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+			ResetFeedback ();
+			keyPressed = false;
 		}
 
-		if(whichbutton == WhichButton.Mouse)
+
+		rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+	}
+
+	void RightJoystick ()
+	{
+		Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
+
+		if(joystickMovement.magnitude != 0 && !keyPressed)
 		{
-			Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-
-			//mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
-			mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-			mouseMovement.Normalize ();
-
-			if(mouseMovement.magnitude != 0 && !keyPressed)
-			{
-				Feedback ();
-				keyPressed = true;
-			}
-
-			if(mouseMovement.magnitude == 0 && keyPressed)
-			{
-				ResetFeedback ();
-				keyPressed = false;
-			}
-
-			rect.anchoredPosition = initialPos + mouseMovement * movementMultiplicator;
+			Feedback ();
+			keyPressed = true;
 		}
+
+		if(joystickMovement.magnitude == 0 && keyPressed)
+		{
+			ResetFeedback ();
+			keyPressed = false;
+		}
+
+
+		rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+	}
+
+	void Mouse ()
+	{
+		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+
+		//mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
+		mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+		mouseMovement.Normalize ();
+
+		if(mouseMovement.magnitude != 0 && !keyPressed)
+		{
+			Feedback ();
+			keyPressed = true;
+		}
+
+		if(mouseMovement.magnitude == 0 && keyPressed)
+		{
+			ResetFeedback ();
+			keyPressed = false;
+		}
+
+		rect.anchoredPosition = initialPos + mouseMovement * movementMultiplicator;
 	}
 
 	void GetPlayersEvent (ControllerStatusChangedEventArgs arg)
@@ -249,17 +221,20 @@ public class FeedbackInputs : MonoBehaviour
 			
 		}
 
-		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+		/*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
 
 		if(transform.gameObject.GetComponent<Image> () != null)
-			transform.gameObject.GetComponent<Image> ().color = modifiedColor;
+			transform.gameObject.GetComponent<Image> ().color = modifiedColor;*/
 	}
 
 	void ResetFeedback ()
 	{
 		//GetComponent<Image> ().sprite = initialSprite;
 
+		if(menuButton)
+			menuButton.ShaderClickStop ();
+		
 		transform.DOScale (originScale, 0.2f);
 	
 		if(descriptionText != null)
@@ -269,10 +244,10 @@ public class FeedbackInputs : MonoBehaviour
 			
 		}
 
-		if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+		/*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
 
 		if(transform.gameObject.GetComponent<Image> () != null)
-			transform.gameObject.GetComponent<Image> ().color = Color.white;
+			transform.gameObject.GetComponent<Image> ().color = Color.white;*/
 	}
 }
