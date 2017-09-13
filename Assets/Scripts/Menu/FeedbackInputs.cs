@@ -38,12 +38,15 @@ public class FeedbackInputs : MonoBehaviour
 	//private Vector2 mouseInitialPos;
 
 	private Sprite initialSprite;
+	private MenuButtonAnimationsAndSounds menuButton;
 
 	// Use this for initialization
 	void Start () 
 	{
 		ReInput.ControllerConnectedEvent += GetPlayersEvent;
 		initialSprite = GetComponent<Image> ().sprite;
+
+		menuButton = GetComponent<MenuButtonAnimationsAndSounds> ();
 
 		GetPlayers ();
 
@@ -65,7 +68,10 @@ public class FeedbackInputs : MonoBehaviour
 			{
 				keyPressed = true;
 
-				GetComponent<Image> ().sprite = modifiedSprite;
+				//GetComponent<Image> ().sprite = modifiedSprite;
+
+				if(menuButton)
+					menuButton.ShaderClick ();
 
 				transform.DOScale (modifiedScale, 0.2f);
 
@@ -73,7 +79,6 @@ public class FeedbackInputs : MonoBehaviour
 				{
 					descriptionText.DOScale (modifiedScaleText, 0.2f);
 					descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
-
 				}
 			}
 			
@@ -99,7 +104,10 @@ public class FeedbackInputs : MonoBehaviour
 				{
 					keyPressed = true;
 
-					GetComponent<Image> ().sprite = modifiedAlternateSprite;
+					//GetComponent<Image> ().sprite = modifiedAlternateSprite;
+
+					if(menuButton)
+						menuButton.ShaderClick ();
 
 					transform.DOScale (modifiedScale, 0.2f);
 
@@ -227,7 +235,10 @@ public class FeedbackInputs : MonoBehaviour
 
 	void Feedback ()
 	{
-		GetComponent<Image> ().sprite = modifiedSprite;
+		//GetComponent<Image> ().sprite = modifiedSprite;
+
+		if(menuButton)
+			menuButton.ShaderClick ();
 
 		transform.DOScale (modifiedScale, 0.2f);
 
@@ -247,7 +258,7 @@ public class FeedbackInputs : MonoBehaviour
 
 	void ResetFeedback ()
 	{
-		GetComponent<Image> ().sprite = initialSprite;
+		//GetComponent<Image> ().sprite = initialSprite;
 
 		transform.DOScale (originScale, 0.2f);
 	

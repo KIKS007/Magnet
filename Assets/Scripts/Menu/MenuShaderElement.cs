@@ -64,6 +64,10 @@ public class MenuShaderElement : MonoBehaviour
 	[ShowIf("useShaderOnChildren")]
 	public List<Image> imagesComponent = new List<Image> ();
 
+	[Header ("Emission Power")]
+	public bool overrideEmissionPower = false;
+	[ShowIf("overrideEmissionPower")]
+	public float emissionPower = 1f;
 
 	protected Material material;
 	protected List<Material> materials = new List<Material> ();
@@ -217,6 +221,9 @@ public class MenuShaderElement : MonoBehaviour
 			else
 				imageComponent.material.SetTexture ("_T_Neon", imageComponent.mainTexture);
 
+			if (overrideEmissionPower)
+				imageComponent.material.SetFloat ("_EmissionPowerButton", emissionPower);
+
 			if(!forceReset && mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") || mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
 				imageComponent.material.SetColor ("_PURPLECHROMAIdle", mainColor);
 
@@ -244,6 +251,9 @@ public class MenuShaderElement : MonoBehaviour
 				imagesComponent [i].material.SetTexture ("_T_Button", imagesComponent [i].mainTexture);
 
 				imagesComponent [i].material.SetTexture ("_T_Neon", imagesComponent [i].mainTexture);
+
+				if (overrideEmissionPower)
+					imagesComponent [i].material.SetFloat ("_EmissionPowerButton", emissionPower);
 
 				if(!forceReset && mainColor != materials [i].GetColor ("_PURPLECHROMAIdle") || mainColor != imagesComponent [i].material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
 					imagesComponent [i].material.SetColor ("_PURPLECHROMAIdle", mainColor);
