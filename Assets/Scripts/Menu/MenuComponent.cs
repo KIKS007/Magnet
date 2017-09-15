@@ -55,9 +55,12 @@ public class MenuComponent : MonoBehaviour
 		underMenusButtons.Clear ();
 
 		//MENU BUTTON
-		if(menuComponentType == MenuComponentType.BasicMenu || menuComponentType == MenuComponentType.RootMenu && transform.GetChild (0).GetComponent<MenuButtonComponent> () != null)
+		if(menuComponentType == MenuComponentType.BasicMenu && transform.GetChild (0).GetComponent<MenuButtonComponent> () != null || menuComponentType == MenuComponentType.RootMenu && transform.GetChild (0).GetComponent<MenuButtonComponent> () != null)
 		{
 			menuButton = transform.GetChild (0).GetComponent<RectTransform> ();
+
+			menuButton.GetComponent<MenuButtonComponent> ().Setup ();
+
 			menuButton.GetComponent<MenuButtonComponent> ().menuComponentParent = this;
 			menuButton.GetComponent<Button> ().interactable = false;
 		}

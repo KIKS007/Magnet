@@ -44,6 +44,8 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 	{
 		button = GetComponent<Button> ();
 		eventSyst = GameObject.FindGameObjectWithTag ("EventSystem").GetComponent<EventSystem> ();
+
+		Setup ();
 	}
 
 	void OnEnable ()
@@ -51,7 +53,7 @@ public class MenuButtonComponent : MonoBehaviour, IPointerClickHandler, ISubmitH
 		Setup ();
 	}
 
-	void Setup ()
+	public void Setup ()
 	{
 		if (menuComponentParent == null)
 			menuComponentParent = transform.GetComponentInParent<MenuComponent> ();
