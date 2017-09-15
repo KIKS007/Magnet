@@ -16,6 +16,7 @@ public class MenuChoosePlayer : MonoBehaviour
 	public Vector2 playButtonYPos; 
 
 	[Header ("Players")]
+	public bool[] hasJoined = new bool[5];
 	public RectTransform[] playersPanel = new RectTransform[4];
 
 	[Header ("Controllers")]
@@ -39,7 +40,6 @@ public class MenuChoosePlayer : MonoBehaviour
 
 	private List<List<Button>> aiButtons = new List<List<Button>> ();
 	private float controllersOnPosition;
-	private bool[] hasJoined = new bool[5];
 	private float playerChangeMovement;
 	private bool noInput = false;
 	private bool canPlay = false;
