@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
 using Replay;
 using DG.Tweening;
+using GameAnalyticsSDK;
 
 public enum AILevel { Easy, Normal , Hard};
 
@@ -375,6 +376,9 @@ public class AIGameplay : PlayersGameplay
 
 		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
 		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
+
+		GameAnalytics.NewDesignEvent("Bot:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
 
 		PlayerStats (playerThatHit);
 
