@@ -291,58 +291,59 @@ public class MenuChoosePlayer : MonoBehaviour
 		playersCount += GlobalVariables.Instance.NumberOfBots;
 
 		if(GlobalVariables.Instance.CurrentModeLoaded != WhichMode.Tutorial)
-		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
-		{ 
-			canPlay = true;
-
-			DOTween.Kill ("PlayButton");
-
-			playButton.gameObject.SetActive (true);
-			playButton.GetComponent<Button> ().interactable = true; 
-
-			/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+		{
+			if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
+			{ 
+				canPlay = true;
+				
+				DOTween.Kill ("PlayButton");
+				
+				playButton.gameObject.SetActive (true);
+				playButton.GetComponent<Button> ().interactable = true; 
+				
+				/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
 			playButton.GetComponent<Button> ().Select (); */
-
-			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
-		} 
-
-		if(GlobalVariables.Instance.CurrentModeLoaded != WhichMode.Tutorial)
-		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
-		{ 
-			canPlay = false;
-
-			DOTween.Kill ("PlayButton");
-
-			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
-		} 
-
-		if(GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
-		if(playersCount == 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
-		{ 
-			canPlay = true;
-
-			DOTween.Kill ("PlayButton");
-
-			playButton.gameObject.SetActive (true);
-			playButton.GetComponent<Button> ().interactable = true; 
-
-			/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+				
+				playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+			} 
+			
+			if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
+			{ 
+				canPlay = false;
+				
+				DOTween.Kill ("PlayButton");
+				
+				playButton.GetComponent<Button> ().interactable = false; 
+				playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
+			} 
+		}
+		else
+		{
+			if(playersCount > 0 && playButton.anchoredPosition.y != playButtonYPos.y) 
+			{ 
+				canPlay = true;
+				
+				DOTween.Kill ("PlayButton");
+				
+				playButton.gameObject.SetActive (true);
+				playButton.GetComponent<Button> ().interactable = true; 
+				
+				/*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
 			playButton.GetComponent<Button> ().Select (); */
-
-			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
-		} 
-
-		if(GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
-		if(playersCount == 0 && playButton.anchoredPosition.y != playButtonYPos.x) 
-		{ 
-			canPlay = false;
-
-			DOTween.Kill ("PlayButton");
-
-			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
-		} 
+				
+				playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
+			} 
+			
+			if(playersCount == 0 && playButton.anchoredPosition.y != playButtonYPos.x) 
+			{ 
+				canPlay = false;
+				
+				DOTween.Kill ("PlayButton");
+				
+				playButton.GetComponent<Button> ().interactable = false; 
+				playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
+			} 
+		}
 
 		yield return 0;
 	} 

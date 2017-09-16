@@ -308,4 +308,16 @@ public class PlayersTutorial : PlayersGameplay
 		
 //		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
 	}
+
+	protected override void TurningGamepad ()
+	{
+		if((tutorialManager.tutorialState & TutorialState.Aim) == TutorialState.Aim)
+			base.TurningGamepad ();
+	}
+
+	protected override void TurningMouse ()
+	{
+		if((tutorialManager.tutorialState & TutorialState.Aim) == TutorialState.Aim)
+			base.TurningMouse ();
+	}
 }
