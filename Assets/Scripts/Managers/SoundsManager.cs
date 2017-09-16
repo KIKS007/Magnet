@@ -135,8 +135,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	private FileInfo[] musicsFiles;
 	private List<string> validExtensions = new List<string> { ".ogg", ".wav", ".mp3" };
-	private string loadedMusicsPath = "/Musics";
-	private string editorLoadedMusicsPath = "./Assets/SOUNDS/Loaded Musics";
+	private string loadedMusicsPath = "\\Musics";
+	private string editorLoadedMusicsPath = ".\\Assets\\SOUNDS\\Loaded Musics";
 	private List<string> loadingMusicsList = new List<string> ();
 
 	private SlowMotionCamera slowMo;
@@ -281,7 +281,7 @@ public class SoundsManager : Singleton<SoundsManager>
 		if (Application.isEditor)
 			loadedMusicsPath = editorLoadedMusicsPath;
 		else
-			loadedMusicsPath = Application.dataPath + loadedMusicsPath;
+			loadedMusicsPath = loadedMusicsPath;
 
 		if(!Directory.Exists (loadedMusicsPath))
 		{
