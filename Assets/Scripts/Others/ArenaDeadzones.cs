@@ -46,7 +46,6 @@ public class ArenaDeadzones : MonoBehaviour
 	public List<GameObject> deadlyColumns = new List<GameObject> ();
 
 	private List<Transform> allColumns = new List<Transform> ();
-	private Color initialColor;
 	private string initialTag;
 	private Vector3 initialScale;
 	private Vector3 initialScale2;
@@ -54,7 +53,6 @@ public class ArenaDeadzones : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		initialColor = frontColumns [0].GetChild (0).GetComponent<Renderer> ().material.color;
 		initialTag = frontColumns [0].GetChild (0).tag;
 		initialScale = frontColumns [0].GetChild (0).localScale;
 		initialScale2 = frontColumns [0].GetChild (1).localScale;
@@ -63,6 +61,8 @@ public class ArenaDeadzones : MonoBehaviour
 		allColumns.AddRange (backColumns);
 		allColumns.AddRange (rightColumns);
 		allColumns.AddRange (leftColumns);
+
+		GlobalVariables.Instance.OnEnvironementChromaChange += Reset;
 
 		GlobalVariables.Instance.OnStartMode += Setup;
 		GlobalVariables.Instance.OnRestartMode += Setup;
@@ -121,8 +121,10 @@ public class ArenaDeadzones : MonoBehaviour
 				column.GetChild (i).tag = initialTag;
 				column.GetChild (i).GetComponent<Collider> ().enabled = false;
 
-				column.GetChild (i).GetComponent<Renderer> ().material.SetColor ("_EmissionColor", initialColor);
-				column.GetChild (i).GetComponent<Renderer> ().material.color = initialColor;
+				Color color = GlobalVariables.Instance.arenaColors [(int)GlobalVariables.Instance.environementChroma];
+
+				column.GetChild (i).GetComponent<Renderer> ().material.SetColor ("_EmissionColor", color);
+				column.GetChild (i).GetComponent<Renderer> ().material.color = color;
 
 				column.GetChild (i).localScale = initialScale;
 
@@ -213,8 +215,10 @@ public class ArenaDeadzones : MonoBehaviour
 			{
 				for(int i = 0; i < column.childCount; i++)
 				{
-					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (initialColor, "_EmissionColor", d.duration).SetUpdate (false);
-					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (initialColor, d.duration).SetUpdate (false);
+					Color color = GlobalVariables.Instance.arenaColors [(int)GlobalVariables.Instance.environementChroma];
+
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (color, "_EmissionColor", d.duration).SetUpdate (false);
+					column.GetChild (i).GetComponent<Renderer> ().material.DOColor (color, d.duration).SetUpdate (false);
 					
 					/*if(i == 0)
 						column.GetChild (i).DOScale (initialScale, d.duration).SetUpdate (false);

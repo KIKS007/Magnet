@@ -97,6 +97,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			p.Setup ();
 	}
 
+	[Header ("Arena Colors")]
+	public Color[] arenaColors = new Color[4];
+
 	[Header ("Movables")]
 	public List<GameObject> AllMovables = new List<GameObject> ();
 
@@ -255,6 +258,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void NextEnvironementChroma ()
 	{
+		if (DOTween.IsTweening (skyboxLoadingRenderer.material))
+			return;
+		
 		int newChromaIndex = (int)environementChroma;
 		newChromaIndex++;
 
@@ -266,6 +272,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void PreviousEnvironementChroma ()
 	{
+		if (DOTween.IsTweening (skyboxLoadingRenderer.material))
+			return;
+		
 		int newChromaIndex = (int)environementChroma;
 		newChromaIndex--;
 
