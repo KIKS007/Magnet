@@ -116,6 +116,15 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 	}
 
+	public override void ShaderColorOnStart ()
+	{
+		if (highlightedOnStart)
+			OnSelect ();
+
+		if (clickedOnStart)
+			ShaderClick (true);
+	}
+
 	public override void ShaderColorChange ()
 	{
 		base.ShaderColorChange ();
@@ -136,6 +145,8 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!useUIShader)
 			return;
 
+		ShaderClick (false);
+
 		if(!useShaderOnChildren)
 		{
 			if(selected)
@@ -155,68 +166,55 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		TextColorChange ();
 	}
 
-	public void ShaderClick (bool duration = false)
-	{
-		if (!useUIShader)
-			return;
-
-		if(!duration)
-		{
-			if(!useShaderOnChildren)
-			{
-				if(material.GetInt (clickToggle) == 0)
-					material.SetInt (clickToggle, 1);
-				else
-					material.SetInt (clickToggle, 0);
-			}
-			else
-			{
-				foreach(var m in materials)
-					if(m.GetInt (clickToggle) == 0)
-						m.SetInt (clickToggle, 1);
-					else
-						m.SetInt (clickToggle, 0);
-			}
-			
-			TextColorChange ();
-		}
-		else
-		{
-			if(!useShaderOnChildren)
-				material.SetInt (clickToggle, 1);
-			else
-				foreach(var m in materials)
-					m.SetInt (clickToggle, 1);
-			
-			TextColorChange ();
-
-			DOVirtual.DelayedCall (clickDuration, ()=> 
-				{
-					if(!useShaderOnChildren)
-						material.SetInt (clickToggle, 0);
-
-					else
-						foreach(var m in materials)
-							m.SetInt (clickToggle, 0);
-
-					TextColorChange ();
-				});
-		}
-	}
-
-	public void ShaderClickStop ()
+	public void ShaderClick (bool clickEnable)
 	{
 		if (!useUIShader)
 			return;
 
 		if(!useShaderOnChildren)
-			material.SetInt (clickToggle, 0);
+		{
+			if(clickEnable)
+				material.SetInt (clickToggle, 1);
+			else
+				material.SetInt (clickToggle, 0);
+		}
+		else
+		{
+			foreach(var m in materials)
+				if(clickEnable)
+					m.SetInt (clickToggle, 1);
+				else
+					m.SetInt (clickToggle, 0);
+		}
+		
+		TextColorChange ();
+	}
+
+	public void ShaderClickDuration ()
+	{
+		if (!useUIShader)
+			return;
+
+		if(!useShaderOnChildren)
+			material.SetInt (clickToggle, 1);
 		else
 			foreach(var m in materials)
-				m.SetInt (clickToggle, 0);
-
-			TextColorChange ();
-
+				m.SetInt (clickToggle, 1);
+		
+		TextColorChange ();
+		
+		DOVirtual.DelayedCall (clickDuration, ()=> 
+			{
+				if(!useShaderOnChildren)
+					material.SetInt (clickToggle, 0);
+				
+				else
+					foreach(var m in materials)
+						m.SetInt (clickToggle, 0);
+				
+				TextColorChange ();
+			});
+		
 	}
 
 	void TextColorChange ()
@@ -384,7 +382,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (colorChange)
 			text.color = mainButton ? GlobalVariables.Instance.mainButtonClickedColorText : GlobalVariables.Instance.secondaryClickedColorText;
 		
-		ShaderClick (true);
+		ShaderClickDuration ();
 	}
 
 	public void OnPointerDown (PointerEventData eventData)
@@ -397,7 +395,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		
 		pointerDown = true;
 		
-		ShaderClick ();
+		ShaderClick (true);
 		
 		ColorChange ();
 	}
@@ -412,6 +410,6 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		
 		pointerDown = false;
 		
-		ShaderClick ();
+		ShaderClick (false);
 	}
 }

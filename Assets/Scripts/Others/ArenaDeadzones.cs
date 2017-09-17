@@ -192,7 +192,7 @@ public class ArenaDeadzones : MonoBehaviour
 		}
 	}
 
-	IEnumerator SetDeadly (Transform column)
+	public IEnumerator SetDeadly (Transform column)
 	{
 		foreach(var d in deadlyTransition)
 		{

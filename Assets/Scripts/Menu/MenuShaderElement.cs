@@ -64,6 +64,10 @@ public class MenuShaderElement : MonoBehaviour
 	[ShowIf("useShaderOnChildren")]
 	public List<Image> imagesComponent = new List<Image> ();
 
+	[Header ("On Start")]
+	public bool highlightedOnStart = false;
+	public bool clickedOnStart = false;
+
 	[Header ("Emission Power")]
 	public bool overrideEmissionPower = false;
 	[ShowIf("overrideEmissionPower")]
@@ -120,6 +124,34 @@ public class MenuShaderElement : MonoBehaviour
 			ShaderColorChange ();
 	}
 
+	protected virtual void Start ()
+	{
+		ShaderColorOnStart ();
+	}
+
+	public virtual void ShaderColorOnStart ()
+	{
+		if(!useShaderOnChildren)
+		{
+			if(highlightedOnStart)
+				material.SetInt (highlightToggle, 1);
+
+			if(clickedOnStart)
+				material.SetInt (clickToggle, 1);
+		}
+		else
+		{
+			foreach(var i in imagesComponent)
+			{
+				if(highlightedOnStart)
+					i.material.SetInt (highlightToggle, 1);
+
+				if(clickedOnStart)
+					i.material.SetInt (clickToggle, 1);
+			}
+		}
+	}
+
 	public virtual void ShaderColorChange ()
 	{
 		if(!useShaderOnChildren)
@@ -132,8 +164,11 @@ public class MenuShaderElement : MonoBehaviour
 			materials.Clear ();
 
 			foreach(var i in imagesComponent)
+			{
 				materials.Add (i.material);
+			}
 		}
+
 
 		if(globalVariables == null)
 			globalVariables = Application.isPlaying ? GlobalVariables.Instance : FindObjectOfType<GlobalVariables> ();

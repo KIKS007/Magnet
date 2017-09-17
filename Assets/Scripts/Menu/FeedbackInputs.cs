@@ -210,7 +210,7 @@ public class FeedbackInputs : MonoBehaviour
 		//GetComponent<Image> ().sprite = modifiedSprite;
 
 		if(menuButton)
-			menuButton.ShaderClick ();
+			menuButton.ShaderClick (true);
 
 		transform.DOScale (modifiedScale, 0.2f);
 
@@ -233,7 +233,7 @@ public class FeedbackInputs : MonoBehaviour
 		//GetComponent<Image> ().sprite = initialSprite;
 
 		if(menuButton)
-			menuButton.ShaderClickStop ();
+			menuButton.ShaderClick (false);
 		
 		transform.DOScale (originScale, 0.2f);
 	
