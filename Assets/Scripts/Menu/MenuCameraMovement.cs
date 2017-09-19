@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using Klak.Motion;
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 public class MenuCameraMovement : MonoBehaviour 
 {
@@ -26,8 +27,8 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
 	[Header ("Start")]
-	public Vector3 startRotation;
-	public Vector3 newStartPosition;
+	public List<Vector3> newStartPositions = new List<Vector3> ();
+	public List<Vector3> newStartRotations = new List<Vector3> ();
 
 	[Header ("Movements")]
 	public Vector3 newMenuPosition;
@@ -43,6 +44,9 @@ public class MenuCameraMovement : MonoBehaviour
 	private BrownianMotion browianMotion;
 	private float browianInitialFrequency;
 
+	[HideInInspector]
+	public bool farPosition = true;
+
 	// Use this for initialization
 	void Awake () 
 	{
@@ -52,9 +56,9 @@ public class MenuCameraMovement : MonoBehaviour
 
 		if(SceneManager.GetActiveScene ().name != "Scene Testing")
 		{
-			transform.position = newStartPosition;
-			transform.rotation = Quaternion.Euler (startRotation);
-			EnableBrowianMotion ();
+			transform.position = newStartPositions [(int)GlobalVariables.Instance.environementChroma];
+			transform.rotation = Quaternion.Euler (newStartRotations [(int)GlobalVariables.Instance.environementChroma]);
+			EnableBrowianMotion (false);
 		}
 		else
 		{
@@ -102,9 +106,33 @@ public class MenuCameraMovement : MonoBehaviour
 		yield return new WaitForSecondsRealtime (logoMovementDuration);
 	}
 
+	public void ToggleFarPosition ()
+	{
+		if (farPosition)
+			StartCoroutine (StartPosition ());
+		else
+			StartCoroutine (StartFarPosition ());
+	}
+
+	public IEnumerator StartFarPosition ()
+	{
+		StopPreviousMovement ();
+
+		farPosition = true;
+
+		transform.DOMove (newStartPositions [(int)GlobalVariables.Instance.environementChroma], newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (newStartRotations [(int)GlobalVariables.Instance.environementChroma], newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+
+		yield return new WaitForSecondsRealtime (newMovementDuration);
+
+		EnableBrowianMotion (false);
+	}
+
 	public IEnumerator StartPosition ()
 	{
 		StopPreviousMovement ();
+
+		farPosition = false;
 
 		if(menuLogo != null)
 		{
@@ -196,12 +224,15 @@ public class MenuCameraMovement : MonoBehaviour
 		}
 	}
 
-	void EnableBrowianMotion ()
+	void EnableBrowianMotion (bool lookatMenu = true)
 	{
 		browianMotion._initialPosition = transform.position;
 		//browianMotion.enabled = true;
 		browianMotion.enablePositionNoise = true;
-		StartCoroutine (LookAtTarget ());
+
+		if(lookatMenu)
+			StartCoroutine (LookAtTarget ());
+
 		DOTween.To (()=> browianMotion.positionFrequency, x=> browianMotion.positionFrequency =x, browianInitialFrequency, newMovementDuration);
 	}
 

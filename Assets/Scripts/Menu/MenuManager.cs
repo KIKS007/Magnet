@@ -258,8 +258,15 @@ public class MenuManager : Singleton <MenuManager>
 			{
 				foreach (var b in backButtonsScript)
 					b.Back (i);
+
+				if(currentMenu != mainMenuScript)
+					currentMenu.Cancel ();
 				
-				currentMenu.Cancel ();
+				else
+				{
+					if (GlobalVariables.Instance.GameState != GameStateEnum.Paused)
+						cameraMovement.ToggleFarPosition ();
+				}
 			}
 		}
 	}
@@ -275,6 +282,12 @@ public class MenuManager : Singleton <MenuManager>
 		//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		for(int i = 0; i < 2; i++)
 		{
+			if (i == 0 && currentMenu == mainMenu && GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel") && !GlobalVariables.Instance.OneGamepadUnplugged)
+			{
+				currentMenu.HideMenu ();
+				PauseResumeGame ();
+			}
+
 			if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
 			{
 				currentMenu.HideMenu ();
@@ -390,6 +403,9 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		menuTweening = true;
 		PlaySubmitSound ();
+
+		if (cameraMovement.farPosition)
+			cameraMovement.ToggleFarPosition ();
 
 		yield return StartCoroutine (HideMenuCoroutine (whichMenu.aboveMenuScript, submitButton));
 
