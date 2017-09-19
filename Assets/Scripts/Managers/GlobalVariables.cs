@@ -53,9 +53,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Material uiMaterialScrollRect;
 	public Renderer skyboxLoadingRenderer;
 	public Text environementChromaText;
-	public string[] environementChromaNames = new string[4];
-	public Scene[] environementScenes = new Scene[0];
-	public GameObject[] environementSkyboxes = new GameObject[0];
+	public List<string> environementChromaNames = new List<string> ();
+	public List<string> environementScenes = new List<string> ();
+	public List<Material> environementSkyboxes = new List<Material> ();
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
@@ -161,7 +161,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	[HideInInspector]
 	public float fixedDeltaFactor = 0;
 
-	private Scene currentEnvironementScene;
+	private string currentEnvironementScene;
 
 	void Awake ()
 	{
@@ -173,7 +173,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		SetupRewiredPlayers ();
 
-		LoadEnvironementChroma ();
 
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
@@ -204,6 +203,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			fixedDeltaTime = x;
 			fixedDeltaFactor = 1 / fixedDeltaTime;
 		};
+	}
+
+	void Start ()
+	{
+		LoadEnvironementChroma ();
 	}
 		
 	void Update ()
@@ -316,22 +320,21 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			
 			yield return new WaitForSeconds (MenuManager.Instance.animationDuration);
 
-			if (currentEnvironementScene.isLoaded)
+			if (SceneManager.GetSceneByName (currentEnvironementScene).isLoaded)
 				yield return SceneManager.UnloadSceneAsync (currentEnvironementScene);
 		}
 
-		if(environementScenes.Length != 0)
+		if(environementScenes.Count != 0)
 		{
-			yield return SceneManager.LoadSceneAsync (environementScenes [newChromaIndex].name, LoadSceneMode.Additive);
+			if (!SceneManager.GetSceneByName (environementScenes [newChromaIndex]).isLoaded)
+				yield return SceneManager.LoadSceneAsync (environementScenes [newChromaIndex], LoadSceneMode.Additive);
+			
 			currentEnvironementScene = environementScenes [newChromaIndex];
 		}
 
-		if(environementSkyboxes.Length != 0)
+		if(environementSkyboxes.Count != 0)
 		{
-			foreach (var s in environementSkyboxes)
-				s.SetActive (false);
-
-			environementSkyboxes [newChromaIndex].SetActive (true);
+			RenderSettings.skybox = environementSkyboxes [newChromaIndex];
 		}
 
 		environementChroma = newChroma;

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-#pragma warning disable 0618
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -95,7 +94,7 @@ namespace UnityStandardAssets.ImageEffects
             supportHDRTextures = SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf);
             supportDX11 = SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
 
-            if (!SystemInfo.supportsImageEffects || !SystemInfo.supportsRenderTextures)
+            if (!SystemInfo.supportsImageEffects)
 			{
                 NotSupported ();
                 return false;

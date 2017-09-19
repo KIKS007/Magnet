@@ -38,7 +38,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
 		if(SceneManager.GetActiveScene ().name != "Scene Testing")
 		{
 			for (int i = 0; i < SceneManager.sceneCount; i++)
-				if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu")
+				if(SceneManager.GetSceneAt(i).name != "Scene Testing" && SceneManager.GetSceneAt(i).name != "Menu" && !GlobalVariables.Instance.environementScenes.Contains (SceneManager.GetSceneAt(i).name))
 					yield return SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
 		}
 

@@ -34,6 +34,10 @@ public class MenuCameraMovement : MonoBehaviour
 	public Vector3 newPlayPosition;
 	public float newMovementDuration = 0.8f;
 
+	[Header ("Rotations")]
+	public Vector3 newMenuRotation;
+	public Vector3 newPlayRotation = new Vector3 (90.0f, 0.0f, 0.0f);
+
 	private Vector3 positionOnPause = Vector3.zero;
 	private SlowMotionCamera slowMo;
 	private BrownianMotion browianMotion;
@@ -55,7 +59,7 @@ public class MenuCameraMovement : MonoBehaviour
 		else
 		{
 			transform.position = newPlayPosition;
-			transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+			transform.rotation = Quaternion.Euler (newPlayRotation);
 			browianMotion.enabled = false;
 		}
 
@@ -112,7 +116,7 @@ public class MenuCameraMovement : MonoBehaviour
 			positionOnPause = transform.position;
 
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (newMenuRotation, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
@@ -130,10 +134,10 @@ public class MenuCameraMovement : MonoBehaviour
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
 
-		transform.rotation = Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f));
+		transform.rotation = Quaternion.Euler (newPlayRotation);
 
 		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.FastBeyond360).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (newMenuRotation, newMovementDuration, RotateMode.FastBeyond360).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
@@ -150,7 +154,7 @@ public class MenuCameraMovement : MonoBehaviour
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
 		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (new Vector3 (90.0f, 0.0f, 0.0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (newPlayRotation, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 	}
@@ -164,7 +168,7 @@ public class MenuCameraMovement : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
-		transform.DORotate (new Vector3 (90.0f, 0.0f, 0.0f), 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+		transform.DORotate (newPlayRotation, 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 	}
 
 	void StopSlowMotion ()
@@ -224,13 +228,13 @@ public class MenuCameraMovement : MonoBehaviour
 	public void EditorMenuPosition ()
 	{
 		transform.position = newMenuPosition;
-		transform.rotation = Quaternion.Euler (Vector3.zero);
+		transform.rotation = Quaternion.Euler (newMenuRotation);
 	}
 
 	[ButtonGroupAttribute ("b", -1)]
 	public void EditorPlayPosition ()
 	{
 		transform.position = newPlayPosition;
-		transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
+		transform.rotation = Quaternion.Euler (newPlayRotation);
 	}
 }
