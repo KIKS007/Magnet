@@ -47,6 +47,7 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Main Menu")]
 	public GameObject mainMenu;
+	public Text playText;
 
 	[Header ("Buttons Positions")]
 	public float menuFirstButtonY = 278;
@@ -127,6 +128,13 @@ public class MenuManager : Singleton <MenuManager>
 			StopCoroutine (PassFight ());
 		};
 
+		GlobalVariables.Instance.OnMenu += () => {
+			playText.text = "PLAY";
+		};
+
+		GlobalVariables.Instance.OnPause += () => {
+			playText.text = "NEW";
+		};
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
