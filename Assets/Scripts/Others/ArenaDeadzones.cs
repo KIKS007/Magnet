@@ -29,6 +29,7 @@ public class ArenaDeadzones : MonoBehaviour
 
 	[Header ("Deadly State")]
 	public Color deadlyColor;
+	public float deadlyEmission = 2f;
 	public float zScale = 3f;
 	public float xScale = 1.8f;
 	public float transitionDuration;
@@ -49,6 +50,7 @@ public class ArenaDeadzones : MonoBehaviour
 	private string initialTag;
 	private Vector3 initialScale;
 	private Vector3 initialScale2;
+	private float initialEmission;
 
 	// Use this for initialization
 	void Start () 
