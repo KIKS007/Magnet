@@ -268,4 +268,29 @@ public class MenuCameraMovement : MonoBehaviour
 		transform.position = newPlayPosition;
 		transform.rotation = Quaternion.Euler (newPlayRotation);
 	}
+
+	[ButtonGroupAttribute ("c", -1)]
+	public void EditorFarPosition ()
+	{
+		if(transform.position == newStartPositions [0])
+		{
+			transform.position = newStartPositions [1];
+			transform.rotation = Quaternion.Euler (newStartRotations [1]);
+		}
+		else if(transform.position == newStartPositions [1])
+		{
+			transform.position = newStartPositions [2];
+			transform.rotation = Quaternion.Euler (newStartRotations [2]);
+		}
+		else if(transform.position == newStartPositions [2])
+		{
+			transform.position = newStartPositions [3];
+			transform.rotation = Quaternion.Euler (newStartRotations [3]);
+		}
+		else
+		{
+			transform.position = newStartPositions [0];
+			transform.rotation = Quaternion.Euler (newStartRotations [0]);
+		}
+	}
 }

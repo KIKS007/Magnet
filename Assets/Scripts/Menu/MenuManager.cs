@@ -74,6 +74,8 @@ public class MenuManager : Singleton <MenuManager>
 	public MenuComponent endModeMenu;
 
 	[Header ("Modes Logos")]
+	public bool useStaticLogos = false;
+	public Transform staticModesLogosParent;
 	public Transform modesLogosCanvas;
 	public float modesLogoDelay;
 	public float modesLogoDuration;
@@ -141,6 +143,8 @@ public class MenuManager : Singleton <MenuManager>
 		modesLogosCanvas.localScale = Vector3.zero;
 		modesLogosCanvas.gameObject.SetActive (false);
 
+		foreach (Transform t in staticModesLogosParent)
+			t.gameObject.SetActive (false);
 
 		foreach (var m in Resources.FindObjectsOfTypeAll<MenuComponent> ())
 			m.SetupMenu ();
@@ -914,41 +918,52 @@ public class MenuManager : Singleton <MenuManager>
 
 	void ModeLogo ()
 	{
-		foreach (Transform t in modesLogosCanvas)
-			t.gameObject.SetActive (false);
-
-		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Default || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.None || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
-			return;
-
-		foreach (Transform t in modesLogosCanvas)
-			if(t.name == GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ())
-			{
-				t.gameObject.SetActive (true);
-				break;
-			}
-
-		modesLogosCanvas.gameObject.SetActive (true);
-
-		float scale = modesLogoScale * 0.7f;
-		modesLogosCanvas.localScale = Vector3.zero;
-
-
-
-		DOVirtual.DelayedCall (modesLogoDelay, ()=> 
-			{
-				modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
-					{
-						modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).SetUpdate (false);
-
-						modesLogosCanvas.DOScale (0, modesLogoDuration).SetEase (Ease.OutQuad).OnComplete (()=> 
-							modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2).SetUpdate (false);
-					}).SetUpdate (false);
-
-				/*modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
+		if(!useStaticLogos)
+		{
+			foreach (Transform t in modesLogosCanvas)
+				t.gameObject.SetActive (false);
+			
+			if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Default || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.None || GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+				return;
+			
+			foreach (Transform t in modesLogosCanvas)
+				if(t.name == GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ())
+				{
+					t.gameObject.SetActive (true);
+					break;
+				}
+			
+			modesLogosCanvas.gameObject.SetActive (true);
+			
+			float scale = modesLogoScale * 0.7f;
+			modesLogosCanvas.localScale = Vector3.zero;
+			
+			
+			
+			DOVirtual.DelayedCall (modesLogoDelay, ()=> 
+				{
+					modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
+						{
+							modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).SetUpdate (false);
+							
+							modesLogosCanvas.DOScale (0, modesLogoDuration).SetEase (Ease.OutQuad).OnComplete (()=> 
+								modesLogosCanvas.gameObject.SetActive (false) ).SetDelay (modesLogoDuration2).SetUpdate (false);
+						}).SetUpdate (false);
+					
+					/*modesLogosCanvas.DOScale (modesLogoScale, modesLogoDuration).SetEase (modesLogoEase).OnComplete (()=> 
 					modesLogosCanvas.DOScale (scale, modesLogoDuration2).SetEase (Ease.OutQuad).OnComplete (()=> 
 						modesLogosCanvas.gameObject.SetActive (false) ));*/
-			}).SetUpdate (false);
-		
+				}).SetUpdate (false);
+		}
+		else
+		{
+			foreach (Transform t in staticModesLogosParent)
+				if(t.name == GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ())
+				{
+					t.gameObject.SetActive (true);
+					break;
+				}
+		}
 	}
 
 	IEnumerator StartModeCoroutine ()
