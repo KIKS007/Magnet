@@ -490,7 +490,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			{
 				GameObject aiClone = Instantiate (aiPrefab, Players [i].transform.position, Players [i].transform.rotation) as GameObject;
 
-				SceneManager.MoveGameObjectToScene (aiClone, SceneManager.GetSceneAt (1));
+				SceneManager.MoveGameObjectToScene (aiClone, SceneManager.GetSceneByName (GlobalVariables.Instance.CurrentModeLoaded.ToString ()));
 
 				aiClone.GetComponent<AIGameplay> ().Setup ((PlayerName)i, aiLevels [i]);
 
