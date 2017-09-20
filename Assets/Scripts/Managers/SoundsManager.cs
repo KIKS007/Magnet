@@ -166,7 +166,6 @@ public class SoundsManager : Singleton<SoundsManager>
 
 		GlobalVariables.Instance.OnStartMode += SetGamePlaylist;
 		GlobalVariables.Instance.OnMenu += SetMenuPlaylist;
-		GlobalVariables.Instance.OnEndMode += () => MasterAudio.PlaySound(winSound, 1, 1, 1.5f);
 
 		GlobalVariables.Instance.OnPlaying += ResetLowPass;
 		GlobalVariables.Instance.OnPlaying += ResetHighPass;

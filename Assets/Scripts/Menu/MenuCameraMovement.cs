@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using Klak.Motion;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
+using DarkTonic.MasterAudio;
 
 public class MenuCameraMovement : MonoBehaviour 
 {
@@ -169,6 +170,8 @@ public class MenuCameraMovement : MonoBehaviour
 
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
+		MasterAudio.PlaySound(SoundsManager.Instance.winSound);
+
 		EnableBrowianMotion ();
 	}
 
@@ -190,7 +193,9 @@ public class MenuCameraMovement : MonoBehaviour
 	public IEnumerator NewRestartRotation ()
 	{
 		StopPreviousMovement ();
-		
+
+		MasterAudio.PlaySound(SoundsManager.Instance.winSound);
+
 		transform.DOMove (newPlayPosition, newMovementDuration * 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 		transform.DORotate (new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase (cameraEaseMovement).SetId ("MenuCamera");
 
