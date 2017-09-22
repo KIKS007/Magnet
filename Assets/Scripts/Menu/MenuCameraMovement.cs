@@ -113,6 +113,8 @@ public class MenuCameraMovement : MonoBehaviour
 			StartCoroutine (StartPosition ());
 		else
 			StartCoroutine (StartFarPosition ());
+
+		MasterAudio.PlaySound (SoundsManager.Instance.gameStartSound);
 	}
 
 	public IEnumerator StartFarPosition ()

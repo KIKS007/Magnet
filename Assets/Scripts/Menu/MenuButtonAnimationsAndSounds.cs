@@ -28,6 +28,9 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	private float scaleOnDuration = 0.25f;
 	[HideInInspector]
 	public Selectable selectableComponent;
+	[HideInInspector]
+	public bool selectableSelection = false;
+
 
 	protected override void Awake ()
 	{
@@ -286,16 +289,18 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	{
 		if (!Application.isPlaying)
 			return;
-
+		
 		if (selectableComponent && selectableComponent.interactable == false)
 			return;
-
-			if(vibration)
-				VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
-			
-			OnSelect ();
-
-			ColorChange ();
+		
+		if(vibration)
+			VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
+		
+		SoundsManager.Instance.MenuSubmit ();
+		
+		OnSelect ();
+		
+		ColorChange ();
 	}
 
 	public void OnSelect( BaseEventData data )
@@ -303,10 +308,12 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		if (!Application.isPlaying)
 			return;
 
-
 		OnSelect ();
 
-		SoundsManager.Instance.MenuNavigation ();
+		if (!selectableSelection)
+			SoundsManager.Instance.MenuNavigation ();
+		else
+			selectableSelection = false;
 	}
 
 

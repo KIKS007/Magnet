@@ -794,6 +794,9 @@ public class MenuManager : Singleton <MenuManager>
 		{
 			Button button = selectable.GetComponent<Button> ();
 
+			if (selectable.GetComponent<MenuButtonAnimationsAndSounds> () != null)
+				selectable.GetComponent<MenuButtonAnimationsAndSounds> ().selectableSelection = true;
+
 			if(button != null)
 				yield return new WaitUntil (() => button.interactable == true);
 

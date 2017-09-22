@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Linq;
+using DarkTonic.MasterAudio;
 
 public class MenuKickstarter : MonoBehaviour 
 {
@@ -145,5 +146,7 @@ public class MenuKickstarter : MonoBehaviour
 		backer.gameObject.SetActive (true);
 
 		backer.DOScale (scale, spawnDuration).SetEase (spawnEase);
+
+		MasterAudio.PlaySound (SoundsManager.Instance.backerPopSound);
 	}
 }

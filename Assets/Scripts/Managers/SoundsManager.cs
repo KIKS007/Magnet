@@ -88,6 +88,8 @@ public class SoundsManager : Singleton<SoundsManager>
 	public string gamepadDisconnectionSound;
 	[SoundGroupAttribute]
 	public string winSound;
+	[SoundGroupAttribute]
+	public string backerPopSound;
 
 	[Header ("Player Sounds")]
 	public string[] attractingSounds = new string[4];
