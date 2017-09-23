@@ -124,6 +124,13 @@ public class MenuShaderElement : MonoBehaviour
 			ShaderColorChange ();
 	}
 
+	protected virtual void OnDestroy ()
+	{
+		if (useUIShader && useEnvironementChroma && GlobalVariables.Instance)
+			GlobalVariables.Instance.OnEnvironementChromaChange -= ShaderColorChange;
+		
+	}
+
 	protected virtual void Start ()
 	{
 		ShaderColorOnStart ();

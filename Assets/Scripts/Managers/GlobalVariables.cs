@@ -48,6 +48,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int LivesCount = 5;
 
 	[Header ("Environement")]
+	public float envrionementTransition = 0.5f;
+	public float envrionementTransitionDelay = 0.5f;
 	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 	public Material uiMaterial;
 	public Material uiMaterialScrollRect;
@@ -316,9 +318,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 			//Fade To Black
 			color.a = 1;
-			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration);
+			skyboxLoadingRenderer.material.DOColor (color, envrionementTransition);
 			
-			yield return new WaitForSeconds (MenuManager.Instance.animationDuration);
+			yield return new WaitForSeconds (envrionementTransition);
 
 			if (SceneManager.GetSceneByName (currentEnvironementScene).isLoaded)
 				yield return SceneManager.UnloadSceneAsync (currentEnvironementScene);
@@ -341,8 +343,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if(!setup)
 		{
+			yield return new WaitForSeconds (envrionementTransitionDelay);
+
 			color.a = 0;
-			skyboxLoadingRenderer.material.DOColor (color, MenuManager.Instance.animationDuration).OnComplete (()=> skyboxLoadingRenderer.gameObject.SetActive (false));
+			skyboxLoadingRenderer.material.DOColor (color, envrionementTransition).OnComplete (()=> skyboxLoadingRenderer.gameObject.SetActive (false));
 		}
 	}
 
