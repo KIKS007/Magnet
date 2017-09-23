@@ -8,6 +8,7 @@ using DG.Tweening;
 public class SongBanner : MonoBehaviour 
 {
 	[Header ("Banner")]
+	public Ease bannerEase = Ease.Linear;
 	public float bannerSpeed;
 	public float bannerPauseDuration;
 
@@ -67,7 +68,7 @@ public class SongBanner : MonoBehaviour
 	{
 		songRect.anchoredPosition = new Vector2 (rightPosition, songRect.anchoredPosition.y);
 		
-		songRect.DOAnchorPosX (centerPosition, bannerSpeed).SetSpeedBased ().SetEase (Ease.OutQuad).OnComplete (()=> {
+		songRect.DOAnchorPosX (centerPosition, bannerSpeed).SetSpeedBased ().SetEase (bannerEase).OnComplete (()=> {
 			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner").SetUpdate (false);
 		}).SetId ("SongBanner").SetUpdate (false);
 	}

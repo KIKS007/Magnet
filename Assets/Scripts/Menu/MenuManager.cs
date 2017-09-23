@@ -198,7 +198,7 @@ public class MenuManager : Singleton <MenuManager>
 
 			for(int i = 0; i < 2; i++)
 			{
-				if(GlobalVariables.Instance.rewiredPlayers[i].GetButton("UI Submit") || GlobalVariables.Instance.rewiredPlayers[i].GetButton("UI Start"))
+				if(GlobalVariables.Instance.rewiredPlayers[i].GetAnyButton ())
 				{
 					startScreenInput = true;
 					break;
@@ -277,7 +277,12 @@ public class MenuManager : Singleton <MenuManager>
 				else
 				{
 					if (GlobalVariables.Instance.GameState != GameStateEnum.Paused)
+					{
 						cameraMovement.ToggleFarPosition ();
+
+						if (OnFarPosition != null)
+							OnFarPosition ();
+					}
 				}
 			}
 		}
@@ -1113,6 +1118,8 @@ public class MenuManager : Singleton <MenuManager>
 
 	#region Events
 	public event EventHandler OnMenuChange;
+
+	public Action OnFarPosition;
 
 	IEnumerator OnMenuChangeEvent (MenuComponent whichMenu)
 	{
