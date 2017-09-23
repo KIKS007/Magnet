@@ -377,7 +377,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 		else if(movable.transform.localScale.x == 3f)
 			feedbackPrefab = spawnFeedbacks [2];
 		
-		GameObject feedback = Instantiate (feedbackPrefab, new Vector3 (newPos.x, 0.1f, newPos.z), feedbackPrefab.transform.rotation) as GameObject;
+		GameObject feedback = Instantiate (feedbackPrefab, new Vector3 (newPos.x, 0.6f, newPos.z), feedbackPrefab.transform.rotation) as GameObject;
 		Vector3 scale = feedback.transform.localScale;
 		feedback.transform.localScale = Vector3.zero;
 

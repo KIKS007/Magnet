@@ -20,6 +20,9 @@ public class ArenaCorner : MonoBehaviour
 
 	void OnTriggerEnter (Collider collider)
 	{
+		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+			return;
+
 		if (collider.GetComponent<Rigidbody> () == null)
 			return;
 		
@@ -36,6 +39,9 @@ public class ArenaCorner : MonoBehaviour
 
 	void OnTriggerExit (Collider collider)
 	{
+		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+			return;
+		
 		if (collider.GetComponent<Rigidbody> () == null)
 			return;
 		
