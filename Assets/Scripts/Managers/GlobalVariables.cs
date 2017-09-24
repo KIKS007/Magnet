@@ -61,6 +61,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public List<Material> environementSkyboxes = new List<Material> ();
 	public List<float> environementPanelAlpha = new List<float> ();
 
+	[Header ("Arena Colors")]
+	public Color[] arenaColors = new Color[4];
+
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
 	public float delayedStartupDuration = 1f;
@@ -100,9 +103,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		foreach (var p in FindObjectsOfType<MenuPlayerColor> ())
 			p.Setup ();
 	}
-
-	[Header ("Arena Colors")]
-	public Color[] arenaColors = new Color[4];
 
 	[Header ("Movables")]
 	public List<GameObject> AllMovables = new List<GameObject> ();

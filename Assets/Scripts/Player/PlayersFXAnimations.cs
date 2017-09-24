@@ -58,6 +58,8 @@ public class PlayersFXAnimations : MonoBehaviour
 	protected int playerNumber = -1;
 	protected float spawnDuration = 0.2f;
 	protected Vector3 initialScale;
+	protected Color initialEmission;
+	protected float stunEmissionValue = 0.1f;
 	protected Color playerColor;
 	[HideInInspector]
 	public float distance;
@@ -106,6 +108,8 @@ public class PlayersFXAnimations : MonoBehaviour
 		foreach (var r in renderers)
 			if (r.material.HasProperty ("_Color") && r.material.color == playerColorMaterial.color)
 				playerMaterials.Add (r);
+
+		initialEmission = playerMaterials [0].material.GetColor ("_EmissionColor");
 	}
 
 	protected virtual void OnEnable ()
@@ -118,7 +122,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
 		for (int i = 0; i < playerMaterials.Count; i++)
 			if(playerMaterials[i] != null)
-				playerMaterials [i].material.EnableKeyword ("_EMISSION");
+				playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 	}
 	
 	// Update is called once per frame
@@ -223,56 +227,56 @@ public class PlayersFXAnimations : MonoBehaviour
 		stunFXDurationsTemp [5] = stunFXDurations [5] + Random.Range (-0.005f, 0.005f);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission * stunEmissionValue);
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[0]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[1]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission * stunEmissionValue);
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[2]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[3]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission * stunEmissionValue);
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[4]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 		playerSoundsScript.StunON ();
 
 		yield return new WaitForSeconds (stunFXDurationsTemp[5]);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.DisableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission * stunEmissionValue);
 
 		playerSoundsScript.StunOFF ();
 
 		yield return new WaitUntil(()=> playerScript.playerState != PlayerState.Stunned);
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 		playerSoundsScript.StunEND ();
 	}
@@ -293,7 +297,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		while(gameObject.layer == LayerMask.NameToLayer ("Safe"))
 		{
 			for (int i = 0; i < playerMaterials.Count; i++)
-				playerMaterials [i].material.DisableKeyword ("_EMISSION");
+				playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission * stunEmissionValue);
 
 			playerSoundsScript.StunOFF ();
 
@@ -303,7 +307,7 @@ public class PlayersFXAnimations : MonoBehaviour
 			yield return new WaitForSeconds (safeDurationBetween);
 
 			for (int i = 0; i < playerMaterials.Count; i++)
-				playerMaterials [i].material.EnableKeyword ("_EMISSION");
+				playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 			playerSoundsScript.StunON ();
 
@@ -311,7 +315,7 @@ public class PlayersFXAnimations : MonoBehaviour
 		}
 
 		for (int i = 0; i < playerMaterials.Count; i++)
-			playerMaterials [i].material.EnableKeyword ("_EMISSION");
+			playerMaterials [i].material.SetColor ("_EmissionColor", initialEmission);
 
 		playerSoundsScript.StunON ();
 	}
