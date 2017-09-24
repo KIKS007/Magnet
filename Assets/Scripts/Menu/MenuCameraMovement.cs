@@ -159,7 +159,7 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		StopPreviousMovement ();
 
-		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> StopSlowMotion ());
+		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> slowMo.StopEffects ());
 
 		StartCoroutine (ShowLogo ());
 
@@ -205,11 +205,6 @@ public class MenuCameraMovement : MonoBehaviour
 		yield return new WaitForSecondsRealtime (newMovementDuration);
 
 		transform.DORotate (newPlayRotation, 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-	}
-
-	void StopSlowMotion ()
-	{
-		slowMo.StopEffects ();
 	}
 
 	void StopPreviousMovement ()

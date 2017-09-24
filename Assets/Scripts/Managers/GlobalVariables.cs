@@ -166,6 +166,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public float fixedDeltaFactor = 0;
 
 	private string currentEnvironementScene;
+	private bool environementLoading = false;
 
 	void Awake ()
 	{
@@ -176,7 +177,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		StartCoroutine (OnEnvironementChromaChangement (environementChroma));
 
 		SetupRewiredPlayers ();
-
 
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => UpdateGamepadList ();
@@ -267,9 +267,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void NextEnvironementChroma ()
 	{
-		if (DOTween.IsTweening (skyboxLoadingRenderer.material))
+		if (environementLoading)
 			return;
-		
+
+		environementLoading = true;
+
 		int newChromaIndex = (int)environementChroma;
 		newChromaIndex++;
 
@@ -281,9 +283,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void PreviousEnvironementChroma ()
 	{
-		if (DOTween.IsTweening (skyboxLoadingRenderer.material))
+		if (environementLoading)
 			return;
-		
+
+		environementLoading = true;
+
 		int newChromaIndex = (int)environementChroma;
 		newChromaIndex--;
 
@@ -324,8 +328,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			//Fade To Black
 			color.a = 1;
 			skyboxLoadingRenderer.material.DOColor (color, envrionementTransition);
-			
-			yield return new WaitForSeconds (envrionementTransition);
+
+			yield return new WaitForSecondsRealtime (envrionementTransition);
 
 			if (SceneManager.GetSceneByName (currentEnvironementScene).isLoaded)
 				yield return SceneManager.UnloadSceneAsync (currentEnvironementScene);
@@ -361,11 +365,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 		if(!setup)
 		{
-			yield return new WaitForSeconds (envrionementTransitionDelay);
+			yield return new WaitForSecondsRealtime (envrionementTransitionDelay);
 
 			color.a = 0;
-			skyboxLoadingRenderer.material.DOColor (color, envrionementTransition).OnComplete (()=> skyboxLoadingRenderer.gameObject.SetActive (false));
+			skyboxLoadingRenderer.material.DOColor (color, envrionementTransition);
+
+			yield return new WaitForSecondsRealtime (envrionementTransition);
+
+			environementLoading = false;
 		}
+
+		environementLoading = false;
 	}
 
 	void GetMovables ()

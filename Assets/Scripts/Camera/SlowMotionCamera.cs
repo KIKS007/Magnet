@@ -27,6 +27,7 @@ public class SlowMotionCamera : MonoBehaviour
 	public float[] slowMotionDurations = new float[4];
 	public float timeTween;
 	public float timeTweenEffect;
+	public float pauseStopTimeTweenEffect = 0.5f;
 
 	[Header ("Pause SlowMo")]
 	public float timeTweenPause;
@@ -392,68 +393,76 @@ public class SlowMotionCamera : MonoBehaviour
 		}
 	}
 
-	void UnityVignetting (bool enable)
+	void UnityVignetting (bool enable, bool endMode = false)
 	{
 		if (!slowMoEnabled)
 			return;
-		
+
+		float duration = endMode ? pauseStopTimeTweenEffect : timeTweenEffect;
+
 		if(enable)
 		{
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, vignettingIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, vignettingChromaticAberration, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, vignettingIntensity, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, vignettingIntensity, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, vignettingChromaticAberration, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, vignettingIntensity, duration).SetEase(easetype).SetId("StartSlowMotion");
 		}
 		else
 		{
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, 0, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, 0, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, 0, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().intensity =x, 0, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().chromaticAberration =x, 0, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur, x=> gameObject.GetComponent<VignetteAndChromaticAberration>().blur =x, 0, duration).SetEase(easetype).SetId("StartSlowMotion");
 		}
 	}
 
-	void RGBSplit (bool enable)
+	void RGBSplit (bool enable, bool endMode = false)
 	{
 		if (!slowMoEnabled)
 			return;
-		
+
+		float duration = endMode ? pauseStopTimeTweenEffect : timeTweenEffect;
+
 		if(enable)
-			DOTween.To(()=> gameObject.GetComponent<RGBSplit>().Amount, x=> gameObject.GetComponent<RGBSplit>().Amount =x, rgbAmount, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<RGBSplit>().Amount, x=> gameObject.GetComponent<RGBSplit>().Amount =x, rgbAmount, duration).SetEase(easetype).SetId("StartSlowMotion");
 
 		else
-			DOTween.To(()=> gameObject.GetComponent<RGBSplit>().Amount, x=> gameObject.GetComponent<RGBSplit>().Amount =x, 0, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<RGBSplit>().Amount, x=> gameObject.GetComponent<RGBSplit>().Amount =x, 0, duration).SetEase(easetype).SetId("StopSlowMotion");
 		
 	}
 
-	void LensDistorsionBlur (bool enable)
+	void LensDistorsionBlur (bool enable, bool endMode = false)
 	{
 		if (!slowMoEnabled)
 			return;
-		
+
+		float duration = endMode ? pauseStopTimeTweenEffect : timeTweenEffect;
+
 		if(enable)
 		{
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Distortion, x=> gameObject.GetComponent<LensDistortionBlur>().Distortion =x, distortion, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion, x=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion =x, cubicDistortion, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Scale, x=> gameObject.GetComponent<LensDistortionBlur>().Scale =x, scaleZoom, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Distortion, x=> gameObject.GetComponent<LensDistortionBlur>().Distortion =x, distortion, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion, x=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion =x, cubicDistortion, duration).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Scale, x=> gameObject.GetComponent<LensDistortionBlur>().Scale =x, scaleZoom, duration).SetEase(easetype).SetId("StartSlowMotion");
 		}
 		else
 		{
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Distortion, x=> gameObject.GetComponent<LensDistortionBlur>().Distortion =x, 0, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion, x=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion =x, 0, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
-			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Scale, x=> gameObject.GetComponent<LensDistortionBlur>().Scale =x, 1, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Distortion, x=> gameObject.GetComponent<LensDistortionBlur>().Distortion =x, 0, duration).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion, x=> gameObject.GetComponent<LensDistortionBlur>().CubicDistortion =x, 0, duration).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<LensDistortionBlur>().Scale, x=> gameObject.GetComponent<LensDistortionBlur>().Scale =x, 1, duration).SetEase(easetype).SetId("StopSlowMotion");
 		}
 
 	}
 
-	void ContrastVignette (bool enable)
+	void ContrastVignette (bool enable, bool endMode = false)
 	{
 		if (!slowMoEnabled)
 			return;
-		
+
+		float duration = endMode ? pauseStopTimeTweenEffect : timeTweenEffect;
+
 		if(enable)
-			DOTween.To(()=> gameObject.GetComponent<ContrastVignette>().Darkness, x=> gameObject.GetComponent<ContrastVignette>().Darkness =x, darkness, timeTweenEffect).SetEase(easetype).SetId("StartSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<ContrastVignette>().Darkness, x=> gameObject.GetComponent<ContrastVignette>().Darkness =x, darkness, duration).SetEase(easetype).SetId("StartSlowMotion");
 
 		else
-			DOTween.To(()=> gameObject.GetComponent<ContrastVignette>().Darkness, x=> gameObject.GetComponent<ContrastVignette>().Darkness =x, 0, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<ContrastVignette>().Darkness, x=> gameObject.GetComponent<ContrastVignette>().Darkness =x, 0, duration).SetEase(easetype).SetId("StopSlowMotion");
 	}
 
 	public void ContrastVignette (Vector3 worldPosition)
@@ -473,19 +482,19 @@ public class SlowMotionCamera : MonoBehaviour
 	public void StopEffects ()
 	{
 		if(unityBloomEnabled)
-			DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomInitialIntensity, timeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
+			DOTween.To(()=> gameObject.GetComponent<Bloom>().bloomIntensity, x=> gameObject.GetComponent<Bloom>().bloomIntensity =x, bloomInitialIntensity, pauseStopTimeTweenEffect).SetEase(easetype).SetId("StopSlowMotion");
 
 		if(unityVignettingEnable)
-			UnityVignetting (false);
+			UnityVignetting (false, true);
 
 		if (rgbSplitEnabled)
-			RGBSplit (false);
+			RGBSplit (false, true);
 
 		if (lensDistortionEnabled)
-			LensDistorsionBlur (false);
+			LensDistorsionBlur (false, true);
 
 		if (contrastVignetteEnabled)
-			ContrastVignette (false);
+			ContrastVignette (false, true);
 
 		if(mirrorEffectEnabled && mirrorScript != null)
 			DOTween.To(()=> mirrorScript.m_ClipPlaneOffset, x=> mirrorScript.m_ClipPlaneOffset =x, initialOffset, mirrorTweenDuration).SetEase(easetype).SetId("StartSlowMotion");

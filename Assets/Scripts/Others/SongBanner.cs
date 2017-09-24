@@ -31,10 +31,7 @@ public class SongBanner : MonoBehaviour
 		songRect = transform.GetChild (0).GetComponent<RectTransform> ();
 		songText = transform.GetChild (0).GetComponent<Text> ();
 
-		playlistController.SongChanged += (newSongName) => {
-			StopAllCoroutines ();
-			StartCoroutine (SongChanged (newSongName));
-		};
+		playlistController.SongChanged += SongChangedVoid;
 
 		StartCoroutine (WaitForPlaylist ());
 	}
@@ -46,6 +43,17 @@ public class SongBanner : MonoBehaviour
 
 		if(playlistController.CurrentPlaylistClip)
 			songText.text = playlistController.CurrentPlaylistClip.name;
+	}
+
+	void OnDestroy ()
+	{
+		playlistController.SongChanged -= SongChangedVoid;
+	}
+
+	void SongChangedVoid (string name)
+	{
+		StopAllCoroutines ();
+		StartCoroutine (SongChanged (name));
 	}
 
 	IEnumerator WaitForPlaylist ()
