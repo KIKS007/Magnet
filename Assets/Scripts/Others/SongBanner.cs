@@ -23,7 +23,7 @@ public class SongBanner : MonoBehaviour
 	private PlaylistController playlistController;
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		playlistController = FindObjectOfType<PlaylistController> ();
 
@@ -39,18 +39,27 @@ public class SongBanner : MonoBehaviour
 		StartCoroutine (WaitForPlaylist ());
 	}
 
+	void OnEnable ()
+	{
+		playlistController = FindObjectOfType<PlaylistController> ();
+		songText = transform.GetChild (0).GetComponent<Text> ();
+
+		if(playlistController.CurrentPlaylistClip)
+			songText.text = playlistController.CurrentPlaylistClip.name;
+	}
+
 	IEnumerator WaitForPlaylist ()
 	{
-		yield return new WaitUntil (() => playlistController.HasPlaylist);
+		yield return new WaitUntil (() => playlistController.CurrentPlaylistClip != null);
 
-		StartCoroutine (SongChanged (playlistController.PlaylistName));
+		StartCoroutine (SongChanged (playlistController.CurrentPlaylistClip.name));
 	}
 
 	IEnumerator SongChanged (string newSongName)
 	{
 		DOTween.Kill ("SongBanner");
 
-		Tween tween = songRect.DOAnchorPosX (leftPosition, 10000f).SetSpeedBased ().SetUpdate (false);
+		Tween tween = songRect.DOAnchorPosX (leftPosition, 10000f).SetSpeedBased ().SetUpdate (true);
 		yield return tween.WaitForCompletion ();
 
 		songText.text = newSongName;
@@ -69,12 +78,12 @@ public class SongBanner : MonoBehaviour
 		songRect.anchoredPosition = new Vector2 (rightPosition, songRect.anchoredPosition.y);
 		
 		songRect.DOAnchorPosX (centerPosition, bannerSpeed).SetSpeedBased ().SetEase (bannerEase).OnComplete (()=> {
-			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner").SetUpdate (false);
-		}).SetId ("SongBanner").SetUpdate (false);
+			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner").SetUpdate (true);
+		}).SetId ("SongBanner").SetUpdate (true);
 	}
 
 	void Hide ()
 	{
-		songRect.DOAnchorPosX (leftPosition, bannerSpeed).SetSpeedBased ().OnComplete (Show).SetId ("SongBanner").SetUpdate (false);
+		songRect.DOAnchorPosX (leftPosition, bannerSpeed).SetSpeedBased ().OnComplete (Show).SetId ("SongBanner").SetUpdate (true);
 	}
 }

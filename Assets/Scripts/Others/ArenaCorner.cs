@@ -16,6 +16,8 @@ public class ArenaCorner : MonoBehaviour
 	void Start ()
 	{
 		arenaDeadzones = FindObjectOfType<ArenaDeadzones> ();
+
+		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
 	}
 
 	void OnTriggerEnter (Collider collider)
@@ -52,6 +54,8 @@ public class ArenaCorner : MonoBehaviour
 	IEnumerator WaitForCamping (GameObject player)
 	{
 		yield return new WaitForSeconds (campingDuration);
+
+		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
 		if (touchingGameobjects.Contains (player))
 		{
