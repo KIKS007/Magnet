@@ -48,16 +48,18 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public int LivesCount = 5;
 
 	[Header ("Environement")]
+	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 	public float envrionementTransition = 0.5f;
 	public float envrionementTransitionDelay = 0.5f;
-	public EnvironementChroma environementChroma = EnvironementChroma.Purple;
 	public Material uiMaterial;
 	public Material uiMaterialScrollRect;
 	public Renderer skyboxLoadingRenderer;
 	public Text environementChromaText;
+	public Renderer panelRenderer;
 	public List<string> environementChromaNames = new List<string> ();
 	public List<string> environementScenes = new List<string> ();
 	public List<Material> environementSkyboxes = new List<Material> ();
+	public List<float> environementPanelAlpha = new List<float> ();
 
 	[Header ("Startup")]
 	public StartupType Startup = StartupType.Wave;
@@ -205,11 +207,12 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			fixedDeltaTime = x;
 			fixedDeltaFactor = 1 / fixedDeltaTime;
 		};
+
+		LoadEnvironementChroma ();
 	}
 
 	void Start ()
 	{
-		LoadEnvironementChroma ();
 	}
 		
 	void Update ()
@@ -292,10 +295,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	void LoadEnvironementChroma ()
 	{
-		if (!PlayerPrefs.HasKey ("EnvironementChromaIndex"))
-			return;
-		
-		int environementChroma = PlayerPrefs.GetInt ("EnvironementChromaIndex");
+		int environementChroma = 0;
+
+		if (PlayerPrefs.HasKey ("EnvironementChromaIndex"))
+			environementChroma = PlayerPrefs.GetInt ("EnvironementChromaIndex");
 
 		StartCoroutine (NewEnvironementChroma (environementChroma, true));
 	}
@@ -307,6 +310,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	IEnumerator NewEnvironementChroma (int newChromaIndex, bool setup = false)
 	{
+		bool alreadyLoaded = false;
+
 		environementChromaText.text = environementChromaNames [newChromaIndex];
 
 		EnvironementChroma newChroma = (EnvironementChroma)newChromaIndex;
@@ -325,10 +330,21 @@ public class GlobalVariables : Singleton<GlobalVariables>
 			if (SceneManager.GetSceneByName (currentEnvironementScene).isLoaded)
 				yield return SceneManager.UnloadSceneAsync (currentEnvironementScene);
 		}
+		else
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+			{
+				if (SceneManager.GetSceneAt (i).name == environementScenes [newChromaIndex])
+					alreadyLoaded = true;
+				
+				if(GlobalVariables.Instance.environementScenes.Contains (SceneManager.GetSceneAt(i).name) && SceneManager.GetSceneAt(i).name != environementScenes [newChromaIndex])
+					SceneManager.UnloadSceneAsync (SceneManager.GetSceneAt (i).name);
+			}
+		}
 
 		if(environementScenes.Count != 0)
 		{
-			if (!SceneManager.GetSceneByName (environementScenes [newChromaIndex]).isLoaded)
+			if (!SceneManager.GetSceneByName (environementScenes [newChromaIndex]).isLoaded && !alreadyLoaded)
 				yield return SceneManager.LoadSceneAsync (environementScenes [newChromaIndex], LoadSceneMode.Additive);
 			
 			currentEnvironementScene = environementScenes [newChromaIndex];
@@ -340,6 +356,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		}
 
 		environementChroma = newChroma;
+
+		panelRenderer.materials [0].DOFloat (environementPanelAlpha [newChromaIndex], "_Opacity", envrionementTransition);
 
 		if(!setup)
 		{

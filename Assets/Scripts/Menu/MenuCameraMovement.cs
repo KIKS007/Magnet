@@ -55,21 +55,6 @@ public class MenuCameraMovement : MonoBehaviour
 		browianMotion = GetComponent<BrownianMotion> ();
 		browianInitialFrequency = browianMotion.positionFrequency;
 
-		if(SceneManager.GetActiveScene ().name != "Scene Testing")
-		{
-			transform.position = newStartPositions [(int)GlobalVariables.Instance.environementChroma];
-			transform.rotation = Quaternion.Euler (newStartRotations [(int)GlobalVariables.Instance.environementChroma]);
-			EnableBrowianMotion (false);
-		}
-		else
-		{
-			transform.position = newPlayPosition;
-			transform.rotation = Quaternion.Euler (newPlayRotation);
-			browianMotion.enabled = false;
-		}
-
-		//StartCoroutine (NewMenuPosition ());
-
 		if(menuLogo != null)
 		{
 			menuLogo.transform.parent.gameObject.SetActive (true);
@@ -84,6 +69,22 @@ public class MenuCameraMovement : MonoBehaviour
 
 		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
+	}
+
+	void Start ()
+	{
+		if(SceneManager.GetActiveScene ().name != "Scene Testing")
+		{
+			transform.position = newStartPositions [(int)GlobalVariables.Instance.environementChroma];
+			transform.rotation = Quaternion.Euler (newStartRotations [(int)GlobalVariables.Instance.environementChroma]);
+			EnableBrowianMotion (false);
+		}
+		else
+		{
+			transform.position = newPlayPosition;
+			transform.rotation = Quaternion.Euler (newPlayRotation);
+			browianMotion.enabled = false;
+		}
 	}
 
 	void Update ()

@@ -228,6 +228,9 @@ namespace Replay
 		// Use this for initialization
 		void Start ()
 		{
+			if (!gameObject.activeSelf)
+				return;
+
 			_slide = _replayCanvas.GetComponentInChildren<Slider> ();
 
 			_play.GetComponent<Button> ().onClick.AddListener (() => Play ());

@@ -12,8 +12,17 @@ public class StartGameText : MonoBehaviour
 	{
 		text = GetComponent<Text> ();
 
-		MenuManager.Instance.OnFarPosition += () => {
-			text.text = "PRESS BACK BUTTON";	
-		};
+		MenuManager.Instance.OnFarPosition += ChangeText;
+	}
+
+	void ChangeText ()
+	{
+		text.text = "PRESS BACK BUTTON";	
+	}
+
+	void OnDestroy ()
+	{
+		if(!GlobalVariables.applicationIsQuitting)
+			MenuManager.Instance.OnFarPosition -= ChangeText;
 	}
 }
