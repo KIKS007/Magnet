@@ -65,6 +65,11 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Back Buttons")]
 	public RectTransform backButtons;
+	public GameObject escBackButton;
+
+	[Header ("Resume Buttons")]
+	public RectTransform resumeButtons;
+	public Vector2 resumeButtonsPositions;
 
 	[Header ("Disconnected Players")]
 	public RectTransform[] unpluggedPlayers = new RectTransform[4];
@@ -96,6 +101,7 @@ public class MenuManager : Singleton <MenuManager>
 	private MenuCameraMovement cameraMovement;
 	private bool isWaitingToSelect = false;
 	private BackButtonsFeedback[] backButtonsScript = new BackButtonsFeedback[0];
+	private ResumeButtonsFeedback[] resumeButtonsScript = new ResumeButtonsFeedback[0];
 	private float modesLogoScale;
 
 	[HideInInspector]
@@ -125,13 +131,27 @@ public class MenuManager : Singleton <MenuManager>
 			StopCoroutine (PassFight ());
 		};
 
-		GlobalVariables.Instance.OnMenu += () => {
+		GlobalVariables.Instance.OnMenu += () => 
+		{
 			playText.text = "PLAY";
+
+			escBackButton.SetActive (true);
+
+			if(resumeButtons.anchoredPosition.x != resumeButtonsPositions.x)
+				resumeButtons.DOAnchorPosX (resumeButtonsPositions.x, animationDuration).SetEase (easeMenu);
 		};
 
-		GlobalVariables.Instance.OnPause += () => {
+		GlobalVariables.Instance.OnPause += () => 
+		{
 			playText.text = "NEW";
+
+			escBackButton.SetActive (false);
+
+			if(resumeButtons.anchoredPosition.x != resumeButtonsPositions.y)
+				resumeButtons.DOAnchorPosX (resumeButtonsPositions.y, animationDuration).SetEase (easeMenu);
 		};
+
+		resumeButtons.DOAnchorPosX (resumeButtonsPositions.x, 0).SetEase (easeMenu);
 
 		mainMenu.SetActive (true);
 		mainMenuScript = mainMenu.GetComponent<MenuComponent> ();
@@ -141,6 +161,7 @@ public class MenuManager : Singleton <MenuManager>
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		backButtonsScript = backButtons.transform.GetComponentsInChildren<BackButtonsFeedback> ();
+		resumeButtonsScript = resumeButtons.transform.GetComponentsInChildren<ResumeButtonsFeedback> ();
 
 		modesLogoScale = modesLogosCanvas.localScale.x;
 		modesLogosCanvas.localScale = Vector3.zero;
@@ -233,6 +254,8 @@ public class MenuManager : Singleton <MenuManager>
 	#region Update
 	void Update () 
 	{
+		CheckPauseInput ();
+
 		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 		{
 			CheckNothingSelected ();
@@ -241,8 +264,6 @@ public class MenuManager : Singleton <MenuManager>
 
 			MouseControl ();
 		}
-
-		CheckPauseInput ();
 
 		if(DOTween.IsTweening ("Menu") || menuTweening)
 			isTweening = true;
@@ -305,6 +326,9 @@ public class MenuManager : Singleton <MenuManager>
 
 			if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
 			{
+				foreach (var b in resumeButtonsScript)
+					b.Back (i);
+				
 				currentMenu.HideMenu ();
 				PauseResumeGame ();
 			}

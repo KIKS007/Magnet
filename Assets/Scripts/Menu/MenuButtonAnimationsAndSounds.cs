@@ -40,17 +40,24 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 		buttonRect = GetComponent<RectTransform> ();
 		selectableComponent = GetComponent<Selectable> ();
 
-		EventSystemScript.OnNewSelectedGameObject += (arg) => 
-		{
-			if(arg != gameObject && selected)
-				OnDeselect ();
-		};
+		EventSystemScript.OnNewSelectedGameObject += OnNewSelectedGameObject;
 
 		if(textColorChange || colorChange)
 			text = transform.GetChild (0).GetComponent<Text> ();
 
 		if (colorChange)
 			ColorChangeSetup ();
+	}
+
+	void OnNewSelectedGameObject (GameObject arg)
+	{
+		if(arg != gameObject && selected)
+			OnDeselect ();
+	}
+
+	void OnDestroy ()
+	{
+		EventSystemScript.OnNewSelectedGameObject -= OnNewSelectedGameObject;
 	}
 
 	void ColorChangeSetup ()
