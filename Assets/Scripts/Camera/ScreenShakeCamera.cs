@@ -19,6 +19,9 @@ public class ScreenShakeCamera : MonoBehaviour
 	public bool shake;
 	public bool resetShake;
 
+	[Header ("Lerp")]
+	public float lerp = 0.1f;
+
 	// Update is called once per frame
 	void Update () 
 	{
@@ -39,6 +42,9 @@ public class ScreenShakeCamera : MonoBehaviour
 	{
 		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 			return;
+
+		DOTween.Kill ("ResetScreenShake");
+		StopCoroutine (ResetCameraRotationCoroutine ());
 
 		float shakeDuration = 0;
 		Vector3 shakeStrenth = Vector3.zero;
@@ -69,12 +75,24 @@ public class ScreenShakeCamera : MonoBehaviour
 
 	void ResetCameraRotation ()
 	{
-		//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+		StartCoroutine (ResetCameraRotationCoroutine ());
+
+		/*//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 		if (DOTween.IsTweening ("ScreenShake"))
 			return;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			transform.DORotate(new Vector3 (90.0f, 0.0f, 0.0f), 1f, RotateMode.Fast).SetId("ScreenShake").SetUpdate (false);
+			transform.DORotate(new Vector3 (90.0f, 0.0f, 0.0f), 1f, RotateMode.Fast).SetId("ResetScreenShake").SetUpdate (false).SetDelay (0.2f);*/
+	}
+
+	IEnumerator ResetCameraRotationCoroutine ()
+	{
+		while(transform.localEulerAngles != new Vector3 (90.0f, 0.0f, 0.0f))
+		{
+			transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)), lerp);
+
+			yield return new WaitForEndOfFrame ();
+		}
 	}
 	
 }

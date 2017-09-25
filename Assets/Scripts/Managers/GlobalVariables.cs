@@ -191,6 +191,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnRestartMode += ()=> SetPlayerMouseCursor();
 		OnMenu += () => Startup = StartupType.Wave;
 		OnEndMode += ()=> Startup = StartupType.Delayed;
+		OnEnvironementChromaChange += SetPlayerMouseCursor;
+
+		SetPlayerMouseCursor ();
 
 		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 		screenShakeCamera = mainCamera.GetComponent<ScreenShakeCamera>();
@@ -541,13 +544,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
 	public void SetPlayerMouseCursor ()
 	{
-		for(int i = 0; i < PlayersControllerNumber.Length; i++)
-			if(PlayersControllerNumber[i] == 0)
-			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-				Cursor.SetCursor (mouseCursor[i], Vector2.zero, CursorMode.Auto);
-			}
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Cursor.SetCursor (mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.Auto);
 	}
 
 	public void SetMouseVisibility (bool forcedHide = false)

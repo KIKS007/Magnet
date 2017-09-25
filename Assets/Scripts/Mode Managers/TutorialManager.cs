@@ -218,7 +218,7 @@ public class TutorialManager : MonoBehaviour
 
 			tutorialState = TutorialState.AimStep;
 
-			if(GlobalVariables.Instance.AllMovables.Count > 0)
+			if(GlobalVariables.Instance.AllMovables.Count > 0 && GlobalVariables.Instance.AllMovables [0].activeSelf)
 				foreach(var m in GlobalVariables.Instance.AllMovables)
 				{
 					float scale = m.transform.localScale.x;
@@ -269,7 +269,7 @@ public class TutorialManager : MonoBehaviour
 		{
 		case TutorialState.AttractRepelStep:
 
-			if(GlobalVariables.Instance.AllMovables.Count > 0)
+			if(GlobalVariables.Instance.AllMovables.Count > 0 && !GlobalVariables.Instance.AllMovables [0].activeSelf)
 				GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
 
 			break;

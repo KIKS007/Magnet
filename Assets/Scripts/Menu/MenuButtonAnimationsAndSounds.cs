@@ -55,8 +55,10 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 			OnDeselect ();
 	}
 
-	void OnDestroy ()
+	protected override void OnDestroy ()
 	{
+		base.OnDestroy ();
+
 		EventSystemScript.OnNewSelectedGameObject -= OnNewSelectedGameObject;
 	}
 
