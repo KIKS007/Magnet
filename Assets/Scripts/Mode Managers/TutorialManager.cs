@@ -202,11 +202,12 @@ public class TutorialManager : MonoBehaviour
 		nextCollider.GetComponent<TutorialColliderEventTrigger> ().eventEnabled = false;
 		previousCollider.GetComponent<TutorialColliderEventTrigger> ().eventEnabled = false;
 
-		//nextCollider.enabled = false;
-		//previousCollider.enabled = false;
+		DOVirtual.DelayedCall (0.2f, ()=> {
+			
+			nextCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
+			previousCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
+		});
 
-		nextCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
-		previousCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
 
 		if( (int)tutorialSteps [tutorialInfosIndex].state != 0)
 			tutorialState = tutorialSteps [tutorialInfosIndex].state;
@@ -254,12 +255,13 @@ public class TutorialManager : MonoBehaviour
 		nextCollider.GetComponent<TutorialColliderEventTrigger> ().eventEnabled = false;
 		previousCollider.GetComponent<TutorialColliderEventTrigger> ().eventEnabled = false;
 
-		//nextCollider.enabled = false;
-		//previousCollider.enabled = false;
+		DOVirtual.DelayedCall (0.2f, ()=> {
 
-		nextCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
-		previousCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
-	
+			nextCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
+			previousCollider.transform.GetChild (0).DOScale (0, transitionDuration).SetEase (Ease.OutQuad);
+
+		});
+
 		if( (int)tutorialSteps [tutorialInfosIndex].state != 0)
 			tutorialState = tutorialSteps [tutorialInfosIndex].state;
 

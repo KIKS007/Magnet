@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using DG.Tweening;
 
 public class TutorialColliderEventTrigger : MonoBehaviour 
 {
@@ -13,8 +14,21 @@ public class TutorialColliderEventTrigger : MonoBehaviour
 	[Header ("OnTriggerEnter")]
 	public UnityEvent onTriggerEnterEvents;
 
+	[Header ("Button")]
+	public MenuButtonAnimationsAndSounds menuButton;
+	public float rotationSpeed;
+
 	[HideInInspector]
 	public List<GameObject> touchingGameobjects = new List<GameObject> ();
+
+	void Start ()
+	{
+		if(rotationSpeed > 0)
+			menuButton.transform.DOLocalRotate (Vector3.forward * 360, rotationSpeed).SetSpeedBased ().SetLoops (-1, LoopType.Incremental).SetRelative ();
+		else
+			menuButton.transform.DOLocalRotate (-Vector3.forward * 360, -rotationSpeed).SetSpeedBased ().SetLoops (-1, LoopType.Incremental).SetRelative ();
+
+	}
 
 	void OnCollisionEnter (Collision collision)
 	{
@@ -28,7 +42,10 @@ public class TutorialColliderEventTrigger : MonoBehaviour
 				touchingGameobjects.Add (collision.gameObject);
 
 				if(eventEnabled)
+				{
 					onCollisionEnterEvents.Invoke ();
+					menuButton.ShaderClickDuration ();
+				}
 			}
 		}
 	}
@@ -54,7 +71,10 @@ public class TutorialColliderEventTrigger : MonoBehaviour
 				touchingGameobjects.Add (collider.gameObject);
 
 				if(eventEnabled)
+				{
 					onTriggerEnterEvents.Invoke ();
+					menuButton.ShaderClickDuration ();
+				}
 			}
 		}
 	}
