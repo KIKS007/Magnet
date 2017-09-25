@@ -65,7 +65,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("Back Buttons")]
 	public RectTransform backButtons;
-	public Vector2 backButtonsXPos;
 
 	[Header ("Disconnected Players")]
 	public RectTransform[] unpluggedPlayers = new RectTransform[4];
@@ -114,8 +113,6 @@ public class MenuManager : Singleton <MenuManager>
 		DOTween.Init();
 		DOTween.defaultTimeScaleIndependent = true;
 
-		OnMenuChange += BackButtons;
-
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
 
@@ -144,8 +141,6 @@ public class MenuManager : Singleton <MenuManager>
 		cameraMovement = mainCamera.GetComponent<MenuCameraMovement> ();
 
 		backButtonsScript = backButtons.transform.GetComponentsInChildren<BackButtonsFeedback> ();
-
-		backButtons.anchoredPosition = new Vector2(backButtonsXPos.x, backButtons.anchoredPosition.y);
 
 		modesLogoScale = modesLogosCanvas.localScale.x;
 		modesLogosCanvas.localScale = Vector3.zero;
@@ -278,6 +273,9 @@ public class MenuManager : Singleton <MenuManager>
 				{
 					if (GlobalVariables.Instance.GameState != GameStateEnum.Paused)
 					{
+						foreach (var b in backButtonsScript)
+							b.Back (i);
+						
 						cameraMovement.ToggleFarPosition ();
 
 						if (OnFarPosition != null)
@@ -853,27 +851,6 @@ public class MenuManager : Singleton <MenuManager>
 	void PlayReturnSound ()
 	{
 		MasterAudio.PlaySound (SoundsManager.Instance.menuCancel);
-	}
-
-
-	void BackButtons ()
-	{
-		if(GlobalVariables.Instance.GameState != GameStateEnum.Playing 
-			&& currentMenu
-			&& currentMenu.menuComponentType != MenuComponentType.MainMenu
-			&& currentMenu.menuComponentType != MenuComponentType.RootMenu)
-		{
-			if (backButtons.gameObject.activeSelf == false)
-				backButtons.gameObject.SetActive (true);
-
-			if (backButtons.anchoredPosition.x != backButtonsXPos.y)
-				backButtons.DOAnchorPosX (backButtonsXPos.y, animationDuration).SetEase (easeMenu);
-		}
-		else
-		{
-			if (backButtons.anchoredPosition.x != backButtonsXPos.x)
-				backButtons.DOAnchorPosX (backButtonsXPos.x, animationDuration).SetEase (easeMenu).OnComplete (()=> backButtons.gameObject.SetActive (false));
-		}
 	}
 
 	public void QuitGame ()

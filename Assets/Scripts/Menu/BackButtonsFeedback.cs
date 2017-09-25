@@ -10,9 +10,6 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	public WhichButton whichButton;
 
-	public Sprite modifiedSprite;
-	private Sprite initialSprite;
-
 	public Player mouseKeyboard;
 	public Player gamepad1;
 	public Player gamepad2;
@@ -22,26 +19,23 @@ public class BackButtonsFeedback : MonoBehaviour
 	private float tweenDuration = 0.1f;
 	private float modifiedScale = 1.3f;
 
-	public Color newColor;
 	public Ease theEase = Ease.OutElastic;
 	public BackButtonsFeedback backText;
 
 	private float initialScale;
 	private RectTransform rect;
-	private Color initialColor;
 	private Vector2 initialPos;
+
+	private MenuButtonAnimationsAndSounds menuButton;
+
 	// Use this for initialization
 	void Start () 
 	{
-		if(GetComponent<Image>() != null)
-			initialSprite = GetComponent<Image> ().sprite;
+		menuButton = GetComponent<MenuButtonAnimationsAndSounds> ();
 
 		rect = GetComponent<RectTransform> ();
 		initialScale = rect.localScale.x;
 		initialPos = rect.anchoredPosition;
-
-		if (GetComponent<Image> () != null)
-			initialColor = GetComponent<Image> ().color;
 	}
 
 	public void Back (int rewiredIndex)
@@ -76,21 +70,13 @@ public class BackButtonsFeedback : MonoBehaviour
 
 	void ButtonPressed ()
 	{
-		GetComponent<Image> ().sprite = modifiedSprite;
+		menuButton.ShaderClickDuration ();
 
 		rect.DOScale (modifiedScale, tweenDuration).SetEase (theEase).OnComplete ( ()=> rect.DOScale (initialScale, 0.2f));
-
-		GetComponent<Image> ().DOColor (newColor, tweenDuration).OnComplete ( () => ResetFeedback());
 	}
 
 	public void BackText ()
 	{
 		rect.DOAnchorPos(new Vector2(initialPos.x + 25, initialPos.y), tweenDuration).SetEase(Ease.OutQuad).OnComplete( ()=> rect.DOAnchorPos(initialPos, tweenDuration * 0.5f));
-	}
-
-	void ResetFeedback ()
-	{
-		GetComponent<Image> ().DOColor (initialColor, tweenDuration);
-		GetComponent<Image> ().sprite = initialSprite;
 	}
 }
