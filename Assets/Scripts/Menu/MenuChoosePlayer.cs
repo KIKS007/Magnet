@@ -54,6 +54,8 @@ public class MenuChoosePlayer : MonoBehaviour
 		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId, true);
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
 
+		MenuManager.Instance.OnStartModeClick += NoInput;
+
 		playButtonComponent = playButton.GetComponent<Button> ();
 
 		mouseInitialXPos = controllersRect [0].anchoredPosition.x;

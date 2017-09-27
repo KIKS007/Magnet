@@ -193,6 +193,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		OnEndMode += ()=> Startup = StartupType.Delayed;
 		OnEnvironementChromaChange += SetPlayerMouseCursor;
 
+		MenuManager.Instance.OnStartModeClick += UpdateGamepadList;
+		MenuManager.Instance.OnStartModeClick += CreateAIs;
+
 		SetPlayerMouseCursor ();
 
 		mainCamera = GameObject.FindGameObjectWithTag("MainCamera");

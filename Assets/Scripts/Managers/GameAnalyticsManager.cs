@@ -8,6 +8,9 @@ public class GameAnalyticsManager : Singleton<GameAnalyticsManager>
 
 	void Start ()
 	{
+		MenuManager.Instance.OnStartModeClick += GamesCount;
+		MenuManager.Instance.OnStartModeClick += PlayersControllers;
+
 		GlobalVariables.Instance.OnStartMode += PlayersControllers;
 
 		GlobalVariables.Instance.OnStartMode += OnModeStart;

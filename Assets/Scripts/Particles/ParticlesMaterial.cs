@@ -9,7 +9,7 @@ public class ParticlesMaterial : MonoBehaviour
 	void Start () 
 	{
 		rend = GetComponent<ParticleSystemRenderer> ();
-		rend.material.SetColor("_EmissionColor", rend.material.color);
+		rend.material.SetColor("_EmissionColor", rend.material.color * 6);
 	}
 /*	
 	// Update is called once per frame

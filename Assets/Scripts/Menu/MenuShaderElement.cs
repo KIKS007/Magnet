@@ -54,6 +54,9 @@ public class MenuShaderElement : MonoBehaviour
 	[ShowIf("PlayerColor")]
 	public PlayerName playerColor = PlayerName.Player1;
 
+	public bool overrideMainColor = false;
+	[ShowIf("overrideMainColor")]
+	public Color mainColor;
 
 	[ShowIf("useUIShader")]
 	public Texture neonTexture;
@@ -269,6 +272,9 @@ public class MenuShaderElement : MonoBehaviour
 			if(!forceReset && mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") || mainColor != imageComponent.material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
 				imageComponent.material.SetColor ("_PURPLECHROMAIdle", mainColor);
 
+			if(overrideMainColor)
+				imageComponent.material.SetColor ("_PURPLECHROMAIdle", this.mainColor);
+
 			material = imageComponent.material;
 		}
 		else
@@ -299,6 +305,9 @@ public class MenuShaderElement : MonoBehaviour
 
 				if(!forceReset && mainColor != materials [i].GetColor ("_PURPLECHROMAIdle") || mainColor != imagesComponent [i].material.GetColor ("_PURPLECHROMAIdle") && !useEnvironementChroma && !usePlayerColor)
 					imagesComponent [i].material.SetColor ("_PURPLECHROMAIdle", mainColor);
+
+				if(overrideMainColor)
+					imagesComponent [i].material.SetColor ("_PURPLECHROMAIdle", this.mainColor);
 
 				materials [i] = imagesComponent [i].material;
 			}
