@@ -70,13 +70,7 @@ public class ArenaDeadzones : MonoBehaviour
 
 		GlobalVariables.Instance.OnStartMode += Setup;
 		GlobalVariables.Instance.OnRestartMode += Setup;
-		GlobalVariables.Instance.OnMenu += ()=> 
-		{
-			StopAllCoroutines ();
-			Reset ();
-		};
-
-
+		GlobalVariables.Instance.OnMenu += Reset;
 
 		Setup ();
 	}
@@ -116,6 +110,8 @@ public class ArenaDeadzones : MonoBehaviour
 	[ButtonAttribute]
 	public void Reset ()
 	{
+		StopAllCoroutines ();
+
 		deadlyColumns.Clear ();
 
 		foreach(var column in allColumns)

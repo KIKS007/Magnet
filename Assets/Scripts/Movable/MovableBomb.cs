@@ -222,6 +222,8 @@ public class MovableBomb : MovableScript
 
 	void ChooseAnotherPlayer ()
 	{
+		tag = "Untagged";
+
 		if(playerHolding)
 			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
 

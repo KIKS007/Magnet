@@ -202,8 +202,12 @@ public class BombManager : LastManManager
 		if (gameEndLoopRunning)
 			yield break;
 
+		Debug.Log ("1");
+
 		if(bombScript.playerHolding == null)
 		{
+			Debug.Log ("2");
+
 			if(bombScript.attracedBy.Count > 0)
 				bombScript.attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
 			else
