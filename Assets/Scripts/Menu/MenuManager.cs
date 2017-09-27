@@ -644,7 +644,7 @@ public class MenuManager : Singleton <MenuManager>
 				Disable (whichMenu.underMenusButtons [i], animationDuration + ButtonsDelay (delay));
 				SetNonInteractable (whichMenu.underMenusButtons [i]);
 
-				whichMenu.underMenusButtons [i].DOAnchorPos (offScreenButton, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
+				whichMenu.underMenusButtons [i].DOAnchorPosX (offScreenButton.x, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 
 				//whichMenu.underMenusButtons [i].DOAnchorPosX (menuOffScreenX, animationDuration).SetDelay (ButtonsDelay (delay)).SetEase (easeMenu).SetId ("Menu");
 				delay++;
