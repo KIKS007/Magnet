@@ -222,9 +222,6 @@ public class MovableBomb : MovableScript
 
 	void ChooseAnotherPlayer ()
 	{
-		if (tag == "DeadCube")
-			return;
-
 		if(playerHolding)
 			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
 

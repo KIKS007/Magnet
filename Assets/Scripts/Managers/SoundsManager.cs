@@ -617,7 +617,7 @@ public class SoundsManager : Singleton<SoundsManager>
 
 	void RandomMusic ()
 	{
-		//MasterAudio.TriggerRandomPlaylistClip ();
+		MasterAudio.TriggerRandomPlaylistClip ();
 	}
 
 	void NextMusic ()

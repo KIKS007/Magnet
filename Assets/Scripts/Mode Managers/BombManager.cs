@@ -210,7 +210,7 @@ public class BombManager : LastManManager
 				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
 		}
 		else
-			Debug.LogError("Bite");
+			Debug.LogError("Bomb PlayerHolding Bug");
 	}
 
 	protected override IEnumerator GameEnd ()

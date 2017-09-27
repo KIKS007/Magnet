@@ -364,6 +364,7 @@ public class MenuComponent : MonoBehaviour
 		EnableSecondaryContentParent ();
 
 		menuManager.mainMenu.transform.parent.gameObject.SetActive (true);
+		menuManager.mainMenu.transform.gameObject.SetActive (true);
 		menuManager.mainMenu.transform.GetChild (0).gameObject.SetActive (true);
 	}
 
