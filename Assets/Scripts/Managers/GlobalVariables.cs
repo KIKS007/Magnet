@@ -55,6 +55,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 	public Material uiMaterialScrollRect;
 	public Renderer skyboxLoadingRenderer;
 	public Text environementChromaText;
+	public Renderer panelPillarRenderer;
 	public Renderer panelRenderer;
 	public List<string> environementChromaNames = new List<string> ();
 	public List<string> environementScenes = new List<string> ();
@@ -368,6 +369,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		environementChroma = newChroma;
 
 		panelRenderer.materials [0].DOFloat (environementPanelAlpha [newChromaIndex], "_Opacity", envrionementTransition);
+		panelPillarRenderer.materials [2].DOColor (arenaColors [newChromaIndex], "_EmissionColor", envrionementTransition);
 
 		if(!setup)
 		{

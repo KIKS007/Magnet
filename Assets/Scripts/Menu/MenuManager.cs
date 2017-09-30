@@ -246,12 +246,18 @@ public class MenuManager : Singleton <MenuManager>
 
 		yield return new WaitForSeconds (delay);
 
+		if (cameraMovement.farPosition)
+			yield break;
+
 		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).transform.DOScale (Vector3.zero, animationDuration).SetEase (Ease.OutQuad);
 
 		backButtons.DOAnchorPosX (-resumeButtonsPositions.y, animationDuration).SetEase (Ease.OutQuad);
 
 		yield return new WaitForSeconds (animationDuration);
 
+		if (cameraMovement.farPosition)
+			yield break;
+		
 		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive (false);
 
 		ShowMenu (mainMenuScript);
@@ -261,6 +267,9 @@ public class MenuManager : Singleton <MenuManager>
 	{
 		if (currentMenu)
 			currentMenu.HideMenu ();
+
+		if (logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.activeSelf)
+			return;
 
 		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).transform.localScale = Vector3.zero;
 		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive (true);
@@ -321,7 +330,7 @@ public class MenuManager : Singleton <MenuManager>
 					{
 						foreach (var b in backButtonsScript)
 							b.Back (i);
-						
+
 						cameraMovement.ToggleFarPosition ();
 
 						if (OnFarPosition != null)
