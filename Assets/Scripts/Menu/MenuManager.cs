@@ -32,9 +32,6 @@ public class MenuManager : Singleton <MenuManager>
 	public Vector2 offScreenButton;
 	public Vector2 onScreenButton;
 
-//	public float menuOffScreenX = -2000;
-//	public float menuOnScreenX = -650;
-
 	[Header ("MainContent Positions")]
 	public Vector2 offScreenContent = new Vector2 (-2000, 0);
 	public Vector2 onScreenContent = new Vector2 (0, 0);
@@ -77,6 +74,11 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("End Mode Menu")]
 	public MenuComponent endModeMenu;
+
+	[Header ("REPULSE Logos")]
+	public Transform logosParent;
+	public float logoStartDelay = 1f;
+	public float logoDelay = 0.5f;
 
 	[Header ("Modes Logos")]
 	public bool useStaticLogos = false;
@@ -177,8 +179,6 @@ public class MenuManager : Singleton <MenuManager>
 		foreach (var m in Resources.FindObjectsOfTypeAll<MenuComponent> ())
 			m.SetupMenu ();
 
-		SetupLogo ();
-
 		for (int i = 0; i < elementsToEnable.Count; i++)
 			if(elementsToEnable [i] != null)
 				elementsToEnable [i].SetActive (true);
@@ -198,14 +198,13 @@ public class MenuManager : Singleton <MenuManager>
 			PauseResumeGame ();	
 	}
 
-	void SetupLogo ()
-	{
-		mainMenuScript.secondaryContents [0].content.gameObject.SetActive (true);
-		mainMenuScript.secondaryContents [0].content.anchoredPosition = mainMenuScript.secondaryContents [0].onScreenPos;
-	}
-
 	IEnumerator WaitStartScreen ()
 	{
+		foreach(Transform t in logosParent)
+			t.gameObject.SetActive (false);
+
+		ShowLogo ();
+
 		bool startScreenInput = false;
 
 		do
@@ -231,21 +230,43 @@ public class MenuManager : Singleton <MenuManager>
 
 		VibrationManager.Instance.Vibrate (1, FeedbackType.ButtonClick);
 
-		StartScreen ();
-
-	}
-		
-	void StartScreen ()
-	{
 		MasterAudio.PlaySound (SoundsManager.Instance.gameStartSound);
 
-		//cameraMovement.StartCoroutine ("StartScreen");
-		cameraMovement.StartCoroutine ("StartPosition");
+		yield return cameraMovement.StartCoroutine ("StartPosition");
 
-		ShowMenu (mainMenuScript);
 		StartCoroutine (OnMenuChangeEvent (mainMenuScript));
 
 		startScreen = false;
+	}
+		
+	public IEnumerator HideLogo (bool start = false)
+	{
+		//cameraMovement.StartCoroutine ("StartScreen");
+		float delay = start ? logoStartDelay : logoDelay;
+
+		yield return new WaitForSeconds (delay);
+
+		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).transform.DOScale (Vector3.zero, animationDuration).SetEase (Ease.OutQuad);
+
+		backButtons.DOAnchorPosX (-resumeButtonsPositions.y, animationDuration).SetEase (Ease.OutQuad);
+
+		yield return new WaitForSeconds (animationDuration);
+
+		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive (false);
+
+		ShowMenu (mainMenuScript);
+	}
+
+	public void ShowLogo ()
+	{
+		if (currentMenu)
+			currentMenu.HideMenu ();
+
+		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).transform.localScale = Vector3.zero;
+		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive (true);
+		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).transform.DOScale (Vector3.one, animationDuration).SetEase (Ease.OutQuad);
+
+		backButtons.DOAnchorPosX (-resumeButtonsPositions.x, animationDuration).SetEase (Ease.OutQuad);
 	}
 
 	void OnApplicationFocus (bool value)
@@ -291,7 +312,7 @@ public class MenuManager : Singleton <MenuManager>
 				foreach (var b in backButtonsScript)
 					b.Back (i);
 
-				if(currentMenu != mainMenuScript)
+				if(currentMenu && currentMenu != mainMenuScript)
 					currentMenu.Cancel ();
 				
 				else

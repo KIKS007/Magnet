@@ -12,20 +12,8 @@ public class MenuCameraMovement : MonoBehaviour
 	public Ease cameraEaseMovement = Ease.OutQuad;
 	public bool tweening = false;
 
-	[Header ("Start Screen")]
-	public RectTransform startScreenText;
-	public float startScreenDuration = 0.5f;
-	public float textOffScreenY = -700;
-	public float logoNewScale = 0.4f;
-
 	[Header ("Bobbing")]
 	public Vector3 bobbingLookTarget;
-
-	[Header ("Logo Movements")]
-	public RectTransform menuLogo;
-	public float logoMovementDuration = 1f;
-	public Vector2 logoNewPos = new Vector2 (0, 365);
-	public Vector2 logoHiddenPos = new Vector2 (0, 500);
 
 	[Header ("Start")]
 	public List<Vector3> newStartPositions = new List<Vector3> ();
@@ -55,18 +43,6 @@ public class MenuCameraMovement : MonoBehaviour
 		browianMotion = GetComponent<BrownianMotion> ();
 		browianInitialFrequency = browianMotion.positionFrequency;
 
-		if(menuLogo != null)
-		{
-			menuLogo.transform.parent.gameObject.SetActive (true);
-			startScreenText.transform.parent.gameObject.SetActive (true);
-
-			menuLogo.gameObject.SetActive (true);
-			startScreenText.gameObject.SetActive (true);
-		}
-		else
-			Debug.LogWarning ("No Menu Logo");
-
-
 		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
 		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
 	}
@@ -92,22 +68,6 @@ public class MenuCameraMovement : MonoBehaviour
 		tweening = DOTween.IsTweening ("MenuCamera");
 	}
 
-	public IEnumerator HideLogo ()
-	{
-		if(menuLogo != null)
-			menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
-		
-		yield return new WaitForSecondsRealtime (logoMovementDuration);
-	}
-
-	public IEnumerator ShowLogo ()
-	{
-		if(menuLogo != null)
-			menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
-		
-		yield return new WaitForSecondsRealtime (logoMovementDuration);
-	}
-
 	public void ToggleFarPosition ()
 	{
 		if (farPosition)
@@ -120,6 +80,8 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator StartFarPosition ()
 	{
+		MenuManager.Instance.ShowLogo ();
+
 		StopPreviousMovement ();
 
 		farPosition = true;
@@ -134,15 +96,11 @@ public class MenuCameraMovement : MonoBehaviour
 
 	public IEnumerator StartPosition ()
 	{
+		StartCoroutine (MenuManager.Instance.HideLogo (MenuManager.Instance.startScreen));
+	
 		StopPreviousMovement ();
 
 		farPosition = false;
-
-		if(menuLogo != null)
-		{
-			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
-			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		}
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
@@ -160,8 +118,6 @@ public class MenuCameraMovement : MonoBehaviour
 		StopPreviousMovement ();
 
 		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> slowMo.StopEffects ());
-
-		StartCoroutine (ShowLogo ());
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
 			positionOnPause = transform.position;
@@ -182,8 +138,6 @@ public class MenuCameraMovement : MonoBehaviour
 	{
 		DisableBrowianMotion ();
 		StopPreviousMovement ();
-
-		StartCoroutine (HideLogo ());
 
 		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
 
