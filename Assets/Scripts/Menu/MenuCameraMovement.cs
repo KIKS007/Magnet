@@ -33,7 +33,6 @@ public class MenuCameraMovement : MonoBehaviour
 	private BrownianMotion browianMotion;
 	private float browianInitialFrequency;
 
-	[HideInInspector]
 	public bool farPosition = true;
 
 	// Use this for initialization

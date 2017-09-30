@@ -273,7 +273,12 @@ public class MenuShaderElement : MonoBehaviour
 				imageComponent.material.SetColor ("_PURPLECHROMAIdle", mainColor);
 
 			if(overrideMainColor)
+			{
 				imageComponent.material.SetColor ("_PURPLECHROMAIdle", this.mainColor);
+				imageComponent.material.SetColor ("_BLUECHROMAIdle", this.mainColor);
+				imageComponent.material.SetColor ("_GREENCHROMAIdle", this.mainColor);
+				imageComponent.material.SetColor ("_ORANGECHROMAIdle", this.mainColor);
+			}
 
 			material = imageComponent.material;
 		}
@@ -307,7 +312,12 @@ public class MenuShaderElement : MonoBehaviour
 					imagesComponent [i].material.SetColor ("_PURPLECHROMAIdle", mainColor);
 
 				if(overrideMainColor)
+				{
 					imagesComponent [i].material.SetColor ("_PURPLECHROMAIdle", this.mainColor);
+					imagesComponent [i].material.SetColor ("_BLUECHROMAIdle", this.mainColor);
+					imagesComponent [i].material.SetColor ("_GREENCHROMAIdle", this.mainColor);
+					imagesComponent [i].material.SetColor ("_ORANGECHROMAIdle", this.mainColor);
+				}
 
 				materials [i] = imagesComponent [i].material;
 			}

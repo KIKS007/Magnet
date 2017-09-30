@@ -105,6 +105,7 @@ public class MenuManager : Singleton <MenuManager>
 	private BackButtonsFeedback[] backButtonsScript = new BackButtonsFeedback[0];
 	private ResumeButtonsFeedback[] resumeButtonsScript = new ResumeButtonsFeedback[0];
 	private float modesLogoScale;
+	private bool logoLoading = false;
 
 	[HideInInspector]
 	public bool startScreen = true;
@@ -244,7 +245,28 @@ public class MenuManager : Singleton <MenuManager>
 		//cameraMovement.StartCoroutine ("StartScreen");
 		float delay = start ? logoStartDelay : logoDelay;
 
-		yield return new WaitForSeconds (delay);
+		yield return new WaitForSeconds (cameraMovement.newMovementDuration);
+
+		logoLoading = true;
+
+		bool startScreenInput = false;
+
+		do
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				if (GlobalVariables.Instance.rewiredPlayers [i].GetAnyButtonDown ())
+				{
+					startScreenInput = true;
+					break;
+				}
+			}
+
+			yield return 0;
+		}
+		while (!startScreenInput);
+
+	//	yield return new WaitForSeconds (delay);
 
 		if (cameraMovement.farPosition)
 			yield break;
@@ -261,6 +283,8 @@ public class MenuManager : Singleton <MenuManager>
 		logosParent.GetChild ((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive (false);
 
 		ShowMenu (mainMenuScript);
+
+		logoLoading = false;
 	}
 
 	public void ShowLogo ()
@@ -316,28 +340,49 @@ public class MenuManager : Singleton <MenuManager>
 		//for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
 		for(int i = 0; i < 2; i++)
 		{
+			//Quit Far Position
+			if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers [i].GetAnyButtonDown ())
+			{
+				if (cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused)
+				{
+					cameraMovement.ToggleFarPosition ();
+
+					if (OnFarPosition != null)
+						OnFarPosition ();
+
+					Debug.Log ("Quit Far");
+					break;
+				}
+			}
+
 			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Cancel"))
 			{
 				foreach (var b in backButtonsScript)
 					b.Back (i);
 
+				//Cancel Menu
 				if(currentMenu && currentMenu != mainMenuScript)
-					currentMenu.Cancel ();
-				
-				else
 				{
-					if (GlobalVariables.Instance.GameState != GameStateEnum.Paused)
-					{
-						foreach (var b in backButtonsScript)
-							b.Back (i);
+					currentMenu.Cancel ();
 
-						cameraMovement.ToggleFarPosition ();
+					Debug.Log ("Cancel");
+					break;
+				}
 
-						if (OnFarPosition != null)
-							OnFarPosition ();
-					}
+				//Go To Far Position
+				else if(!cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused && !logoLoading)
+				{
+					cameraMovement.ToggleFarPosition ();
+					
+					if (OnFarPosition != null)
+						OnFarPosition ();
+
+					Debug.Log ("Far Position");
+					break;
 				}
 			}
+
+
 		}
 	}
 

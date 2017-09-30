@@ -50,7 +50,6 @@ public class SoundsManager : Singleton<SoundsManager>
 	public bool loadMusicsOnStart = false;
 	public List<AudioClip> loadedMusics = new List<AudioClip> ();
 
-
 	[Header ("Low Pass")]
 	public bool lowPassEnabled = true;
 	public Toggle lowPassToggle;
@@ -657,7 +656,7 @@ public class SoundsManager : Singleton<SoundsManager>
 			playlistCont.PlayRandomSong ();
 		}
 
-		personalMusicButton.interactable = !playLoadedMusics && loadedMusics.Count > 0;
+		//personalMusicButton.interactable = !playLoadedMusics && loadedMusics.Count > 0;
 		gameMusicButton.interactable = playLoadedMusics;
 	}
 
