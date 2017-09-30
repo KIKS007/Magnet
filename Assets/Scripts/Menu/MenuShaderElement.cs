@@ -66,6 +66,10 @@ public class MenuShaderElement : MonoBehaviour
 	public bool isInScrollRect = false;
 	[ShowIf("useShaderOnChildren")]
 	public List<Image> imagesComponent = new List<Image> ();
+	public bool overrideRenderQueue = false;
+	[ShowIf("overrideRenderQueue")]
+	public int renderQueue = 3000;
+
 
 	[Header ("On Start")]
 	public bool highlightedOnStart = false;
@@ -280,6 +284,9 @@ public class MenuShaderElement : MonoBehaviour
 				imageComponent.material.SetColor ("_ORANGECHROMAIdle", this.mainColor);
 			}
 
+			if (overrideRenderQueue)
+				material.renderQueue = renderQueue;
+
 			material = imageComponent.material;
 		}
 		else
@@ -318,6 +325,9 @@ public class MenuShaderElement : MonoBehaviour
 					imagesComponent [i].material.SetColor ("_GREENCHROMAIdle", this.mainColor);
 					imagesComponent [i].material.SetColor ("_ORANGECHROMAIdle", this.mainColor);
 				}
+
+				if (overrideRenderQueue)
+					imagesComponent [i].material.renderQueue = renderQueue;
 
 				materials [i] = imagesComponent [i].material;
 			}

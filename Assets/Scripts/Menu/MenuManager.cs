@@ -350,7 +350,6 @@ public class MenuManager : Singleton <MenuManager>
 					if (OnFarPosition != null)
 						OnFarPosition ();
 
-					Debug.Log ("Quit Far");
 					break;
 				}
 			}
@@ -365,7 +364,6 @@ public class MenuManager : Singleton <MenuManager>
 				{
 					currentMenu.Cancel ();
 
-					Debug.Log ("Cancel");
 					break;
 				}
 
@@ -377,7 +375,6 @@ public class MenuManager : Singleton <MenuManager>
 					if (OnFarPosition != null)
 						OnFarPosition ();
 
-					Debug.Log ("Far Position");
 					break;
 				}
 			}
