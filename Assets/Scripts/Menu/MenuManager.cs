@@ -77,8 +77,6 @@ public class MenuManager : Singleton <MenuManager>
 
 	[Header ("REPULSE Logos")]
 	public Transform logosParent;
-	public float logoStartDelay = 1f;
-	public float logoDelay = 0.5f;
 
 	[Header ("Modes Logos")]
 	public bool useStaticLogos = false;
@@ -242,10 +240,10 @@ public class MenuManager : Singleton <MenuManager>
 		
 	public IEnumerator HideLogo (bool start = false)
 	{
-		//cameraMovement.StartCoroutine ("StartScreen");
-		float delay = start ? logoStartDelay : logoDelay;
+		yield return new WaitForEndOfFrame ();
+		yield return new WaitForEndOfFrame ();
 
-		yield return new WaitForSeconds (cameraMovement.newMovementDuration);
+		//yield return new WaitForSeconds (cameraMovement.newMovementDuration);
 
 		logoLoading = true;
 
@@ -265,8 +263,6 @@ public class MenuManager : Singleton <MenuManager>
 			yield return 0;
 		}
 		while (!startScreenInput);
-
-	//	yield return new WaitForSeconds (delay);
 
 		if (cameraMovement.farPosition)
 			yield break;
@@ -487,7 +483,24 @@ public class MenuManager : Singleton <MenuManager>
 		}
 	}
 
+	public void BackButton ()
+	{
+		if (isTweening || DOTween.IsTweening ("MenuCamera") || startScreen)
+			return;
 
+		if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+			return;
+
+		if(!cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused && !logoLoading)
+		{
+			cameraMovement.ToggleFarPosition ();
+
+			if (OnFarPosition != null)
+				OnFarPosition ();
+		}
+		else
+			ExitMenu ();
+	}
 	#endregion
 
 	#region Submit Methods

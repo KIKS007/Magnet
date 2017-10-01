@@ -357,7 +357,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
 		{
 			if (!SceneManager.GetSceneByName (environementScenes [newChromaIndex]).isLoaded && !alreadyLoaded)
 				yield return SceneManager.LoadSceneAsync (environementScenes [newChromaIndex], LoadSceneMode.Additive);
-			
+
+			SceneManager.SetActiveScene (SceneManager.GetSceneByName (environementScenes [newChromaIndex]));
+
 			currentEnvironementScene = environementScenes [newChromaIndex];
 		}
 
