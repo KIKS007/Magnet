@@ -8,6 +8,8 @@ namespace Replay
 {
 	public class ReplayParticles : ReplayComponent 
 	{
+		public bool listParticle = true;
+
 		[Header ("Data")]
 		public List<TimelinedParticles> particles = new List<TimelinedParticles> ();
 
@@ -19,21 +21,36 @@ namespace Replay
 				return;
 
 			if (GetComponent<ParticlesAutoDestroy> ())
-				Destroy (GetComponent<ParticlesAutoDestroy> ());
+			{
+				if(!listParticle)
+					Destroy (GetComponent<ParticlesAutoDestroy> ());
+				else
+					GetComponent<ParticlesAutoDestroy> ().replayParticles = true;
+			}
 
 			particleSys = GetComponent<ParticleSystem> ();
+
+			if(listParticle)
+				ReplayManager.Instance.particlesReplay.Add (new ReplayManager.Particles (particleSys));
+
 
 			base.Start ();
 		}
 
 		public override void OnClear ()
 		{
+			if (listParticle)
+				return;
+
 			base.OnClear ();
 			particles.Clear ();
 		}
 
 		public override void OnRecordingStart ()
 		{
+			if (listParticle)
+				return;
+			
 			base.OnRecordingStart ();
 
 			particles = new List<TimelinedParticles> ();
@@ -46,6 +63,9 @@ namespace Replay
 
 		protected override void Recording ()
 		{
+			if (listParticle)
+				return;
+			
 			base.Recording ();
 
 			particles.Add (new TimelinedParticles (particleSys));
@@ -53,6 +73,9 @@ namespace Replay
 
 		public override void OnReplayStart ()
 		{
+			if (listParticle)
+				return;
+			
 			base.OnReplayStart ();
 
 			particleSys.Play (true);
@@ -61,12 +84,18 @@ namespace Replay
 
 		public override void OnReplayStop ()
 		{
+			if (listParticle)
+				return;
+			
 			base.OnReplayStop ();
 
 		}
 
 		public override void Replay (float t)
 		{
+			if (listParticle)
+				return;
+			
 			base.Replay (t);
 
 			if(particles == null)
@@ -77,7 +106,7 @@ namespace Replay
 
 			if (particles.Count == 0)
 				return;
-			
+
 			if (t < particles [0].time)
 				particleSys.Clear ();
 

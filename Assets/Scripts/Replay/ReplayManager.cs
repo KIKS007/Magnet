@@ -114,6 +114,12 @@ namespace Replay
 		public bool useAnimationCurves = false;
 		public float listRecordEpsilon = 0.008f;
 
+		[Header ("Particles")]
+		public List<Particles> particlesReplay = new List<Particles> ();
+
+		[Header ("ArenaDeadzones")]
+		public List<ArenaDeadzoneColumn> arenaDeadzoneColumns = new List<ArenaDeadzoneColumn> ();
+
 		public Action<float> OnReplayTimeChange;
 		public Action OnReplayStart;
 		public Action OnReplayStop;
@@ -143,6 +149,7 @@ namespace Replay
 
 		private float _startTime;
 		private float _endTime;
+		private ArenaDeadzones _arenaDeadzones;
 
 		#endregion
 
@@ -204,6 +211,10 @@ namespace Replay
 				OnReplayStart ();
 			}
 
+			_arenaDeadzones.Reset ();
+
+			StartCoroutine (Replaying ());
+
 			if(OnReplayTimeChange != null)
 				OnReplayTimeChange (_startTime);
 		}
@@ -238,7 +249,50 @@ namespace Replay
 			_replay.GetComponent<Button> ().onClick.AddListener (() => ReplayReplay ());
 			_slide.GetComponent<Slider> ().onValueChanged.AddListener ((Single v) => SetCursor (v));
 
+			_arenaDeadzones = FindObjectOfType<ArenaDeadzones> ();
+
 			SetUIEvents ();
+		}
+
+		void ResetReplay ()
+		{
+			particlesReplay.Clear ();
+			arenaDeadzoneColumns.Clear ();
+
+			_arenaDeadzones.Reset ();
+		}
+
+		protected virtual IEnumerator Replaying ()
+		{
+			while(isReplaying)
+			{
+				if (isReplaying && !isPaused)
+					Replay (ReplayManager.Instance.GetReplayTime ());
+
+				yield return new WaitForEndOfFrame ();
+			}
+		}
+
+		void Replay (float time)
+		{
+			foreach(var p in particlesReplay)
+			{
+				if(time >= p.time && !p.replayed)
+				{
+					p.replayed = true;
+					p.particles.gameObject.SetActive (true);
+					p.particles.Play ();
+				}
+			}
+
+			foreach(var c in arenaDeadzoneColumns)
+			{
+				if(time >= c.time && !c.replayed)
+				{
+					c.replayed = true;
+					StartCoroutine (_arenaDeadzones.SetDeadly (c.columnParent, true));
+				}
+			}
 		}
 
 		void SetUIEvents ()
@@ -414,6 +468,34 @@ namespace Replay
 				AnimationUtility.SetKeyRightTangentMode (curve, i, AnimationUtility.TangentMode.Constant);
 			}
 			#endif
+		}
+
+		[System.Serializable]
+		public class Particles
+		{
+			public float time;
+			public bool replayed = false;
+			public ParticleSystem particles;
+
+			public Particles (ParticleSystem p)
+			{
+				time = ReplayManager.Instance.GetCurrentTime ();
+				particles = p;
+			}
+		}
+
+		[System.Serializable]
+		public class ArenaDeadzoneColumn
+		{
+			public float time;
+			public bool replayed = false;
+			public Transform columnParent;
+
+			public ArenaDeadzoneColumn (Transform t)
+			{
+				time = ReplayManager.Instance.GetCurrentTime ();
+				columnParent = t;
+			}
 		}
 	}
 }

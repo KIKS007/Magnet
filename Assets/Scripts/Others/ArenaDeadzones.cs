@@ -196,8 +196,11 @@ public class ArenaDeadzones : MonoBehaviour
 		}
 	}
 
-	public IEnumerator SetDeadly (Transform column)
+	public IEnumerator SetDeadly (Transform column, bool replaying = false)
 	{
+		if(!replaying)
+			ReplayManager.Instance.arenaDeadzoneColumns.Add (new ReplayManager.ArenaDeadzoneColumn (column));
+
 		foreach(var d in deadlyTransition)
 		{
 			if(d.toRed)

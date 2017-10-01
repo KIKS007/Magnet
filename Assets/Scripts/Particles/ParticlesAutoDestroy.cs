@@ -3,21 +3,23 @@ using System.Collections;
 
 public class ParticlesAutoDestroy : MonoBehaviour 
 {
+	public bool replayParticles = false;
 	private ParticleSystem ps;
 	
 	void Start() 
 	{
 		ps = GetComponent<ParticleSystem>();
+
+		StartCoroutine (Wait ());
 	}
-	
-	void Update() 
+
+	IEnumerator Wait ()
 	{
-		if(ps)
-		{
-			if(!ps.IsAlive())
-			{
-				Destroy(gameObject);
-			}
-		}
+		yield return new WaitWhile (() => ps.IsAlive ());
+
+		if (!replayParticles)
+			Destroy (gameObject);
+		else
+			gameObject.SetActive (false);
 	}
 }
