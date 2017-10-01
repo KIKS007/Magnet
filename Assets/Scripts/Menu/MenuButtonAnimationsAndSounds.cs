@@ -30,7 +30,9 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 	public Selectable selectableComponent;
 	[HideInInspector]
 	public bool selectableSelection = false;
-
+	[HideInInspector]
+	public bool forcedHighlight = false;
+	
 
 	protected override void Awake ()
 	{
@@ -159,20 +161,32 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
 
 		ShaderClick (false);
 
-		if(!useShaderOnChildren)
+		if(forcedHighlight)
 		{
-			if(selected)
+			if(!useShaderOnChildren)
 				material.SetInt (highlightToggle, 1);
 			else
-				material.SetInt (highlightToggle, 0);
+				foreach(var m in materials)
+					if(selected)
+						m.SetInt (highlightToggle, 1);
 		}
 		else
 		{
-			foreach(var m in materials)
+			if(!useShaderOnChildren)
+			{
 				if(selected)
-					m.SetInt (highlightToggle, 1);
+					material.SetInt (highlightToggle, 1);
 				else
-					m.SetInt (highlightToggle, 0);
+					material.SetInt (highlightToggle, 0);
+			}
+			else
+			{
+				foreach(var m in materials)
+					if(selected)
+						m.SetInt (highlightToggle, 1);
+					else
+						m.SetInt (highlightToggle, 0);
+			}
 		}
 
 		TextColorChange ();
