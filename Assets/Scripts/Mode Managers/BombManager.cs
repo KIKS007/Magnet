@@ -202,15 +202,34 @@ public class BombManager : LastManManager
 		if (gameEndLoopRunning)
 			yield break;
 
-		if(bombScript.playerHolding == null)
+		if(!bombScript.hold)
 		{
+//			Debug.Log ("Bomb Player Choice");
+
 			if(bombScript.attracedBy.Count > 0)
+			{
 				bombScript.attracedBy[0].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);			
+//				Debug.Log ("Player Attracted By: " + bombScript.attracedBy[0], bombScript.attracedBy[0]);
+			}
 			else
-				GlobalVariables.Instance.AlivePlayersList [Random.Range (0, GlobalVariables.Instance.AlivePlayersList.Count)].GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
+			{
+				var players = new List<GameObject> ();
+
+				foreach(var p in GlobalVariables.Instance.AlivePlayersList)
+				{
+					var script = p.GetComponent<PlayersGameplay> ();
+
+					if (script.playerState == PlayerState.Dead || script.playerState == PlayerState.Stunned || script.holdState == HoldState.CannotHold)
+						continue;
+
+					players.Add (p);
+				}
+
+				GameObject player = players [Random.Range (0, players.Count)];
+				player.GetComponent<PlayersGameplay> ().OnHoldMovable (bomb);
+//				Debug.Log ("Player Choice: " + player, player);
+			}
 		}
-		else
-			Debug.LogError("Bomb PlayerHolding Bug");
 	}
 
 	protected override IEnumerator GameEnd ()

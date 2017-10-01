@@ -124,7 +124,7 @@ public class MenuManager : Singleton <MenuManager>
 		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange ();
 
 		GlobalVariables.Instance.OnGamepadDisconnected += GamepadDisconnected;
-		GlobalVariables.Instance.OnEndMode += HideStaticModesLogos;
+		GlobalVariables.Instance.OnMenu += HideStaticModesLogos;
 		GlobalVariables.Instance.OnStartMode += ModeLogo;
 		GlobalVariables.Instance.OnRestartMode += ModeLogo;
 		GlobalVariables.Instance.OnPlayerDeath += OnPlayerDeath;

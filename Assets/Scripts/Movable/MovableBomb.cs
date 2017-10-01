@@ -47,6 +47,9 @@ public class MovableBomb : MovableScript
 			cubeMaterial.SetColor ("_Color", GlobalVariables.Instance.playersColors[4]);
 		}
 
+		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+			g.GetComponent<PlayersGameplay> ().RemoveCubeAttractionRepulsion (this);
+
 		attracedBy.Clear ();
 		repulsedBy.Clear ();
 	}
@@ -86,6 +89,7 @@ public class MovableBomb : MovableScript
 			hold = true;
 			playerHolding = other.gameObject;
 
+			playerScript.OnDeath -= PlayerSuicide;
 			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
 			mainCamera.GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.Stun);
@@ -100,11 +104,11 @@ public class MovableBomb : MovableScript
 		base.OnHold ();
 
 		if (playerHolding != null)
-			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
+			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= PlayerSuicide;
 
 		playerHolding = player.gameObject;
 
-		playerHolding.GetComponent<PlayersGameplay> ().OnDeath += ChooseAnotherPlayer;
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath += PlayerSuicide;
 	}
 
 	public override void OnRelease ()
@@ -150,7 +154,7 @@ public class MovableBomb : MovableScript
 
 		Vector3 explosionPos = Vector3.Lerp (playerHolding.transform.position, transform.position, 0.5f);
 
-		playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
+		playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= PlayerSuicide;
 
 		playerHolding.GetComponent<PlayersGameplay> ().Death (DeathFX.All, explosionPos);
 
@@ -180,7 +184,7 @@ public class MovableBomb : MovableScript
 
 		StartCoroutine (AddSpeed ());
 
-		while(Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
+		while(playerHolding && Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
 		{
 			if (!hold)
 			{
@@ -220,12 +224,12 @@ public class MovableBomb : MovableScript
 			StartCoroutine (AddSpeed ());
 	}
 
-	void ChooseAnotherPlayer ()
+	void PlayerSuicide ()
 	{
 		tag = "Untagged";
 
 		if(playerHolding)
-			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= ChooseAnotherPlayer;
+			playerHolding.GetComponent<PlayersGameplay> ().OnDeath -= PlayerSuicide;
 
 		playerHolding = null;
 		trackingPlayer = false;
