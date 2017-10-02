@@ -4,37 +4,39 @@ using UnityEngine;
 
 public class AIAttract : AIComponent
 {
-	protected override void Enable ()
-	{
-		if (!AIScript.shootLayerEnabled)
-			return;
+    protected override void Enable()
+    {
+        if (!AIScript.shootLayerEnabled)
+            return;
 
-		if (!CanPlay ())
-			return;
+        if (!CanPlay())
+            return;
 
-		base.Enable ();
+        Debug.Log("Attract Enable");
+
+        base.Enable();
 		
-		AIScript.isAttracting = true;
-	}
+        AIScript.isAttracting = true;
+    }
 
-	protected override void Update ()
-	{
-		base.Update ();
+    protected override void Update()
+    {
+        base.Update();
 
-		if (!AIScript.shootLayerEnabled)
-			return;
+        if (!AIScript.shootLayerEnabled)
+            return;
 
-		if(!AIScript.isAttracting)
-			AIScript.isAttracting = true;
-	}
+        if (!AIScript.isAttracting)
+            AIScript.isAttracting = true;
+    }
 
-	protected override void OnDisable ()
-	{
-		if (!AIScript.shootLayerEnabled)
-			return;
+    protected override void OnDisable()
+    {
+        if (!AIScript.shootLayerEnabled)
+            return;
 		
-		base.OnDisable ();
+        base.OnDisable();
 		
-		AIScript.isAttracting = false;
-	}
+        AIScript.isAttracting = false;
+    }
 }
