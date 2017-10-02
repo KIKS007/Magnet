@@ -324,8 +324,6 @@ public class PlayersFXAnimations : MonoBehaviour
 
     public virtual IEnumerator AttractionFX(GameObject whichCube)
     {
-        float time = Time.unscaledTime;
-
         GameObject fx = Instantiate(GlobalVariables.Instance.attractFX[playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
         attractionRepulsionFX.Add(fx);
         ParticleSystem ps = fx.GetComponent<ParticleSystem>();
@@ -344,8 +342,6 @@ public class PlayersFXAnimations : MonoBehaviour
         yield return new WaitWhile(() => ps.IsAlive());
 
         attractionRepulsionFX.Remove(fx);
-
-        // Debug.Log(gameObject.name + " FX time: " + (Time.unscaledTime - time).ToString(), gameObject);
 
         if (!ReplayManager.Instance.replayEnabled)
             Destroy(fx);

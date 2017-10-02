@@ -12,8 +12,6 @@ public class AIAttract : AIComponent
         if (!CanPlay())
             return;
 
-        Debug.Log("Attract Enable");
-
         base.Enable();
 		
         AIScript.isAttracting = true;

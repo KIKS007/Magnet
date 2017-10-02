@@ -33,16 +33,19 @@ public class MagnetZoneScript : MonoBehaviour
 		
         if (rewiredPlayer != null)
         {
-            if (rewiredPlayer.GetButtonUp("Attract"))
+            if (rewiredPlayer.GetButtonUp("Attract") && playerScript.cubesAttracted.Count > 0)
                 playerScript.cubesAttracted.Clear();
 			
-            if (rewiredPlayer.GetButtonUp("Repulse"))
+            if (rewiredPlayer.GetButtonUp("Repulse") && playerScript.cubesRepulsed.Count > 0)
                 playerScript.cubesRepulsed.Clear();
 			
             if (rewiredPlayer.GetButton("Repulse") && rewiredPlayer.GetButton("Attract"))
             {
-                playerScript.cubesAttracted.Clear();
-                playerScript.cubesRepulsed.Clear();
+                if (playerScript.cubesAttracted.Count > 0)
+                    playerScript.cubesAttracted.Clear();
+               
+                if (playerScript.cubesRepulsed.Count > 0)
+                    playerScript.cubesRepulsed.Clear();
             }			
         }
     }
@@ -71,7 +74,7 @@ public class MagnetZoneScript : MonoBehaviour
             {
                 if (hit.collider.gameObject.tag == "Movable" || hit.collider.gameObject.tag == "Suggestible")
                 {
-                    Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
+                    //Debug.DrawRay(player.transform.position, other.transform.position - player.transform.position, Color.red);
 					
                     if (rewiredPlayer.GetButton("Attract") && !rewiredPlayer.GetButton("Repulse"))
                         Attract(other);

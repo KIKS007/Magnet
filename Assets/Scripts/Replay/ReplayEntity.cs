@@ -197,9 +197,9 @@ namespace Replay
     [Serializable]
     public class TimelinedVector3
     {
-        public AnimationCurve x;
-        public AnimationCurve y;
-        public AnimationCurve z;
+        public AnimationCurve x = new AnimationCurve();
+        public AnimationCurve y = new AnimationCurve();
+        public AnimationCurve z = new AnimationCurve();
 
         public void Add(Vector3 v)
         {
@@ -217,10 +217,10 @@ namespace Replay
     [Serializable]
     public class TimelinedQuaternion
     {
-        public AnimationCurve x;
-        public AnimationCurve y;
-        public AnimationCurve z;
-        public AnimationCurve w;
+        public AnimationCurve x = new AnimationCurve();
+        public AnimationCurve y = new AnimationCurve();
+        public AnimationCurve z = new AnimationCurve();
+        public AnimationCurve w = new AnimationCurve();
 
         public void Add(Quaternion v)
         {
@@ -239,10 +239,10 @@ namespace Replay
     [Serializable]
     public class RecordData
     {
-        public TimelinedVector3 position;
-        public TimelinedQuaternion rotation;
-        public TimelinedVector3 scale;
-        public AnimationCurve enabled;
+        public TimelinedVector3 position = new TimelinedVector3();
+        public TimelinedQuaternion rotation = new TimelinedQuaternion();
+        public TimelinedVector3 scale = new TimelinedVector3();
+        public AnimationCurve enabled = new AnimationCurve();
 
         public void Add(Transform t)
         {

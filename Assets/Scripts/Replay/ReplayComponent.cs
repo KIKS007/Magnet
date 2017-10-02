@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 namespace Replay
 {
@@ -43,9 +44,22 @@ namespace Replay
 
         public virtual void OnRecordingStart()
         {
-            StartCoroutine(RecordingRate());
+            //StartCoroutine(RecordingRate());
         }
 
+        protected virtual void Update()
+        {
+            if (ReplayManager.Instance.isRecording)
+            {
+                int recordRate = ReplayManager.Instance.recordRate;
+
+                if (overrideRecordRate)
+                    recordRate = this.recordRate;
+
+                if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
+                    Recording();
+            }
+        }
 
         protected virtual IEnumerator RecordingRate()
         {

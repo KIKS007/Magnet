@@ -35,9 +35,9 @@ namespace Replay
 			isReplaying = false;
 			isPaused = false;
 
-			OnReplayStart = null;
+			/*OnReplayStart = null;
 			OnReplayStop = null;
-			OnReplayTimeChange = null;
+			OnReplayTimeChange = null;*/
 
 			if (OnClear != null)
 				OnClear();
@@ -232,9 +232,9 @@ namespace Replay
 			isPaused = false;
 			_replayCanvas.GetComponent<CanvasGroup>().alpha = 0;
 
-			OnReplayStart = null;
+			/*OnReplayStart = null;
 			OnReplayStop = null;
-			OnReplayTimeChange = null;
+			OnReplayTimeChange = null;*/
 		}
 
 		// Use this for initialization
@@ -252,15 +252,22 @@ namespace Replay
 
 			_arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
 
+			GlobalVariables.Instance.OnStartMode += ResetReplay;
+			GlobalVariables.Instance.OnRestartMode += ResetReplay;
+
 			SetUIEvents();
 		}
 
 		void ResetReplay()
 		{
+			Clear();
+
 			particlesReplay.Clear();
 			arenaDeadzoneColumns.Clear();
 
-			_arenaDeadzones.Reset();
+			StartRecording();
+
+			//_arenaDeadzones.Reset();
 		}
 
 		protected virtual IEnumerator Replaying()
@@ -281,8 +288,12 @@ namespace Replay
 				if (time >= p.time && !p.replayed)
 				{
 					p.replayed = true;
-					p.particles.gameObject.SetActive(true);
+
+					if (!p.particles.gameObject.activeSelf)
+						p.particles.gameObject.SetActive(true);
+
 					p.particles.Play();
+					break;
 				}
 			}
 
@@ -292,6 +303,7 @@ namespace Replay
 				{
 					c.replayed = true;
 					StartCoroutine(_arenaDeadzones.SetDeadly(c.columnParent, true));
+					break;
 				}
 			}
 		}
