@@ -1252,14 +1252,14 @@ public class MenuManager : Singleton <MenuManager>
     {
         GlobalVariables.Instance.slowMotionCamera.StopPauseSlowMotion();
 
-        //ReplayManager.Instance.SetupStartReplay();
+        ReplayManager.Instance.StartReplay();
 
         StartCoroutine(cameraMovement.NewPlayPosition());
 
-        /*DOVirtual.DelayedCall(cameraMovement.newMovementDuration, () =>
+        DOVirtual.DelayedCall(cameraMovement.newMovementDuration, () =>
             {
-                ReplayManager.Instance.StartReplay();
-            });*/
+                ReplayManager.Instance.Play();
+            });
     }
 
     public void StopReplay()

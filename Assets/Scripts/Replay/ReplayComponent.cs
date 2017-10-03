@@ -38,13 +38,12 @@ namespace Replay
 
         protected virtual void OnEnable()
         {
-            /* if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
-                StartCoroutine(RecordingRate());*/
+            
         }
 
         public virtual void OnRecordingStart()
         {
-            //StartCoroutine(RecordingRate());
+            
         }
 
         protected virtual void Update()
@@ -59,6 +58,9 @@ namespace Replay
                 if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
                     Recording();
             }
+
+            if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
+                Replay(ReplayManager.Instance.GetReplayTime());
         }
 
         protected virtual IEnumerator RecordingRate()
@@ -90,19 +92,6 @@ namespace Replay
         public virtual void OnReplayStart()
         {
             gameObject.SetActive(true);
-
-            StartCoroutine(Replaying());
-        }
-
-        protected virtual IEnumerator Replaying()
-        {
-            while (ReplayManager.Instance.isReplaying)
-            {
-                if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
-                    Replay(ReplayManager.Instance.GetReplayTime());
-
-                yield return new WaitForEndOfFrame();
-            }
         }
 
         public virtual void Replay(float t)

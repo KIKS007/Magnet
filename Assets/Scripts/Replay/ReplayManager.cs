@@ -104,6 +104,10 @@ namespace Replay
         public int recordRate = 120;
         public int particlesRecordRate = 60;
 
+        [Header("Replay")]
+        public List<ReplaySpeed> replaySpeed = new List<ReplaySpeed>();
+        public int currentReplaySpeed = 0;
+
         [Header("States")]
         public bool isRecording = false;
         public bool isReplaying = false;
@@ -113,7 +117,6 @@ namespace Replay
         public List<GameStateEnum> noRecordStates = new List<GameStateEnum>();
 
         [Header("Replay Entities")]
-        public bool useAnimationCurves = false;
         public float listRecordEpsilon = 0.008f;
 
         [Header("Particles")]
@@ -127,8 +130,6 @@ namespace Replay
         public Action OnReplayStop;
         public Action OnRecordingStart;
         public Action OnRecordingStop;
-        public Action OnReplayPlay;
-        public Action OnReplayPause;
         public Action OnClear;
 
         private bool wasPlaying = true;
@@ -154,6 +155,70 @@ namespace Replay
         private ArenaDeadzones _arenaDeadzones;
 
         #endregion
+
+        // Use this for initialization
+        void Start()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            _slide = _replayCanvas.GetComponentInChildren<Slider>();
+
+            _play.GetComponent<Button>().onClick.AddListener(() => Play());
+            _pause.GetComponent<Button>().onClick.AddListener(() => Pause());
+            _replay.GetComponent<Button>().onClick.AddListener(() => ReplayReplay());
+            _slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
+
+            _arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
+
+            GlobalVariables.Instance.OnStartMode += ResetReplay;
+            GlobalVariables.Instance.OnRestartMode += ResetReplay;
+            GlobalVariables.Instance.OnEndMode += () =>
+            {
+                DOVirtual.DelayedCall(GlobalVariables.Instance.lastManManager.endGameDelay, () =>
+                    {
+                        StopRecording();
+
+                    }).SetUpdate(true);
+            };
+
+            SetUIEvents();
+        }
+
+        [ButtonGroupAttribute("Repplay", -1)]
+        public void NextReplaySpeed()
+        {
+            if (currentReplaySpeed + 1 >= replaySpeed.Count)
+                currentReplaySpeed = 0;
+            else
+                currentReplaySpeed++;
+        }
+
+        [ButtonGroupAttribute("Repplay", -1)]
+        public void PreviousReplaySpeed()
+        {
+            if (currentReplaySpeed - 1 < 0)
+                currentReplaySpeed = replaySpeed.Count - 1;
+            else
+                currentReplaySpeed--;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (isReplaying)
+            {
+                if (!isPaused)
+                {
+                    _slide.value += Time.unscaledDeltaTime * replaySpeed[currentReplaySpeed].speed;
+
+                    if (OnReplayTimeChange != null)
+                        OnReplayTimeChange(_slide.value);
+
+                    Replay(ReplayManager.Instance.GetReplayTime());
+                }
+            }
+        }
 
         public float GetCurrentTime()
         {
@@ -185,7 +250,7 @@ namespace Replay
                 OnRecordingStop();
         }
 
-        public void SetupStartReplay()
+        public void StartReplay()
         {
             if (OnRecordingStart == null)
             {
@@ -196,7 +261,9 @@ namespace Replay
             _replayCanvas.GetComponent<CanvasGroup>().alpha = 1;
             _slide.maxValue = _endTime - _startTime;
 
-            _slide.value = _slide.minValue;
+            foreach (Transform p in GlobalVariables.Instance.ParticulesClonesParent)
+                if (p.GetComponent<ParticleSystem>() != null)
+                    p.GetComponent<ParticleSystem>().Clear();
 
             for (int i = 0; i < particlesReplay.Count; i++)
                 particlesReplay[i].replayed = false;
@@ -217,18 +284,14 @@ namespace Replay
             }
 
             _arenaDeadzones.Reset();
-        }
 
-        public void StartReplay()
-        {
-            SetupStartReplay();
+            isReplaying = true;
+            isPaused = false;
 
-            StartCoroutine(Replaying());
+            _slide.value = 0;
 
             if (OnReplayTimeChange != null)
                 OnReplayTimeChange(_startTime);
-
-            Play();
         }
 
         void StopReplay()
@@ -248,34 +311,6 @@ namespace Replay
 			OnReplayTimeChange = null;*/
         }
 
-        // Use this for initialization
-        void Start()
-        {
-            if (!gameObject.activeSelf)
-                return;
-
-            _slide = _replayCanvas.GetComponentInChildren<Slider>();
-
-            _play.GetComponent<Button>().onClick.AddListener(() => Play());
-            _pause.GetComponent<Button>().onClick.AddListener(() => Pause());
-            _replay.GetComponent<Button>().onClick.AddListener(() => ReplayReplay());
-            _slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
-
-            _arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
-
-            GlobalVariables.Instance.OnStartMode += ResetReplay;
-            GlobalVariables.Instance.OnRestartMode += ResetReplay;
-            GlobalVariables.Instance.OnEndMode += () =>
-            {
-                DOVirtual.DelayedCall(GlobalVariables.Instance.lastManManager.endGameDelay, () =>
-                    {
-                        StopRecording();
-                    });
-            };
-
-            SetUIEvents();
-        }
-
         void ResetReplay()
         {
             Clear();
@@ -286,17 +321,6 @@ namespace Replay
             StartRecording();
 
             //_arenaDeadzones.Reset();
-        }
-
-        protected virtual IEnumerator Replaying()
-        {
-            while (isReplaying)
-            {
-                if (isReplaying && !isPaused)
-                    Replay(ReplayManager.Instance.GetReplayTime());
-
-                yield return new WaitForEndOfFrame();
-            }
         }
 
         void Replay(float time)
@@ -326,6 +350,9 @@ namespace Replay
             }
         }
 
+
+        #region UI Methods
+
         void SetUIEvents()
         {
             EventTrigger trigger = _slide.GetComponent<EventTrigger>();
@@ -335,7 +362,7 @@ namespace Replay
                 entry.callback.AddListener((eventData) =>
                     {
                         wasPlaying = !isPaused;
-						
+
                         isPaused = true;
 
                         Pause();
@@ -374,31 +401,12 @@ namespace Replay
             }
         }
 
-	
-        // Update is called once per frame
-        void Update()
-        {
-            if (isReplaying)
-            {
-                if (!isPaused)
-                {
-                    _slide.value += Time.unscaledDeltaTime;
-					
-                    /*if (OnReplayTimeChange != null) 
-						OnReplayTimeChange (_slide.value);*/
-                }
-            }
-        }
-
         public void Play()
         {
             _slide.Select();
 
             if (_slide.value == _endTime - _startTime)
                 return;
-
-            if (OnReplayPlay != null)
-                OnReplayPlay();
 
             if (isPaused || !isReplaying)
             {
@@ -428,9 +436,6 @@ namespace Replay
         {
             _slide.Select();
 
-            if (OnReplayPause != null)
-                OnReplayPause();
-
             if (!isPaused)
             {
                 isPaused = true;
@@ -449,6 +454,8 @@ namespace Replay
             _slide.value = 0;
             replayReplayAvailable = false;
             isPaused = false;
+
+            StartReplay();
 
             Swap(_replay.gameObject);
             Play();
@@ -472,11 +479,11 @@ namespace Replay
                 Swap(_play.gameObject, _replay.gameObject, .2f);
             }
 
-            if (OnReplayTimeChange != null && isPaused)
+            /*if (OnReplayTimeChange != null && isPaused)
             {
                 OnReplayTimeChange(value + _startTime);
                 Debug.Log(value + _startTime);
-            }
+            }*/
         }
 
         void RefreshTimer()
@@ -504,6 +511,8 @@ namespace Replay
             #endif
         }
 
+        #endregion
+
         [System.Serializable]
         public class Particles
         {
@@ -530,6 +539,13 @@ namespace Replay
                 time = ReplayManager.Instance.GetCurrentTime();
                 columnParent = t;
             }
+        }
+
+        [System.Serializable]
+        public class ReplaySpeed
+        {
+            public string speedName;
+            public float speed = 1;
         }
     }
 }

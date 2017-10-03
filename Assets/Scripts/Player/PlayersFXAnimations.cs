@@ -343,7 +343,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
         attractionRepulsionFX.Remove(fx);
 
-        Destroy(fx);
+        if (fx.GetComponent<ReplayParticles>() == null)
+            Destroy(fx);
     }
 
     protected virtual IEnumerator SetAttractionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)
@@ -403,7 +404,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
         attractionRepulsionFX.Remove(fx);
 
-        Destroy(fx);
+        if (fx.GetComponent<ReplayParticles>() == null)
+            Destroy(fx);
     }
 
     protected virtual IEnumerator SetRepulsionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)

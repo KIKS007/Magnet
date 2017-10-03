@@ -44,7 +44,11 @@ namespace Replay
         {
             base.OnEnable();
 
-            enableData.Add(new EnableData(transform, true));
+            if (ReplayManager.Instance.isRecording && gameObject.layer == LayerMask.NameToLayer("Movables") && recordScale)
+                data.scale.Add(Vector3.zero);
+
+            if (ReplayManager.Instance.isRecording)
+                enableData.Add(new EnableData(transform, true));
         }
 
         void OnDisable()
@@ -52,7 +56,8 @@ namespace Replay
             if (GlobalVariables.applicationIsQuitting)
                 return;
             
-            enableData.Add(new EnableData(transform, false));
+            if (ReplayManager.Instance.isRecording)
+                enableData.Add(new EnableData(transform, false));
         }
 
         public override void OnClear()
@@ -61,33 +66,33 @@ namespace Replay
             data = new RecordData();
         }
 
+        public override void OnRecordingStart()
+        {
+            base.OnRecordingStart();
+
+            if (gameObject.activeSelf)
+                enableData.Add(new EnableData(transform, true));
+        }
+
         protected override void Recording()
         {
             base.Recording();
 
-            if (ReplayManager.Instance.useAnimationCurves)
-            {
-                if (recordPosition)
-                    data.position.Add(transform.position);
+            if (recordPosition)
+                data.position.Add(transform.position);
 				
-                if (recordRotation)
-                    data.rotation.Add(transform.rotation);
+            if (recordRotation)
+                data.rotation.Add(transform.rotation);
 				
-                if (recordScale)
-                    data.scale.Add(transform.localScale);
+            if (recordScale)
+                data.scale.Add(transform.localScale);
 
-                enableData.Add(new EnableData(transform, gameObject.activeSelf));
-            }
+            //enableData.Add(new EnableData(transform, gameObject.activeSelf));
         }
 
         public override void OnReplayStart()
         {
             base.OnReplayStart();
-
-            if (ReplayManager.Instance.useAnimationCurves)
-            {
-                enableData.Add(new EnableData(transform, gameObject.activeSelf));
-            }
 
             rigidBody = GetComponent<Rigidbody>();
 
@@ -121,26 +126,23 @@ namespace Replay
         {
             base.Replay(t);
 
-            if (ReplayManager.Instance.useAnimationCurves)
+            if (recordPosition && data.position.x.keys.Length > 0)
+                transform.position = data.position.Get(t);
+				
+            if (recordRotation && data.rotation.x.keys.Length > 0)
+                transform.rotation = data.rotation.Get(t);
+				
+            if (recordScale && data.scale.x.keys.Length > 0)
+                transform.localScale = data.scale.Get(t);
+
+            foreach (var d in enableData)
             {
-                if (recordPosition && data.position.x.keys.Length > 0)
-                    transform.position = data.position.Get(t);
-				
-                if (recordRotation && data.rotation.x.keys.Length > 0)
-                    transform.rotation = data.rotation.Get(t);
-				
-                if (recordScale && data.scale.x.keys.Length > 0)
-                    transform.localScale = data.scale.Get(t);
-
-                foreach (var d in enableData)
+                if (Mathf.Abs(d.time - t) < ReplayManager.Instance.listRecordEpsilon)
                 {
-                    if (Mathf.Abs(d.time - t) < ReplayManager.Instance.listRecordEpsilon)
-                    {
-                        if (recordEnable)
-                            gameObject.SetActive(d.enabled);
+                    if (recordEnable)
+                        gameObject.SetActive(d.enabled);
 
-                        break;
-                    }
+                    break;
                 }
             }
         }

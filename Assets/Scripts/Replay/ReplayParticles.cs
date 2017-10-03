@@ -110,7 +110,15 @@ namespace Replay
                 return;
 
             if (t < particles[0].time)
+            {
                 particleSys.Clear();
+                return;
+            }
+
+            if (t > particles[particles.Count - 1].time)
+            {
+                return;
+            }
 
             foreach (var p in particles)
             {
