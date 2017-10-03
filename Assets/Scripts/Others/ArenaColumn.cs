@@ -12,14 +12,17 @@ public class ArenaColumn : MonoBehaviour
     private Color color;
     private float scaleModifier = 1.5f;
     private Vector3 scale;
+    private ArenaDeadzones arenaDeadzones;
 
     void Start()
     {
         rend = GetComponent<Renderer>();
         scale = transform.localScale;
 
-        GlobalVariables.Instance.OnStartMode += () => color = rend.material.GetColor("_EmissionColor");
-        GlobalVariables.Instance.OnRestartMode += () => color = rend.material.GetColor("_EmissionColor");
+        GlobalVariables.Instance.OnStartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma];
+        GlobalVariables.Instance.OnRestartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma];
+
+        arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -71,6 +74,6 @@ public class ArenaColumn : MonoBehaviour
             yield break;
         
         transform.DOScale(scale, duration);
-        rend.material.DOColor(color, "_EmissionColor", duration).SetId("ColumnRend" + GetInstanceID());
+        rend.material.DOColor(color * arenaDeadzones.normalEmission, "_EmissionColor", duration).SetId("ColumnRend" + GetInstanceID());
     }
 }

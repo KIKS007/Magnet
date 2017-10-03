@@ -155,7 +155,8 @@ namespace Replay
         {
             if (!gameObject.activeSelf)
                 return;
-
+            
+            transform.GetChild(0).gameObject.SetActive(true);
 
             _slide = _replayCanvas.GetComponentInChildren<Slider>();
             _slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
