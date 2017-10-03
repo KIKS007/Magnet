@@ -258,7 +258,7 @@ namespace Replay
                 return;
             }
 
-            _replayCanvas.GetComponent<CanvasGroup>().alpha = 1;
+            _replayCanvas.GetComponent<CanvasGroup>().DOFade(1, MenuManager.Instance.animationDuration);
             _slide.maxValue = _endTime - _startTime;
 
             foreach (Transform p in GlobalVariables.Instance.ParticulesClonesParent)
@@ -304,7 +304,7 @@ namespace Replay
 
             isReplaying = false;
             isPaused = false;
-            _replayCanvas.GetComponent<CanvasGroup>().alpha = 0;
+            _replayCanvas.GetComponent<CanvasGroup>().DOFade(0, MenuManager.Instance.animationDuration);
 
             /*OnReplayStart = null;
 			OnReplayStop = null;
