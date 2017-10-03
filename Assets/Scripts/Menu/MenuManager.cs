@@ -11,6 +11,7 @@ using GameAnalyticsSDK;
 using System;
 using GameAnalyticsSDK.Setup;
 using Steamworks;
+using Replay;
 
 public class MenuManager : Singleton <MenuManager>
 {
@@ -274,7 +275,7 @@ public class MenuManager : Singleton <MenuManager>
 
         backButtons.DOAnchorPosX(-resumeButtonsPositions.y, animationDuration).SetEase(Ease.OutQuad);
 
-        yield return new WaitForSeconds(animationDuration);
+        yield return new WaitForSecondsRealtime(animationDuration);
 
         if (cameraMovement.farPosition)
             yield break;
@@ -1245,6 +1246,25 @@ public class MenuManager : Singleton <MenuManager>
         MasterAudio.PlaySound(SoundsManager.Instance.closeMenuSound);
 
         LoadModeManager.Instance.RestartSceneVoid(false);
+    }
+
+    public void StartReplay()
+    {
+        GlobalVariables.Instance.slowMotionCamera.StopPauseSlowMotion();
+
+        //ReplayManager.Instance.SetupStartReplay();
+
+        StartCoroutine(cameraMovement.NewPlayPosition());
+
+        /*DOVirtual.DelayedCall(cameraMovement.newMovementDuration, () =>
+            {
+                ReplayManager.Instance.StartReplay();
+            });*/
+    }
+
+    public void StopReplay()
+    {
+        
     }
 
     #endregion

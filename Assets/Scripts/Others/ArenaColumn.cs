@@ -29,7 +29,7 @@ public class ArenaColumn : MonoBehaviour
 
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
         {
-            if (other.gameObject.tag != "HoldMovable" && other.gameObject.tag == "Player" && tag == "DeadZones")
+            if (other.gameObject.tag != "HoldMovable" && other.gameObject.tag == "Player" && tag == "DeadZone")
             {
                 var playerScript = other.gameObject.GetComponent<PlayersGameplay>();
 
@@ -37,9 +37,9 @@ public class ArenaColumn : MonoBehaviour
                     playerScript.Death(DeathFX.All, other.transform.position);
             } 
 
-            if (tag != "DeadZones")
+            if (tag != "DeadZone")
             {
-                if (other.gameObject.layer == LayerMask.NameToLayer("Movables") || other.gameObject.layer == LayerMask.NameToLayer("Player"))
+                if (other.gameObject.layer == LayerMask.NameToLayer("Movables") && other.attachedRigidbody != null || other.gameObject.layer == LayerMask.NameToLayer("Player") && other.gameObject.tag == "Player" && other.attachedRigidbody != null)
                 {
                     if (DOTween.IsTweening("ColumnRend" + GetInstanceID()))
                         DOTween.Kill("ColumnRend" + GetInstanceID());
@@ -53,8 +53,11 @@ public class ArenaColumn : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (tag != "DeadZones")
-        if (other.gameObject.layer == LayerMask.NameToLayer("Movables") || other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        if (ReplayManager.Instance.isReplaying)
+            return;
+        
+        if (tag != "DeadZone")
+        if (other.gameObject.layer == LayerMask.NameToLayer("Movables") && other.attachedRigidbody != null || other.gameObject.layer == LayerMask.NameToLayer("Player") && other.gameObject.tag == "Player" && other.attachedRigidbody != null)
         {
             StartCoroutine(Exit());
         }
@@ -64,7 +67,7 @@ public class ArenaColumn : MonoBehaviour
     {
         yield return new WaitWhile(() => DOTween.IsTweening("ColumnRend" + GetInstanceID()));
 
-        if (tag == "DeadZones")
+        if (tag == "DeadZone")
             yield break;
         
         transform.DOScale(scale, duration);

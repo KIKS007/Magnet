@@ -38,8 +38,8 @@ namespace Replay
 
         protected virtual void OnEnable()
         {
-            if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
-                StartCoroutine(RecordingRate());
+            /* if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
+                StartCoroutine(RecordingRate());*/
         }
 
         public virtual void OnRecordingStart()
@@ -89,7 +89,7 @@ namespace Replay
 
         public virtual void OnReplayStart()
         {
-            //  gameObject.SetActive(true);
+            gameObject.SetActive(true);
 
             StartCoroutine(Replaying());
         }

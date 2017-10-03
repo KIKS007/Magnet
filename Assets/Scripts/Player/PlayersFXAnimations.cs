@@ -343,10 +343,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
         attractionRepulsionFX.Remove(fx);
 
-        if (!ReplayManager.Instance.replayEnabled)
-            Destroy(fx);
-        /*  else
-            fx.gameObject.SetActive(false);*/
+        Destroy(fx);
     }
 
     protected virtual IEnumerator SetAttractionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)
@@ -357,7 +354,6 @@ public class PlayersFXAnimations : MonoBehaviour
 
             Vector3 lookPos = new Vector3(transform.position.x, fx.transform.position.y, transform.position.z);
             fx.transform.LookAt(lookPos);
-
 
             float dist = Vector3.Distance(transform.position, whichCube.transform.position);
             float lifeTime = aFactor * dist + bFactor;
@@ -407,10 +403,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
         attractionRepulsionFX.Remove(fx);
 
-        if (!ReplayManager.Instance.replayEnabled)
-            Destroy(fx);
-        /*else
-            fx.gameObject.SetActive(false);*/
+        Destroy(fx);
     }
 
     protected virtual IEnumerator SetRepulsionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)

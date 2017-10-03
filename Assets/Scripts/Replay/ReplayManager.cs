@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,61 +21,61 @@ using UnityEditor;
 
 namespace Replay
 {
-	public class ReplayManager : Singleton<ReplayManager>
-	{
-		#region Buttons
+    public class ReplayManager : Singleton<ReplayManager>
+    {
+        #region Buttons
 
-		[PropertyOrder(-4)]
-		[Button("Clear Recording")]
-		public void Clear()
-		{
-			StopRecording();
-			StopReplay();
+        [PropertyOrder(-4)]
+        [Button("Clear Recording")]
+        public void Clear()
+        {
+            StopRecording();
+            StopReplay();
 
-			isRecording = false;
-			isReplaying = false;
-			isPaused = false;
+            isRecording = false;
+            isReplaying = false;
+            isPaused = false;
 
-			/*OnReplayStart = null;
+            /*OnReplayStart = null;
 			OnReplayStop = null;
 			OnReplayTimeChange = null;*/
 
-			if (OnClear != null)
-				OnClear();
+            if (OnClear != null)
+                OnClear();
 
-			LoadModeManager.Instance.DestroyParticules();
-		}
+            LoadModeManager.Instance.DestroyParticules();
+        }
 
-		[ButtonGroupAttribute("Record", -3)]
-		[Button("Start Recording")]
-		public void StartRecordingButton()
-		{
-			StartRecording();
-		}
+        [ButtonGroupAttribute("Record", -3)]
+        [Button("Start Recording")]
+        public void StartRecordingButton()
+        {
+            StartRecording();
+        }
 
-		[ButtonGroupAttribute("Record", -3)]
-		[Button("Stop Recording")]
-		public void StopRecordingButton()
-		{
-			StopRecording();
-		}
+        [ButtonGroupAttribute("Record", -3)]
+        [Button("Stop Recording")]
+        public void StopRecordingButton()
+        {
+            StopRecording();
+        }
 
-		[ButtonGroupAttribute("Replay", -2)]
-		[Button("Start Replay")]
-		public void StartReplayButton()
-		{
-			StartReplay();
-		}
+        [ButtonGroupAttribute("Replay", -2)]
+        [Button("Start Replay")]
+        public void StartReplayButton()
+        {
+            StartReplay();
+        }
 
-		[ButtonGroupAttribute("Replay", -2)]
-		[Button("Stop Replay")]
-		public void StopReplayButton()
-		{
-			StopRecording();
-			StopReplay();
-		}
+        [ButtonGroupAttribute("Replay", -2)]
+        [Button("Stop Replay")]
+        public void StopReplayButton()
+        {
+            StopRecording();
+            StopReplay();
+        }
 
-		/*[ButtonGroupAttribute ("Play", -1)]
+        /*[ButtonGroupAttribute ("Play", -1)]
 		[Button ("Play")]
 		public void PlayButton ()
 		{
@@ -95,423 +96,440 @@ namespace Replay
 			ReplayReplay ();
 		}*/
 
-		#endregion
+        #endregion
 
-		public bool replayEnabled = false;
+        public bool replayEnabled = false;
 
-		[Header("Record Rate")]
-		public int recordRate = 120;
-		public int particlesRecordRate = 60;
+        [Header("Record Rate")]
+        public int recordRate = 120;
+        public int particlesRecordRate = 60;
 
-		[Header("States")]
-		public bool isRecording = false;
-		public bool isReplaying = false;
-		public bool isPaused = false;
+        [Header("States")]
+        public bool isRecording = false;
+        public bool isReplaying = false;
+        public bool isPaused = false;
 
-		[Header("No Record States")]
-		public List<GameStateEnum> noRecordStates = new List<GameStateEnum>();
+        [Header("No Record States")]
+        public List<GameStateEnum> noRecordStates = new List<GameStateEnum>();
 
-		[Header("Replay Entities")]
-		public bool useAnimationCurves = false;
-		public float listRecordEpsilon = 0.008f;
+        [Header("Replay Entities")]
+        public bool useAnimationCurves = false;
+        public float listRecordEpsilon = 0.008f;
 
-		[Header("Particles")]
-		public List<Particles> particlesReplay = new List<Particles>();
+        [Header("Particles")]
+        public List<Particles> particlesReplay = new List<Particles>();
 
-		[Header("ArenaDeadzones")]
-		public List<ArenaDeadzoneColumn> arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>();
+        [Header("ArenaDeadzones")]
+        public List<ArenaDeadzoneColumn> arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>();
 
-		public Action<float> OnReplayTimeChange;
-		public Action OnReplayStart;
-		public Action OnReplayStop;
-		public Action OnRecordingStart;
-		public Action OnRecordingStop;
-		public Action OnReplayPlay;
-		public Action OnReplayPause;
-		public Action OnClear;
+        public Action<float> OnReplayTimeChange;
+        public Action OnReplayStart;
+        public Action OnReplayStop;
+        public Action OnRecordingStart;
+        public Action OnRecordingStop;
+        public Action OnReplayPlay;
+        public Action OnReplayPause;
+        public Action OnClear;
 
-		private bool wasPlaying = true;
+        private bool wasPlaying = true;
 
-		private bool replayReplayAvailable = false;
+        private bool replayReplayAvailable = false;
 
-		#region UI
+        #region UI
 
-		[Header("Replay UI")]
-		public Slider _slide;
-		public Image _play;
-		public Image _replay;
-		public Image _pause;
-		public Text _timestamp;
-		public GameObject _replayCanvas;
+        [Header("Replay UI")]
+        public Slider _slide;
+        public Image _play;
+        public Image _replay;
+        public Image _pause;
+        public Text _timestamp;
+        public GameObject _replayCanvas;
 
-		#endregion
+        #endregion
 
-		#region Time
+        #region Time
 
-		private float _startTime;
-		private float _endTime;
-		private ArenaDeadzones _arenaDeadzones;
+        private float _startTime;
+        private float _endTime;
+        private ArenaDeadzones _arenaDeadzones;
 
-		#endregion
+        #endregion
 
-		public float GetCurrentTime()
-		{
-			return Time.time - _startTime;
-		}
+        public float GetCurrentTime()
+        {
+            return Time.time - _startTime;
+        }
 
-		public float GetReplayTime()
-		{
-			return _slide.value;
-		}
+        public float GetReplayTime()
+        {
+            return _slide.value;
+        }
 
-		public void StartRecording()
-		{
-			_startTime = Time.time;
-			isRecording = true;
-			isReplaying = false;
+        public void StartRecording()
+        {
+            _startTime = Time.time;
+            isRecording = true;
+            isReplaying = false;
 
-			if (OnRecordingStart != null)
-				OnRecordingStart();
-		}
+            if (OnRecordingStart != null)
+                OnRecordingStart();
+        }
 
-		public void StopRecording()
-		{
-			_endTime = Time.time;
-			isRecording = false;
-			isReplaying = false;
+        public void StopRecording()
+        {
+            _endTime = Time.time;
+            isRecording = false;
+            isReplaying = false;
 
-			if (OnRecordingStop != null)
-				OnRecordingStop();
-		}
+            if (OnRecordingStop != null)
+                OnRecordingStop();
+        }
 
-		void StartReplay()
-		{
-			if (OnRecordingStart == null)
-			{
-				Debug.LogWarning("No Replay Entity!"); 
-				return;
-			}
+        public void SetupStartReplay()
+        {
+            if (OnRecordingStart == null)
+            {
+                Debug.LogWarning("No Replay Entity!"); 
+                return;
+            }
 
-			isReplaying = true;
-			isPaused = true;
+            _replayCanvas.GetComponent<CanvasGroup>().alpha = 1;
+            _slide.maxValue = _endTime - _startTime;
 
-			_replayCanvas.GetComponent<CanvasGroup>().alpha = 1;
-			_slide.maxValue = _endTime - _startTime;
+            _slide.value = _slide.minValue;
 
-			_slide.value = _slide.minValue;
+            for (int i = 0; i < particlesReplay.Count; i++)
+                particlesReplay[i].replayed = false;
 
-			RefreshTimer();
+            for (int i = 0; i < arenaDeadzoneColumns.Count; i++)
+                arenaDeadzoneColumns[i].replayed = false;
 
-			if (OnReplayStart != null)
-			{
-				// You can remove this log if you don't care
-				#if UNITY_EDITOR
-				Debug.Log("There's " + OnReplayStart.GetInvocationList().Length + " objects affected by the replay.");
-				#endif
+            RefreshTimer();
 
-				OnReplayStart();
-			}
+            if (OnReplayStart != null)
+            {
+                // You can remove this log if you don't care
+                #if UNITY_EDITOR
+                Debug.Log("There's " + OnReplayStart.GetInvocationList().Length + " objects affected by the replay.");
+                #endif
 
-			_arenaDeadzones.Reset();
+                OnReplayStart();
+            }
 
-			StartCoroutine(Replaying());
+            _arenaDeadzones.Reset();
+        }
 
-			if (OnReplayTimeChange != null)
-				OnReplayTimeChange(_startTime);
-		}
+        public void StartReplay()
+        {
+            SetupStartReplay();
 
-		void StopReplay()
-		{
-			if (OnReplayTimeChange != null)
-				OnReplayTimeChange(_endTime);
+            StartCoroutine(Replaying());
 
-			if (OnReplayStop != null)
-				OnReplayStop();
+            if (OnReplayTimeChange != null)
+                OnReplayTimeChange(_startTime);
 
-			isReplaying = false;
-			isPaused = false;
-			_replayCanvas.GetComponent<CanvasGroup>().alpha = 0;
+            Play();
+        }
 
-			/*OnReplayStart = null;
+        void StopReplay()
+        {
+            if (OnReplayTimeChange != null)
+                OnReplayTimeChange(_endTime);
+
+            if (OnReplayStop != null)
+                OnReplayStop();
+
+            isReplaying = false;
+            isPaused = false;
+            _replayCanvas.GetComponent<CanvasGroup>().alpha = 0;
+
+            /*OnReplayStart = null;
 			OnReplayStop = null;
 			OnReplayTimeChange = null;*/
-		}
+        }
 
-		// Use this for initialization
-		void Start()
-		{
-			if (!gameObject.activeSelf)
-				return;
+        // Use this for initialization
+        void Start()
+        {
+            if (!gameObject.activeSelf)
+                return;
 
-			_slide = _replayCanvas.GetComponentInChildren<Slider>();
+            _slide = _replayCanvas.GetComponentInChildren<Slider>();
 
-			_play.GetComponent<Button>().onClick.AddListener(() => Play());
-			_pause.GetComponent<Button>().onClick.AddListener(() => Pause());
-			_replay.GetComponent<Button>().onClick.AddListener(() => ReplayReplay());
-			_slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
+            _play.GetComponent<Button>().onClick.AddListener(() => Play());
+            _pause.GetComponent<Button>().onClick.AddListener(() => Pause());
+            _replay.GetComponent<Button>().onClick.AddListener(() => ReplayReplay());
+            _slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
 
-			_arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
+            _arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
 
-			GlobalVariables.Instance.OnStartMode += ResetReplay;
-			GlobalVariables.Instance.OnRestartMode += ResetReplay;
+            GlobalVariables.Instance.OnStartMode += ResetReplay;
+            GlobalVariables.Instance.OnRestartMode += ResetReplay;
+            GlobalVariables.Instance.OnEndMode += () =>
+            {
+                DOVirtual.DelayedCall(GlobalVariables.Instance.lastManManager.endGameDelay, () =>
+                    {
+                        StopRecording();
+                    });
+            };
 
-			SetUIEvents();
-		}
+            SetUIEvents();
+        }
 
-		void ResetReplay()
-		{
-			Clear();
+        void ResetReplay()
+        {
+            Clear();
 
-			particlesReplay.Clear();
-			arenaDeadzoneColumns.Clear();
+            particlesReplay.Clear();
+            arenaDeadzoneColumns.Clear();
 
-			StartRecording();
+            StartRecording();
 
-			//_arenaDeadzones.Reset();
-		}
+            //_arenaDeadzones.Reset();
+        }
 
-		protected virtual IEnumerator Replaying()
-		{
-			while (isReplaying)
-			{
-				if (isReplaying && !isPaused)
-					Replay(ReplayManager.Instance.GetReplayTime());
+        protected virtual IEnumerator Replaying()
+        {
+            while (isReplaying)
+            {
+                if (isReplaying && !isPaused)
+                    Replay(ReplayManager.Instance.GetReplayTime());
 
-				yield return new WaitForEndOfFrame();
-			}
-		}
+                yield return new WaitForEndOfFrame();
+            }
+        }
 
-		void Replay(float time)
-		{
-			foreach (var p in particlesReplay)
-			{
-				if (time >= p.time && !p.replayed)
-				{
-					p.replayed = true;
+        void Replay(float time)
+        {
+            foreach (var p in particlesReplay)
+            {
+                if (time >= p.time && !p.replayed)
+                {
+                    p.replayed = true;
 
-					if (!p.particles.gameObject.activeSelf)
-						p.particles.gameObject.SetActive(true);
+                    if (!p.particles.gameObject.activeSelf)
+                        p.particles.gameObject.SetActive(true);
 
-					p.particles.Play();
-					break;
-				}
-			}
+                    p.particles.Play();
+                    break;
+                }
+            }
 
-			foreach (var c in arenaDeadzoneColumns)
-			{
-				if (time >= c.time && !c.replayed)
-				{
-					c.replayed = true;
-					StartCoroutine(_arenaDeadzones.SetDeadly(c.columnParent, true));
-					break;
-				}
-			}
-		}
+            foreach (var c in arenaDeadzoneColumns)
+            {
+                if (time >= c.time && !c.replayed)
+                {
+                    c.replayed = true;
+                    StartCoroutine(_arenaDeadzones.SetDeadly(c.columnParent, true));
+                    break;
+                }
+            }
+        }
 
-		void SetUIEvents()
-		{
-			EventTrigger trigger = _slide.GetComponent<EventTrigger>();
-			{
-				EventTrigger.Entry entry = new EventTrigger.Entry();
-				entry.eventID = EventTriggerType.PointerDown;
-				entry.callback.AddListener((eventData) =>
-					{
-						wasPlaying = !isPaused;
+        void SetUIEvents()
+        {
+            EventTrigger trigger = _slide.GetComponent<EventTrigger>();
+            {
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerDown;
+                entry.callback.AddListener((eventData) =>
+                    {
+                        wasPlaying = !isPaused;
 						
-						isPaused = true;
+                        isPaused = true;
 
-						Pause();
-					});
-				trigger.triggers.Add(entry);
-			}
-			{
-				EventTrigger.Entry entry = new EventTrigger.Entry();
-				entry.eventID = EventTriggerType.PointerUp;
-				entry.callback.AddListener((eventData) =>
-					{
-						if (wasPlaying)
-							Play();
-					});
-				trigger.triggers.Add(entry);
-			}
+                        Pause();
+                    });
+                trigger.triggers.Add(entry);
+            }
+            {
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerUp;
+                entry.callback.AddListener((eventData) =>
+                    {
+                        if (wasPlaying)
+                            Play();
+                    });
+                trigger.triggers.Add(entry);
+            }
 
-			trigger = _slide.transform.parent.GetComponent<EventTrigger>();
-			{
-				EventTrigger.Entry entry = new EventTrigger.Entry();
-				entry.eventID = EventTriggerType.PointerExit;
-				entry.callback.AddListener((eventData) =>
-					{
-						_slide.handleRect.transform.localScale = Vector3.zero;
-					});
-				trigger.triggers.Add(entry);
-			}
-			{
-				EventTrigger.Entry entry = new EventTrigger.Entry();
-				entry.eventID = EventTriggerType.PointerEnter;
-				entry.callback.AddListener((eventData) =>
-					{
-						_slide.handleRect.transform.localScale = Vector3.one;
-					});
-				trigger.triggers.Add(entry);
-			}
-		}
+            trigger = _slide.transform.parent.GetComponent<EventTrigger>();
+            {
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerExit;
+                entry.callback.AddListener((eventData) =>
+                    {
+                        _slide.handleRect.transform.localScale = Vector3.zero;
+                    });
+                trigger.triggers.Add(entry);
+            }
+            {
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerEnter;
+                entry.callback.AddListener((eventData) =>
+                    {
+                        _slide.handleRect.transform.localScale = Vector3.one;
+                    });
+                trigger.triggers.Add(entry);
+            }
+        }
 
 	
-		// Update is called once per frame
-		void Update()
-		{
-			if (isReplaying)
-			{
-				if (!isPaused)
-				{
-					_slide.value += Time.deltaTime * Time.timeScale;
+        // Update is called once per frame
+        void Update()
+        {
+            if (isReplaying)
+            {
+                if (!isPaused)
+                {
+                    _slide.value += Time.unscaledDeltaTime;
 					
-					/*if (OnReplayTimeChange != null) 
+                    /*if (OnReplayTimeChange != null) 
 						OnReplayTimeChange (_slide.value);*/
-				}
-			}
-		}
+                }
+            }
+        }
 
-		public void Play()
-		{
-			_slide.Select();
+        public void Play()
+        {
+            _slide.Select();
 
-			if (_slide.value == _endTime - _startTime)
-				return;
+            if (_slide.value == _endTime - _startTime)
+                return;
 
-			if (OnReplayPlay != null)
-				OnReplayPlay();
+            if (OnReplayPlay != null)
+                OnReplayPlay();
 
-			if (isPaused || !isReplaying)
-			{
-				isReplaying = true;
-				isPaused = false;
+            if (isPaused || !isReplaying)
+            {
+                isReplaying = true;
+                isPaused = false;
 
-				Swap(_play.gameObject, _pause.gameObject);
+                Swap(_play.gameObject, _pause.gameObject);
 
-				if (_play.transform.GetSiblingIndex() > _pause.transform.GetSiblingIndex())
-				{
-					_play.transform.SetSiblingIndex(_pause.transform.GetSiblingIndex());
-				}
-			}
-		}
+                if (_play.transform.GetSiblingIndex() > _pause.transform.GetSiblingIndex())
+                {
+                    _play.transform.SetSiblingIndex(_pause.transform.GetSiblingIndex());
+                }
+            }
+        }
 
-		void Swap(GameObject _out, GameObject _in = null, float delay = 0f)
-		{
-			if (_in != null)
-			{
-				_in.SetActive(true);
-			}
+        void Swap(GameObject _out, GameObject _in = null, float delay = 0f)
+        {
+            if (_in != null)
+            {
+                _in.SetActive(true);
+            }
 
-			_out.SetActive(false);
-		}
+            _out.SetActive(false);
+        }
 
-		public void Pause()
-		{
-			_slide.Select();
+        public void Pause()
+        {
+            _slide.Select();
 
-			if (OnReplayPause != null)
-				OnReplayPause();
+            if (OnReplayPause != null)
+                OnReplayPause();
 
-			if (!isPaused)
-			{
-				isPaused = true;
+            if (!isPaused)
+            {
+                isPaused = true;
 
-				Swap(_pause.gameObject, _play.gameObject);
+                Swap(_pause.gameObject, _play.gameObject);
 
-				if (_pause.transform.GetSiblingIndex() > _play.transform.GetSiblingIndex())
-				{
-					_pause.transform.SetSiblingIndex(_play.transform.GetSiblingIndex());
-				}
-			}
-		}
+                if (_pause.transform.GetSiblingIndex() > _play.transform.GetSiblingIndex())
+                {
+                    _pause.transform.SetSiblingIndex(_play.transform.GetSiblingIndex());
+                }
+            }
+        }
 
-		public void ReplayReplay()
-		{
-			_slide.value = 0;
-			replayReplayAvailable = false;
-			isPaused = false;
+        public void ReplayReplay()
+        {
+            _slide.value = 0;
+            replayReplayAvailable = false;
+            isPaused = false;
 
-			Swap(_replay.gameObject);
-			Play();
-		}
+            Swap(_replay.gameObject);
+            Play();
+        }
 
-		public void SetCursor(Single value)
-		{
-			RefreshTimer();
+        public void SetCursor(Single value)
+        {
+            RefreshTimer();
 
-			if (replayReplayAvailable)
-			{
-				replayReplayAvailable = false;
-				Swap(_replay.gameObject, _play.gameObject);
-			}
+            if (replayReplayAvailable)
+            {
+                replayReplayAvailable = false;
+                Swap(_replay.gameObject, _play.gameObject);
+            }
 
-			if (_slide.value == _endTime - _startTime)
-			{
-				Pause();
+            if (_slide.value == _endTime - _startTime)
+            {
+                Pause();
 
-				replayReplayAvailable = true;
-				Swap(_play.gameObject, _replay.gameObject, .2f);
-			}
+                replayReplayAvailable = true;
+                Swap(_play.gameObject, _replay.gameObject, .2f);
+            }
 
-			if (OnReplayTimeChange != null && isPaused)
-			{
-				OnReplayTimeChange(value + _startTime);
-				Debug.Log(value + _startTime);
-			}
-		}
+            if (OnReplayTimeChange != null && isPaused)
+            {
+                OnReplayTimeChange(value + _startTime);
+                Debug.Log(value + _startTime);
+            }
+        }
 
-		void RefreshTimer()
-		{
-			float current = _slide.value;
-			float total = (_endTime - _startTime);
+        void RefreshTimer()
+        {
+            float current = _slide.value;
+            float total = (_endTime - _startTime);
 
-			string currentMinutes = Mathf.Floor(current / 60).ToString("00");
-			string currentSeconds = (current % 60).ToString("00");
+            string currentMinutes = Mathf.Floor(current / 60).ToString("00");
+            string currentSeconds = (current % 60).ToString("00");
 
-			string totalMinutes = Mathf.Floor(total / 60).ToString("00");
-			string totalSeconds = (total % 60).ToString("00");
+            string totalMinutes = Mathf.Floor(total / 60).ToString("00");
+            string totalSeconds = (total % 60).ToString("00");
 
-			_timestamp.text = currentMinutes + ":" + currentSeconds + " / " + totalMinutes + ":" + totalSeconds;
-		}
+            _timestamp.text = currentMinutes + ":" + currentSeconds + " / " + totalMinutes + ":" + totalSeconds;
+        }
 
-		public void SetCurveConstant(AnimationCurve curve)
-		{
-			#if UNITY_EDITOR
-			for (int i = 0; i < curve.keys.Length; i++)
-			{
-				AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
-				AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
-			}
-			#endif
-		}
+        public void SetCurveConstant(AnimationCurve curve)
+        {
+            #if UNITY_EDITOR
+            for (int i = 0; i < curve.keys.Length; i++)
+            {
+                AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
+                AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
+            }
+            #endif
+        }
 
-		[System.Serializable]
-		public class Particles
-		{
-			public float time;
-			public bool replayed = false;
-			public ParticleSystem particles;
+        [System.Serializable]
+        public class Particles
+        {
+            public float time;
+            public bool replayed = false;
+            public ParticleSystem particles;
 
-			public Particles(ParticleSystem p)
-			{
-				time = ReplayManager.Instance.GetCurrentTime();
-				particles = p;
-			}
-		}
+            public Particles(ParticleSystem p)
+            {
+                time = ReplayManager.Instance.GetCurrentTime();
+                particles = p;
+            }
+        }
 
-		[System.Serializable]
-		public class ArenaDeadzoneColumn
-		{
-			public float time;
-			public bool replayed = false;
-			public Transform columnParent;
+        [System.Serializable]
+        public class ArenaDeadzoneColumn
+        {
+            public float time;
+            public bool replayed = false;
+            public Transform columnParent;
 
-			public ArenaDeadzoneColumn(Transform t)
-			{
-				time = ReplayManager.Instance.GetCurrentTime();
-				columnParent = t;
-			}
-		}
-	}
+            public ArenaDeadzoneColumn(Transform t)
+            {
+                time = ReplayManager.Instance.GetCurrentTime();
+                columnParent = t;
+            }
+        }
+    }
 }
