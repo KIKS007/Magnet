@@ -107,6 +107,7 @@ namespace Replay
         [Header("Replay")]
         public List<ReplaySpeed> replaySpeed = new List<ReplaySpeed>();
         public int currentReplaySpeed = 0;
+        public Text speedText;
 
         [Header("States")]
         public bool isRecording = false;
@@ -132,29 +133,22 @@ namespace Replay
         public Action OnRecordingStop;
         public Action OnClear;
 
-        private bool wasPlaying = true;
-
-        private bool replayReplayAvailable = false;
-
-        #region UI
-
         [Header("Replay UI")]
+        public Button restartButton;
+        public Button playPauseButton;
+        public Button speedButton;
+        public Button quitButton;
         public Slider _slide;
         public Image _play;
-        public Image _replay;
         public Image _pause;
         public Text _timestamp;
         public GameObject _replayCanvas;
 
-        #endregion
-
-        #region Time
-
         private float _startTime;
         private float _endTime;
         private ArenaDeadzones _arenaDeadzones;
-
-        #endregion
+       
+        private bool wasPlaying = true;
 
         // Use this for initialization
         void Start()
@@ -162,11 +156,8 @@ namespace Replay
             if (!gameObject.activeSelf)
                 return;
 
-            _slide = _replayCanvas.GetComponentInChildren<Slider>();
 
-            _play.GetComponent<Button>().onClick.AddListener(() => Play());
-            _pause.GetComponent<Button>().onClick.AddListener(() => Pause());
-            _replay.GetComponent<Button>().onClick.AddListener(() => ReplayReplay());
+            _slide = _replayCanvas.GetComponentInChildren<Slider>();
             _slide.GetComponent<Slider>().onValueChanged.AddListener((Single v) => SetCursor(v));
 
             _arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
@@ -182,7 +173,9 @@ namespace Replay
                     }).SetUpdate(true);
             };
 
-            SetUIEvents();
+            speedText.text = replaySpeed[currentReplaySpeed].speedName;
+
+            transform.GetChild(0).gameObject.SetActive(false);
         }
 
         [ButtonGroupAttribute("Repplay", -1)]
@@ -192,6 +185,8 @@ namespace Replay
                 currentReplaySpeed = 0;
             else
                 currentReplaySpeed++;
+
+            speedText.text = replaySpeed[currentReplaySpeed].speedName;
         }
 
         [ButtonGroupAttribute("Repplay", -1)]
@@ -201,6 +196,8 @@ namespace Replay
                 currentReplaySpeed = replaySpeed.Count - 1;
             else
                 currentReplaySpeed--;
+
+            speedText.text = replaySpeed[currentReplaySpeed].speedName;
         }
 
         // Update is called once per frame
@@ -258,7 +255,7 @@ namespace Replay
                 return;
             }
 
-            _replayCanvas.GetComponent<CanvasGroup>().DOFade(1, MenuManager.Instance.animationDuration);
+            transform.GetChild(0).gameObject.SetActive(true);
             _slide.maxValue = _endTime - _startTime;
 
             foreach (Transform p in GlobalVariables.Instance.ParticulesClonesParent)
@@ -288,13 +285,15 @@ namespace Replay
             isReplaying = true;
             isPaused = false;
 
+            Swap(_play.gameObject, _pause.gameObject);
+
             _slide.value = 0;
 
             if (OnReplayTimeChange != null)
                 OnReplayTimeChange(_startTime);
         }
 
-        void StopReplay()
+        public void StopReplay()
         {
             if (OnReplayTimeChange != null)
                 OnReplayTimeChange(_endTime);
@@ -304,11 +303,7 @@ namespace Replay
 
             isReplaying = false;
             isPaused = false;
-            _replayCanvas.GetComponent<CanvasGroup>().DOFade(0, MenuManager.Instance.animationDuration);
-
-            /*OnReplayStart = null;
-			OnReplayStop = null;
-			OnReplayTimeChange = null;*/
+            transform.GetChild(0).gameObject.SetActive(false);
         }
 
         void ResetReplay()
@@ -353,51 +348,26 @@ namespace Replay
 
         #region UI Methods
 
-        void SetUIEvents()
+        public void PlayPause()
         {
-            EventTrigger trigger = _slide.GetComponent<EventTrigger>();
+            if (isPaused)
             {
-                EventTrigger.Entry entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerDown;
-                entry.callback.AddListener((eventData) =>
-                    {
-                        wasPlaying = !isPaused;
+                if (_slide.value == _endTime - _startTime)
+                {
+                    StartReplay();
+                    return;
+                }
 
-                        isPaused = true;
+                isReplaying = true;
+                isPaused = false;
 
-                        Pause();
-                    });
-                trigger.triggers.Add(entry);
+                Swap(_play.gameObject, _pause.gameObject);
             }
+            else
             {
-                EventTrigger.Entry entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerUp;
-                entry.callback.AddListener((eventData) =>
-                    {
-                        if (wasPlaying)
-                            Play();
-                    });
-                trigger.triggers.Add(entry);
-            }
+                isPaused = true;
 
-            trigger = _slide.transform.parent.GetComponent<EventTrigger>();
-            {
-                EventTrigger.Entry entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerExit;
-                entry.callback.AddListener((eventData) =>
-                    {
-                        _slide.handleRect.transform.localScale = Vector3.zero;
-                    });
-                trigger.triggers.Add(entry);
-            }
-            {
-                EventTrigger.Entry entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerEnter;
-                entry.callback.AddListener((eventData) =>
-                    {
-                        _slide.handleRect.transform.localScale = Vector3.one;
-                    });
-                trigger.triggers.Add(entry);
+                Swap(_pause.gameObject, _play.gameObject);
             }
         }
 
@@ -434,8 +404,6 @@ namespace Replay
 
         public void Pause()
         {
-            _slide.Select();
-
             if (!isPaused)
             {
                 isPaused = true;
@@ -452,12 +420,10 @@ namespace Replay
         public void ReplayReplay()
         {
             _slide.value = 0;
-            replayReplayAvailable = false;
             isPaused = false;
 
             StartReplay();
 
-            Swap(_replay.gameObject);
             Play();
         }
 
@@ -465,25 +431,10 @@ namespace Replay
         {
             RefreshTimer();
 
-            if (replayReplayAvailable)
-            {
-                replayReplayAvailable = false;
-                Swap(_replay.gameObject, _play.gameObject);
-            }
-
             if (_slide.value == _endTime - _startTime)
             {
                 Pause();
-
-                replayReplayAvailable = true;
-                Swap(_play.gameObject, _replay.gameObject, .2f);
             }
-
-            /*if (OnReplayTimeChange != null && isPaused)
-            {
-                OnReplayTimeChange(value + _startTime);
-                Debug.Log(value + _startTime);
-            }*/
         }
 
         void RefreshTimer()
@@ -498,17 +449,6 @@ namespace Replay
             string totalSeconds = (total % 60).ToString("00");
 
             _timestamp.text = currentMinutes + ":" + currentSeconds + " / " + totalMinutes + ":" + totalSeconds;
-        }
-
-        public void SetCurveConstant(AnimationCurve curve)
-        {
-            #if UNITY_EDITOR
-            for (int i = 0; i < curve.keys.Length; i++)
-            {
-                AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
-                AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Constant);
-            }
-            #endif
         }
 
         #endregion

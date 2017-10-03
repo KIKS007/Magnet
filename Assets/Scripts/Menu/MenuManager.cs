@@ -1264,7 +1264,13 @@ public class MenuManager : Singleton <MenuManager>
 
     public void StopReplay()
     {
-        
+        StartCoroutine(cameraMovement.NewMenuPosition());
+
+        DOVirtual.DelayedCall(cameraMovement.newMovementDuration * 0.5f, () =>
+            {
+                ReplayManager.Instance.StopReplay();
+                eventSyst.SetSelectedGameObject(currentMenu.selectable);
+            });
     }
 
     #endregion

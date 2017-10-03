@@ -91,7 +91,9 @@ namespace Replay
 
         public virtual void OnReplayStart()
         {
-            gameObject.SetActive(true);
+            Debug.Log(name + " activeself: " + gameObject.activeSelf);
+
+            //gameObject.SetActive(true);
         }
 
         public virtual void Replay(float t)
