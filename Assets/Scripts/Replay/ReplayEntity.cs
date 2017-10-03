@@ -70,8 +70,7 @@ namespace Replay
         {
             base.OnRecordingStart();
 
-            if (gameObject.activeSelf)
-                enableData.Add(new EnableData(transform, true));
+            enableData.Add(new EnableData(transform, gameObject.activeSelf));
         }
 
         protected override void Recording()
@@ -93,6 +92,9 @@ namespace Replay
         public override void OnReplayStart()
         {
             base.OnReplayStart();
+
+            if (recordEnable)
+                gameObject.SetActive(enableData[0].enabled);
 
             rigidBody = GetComponent<Rigidbody>();
 

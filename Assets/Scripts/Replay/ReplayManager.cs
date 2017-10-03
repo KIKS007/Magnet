@@ -214,7 +214,45 @@ namespace Replay
 
                     Replay(ReplayManager.Instance.GetReplayTime());
                 }
+
+                ReplayInputs();
             }
+        }
+
+        void ReplayInputs()
+        {
+            //for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+            for (int i = 0; i < 2; i++)
+            {
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("PlayPause"))
+                {
+                    playPauseButton.onClick.Invoke();
+                    playPauseButton.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                }
+
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("Restart"))
+                {
+                    restartButton.onClick.Invoke();
+                    restartButton.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                }
+
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("NextSpeed"))
+                {
+                    speedButton.onClick.Invoke();
+                    speedButton.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                }
+
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("QuitReplay"))
+                {
+                    quitButton.onClick.Invoke();
+                    quitButton.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                }
+            }
+        }
+
+        public void SelectNone()
+        {
+            MenuManager.Instance.eventSyst.SetSelectedGameObject(null);
         }
 
         public float GetCurrentTime()

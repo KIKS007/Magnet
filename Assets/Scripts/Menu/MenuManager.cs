@@ -429,7 +429,7 @@ public class MenuManager : Singleton <MenuManager>
 
     void CheckNothingSelected()
     {
-        if (eventSyst.currentSelectedGameObject == null && currentMenu != null && !isTweening && !isWaitingToSelect)
+        if (eventSyst.currentSelectedGameObject == null && currentMenu != null && !isTweening && !isWaitingToSelect && !ReplayManager.Instance.isReplaying)
             StartCoroutine(SelectPreviousElement(currentMenu));
     }
 
