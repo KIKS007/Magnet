@@ -31,9 +31,13 @@ namespace Replay
         private NavMeshAgent agent;
         private Animator animator;
 
+        private LayerMask initialLayer;
+
         protected override void Start()
         {
             base.Start();
+
+            initialLayer = gameObject.layer;
 
             rigidBody = GetComponent<Rigidbody>();
             agent = GetComponent<NavMeshAgent>();
@@ -47,8 +51,8 @@ namespace Replay
             if (ReplayManager.Instance.isRecording && gameObject.layer == LayerMask.NameToLayer("Movables") && recordScale)
                 data.scale.Add(Vector3.zero);
 
-            if (ReplayManager.Instance.isRecording)
-                enableData.Add(new EnableData(transform, true));
+            if (ReplayManager.Instance.isRecording && recordEnable)
+                enableData.Add(new EnableData(true));
         }
 
         void OnDisable()
@@ -56,8 +60,8 @@ namespace Replay
             if (GlobalVariables.applicationIsQuitting)
                 return;
             
-            if (ReplayManager.Instance.isRecording)
-                enableData.Add(new EnableData(transform, false));
+            if (ReplayManager.Instance.isRecording && recordEnable)
+                enableData.Add(new EnableData(false));
         }
 
         public override void OnClear()
@@ -70,7 +74,8 @@ namespace Replay
         {
             base.OnRecordingStart();
 
-            enableData.Add(new EnableData(transform, gameObject.activeSelf));
+            if (recordEnable)
+                enableData.Add(new EnableData(gameObject.activeSelf));
         }
 
         protected override void Recording()
@@ -89,12 +94,23 @@ namespace Replay
             //enableData.Add(new EnableData(transform, gameObject.activeSelf));
         }
 
+        public override void OnRecordingStop()
+        {
+            base.OnRecordingStop();
+
+            if (recordEnable)
+                enableData.Add(new EnableData(gameObject.activeSelf));
+        }
+
         public override void OnReplayStart()
         {
             base.OnReplayStart();
 
             if (recordEnable)
-                gameObject.SetActive(enableData[0].enabled);
+            {
+                if (tag == "Player" && GlobalVariables.Instance.EnabledPlayersList.Contains(gameObject) || tag != "Player")
+                    SetEnable(enableData[0].enabled);
+            }
 
             rigidBody = GetComponent<Rigidbody>();
 
@@ -106,6 +122,36 @@ namespace Replay
 
             if (animator)
                 animator.enabled = false;	
+        }
+
+        void SetEnable(bool enable)
+        {
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
+            if (enable)
+                SetLayerRecursively(gameObject, initialLayer);
+            else
+                SetLayerRecursively(gameObject, LayerMask.NameToLayer("Disabled"));
+        }
+
+        void SetLayerRecursively(GameObject obj, int newLayer)
+        {
+            if (null == obj)
+            {
+                return;
+            }
+
+            obj.layer = newLayer;
+
+            foreach (Transform child in obj.transform)
+            {
+                if (null == child)
+                {
+                    continue;
+                }
+                SetLayerRecursively(child.gameObject, newLayer);
+            }
         }
 
         public override void OnReplayStop()
@@ -137,13 +183,20 @@ namespace Replay
             if (recordScale && data.scale.x.keys.Length > 0)
                 transform.localScale = data.scale.Get(t);
 
+            /* for(int i = enableData.Count - 1; i >= 0; i--)
+            {
+                
+            }*/
+
+            bool enable = enableData[0].enabled;
+
             foreach (var d in enableData)
             {
-                if (Mathf.Abs(d.time - t) < ReplayManager.Instance.listRecordEpsilon)
+                if (d.time <= t)
+                    enable = d.enabled;
+                else
                 {
-                    if (recordEnable)
-                        gameObject.SetActive(d.enabled);
-
+                    SetEnable(enable);
                     break;
                 }
             }
@@ -156,7 +209,7 @@ namespace Replay
         public float time;
         public bool enabled;
 
-        public EnableData(Transform t, bool enable)
+        public EnableData(bool enable)
         {
             time = ReplayManager.Instance.GetCurrentTime();
             enabled = enable;

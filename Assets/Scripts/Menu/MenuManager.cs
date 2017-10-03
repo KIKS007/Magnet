@@ -1252,6 +1252,8 @@ public class MenuManager : Singleton <MenuManager>
     {
         GlobalVariables.Instance.slowMotionCamera.StopPauseSlowMotion();
 
+        ReplayManager.Instance.SetupReplay();
+
         ReplayManager.Instance.StartReplay();
 
         StartCoroutine(cameraMovement.NewPlayPosition());

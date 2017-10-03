@@ -103,8 +103,9 @@ namespace Replay
         [Header("Record Rate")]
         public int recordRate = 120;
         public int particlesRecordRate = 60;
+        public float recordLength = 20;
 
-        [Header("Replay")]
+        [Header("Replay Speed")]
         public List<ReplaySpeed> replaySpeed = new List<ReplaySpeed>();
         public int currentReplaySpeed = 0;
         public Text speedText;
@@ -144,11 +145,12 @@ namespace Replay
         public Text _timestamp;
         public GameObject _replayCanvas;
 
-        private float _startTime;
-        private float _endTime;
+        public float _startTime;
+        public float _endTime;
         private ArenaDeadzones _arenaDeadzones;
        
         private bool wasPlaying = true;
+        public float endTimeDiference = 0;
 
         // Use this for initialization
         void Start()
@@ -211,7 +213,7 @@ namespace Replay
                     _slide.value += Time.unscaledDeltaTime * replaySpeed[currentReplaySpeed].speed;
 
                     if (OnReplayTimeChange != null)
-                        OnReplayTimeChange(_slide.value);
+                        OnReplayTimeChange(_slide.value + endTimeDiference);
 
                     Replay(ReplayManager.Instance.GetReplayTime());
                 }
@@ -263,7 +265,7 @@ namespace Replay
 
         public float GetReplayTime()
         {
-            return _slide.value;
+            return _slide.value + endTimeDiference;
         }
 
         public void StartRecording()
@@ -286,6 +288,21 @@ namespace Replay
                 OnRecordingStop();
         }
 
+        public void SetupReplay()
+        {
+            endTimeDiference = 0;
+
+            transform.GetChild(0).gameObject.SetActive(true);
+
+            StartCoroutine(CleanParticles());
+
+            if ((_endTime - _startTime) > recordLength)
+            {
+                endTimeDiference = _endTime - recordLength - _startTime;
+                _startTime = _endTime - recordLength;
+            }
+        }
+
         public void StartReplay()
         {
             if (OnRecordingStart == null)
@@ -294,7 +311,6 @@ namespace Replay
                 return;
             }
 
-            transform.GetChild(0).gameObject.SetActive(true);
             _slide.maxValue = _endTime - _startTime;
 
             foreach (Transform p in GlobalVariables.Instance.ParticulesClonesParent)
@@ -330,6 +346,20 @@ namespace Replay
 
             if (OnReplayTimeChange != null)
                 OnReplayTimeChange(_startTime);
+
+        }
+
+        IEnumerator CleanParticles()
+        {
+            float thresholdTime = (_endTime - _startTime - recordLength);
+
+            foreach (var p in particlesReplay)
+                if (p.time < thresholdTime)
+                    Destroy(p.particles);
+
+            yield return new WaitForEndOfFrame();
+
+            particlesReplay.RemoveAll(item => item.particles == null);
         }
 
         public void StopReplay()
