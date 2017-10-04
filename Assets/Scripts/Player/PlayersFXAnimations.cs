@@ -9,6 +9,9 @@ using Replay;
 
 public class PlayersFXAnimations : MonoBehaviour
 {
+    public System.Action OnStunFXON;
+    public System.Action OnStunFXOFF;
+
     [Header("Trail FX Settings")]
     public float trailTweenDuration = 0.5f;
     public float lowSpeedtime = 0.1f;
@@ -63,7 +66,6 @@ public class PlayersFXAnimations : MonoBehaviour
     protected Color playerColor;
     [HideInInspector]
     public float distance;
-
     [HideInInspector]
     public List<GameObject> attractionRepulsionFX = new List<GameObject>();
 
@@ -226,59 +228,63 @@ public class PlayersFXAnimations : MonoBehaviour
         stunFXDurationsTemp[4] = stunFXDurations[4] + Random.Range(-0.005f, 0.005f);
         stunFXDurationsTemp[5] = stunFXDurations[5] + Random.Range(-0.005f, 0.005f);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
-
-        playerSoundsScript.StunOFF();
+        StunOFF();
 
         yield return new WaitForSeconds(stunFXDurationsTemp[0]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
-
-        playerSoundsScript.StunON();
+        StunON();
 
         yield return new WaitForSeconds(stunFXDurationsTemp[1]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
-
-        playerSoundsScript.StunOFF();
+        StunOFF();
 
         yield return new WaitForSeconds(stunFXDurationsTemp[2]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
-
-        playerSoundsScript.StunON();
-
+        StunON();
+       
         yield return new WaitForSeconds(stunFXDurationsTemp[3]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
-
-        playerSoundsScript.StunOFF();
+        StunOFF();
 
         yield return new WaitForSeconds(stunFXDurationsTemp[4]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
-
-        playerSoundsScript.StunON();
-
+        StunON();
+       
         yield return new WaitForSeconds(stunFXDurationsTemp[5]);
 
-        for (int i = 0; i < playerMaterials.Count; i++)
-            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
-
-        playerSoundsScript.StunOFF();
-
+        StunOFF();
+       
         yield return new WaitUntil(() => playerScript.playerState != PlayerState.Stunned);
 
         for (int i = 0; i < playerMaterials.Count; i++)
             playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
 
         playerSoundsScript.StunEND();
+
+        if (OnStunFXON != null)
+            OnStunFXON();
+    }
+
+    public virtual void StunON()
+    {
+        if (OnStunFXON != null)
+            OnStunFXON();
+
+        for (int i = 0; i < playerMaterials.Count; i++)
+            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
+
+        playerSoundsScript.StunON(); 
+    }
+
+    public virtual void StunOFF()
+    {
+        if (OnStunFXOFF != null)
+            OnStunFXOFF();
+
+        for (int i = 0; i < playerMaterials.Count; i++)
+            playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
+
+        playerSoundsScript.StunOFF();
     }
 
     protected virtual void DashAvailableFX()
@@ -345,6 +351,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
         if (fx.GetComponent<ReplayParticles>() == null)
             Destroy(fx);
+        else
+            fx.gameObject.SetActive(false);
     }
 
     protected virtual IEnumerator SetAttractionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)
@@ -406,6 +414,8 @@ public class PlayersFXAnimations : MonoBehaviour
 
         if (fx.GetComponent<ReplayParticles>() == null)
             Destroy(fx);
+        else
+            fx.gameObject.SetActive(false);
     }
 
     protected virtual IEnumerator SetRepulsionParticles(GameObject whichCube, GameObject fx, ParticleSystem ps)

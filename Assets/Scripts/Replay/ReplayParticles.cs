@@ -27,10 +27,7 @@ namespace Replay
 
             if (GetComponent<ParticlesAutoDestroy>())
             {
-                if (!listParticle)
-                    Destroy(GetComponent<ParticlesAutoDestroy>());
-                else
-                    GetComponent<ParticlesAutoDestroy>().replayParticles = true;
+                GetComponent<ParticlesAutoDestroy>().replayParticles = true;
             }
 
             particleSys = GetComponent<ParticleSystem>();
@@ -118,6 +115,12 @@ namespace Replay
             if (t < particles[0].time)
             {
                 particleSys.Clear();
+                return;
+            }
+
+            if (_particles.Count == 0 && particleSys.isPlaying)
+            {
+                particleSys.Stop();
                 return;
             }
 

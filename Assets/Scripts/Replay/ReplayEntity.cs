@@ -189,19 +189,22 @@ namespace Replay
                 
             }*/
 
-            bool enable = enableData[0].enabled;
-
-            foreach (var d in enableData)
+            if (recordEnable)
             {
-                if (d.time <= t)
-                    enable = d.enabled;
-                else
+                bool enable = enableData[0].enabled;
+                
+                foreach (var d in enableData)
                 {
-                    break;
+                    if (d.time <= t)
+                        enable = d.enabled;
+                    else
+                    {
+                        break;
+                    }
                 }
+                
+                SetEnable(enable);
             }
-
-            SetEnable(enable);
         }
     }
 
