@@ -54,6 +54,35 @@ public class ArenaColumn : MonoBehaviour
         }
     }
 
+    void OnTriggerStay(Collider other)
+    {
+        if (ReplayManager.Instance.isReplaying)
+            return;
+
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+        {
+            if (other.gameObject.tag != "HoldMovable" && other.gameObject.tag == "Player" && tag == "DeadZone")
+            {
+                var playerScript = other.gameObject.GetComponent<PlayersGameplay>();
+
+                if (other.gameObject.layer != LayerMask.NameToLayer("Safe") && playerScript.playerState != PlayerState.Dead)
+                    playerScript.Death(DeathFX.All, other.transform.position);
+            } 
+
+            if (tag != "DeadZone")
+            {
+                if (other.gameObject.layer == LayerMask.NameToLayer("Movables") && other.attachedRigidbody != null || other.gameObject.layer == LayerMask.NameToLayer("Player") && other.gameObject.tag == "Player" && other.attachedRigidbody != null)
+                {
+                    if (DOTween.IsTweening("ColumnRend" + GetInstanceID()))
+                        DOTween.Kill("ColumnRend" + GetInstanceID());
+
+                    transform.DOScale(scale * scaleModifier, duration * 0.5f);
+                    rend.material.DOColor(color * emission, "_EmissionColor", duration * 0.5f).SetId("ColumnRend" + GetInstanceID());
+                }
+            }
+        }
+    }
+
     void OnTriggerExit(Collider other)
     {
         if (ReplayManager.Instance.isReplaying)

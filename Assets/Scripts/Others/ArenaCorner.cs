@@ -59,6 +59,11 @@ public class ArenaCorner : MonoBehaviour
 
         if (touchingGameobjects.Contains(player))
         {
+            var s = player.GetComponent<PlayersGameplay>();
+
+            if (s.playerState == PlayerState.Dead || s.playerState == PlayerState.Stunned)
+                yield break;
+
             foreach (var c in deadlyColumns)
                 StartCoroutine(arenaDeadzones.SetDeadly(c));
         }

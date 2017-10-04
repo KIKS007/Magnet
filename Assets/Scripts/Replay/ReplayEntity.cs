@@ -214,7 +214,6 @@ namespace Replay
         public EnableData(bool enable)
         {
             time = ReplayManager.Instance.GetCurrentTime();
-            Debug.Log("Enable: " + enable + " at " + time);
             enabled = enable;
         }
     }

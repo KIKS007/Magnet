@@ -6,7 +6,7 @@ public class ParticlesAutoDestroy : MonoBehaviour
     public bool replayParticles = false;
     private ParticleSystem ps;
 
-    void Start()
+    public void Start()
     {
         ps = GetComponent<ParticleSystem>();
 

@@ -733,6 +733,9 @@ public class PlayersGameplay : MonoBehaviour
     {
         yield return new WaitForSeconds(dashDuration);
 
+        if (OnDashEnd != null)
+            OnDashEnd();
+
         playersHit.Clear();
 
         dashState = DashState.Cooldown;
@@ -881,6 +884,7 @@ public class PlayersGameplay : MonoBehaviour
     public event EventHandler OnCubeHit;
     public event EventHandler OnDashHit;
     public event EventHandler OnDash;
+    public event EventHandler OnDashEnd;
     public event EventHandler OnDashAvailable;
     public event EventHandler OnDeath;
     public event EventHandler OnTaunt;

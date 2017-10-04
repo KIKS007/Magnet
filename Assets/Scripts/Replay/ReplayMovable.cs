@@ -22,6 +22,7 @@ namespace Replay
         [Header("Data")]
         public TimelinedMovableColor colors = new TimelinedMovableColor();
         public TimelinedBombTimer timer = new TimelinedBombTimer();
+        public List<DeadlyData> deadlyData = new List<DeadlyData>();
 
         [HideInInspector]
         public Material cubeMaterial;
@@ -42,6 +43,31 @@ namespace Replay
 
             if (bombManager != null)
                 text = GetComponentInChildren<Text>();
+
+            cubeScript.OnNeutral += () => deadlyData.Add(new DeadlyData(false));
+            cubeScript.OnDeadly += () => deadlyData.Add(new DeadlyData(true));
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            if (ReplayManager.Instance.isRecording)
+            {
+                if (cubeScript == null)
+                    cubeScript = GetComponent<MovableScript>();
+
+                deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
+            }
+        }
+
+        void OnDisable()
+        {
+            if (GlobalVariables.applicationIsQuitting)
+                return;
+
+            if (ReplayManager.Instance.isRecording)
+                deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
         }
 
         public override void OnClear()
@@ -49,6 +75,14 @@ namespace Replay
             base.OnClear();
             colors = new TimelinedMovableColor();
             timer = new TimelinedBombTimer();
+            deadlyData = new List<DeadlyData>();
+        }
+
+        public override void OnRecordingStart()
+        {
+            base.OnRecordingStart();
+
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
         }
 
         protected override void Recording()
@@ -57,6 +91,13 @@ namespace Replay
 
             if (bombManager != null)
                 timer.Add(Mathf.RoundToInt(bombManager.timer));
+        }
+
+        public override void OnRecordingStop()
+        {
+            base.OnRecordingStop();
+
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
         }
 
         void RecordColors()
@@ -68,6 +109,13 @@ namespace Replay
             float r = cubeMaterial.GetFloat("_LerpRED");
 
             colors.Add(b, p, g, y, r);
+        }
+
+        public override void OnReplayStart()
+        {
+            base.OnReplayStart();
+
+            DeadlyEnable(deadlyData[0].enabled);
         }
 
         public override void Replay(float t)
@@ -82,6 +130,47 @@ namespace Replay
 
                 text.text = timer.Get(t).ToString();
             }
+
+            bool enable = deadlyData[0].enabled;
+
+            foreach (var d in deadlyData)
+            {
+                if (d.time <= t)
+                    enable = d.enabled;
+                else
+                {
+                    break;
+                }
+            }
+
+            DeadlyEnable(enable);
+        }
+
+        void DeadlyEnable(bool enable)
+        {
+            if (enable)
+            {
+                cubeScript.deadlyParticle.Play();
+                cubeScript.deadlyParticle2.Play();
+            }
+            else
+            {
+                cubeScript.deadlyParticle.Stop();
+                cubeScript.deadlyParticle2.Stop();
+            }
+        }
+    }
+
+    [Serializable]
+    public class DeadlyData
+    {
+        public float time;
+        public bool enabled;
+
+        public DeadlyData(bool enable)
+        {
+            time = ReplayManager.Instance.GetCurrentTime();
+            enabled = enable;
         }
     }
 

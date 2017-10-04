@@ -27,11 +27,17 @@ namespace Replay
 
         public void ClearAll()
         {
-            StopRecording();
-            StopReplay();
+            if (isRecording)
+            {
+                isRecording = false;
+                StopRecording();
+            }
+            if (isReplaying)
+            {
+                isReplaying = false;
+                StopReplay();
+            }
 
-            isRecording = false;
-            isReplaying = false;
             isPaused = false;
 
             if (OnClear != null)
@@ -97,8 +103,12 @@ namespace Replay
         [Header("Particles")]
         public List<Particles> particlesReplay = new List<Particles>();
 
+        private List<Particles> _particlesReplay = new List<Particles>();
+
         [Header("ArenaDeadzones")]
         public List<ArenaDeadzoneColumn> arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>();
+
+        private List<ArenaDeadzoneColumn> _arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>();
 
         public Action<float> OnReplayTimeChange;
         public Action OnReplayStart;
@@ -118,12 +128,12 @@ namespace Replay
         public Text _timestamp;
         public GameObject _replayCanvas;
 
-        public float _startTime;
-        public float _endTime;
+        private float _startTime;
+        private float _endTime;
         private ArenaDeadzones _arenaDeadzones;
        
         private bool wasPlaying = true;
-        public float endTimeDiference = 0;
+        private float endTimeDiference = 0;
 
         // Use this for initialization
         void Start()
@@ -290,14 +300,22 @@ namespace Replay
             _slide.maxValue = _endTime - _startTime;
 
             foreach (Transform p in GlobalVariables.Instance.ParticulesClonesParent)
+            {
                 if (p.GetComponent<ParticleSystem>() != null)
                     p.GetComponent<ParticleSystem>().Clear();
+            }
+
+            foreach (var p in particlesReplay)
+                p.particles.gameObject.SetActive(false);
 
             for (int i = 0; i < particlesReplay.Count; i++)
                 particlesReplay[i].replayed = false;
 
             for (int i = 0; i < arenaDeadzoneColumns.Count; i++)
                 arenaDeadzoneColumns[i].replayed = false;
+
+            _particlesReplay = new List<Particles>(particlesReplay);
+            _arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>(arenaDeadzoneColumns);
 
             RefreshTimer();
 
@@ -365,29 +383,50 @@ namespace Replay
 
         void Replay(float time)
         {
-            foreach (var p in particlesReplay)
+            Particles particles = null;
+
+            foreach (var p in _particlesReplay)
             {
+                if (p.particles == null)
+                    continue;
+
                 if (time >= p.time && !p.replayed)
                 {
+                    particles = p;
+
                     p.replayed = true;
 
                     if (!p.particles.gameObject.activeSelf)
                         p.particles.gameObject.SetActive(true);
 
                     p.particles.Play();
+
+                    if (p.particles.GetComponent<ParticlesAutoDestroy>())
+                        p.particles.GetComponent<ParticlesAutoDestroy>().Start();
                     break;
                 }
             }
 
-            foreach (var c in arenaDeadzoneColumns)
+            if (particles != null)
+                _particlesReplay.Remove(particles);
+
+            ArenaDeadzoneColumn arenaColumn = null;
+
+            foreach (var c in _arenaDeadzoneColumns)
             {
                 if (time >= c.time && !c.replayed)
                 {
+                    arenaColumn = c;
+
                     c.replayed = true;
                     StartCoroutine(_arenaDeadzones.SetDeadly(c.columnParent, true));
                     break;
                 }
             }
+
+            if (arenaColumn != null)
+                _arenaDeadzoneColumns.Remove(arenaColumn);
+            
         }
 
 

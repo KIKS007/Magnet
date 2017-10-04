@@ -13,12 +13,17 @@ namespace Replay
         [Header("Data")]
         public List<TimelinedParticles> particles = new List<TimelinedParticles>();
 
+        private List<TimelinedParticles> _particles = new List<TimelinedParticles>();
+
         protected ParticleSystem particleSys;
+        protected float listRecordEpsilon = 0.008f;
 
         protected override void Start()
         {
             if (!ReplayManager.Instance.replayEnabled)
                 return;
+
+            listRecordEpsilon = ReplayManager.Instance.listRecordEpsilon;
 
             if (GetComponent<ParticlesAutoDestroy>())
             {
@@ -32,7 +37,6 @@ namespace Replay
 
             if (listParticle)
                 ReplayManager.Instance.particlesReplay.Add(new ReplayManager.Particles(particleSys));
-
 
             base.Start();
         }
@@ -78,6 +82,8 @@ namespace Replay
 			
             gameObject.SetActive(true);
 
+            _particles = new List<TimelinedParticles>(particles);
+
             base.OnReplayStart();
 
             particleSys.Play(true);
@@ -120,14 +126,21 @@ namespace Replay
                 return;
             }
 
-            foreach (var p in particles)
+            TimelinedParticles timelinedParticles = null;
+
+            foreach (var p in _particles)
             {
-                if (Mathf.Abs(p.time - t) < ReplayManager.Instance.listRecordEpsilon)
+                if (Mathf.Abs(p.time - t) < listRecordEpsilon)
                 {
+                    timelinedParticles = p;
+
                     particleSys.SetParticles(p.particles, p.particles.Length);
                     break;
                 }
             }
+
+            if (timelinedParticles != null)
+                _particles.Remove(timelinedParticles);
         }
     }
 
