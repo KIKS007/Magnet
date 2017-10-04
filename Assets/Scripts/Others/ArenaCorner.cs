@@ -57,6 +57,12 @@ public class ArenaCorner : MonoBehaviour
 
         yield return new WaitWhile(() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
+        if (player == null)
+        {
+            touchingGameobjects.Remove(player); 
+            yield break;
+        }
+
         if (touchingGameobjects.Contains(player))
         {
             var s = player.GetComponent<PlayersGameplay>();
