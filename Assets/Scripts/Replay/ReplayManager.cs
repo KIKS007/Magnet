@@ -290,6 +290,8 @@ namespace Replay
 
         public void StartReplay()
         {
+            Time.timeScale = 1;
+
             if (OnRecordingStart == null)
             {
                 Debug.LogWarning("No Replay Entity!"); 
@@ -353,6 +355,8 @@ namespace Replay
             yield return new WaitForEndOfFrame();
 
             particlesReplay.RemoveAll(item => item.particles == null);
+
+            isPaused = true;
         }
 
         public void StopReplay()
@@ -435,6 +439,8 @@ namespace Replay
         {
             if (isPaused)
             {
+                Time.timeScale = 1;
+
                 if (_slide.value == _endTime - _startTime)
                 {
                     StartReplay();
@@ -448,6 +454,8 @@ namespace Replay
             }
             else
             {
+                Time.timeScale = 0;
+
                 isPaused = true;
 
                 Swap(_pause.gameObject, _play.gameObject);
@@ -456,8 +464,6 @@ namespace Replay
 
         public void Play()
         {
-            _slide.Select();
-
             if (_slide.value == _endTime - _startTime)
                 return;
 

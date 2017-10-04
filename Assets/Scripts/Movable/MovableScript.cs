@@ -359,7 +359,8 @@ public class MovableScript : MonoBehaviour
         GameObject instantiatedParticles = InstantiateParticles(other.contacts[0], GlobalVariables.Instance.WallHitParticles, gameObject.GetComponent<Renderer>().material.color);
 
         instantiatedParticles.GetComponent<ParticleSystem>().startSize += (gameObject.transform.lossyScale.x * 0.1f);
-        instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
+        instantiatedParticles.GetComponent<ParticleSystem>().emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, (short)numberOfParticles, (short)numberOfParticles) });
+        // instantiatedParticles.GetComponent<ParticleSystem>().Emit(numberOfParticles);
 
         if (playerThatThrew != null && other.collider.tag != "HoldMovable")
             other.gameObject.GetComponent<MovableScript>().playerThatThrew = playerThatThrew;

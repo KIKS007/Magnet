@@ -103,31 +103,31 @@ namespace Replay
 			
             base.Replay(t);
 
-            if (particles == null)
+            if (particles == null || particles.Count == 0)
             {
                 Debug.LogWarning("No Particles!");
                 return;
             }
 
-            if (particles.Count == 0)
+            if (t > particles[particles.Count - 1].time)
+            {
+                particleSys.Clear();
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
                 return;
+            }
+
 
             if (t < particles[0].time)
             {
                 particleSys.Clear();
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
                 return;
             }
 
-            if (_particles.Count == 0 && particleSys.isPlaying)
-            {
-                particleSys.Stop();
-                return;
-            }
-
-            if (t > particles[particles.Count - 1].time)
-            {
-                return;
-            }
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
 
             TimelinedParticles timelinedParticles = null;
 
