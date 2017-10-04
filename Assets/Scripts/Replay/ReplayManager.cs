@@ -25,9 +25,7 @@ namespace Replay
     {
         #region Buttons
 
-        [PropertyOrder(-4)]
-        [Button("Clear Recording")]
-        public void Clear()
+        public void ClearAll()
         {
             StopRecording();
             StopReplay();
@@ -35,10 +33,6 @@ namespace Replay
             isRecording = false;
             isReplaying = false;
             isPaused = false;
-
-            /*OnReplayStart = null;
-			OnReplayStop = null;
-			OnReplayTimeChange = null;*/
 
             if (OnClear != null)
                 OnClear();
@@ -74,27 +68,6 @@ namespace Replay
             StopRecording();
             StopReplay();
         }
-
-        /*[ButtonGroupAttribute ("Play", -1)]
-		[Button ("Play")]
-		public void PlayButton ()
-		{
-			Play ();
-		}
-
-		[ButtonGroupAttribute ("Play", -1)]
-		[Button ("Pause")]
-		public void PauseButton ()
-		{
-			Pause ();
-		}
-
-		[ButtonGroupAttribute ("Play", -1)]
-		[Button ("Replay")]
-		public void ReplayButton ()
-		{
-			ReplayReplay ();
-		}*/
 
         #endregion
 
@@ -270,6 +243,9 @@ namespace Replay
 
         public void StartRecording()
         {
+            if (OnClear != null)
+                OnClear();
+
             _startTime = Time.time;
             isRecording = true;
             isReplaying = false;
@@ -377,7 +353,7 @@ namespace Replay
 
         void ResetReplay()
         {
-            Clear();
+            ClearAll();
 
             particlesReplay.Clear();
             arenaDeadzoneColumns.Clear();

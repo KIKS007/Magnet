@@ -68,6 +68,7 @@ namespace Replay
         {
             base.OnClear();
             data = new RecordData();
+            enableData = new List<EnableData>();
         }
 
         public override void OnRecordingStart()
@@ -196,10 +197,11 @@ namespace Replay
                     enable = d.enabled;
                 else
                 {
-                    SetEnable(enable);
                     break;
                 }
             }
+
+            SetEnable(enable);
         }
     }
 
@@ -212,6 +214,7 @@ namespace Replay
         public EnableData(bool enable)
         {
             time = ReplayManager.Instance.GetCurrentTime();
+            Debug.Log("Enable: " + enable + " at " + time);
             enabled = enable;
         }
     }
