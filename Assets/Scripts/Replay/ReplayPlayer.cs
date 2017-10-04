@@ -33,6 +33,7 @@ namespace Replay
             playerScript.OnDashAvailable += DashDispo;
             playerScript.OnDash += Dash;
             playerScript.OnDashEnd += DashEnd;
+           
         }
 
         public override void OnClear()
@@ -80,20 +81,16 @@ namespace Replay
                 }
             }
 
-            if (playerFXScript == null)
-                Debug.LogError("FXScript Null", this);
-
-            if (playerFXScript.dashFX == null)
-                Debug.LogError("DashFX Null", this);
-
             if (enable)
                 playerFXScript.dashFX.Play();
             else
                 playerFXScript.dashFX.Stop();
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             if (GlobalVariables.applicationIsQuitting)
                 return;
 

@@ -4,250 +4,254 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Rewired;
 
-public class FeedbackInputs : MonoBehaviour 
+public class FeedbackInputs : MonoBehaviour
 {
-	public enum WhichButton {GamepadButton, KeyboardOrMouseButton, LeftJoystick, RightJoystick, Mouse};
+    public enum WhichButton
+    {
+GamepadButton,
+        KeyboardOrMouseButton,
+        LeftJoystick,
+        RightJoystick,
+        Mouse}
 
-	public WhichButton whichbutton;
-	public Transform descriptionText;
+    ;
 
-	public Sprite modifiedSprite;
-	public Sprite alternateSprite;
-	public Sprite modifiedAlternateSprite;
+    public WhichButton whichbutton;
+    public Transform descriptionText;
 
-	public string whichAction;
+    public Sprite modifiedSprite;
+    public Sprite alternateSprite;
+    public Sprite modifiedAlternateSprite;
 
-	public float movementMultiplicator;
+    public string whichAction;
 
-	public KeyCode keycode;
-	public KeyCode keycodeAlternate;
+    public float movementMultiplicator;
 
-	public float originScale;
-	public float modifiedScale;
-	public float modifiedScaleText;
+    public KeyCode keycode;
+    public KeyCode keycodeAlternate;
 
-	public Color modifiedColor;
+    public float originScale;
+    public float modifiedScale;
+    public float modifiedScaleText;
 
-	public bool keyPressed;
+    public Color modifiedColor;
 
-	public Player mouseKeyboard;
-	public Player gamepad1;
+    public bool keyPressed;
 
-	private RectTransform rect;
-	private Vector2 initialPos;
-	//private Vector2 mouseInitialPos;
+    public Player mouseKeyboard;
+    public Player gamepad1;
 
-	private Sprite initialSprite;
-	private MenuButtonAnimationsAndSounds menuButton;
+    private RectTransform rect;
+    private Vector2 initialPos;
+    //private Vector2 mouseInitialPos;
 
-	// Use this for initialization
-	void Start () 
-	{
-		ReInput.ControllerConnectedEvent += GetPlayersEvent;
-		initialSprite = GetComponent<Image> ().sprite;
+    private MenuButtonAnimationsAndSounds menuButton;
 
-		menuButton = GetComponent<MenuButtonAnimationsAndSounds> ();
+    // Use this for initialization
+    void Start()
+    {
+        ReInput.ControllerConnectedEvent += GetPlayersEvent;
 
-		GetPlayers ();
+        menuButton = GetComponent<MenuButtonAnimationsAndSounds>();
 
-		rect = GetComponent<RectTransform> ();
-		initialPos = rect.anchoredPosition;
-	}
+        GetPlayers();
 
-	void OnEnable ()
-	{
-		//mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        rect = GetComponent<RectTransform>();
+        initialPos = rect.anchoredPosition;
+    }
 
-		ResetFeedback ();
-		keyPressed = false;
-	}
+    void OnEnable()
+    {
+        //mouseInitialPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+        ResetFeedback();
+        keyPressed = false;
+    }
 	
-	// Update is called once per frame
-	void Update () 
-	{
-		switch (whichbutton)
-		{
-		case WhichButton.GamepadButton:
-			GamepadButton ();
-			break;
-		case WhichButton.KeyboardOrMouseButton:
-			KeyboardOrMouse ();
-			break;
-		case WhichButton.LeftJoystick:
-			LeftJoystick ();
-			break;
-		case WhichButton.RightJoystick:
-			RightJoystick ();
-			break;
-		case WhichButton.Mouse:
-			Mouse ();
-			break;
-		}
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        switch (whichbutton)
+        {
+            case WhichButton.GamepadButton:
+                GamepadButton();
+                break;
+            case WhichButton.KeyboardOrMouseButton:
+                KeyboardOrMouse();
+                break;
+            case WhichButton.LeftJoystick:
+                LeftJoystick();
+                break;
+            case WhichButton.RightJoystick:
+                RightJoystick();
+                break;
+            case WhichButton.Mouse:
+                Mouse();
+                break;
+        }
+    }
 
-	void GamepadButton ()
-	{
-		if(gamepad1.GetButtonDown(whichAction) && !keyPressed)
-		{
-			Feedback ();
-			keyPressed = true;
-		}
+    void GamepadButton()
+    {
+        if (gamepad1.GetButtonDown(whichAction) && !keyPressed)
+        {
+            Feedback();
+            keyPressed = true;
+        }
 
-		if(gamepad1.GetButtonUp(whichAction) && keyPressed)
-		{
-			ResetFeedback ();
-			keyPressed = false;
-		}
-	}
+        if (gamepad1.GetButtonUp(whichAction) && keyPressed)
+        {
+            ResetFeedback();
+            keyPressed = false;
+        }
+    }
 
-	void KeyboardOrMouse ()
-	{
-		if(Input.GetKeyDown(keycode) && !keyPressed)
-		{
-			Feedback ();
-			keyPressed = true;
-		}
+    void KeyboardOrMouse()
+    {
+        if (Input.GetKeyDown(keycode) && !keyPressed)
+        {
+            Feedback();
+            keyPressed = true;
+        }
 
-		if(Input.GetKeyUp(keycode) && keyPressed)
-		{
-			ResetFeedback ();
-			keyPressed = false;
-		}
+        if (Input.GetKeyUp(keycode) && keyPressed)
+        {
+            ResetFeedback();
+            keyPressed = false;
+        }
 
-		if(keycodeAlternate != KeyCode.None)
-		{
-			if(Input.GetKeyDown(keycodeAlternate) && !keyPressed)
-			{
-				Feedback ();
-				keyPressed = true;
-			}
+        if (keycodeAlternate != KeyCode.None)
+        {
+            if (Input.GetKeyDown(keycodeAlternate) && !keyPressed)
+            {
+                Feedback();
+                keyPressed = true;
+            }
 
-			if(Input.GetKeyUp(keycodeAlternate) && keyPressed)
-			{
-				ResetFeedback ();
-				keyPressed = false;
-			}				
-		}
-	}
+            if (Input.GetKeyUp(keycodeAlternate) && keyPressed)
+            {
+                ResetFeedback();
+                keyPressed = false;
+            }				
+        }
+    }
 
-	void LeftJoystick ()
-	{
-		Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
+    void LeftJoystick()
+    {
+        Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
 
-		if(joystickMovement.magnitude != 0 && !keyPressed)
-		{
-			Feedback ();
-			keyPressed = true;
-		}
+        if (joystickMovement.magnitude != 0 && !keyPressed)
+        {
+            Feedback();
+            keyPressed = true;
+        }
 
-		if(joystickMovement.magnitude == 0 && keyPressed)
-		{
-			ResetFeedback ();
-			keyPressed = false;
-		}
-
-
-		rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
-	}
-
-	void RightJoystick ()
-	{
-		Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
-
-		if(joystickMovement.magnitude != 0 && !keyPressed)
-		{
-			Feedback ();
-			keyPressed = true;
-		}
-
-		if(joystickMovement.magnitude == 0 && keyPressed)
-		{
-			ResetFeedback ();
-			keyPressed = false;
-		}
+        if (joystickMovement.magnitude == 0 && keyPressed)
+        {
+            ResetFeedback();
+            keyPressed = false;
+        }
 
 
-		rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
-	}
+        rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+    }
 
-	void Mouse ()
-	{
-		Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+    void RightJoystick()
+    {
+        Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
 
-		//mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
-		mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-		mouseMovement.Normalize ();
+        if (joystickMovement.magnitude != 0 && !keyPressed)
+        {
+            Feedback();
+            keyPressed = true;
+        }
 
-		if(mouseMovement.magnitude != 0 && !keyPressed)
-		{
-			Feedback ();
-			keyPressed = true;
-		}
+        if (joystickMovement.magnitude == 0 && keyPressed)
+        {
+            ResetFeedback();
+            keyPressed = false;
+        }
 
-		if(mouseMovement.magnitude == 0 && keyPressed)
-		{
-			ResetFeedback ();
-			keyPressed = false;
-		}
 
-		rect.anchoredPosition = initialPos + mouseMovement * movementMultiplicator;
-	}
+        rect.anchoredPosition = initialPos + joystickMovement * movementMultiplicator;
+    }
 
-	void GetPlayersEvent (ControllerStatusChangedEventArgs arg)
-	{
-		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
-		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
-	}
+    void Mouse()
+    {
+        Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-	void GetPlayers ()
-	{
-		mouseKeyboard = GlobalVariables.Instance.rewiredPlayers [0]; 
-		gamepad1 = GlobalVariables.Instance.rewiredPlayers [1]; 
-	}
+        //mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - mouseInitialPos;
+        mouseMovement = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        mouseMovement.Normalize();
 
-	void Feedback ()
-	{
-		//GetComponent<Image> ().sprite = modifiedSprite;
+        if (mouseMovement.magnitude != 0 && !keyPressed)
+        {
+            Feedback();
+            keyPressed = true;
+        }
 
-		if(menuButton)
-			menuButton.ShaderClick (true);
+        if (mouseMovement.magnitude == 0 && keyPressed)
+        {
+            ResetFeedback();
+            keyPressed = false;
+        }
 
-		transform.DOScale (modifiedScale, 0.2f);
+        rect.anchoredPosition = initialPos + mouseMovement * movementMultiplicator;
+    }
 
-		if(descriptionText != null)
-		{
-			descriptionText.DOScale (modifiedScaleText, 0.2f);
-			descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
+    void GetPlayersEvent(ControllerStatusChangedEventArgs arg)
+    {
+        mouseKeyboard = GlobalVariables.Instance.rewiredPlayers[0]; 
+        gamepad1 = GlobalVariables.Instance.rewiredPlayers[1]; 
+    }
+
+    void GetPlayers()
+    {
+        mouseKeyboard = GlobalVariables.Instance.rewiredPlayers[0]; 
+        gamepad1 = GlobalVariables.Instance.rewiredPlayers[1]; 
+    }
+
+    void Feedback()
+    {
+        //GetComponent<Image> ().sprite = modifiedSprite;
+
+        if (menuButton)
+            menuButton.ShaderClick(true);
+
+        transform.DOScale(modifiedScale, 0.2f);
+
+        if (descriptionText != null)
+        {
+            descriptionText.DOScale(modifiedScaleText, 0.2f);
+            descriptionText.GetComponent<Text>().DOColor(modifiedColor, 0.2f);
 			
-		}
+        }
 
-		/*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+        /*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = modifiedColor;
 
 		if(transform.gameObject.GetComponent<Image> () != null)
 			transform.gameObject.GetComponent<Image> ().color = modifiedColor;*/
-	}
+    }
 
-	void ResetFeedback ()
-	{
-		//GetComponent<Image> ().sprite = initialSprite;
-
-		if(menuButton)
-			menuButton.ShaderClick (false);
+    void ResetFeedback()
+    {
+        if (menuButton)
+            menuButton.ShaderClick(false);
 		
-		transform.DOScale (originScale, 0.2f);
+        transform.DOScale(originScale, 0.2f);
 	
-		if(descriptionText != null)
-		{
-			descriptionText.DOScale (originScale, 0.2f);
-			descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
+        if (descriptionText != null)
+        {
+            descriptionText.DOScale(originScale, 0.2f);
+            descriptionText.GetComponent<Text>().DOColor(Color.white, 0.2f);
 			
-		}
+        }
 
-		/*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
+        /*if(transform.gameObject.GetComponent<SpriteRenderer> () != null)
 			transform.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
 
 		if(transform.gameObject.GetComponent<Image> () != null)
 			transform.gameObject.GetComponent<Image> ().color = Color.white;*/
-	}
+    }
 }

@@ -8,11 +8,6 @@ namespace Replay
 {
     public class ReplayComponent : MonoBehaviour
     {
-        [Header("Record Rate")]
-        public bool overrideRecordRate = false;
-        [ShowIfAttribute("overrideRecordRate")]
-        public int recordRate = 120;
-
         protected virtual void Start()
         {
             SetEvents();
@@ -50,33 +45,12 @@ namespace Replay
         {
             if (ReplayManager.Instance.isRecording)
             {
-                int recordRate = ReplayManager.Instance.recordRate;
-
-                if (overrideRecordRate)
-                    recordRate = this.recordRate;
-
                 if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
                     Recording();
             }
 
             if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
                 Replay(ReplayManager.Instance.GetReplayTime());
-        }
-
-        protected virtual IEnumerator RecordingRate()
-        {
-            while (ReplayManager.Instance.isRecording)
-            {
-                int recordRate = ReplayManager.Instance.recordRate;
-
-                if (overrideRecordRate)
-                    recordRate = this.recordRate;
-
-                yield return new WaitForSeconds(1 / recordRate);
-
-                if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
-                    Recording();
-            }
         }
 
         protected virtual void Recording()

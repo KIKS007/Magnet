@@ -132,7 +132,6 @@ namespace Replay
         private float _endTime;
         private ArenaDeadzones _arenaDeadzones;
        
-        private bool wasPlaying = true;
         private float endTimeDiference = 0;
 
         // Use this for initialization
