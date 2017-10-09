@@ -178,6 +178,7 @@ public class MenuChoosePlayer : MonoBehaviour
 
         if (!canPlay && playButtonComponent.interactable || MenuManager.Instance.isTweening)
             playButtonComponent.interactable = false;
+
     }
 
     void CheckInput()
@@ -194,6 +195,15 @@ public class MenuChoosePlayer : MonoBehaviour
                         Leave(0);
 					
                     Join(i);
+                }
+            }
+
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start"))
+            {
+                if (canPlay && playButtonComponent.interactable)
+                {
+                    playButtonComponent.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                    playButtonComponent.onClick.Invoke();
                 }
             }
 

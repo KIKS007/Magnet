@@ -125,7 +125,6 @@ public class TutorialManager : MonoBehaviour
 
         DOVirtual.DelayedCall(0.01f, () =>
             {
-                arena.StopAllCoroutines();
                 arena.Reset();
             });
 
@@ -234,7 +233,6 @@ public class TutorialManager : MonoBehaviour
 
                 tutorialState = TutorialState.ShootStep;
 
-                arena.StopAllCoroutines();
                 arena.Reset();
 
                 break;
