@@ -48,12 +48,10 @@ public class PlayersFXAnimations : MonoBehaviour
     [Header("Attraction Settings")]
     public float aFactor = 0.03f;
     public float bFactor = -0.03f;
-    public float fadeDistance = 0;
 
     [Header("Repulsion Settings")]
     public float aFactor2 = 0.03f;
     public float bFactor2 = -0.03f;
-    public float fadeDistance2 = 0;
 
     protected PlayersGameplay playerScript;
     protected PlayersSounds playerSoundsScript;
@@ -62,7 +60,7 @@ public class PlayersFXAnimations : MonoBehaviour
     protected float spawnDuration = 0.2f;
     protected Vector3 initialScale;
     protected Color initialEmission;
-    protected float stunEmissionValue = 0.1f;
+    protected float stunEmissionValue = 0.2f;
     protected Color playerColor;
     [HideInInspector]
     public float distance;
@@ -372,17 +370,17 @@ public class PlayersFXAnimations : MonoBehaviour
             ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
             ps.GetParticles(particlesList);
 
+            distance = Vector3.Distance(transform.position, whichCube.transform.position);
+
             for (int i = 0; i < ps.particleCount; i++)
             {
-                distance = Vector3.Distance(transform.position, whichCube.transform.position);
-
                 dist = Vector3.Distance(whichCube.transform.position, ps.transform.TransformPoint(particlesList[i].position));
                 lifeTime = aFactor * dist + bFactor;
 
-                if (dist > distance + fadeDistance)
+                if (dist >= distance)
                     particlesList[i].startLifetime = 0;
-                /*else
-					particlesList [i].startLifetime = lifeTime;*/
+                /* else
+                    particlesList[i].startLifetime = lifeTime;*/
             }
 
             ps.SetParticles(particlesList, particlesList.Length);
@@ -427,7 +425,6 @@ public class PlayersFXAnimations : MonoBehaviour
             Vector3 lookPos = new Vector3(whichCube.transform.position.x, fx.transform.position.y, whichCube.transform.position.z);
             fx.transform.LookAt(lookPos);
 
-
             float dist = Vector3.Distance(transform.position, whichCube.transform.position);
             float lifeTime = aFactor2 * dist + bFactor2;
 
@@ -436,14 +433,16 @@ public class PlayersFXAnimations : MonoBehaviour
             ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[ps.particleCount];
             ps.GetParticles(particlesList);
 
+            distance = Vector3.Distance(transform.position, whichCube.transform.position);
+
             for (int i = 0; i < ps.particleCount; i++)
             {
-                distance = Vector3.Distance(transform.position, whichCube.transform.position);
-
                 dist = Vector3.Distance(transform.position, ps.transform.TransformPoint(particlesList[i].position));
 
-                if (dist > distance + fadeDistance2)
+                if (dist >= distance)
                     particlesList[i].startLifetime = 0;
+                else
+                    particlesList[i].startLifetime = lifeTime;
             }
 
             ps.SetParticles(particlesList, particlesList.Length);
