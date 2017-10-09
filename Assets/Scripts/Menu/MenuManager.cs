@@ -134,6 +134,7 @@ public class MenuManager : Singleton <MenuManager>
         GlobalVariables.Instance.OnStartMode += ModeLogo;
         GlobalVariables.Instance.OnRestartMode += ModeLogo;
         GlobalVariables.Instance.OnPlayerDeath += OnPlayerDeath;
+        GlobalVariables.Instance.OnPlaying += () => eventSyst.SetSelectedGameObject(null);
         GlobalVariables.Instance.OnEndMode += () =>
         {
             HidePassFightButton();
@@ -141,6 +142,16 @@ public class MenuManager : Singleton <MenuManager>
         };
 
         GlobalVariables.Instance.OnMenu += () =>
+        {
+            playText.text = "PLAY";
+
+            escBackButton.SetActive(true);
+
+            if (resumeButtons.anchoredPosition.x != resumeButtonsPositions.x)
+                resumeButtons.DOAnchorPosX(resumeButtonsPositions.x, animationDuration).SetEase(easeMenu);
+        };
+
+        GlobalVariables.Instance.OnEndMode += () =>
         {
             playText.text = "PLAY";
 
@@ -413,7 +424,6 @@ public class MenuManager : Singleton <MenuManager>
                 foreach (var b in resumeButtonsScript)
                     b.Back(i);
 				
-                currentMenu.HideMenu();
                 PauseResumeGame();
             }
 			
@@ -1032,6 +1042,8 @@ public class MenuManager : Singleton <MenuManager>
         }
         else
         {
+            currentMenu.HideMenu();
+
             MasterAudio.PlaySound(SoundsManager.Instance.closeMenuSound);
 
             yield return StartCoroutine(cameraMovement.NewPlayPosition());

@@ -53,12 +53,17 @@ namespace Replay
             base.OnEnable();
 
             if (ReplayManager.Instance.isRecording)
-            {
-                if (cubeScript == null)
-                    cubeScript = GetComponent<MovableScript>();
+                StartCoroutine(Enable());
+        }
 
-                deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
-            }
+        IEnumerator Enable()
+        {
+            yield return new WaitUntil(() => GetComponent<MovableScript>() == null);
+
+            if (cubeScript == null)
+                cubeScript = GetComponent<MovableScript>();
+
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
         }
 
         void OnDisable()
@@ -66,7 +71,7 @@ namespace Replay
             if (GlobalVariables.applicationIsQuitting)
                 return;
 
-            if (ReplayManager.Instance.isRecording)
+            if (ReplayManager.Instance.isRecording && cubeScript != null)
                 deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
         }
 

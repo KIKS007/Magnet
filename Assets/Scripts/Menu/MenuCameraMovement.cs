@@ -157,7 +157,7 @@ public class MenuCameraMovement : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(newMovementDuration);
 
-        transform.DORotate(newPlayRotation, 0.5f, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        //transform.DORotate(newPlayRotation, 0.5f, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
     }
 
     void StopPreviousMovement()
