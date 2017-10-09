@@ -48,6 +48,9 @@ public class MenuManager : Singleton <MenuManager>
     public GameObject mainMenu;
     public Text playText;
 
+    [Header("Instructions Menu")]
+    public MenuComponent instructionsMenu;
+
     [Header("Buttons Positions")]
     public float menuFirstButtonY = 278;
     public float buttonFirstButtonY = 278;
@@ -339,8 +342,8 @@ public class MenuManager : Singleton <MenuManager>
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
             return;
 
-        //for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+        //for (int i = 0; i < 2; i++)
         {
             //Quit Far Position
             if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
@@ -358,6 +361,9 @@ public class MenuManager : Singleton <MenuManager>
 
             if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel"))
             {
+                if (Input.GetMouseButton(1) && currentMenu == instructionsMenu)
+                    return;
+
                 foreach (var b in backButtonsScript)
                     b.Back(i);
 
@@ -393,8 +399,8 @@ public class MenuManager : Singleton <MenuManager>
         if (GlobalVariables.Instance.GameState != GameStateEnum.Paused && GlobalVariables.Instance.GameState != GameStateEnum.Playing)
             return;
 		
-        //for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+        //for (int i = 0; i < 2; i++)
         {
             if (i == 0 && currentMenu == mainMenu && GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel") && !GlobalVariables.Instance.OneGamepadUnplugged)
             {

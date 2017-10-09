@@ -240,7 +240,8 @@ public class SoundsManager : Singleton<SoundsManager>
 
     void Update()
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+        //for (int i = 0; i < 2; i++)
         {
             if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("Random Music"))
                 RandomMusic();
