@@ -201,7 +201,7 @@ public class BombManager : LastManManager
         if (gameEndLoopRunning)
             yield break;
 
-        if (!bombScript.hold)
+        if (!bombScript.hold && bombScript.playerHolding == null)
         {
 //			Debug.Log ("Bomb Player Choice");
 
