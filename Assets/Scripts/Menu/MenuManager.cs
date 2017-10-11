@@ -397,8 +397,6 @@ public class MenuManager : Singleton <MenuManager>
                     break;
                 }
             }
-
-
         }
     }
 
@@ -413,13 +411,13 @@ public class MenuManager : Singleton <MenuManager>
         for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
         //for (int i = 0; i < 2; i++)
         {
-            if (i == 0 && currentMenu == mainMenu && GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel") && !GlobalVariables.Instance.OneGamepadUnplugged)
+            if (i == 0 && currentMenu == mainMenu && GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel"))
             {
                 currentMenu.HideMenu();
                 PauseResumeGame();
             }
 
-            if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start") && !GlobalVariables.Instance.OneGamepadUnplugged)
+            if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start"))
             {
                 foreach (var b in resumeButtonsScript)
                     b.Back(i);
@@ -463,6 +461,8 @@ public class MenuManager : Singleton <MenuManager>
         if (GlobalVariables.Instance.GameState == GameStateEnum.Menu)
             return;
 
+        List<int> gamepadsIndex = new List<int>(){ 1, 2, 3, 4 };
+
         foreach (GameObject p in GlobalVariables.Instance.EnabledPlayersList)
         {
             if (p == null)
@@ -473,20 +473,34 @@ public class MenuManager : Singleton <MenuManager>
             if (script.rewiredPlayer == null)
                 continue;
 
-            //Unplugged
-            if (script.rewiredPlayer.controllers.joystickCount == 0 && script.controllerNumber != 0 && script.controllerNumber != -1)
+            //Gamepad
+            if (gamepadsIndex.Contains(script.controllerNumber))
             {
-                unpluggedPlayers[(int)script.playerName].gameObject.SetActive(true);
-                unpluggedPlayers[(int)script.playerName].DOAnchorPosY(disconnectedPlayersYPos.y, animationDuration).SetEase(easeMenu);
+                gamepadsIndex.Remove(script.controllerNumber);
+
+                //Unplugged
+                if (script.rewiredPlayer.controllers.joystickCount == 0)
+                {
+                    unpluggedPlayers[(int)script.controllerNumber - 1].gameObject.SetActive(true);
+                    unpluggedPlayers[(int)script.controllerNumber - 1].DOAnchorPosY(disconnectedPlayersYPos.y, animationDuration).SetEase(easeMenu);
+                }
+                //Plugged
+                else
+                {
+                    unpluggedPlayers[(int)script.controllerNumber - 1].DOAnchorPosY(disconnectedPlayersYPos.x, animationDuration).SetEase(easeMenu).OnComplete(() =>
+                        {
+                            unpluggedPlayers[(int)script.controllerNumber - 1].gameObject.SetActive(false);
+                        });
+                }
             }
-			//Plugged
-			else
-            {
-                unpluggedPlayers[(int)script.playerName].DOAnchorPosY(disconnectedPlayersYPos.x, animationDuration).SetEase(easeMenu).OnComplete(() =>
-                    {
-                        unpluggedPlayers[(int)script.playerName].gameObject.SetActive(false);
-                    });
-            }
+        }
+
+        foreach (var i in gamepadsIndex)
+        {
+            unpluggedPlayers[i - 1].DOAnchorPosY(disconnectedPlayersYPos.x, animationDuration).SetEase(easeMenu).OnComplete(() =>
+                {
+                    unpluggedPlayers[i - 1].gameObject.SetActive(false);
+                });
         }
     }
 
