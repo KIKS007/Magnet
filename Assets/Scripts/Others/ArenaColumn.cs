@@ -7,7 +7,7 @@ using DG.Tweening;
 public class ArenaColumn : MonoBehaviour
 {
     private Renderer rend;
-    private float emission = 3f;
+    private float[] emission = new float[] { 3, 3, 3, 3 };
     private float duration = 0.5f;
     private Color color;
     private float scaleModifier = 1.5f;
@@ -48,7 +48,7 @@ public class ArenaColumn : MonoBehaviour
                         DOTween.Kill("ColumnRend" + GetInstanceID());
 
                     transform.DOScale(scale * scaleModifier, duration * 0.5f);
-                    rend.material.DOColor(color * emission, "_EmissionColor", duration * 0.5f).SetId("ColumnRend" + GetInstanceID());
+                    rend.material.DOColor(color * emission[(int)GlobalVariables.Instance.environementChroma], "_EmissionColor", duration * 0.5f).SetId("ColumnRend" + GetInstanceID());
                 }
             }
         }
@@ -77,7 +77,7 @@ public class ArenaColumn : MonoBehaviour
                         DOTween.Kill("ColumnRend" + GetInstanceID());
 
                     transform.DOScale(scale * scaleModifier, duration * 0.5f);
-                    rend.material.DOColor(color * emission, "_EmissionColor", duration * 0.5f).SetId("ColumnRend" + GetInstanceID());
+                    rend.material.DOColor(color * emission[(int)GlobalVariables.Instance.environementChroma], "_EmissionColor", duration * 0.5f).SetId("ColumnRend" + GetInstanceID());
                 }
             }
         }

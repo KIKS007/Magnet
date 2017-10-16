@@ -527,7 +527,7 @@ public class MenuManager : Singleton <MenuManager>
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
             return;
 
-        if (!cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused && !logoLoading)
+        if (currentMenu == mainMenuScript && !cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused && !logoLoading)
         {
             cameraMovement.ToggleFarPosition();
 
