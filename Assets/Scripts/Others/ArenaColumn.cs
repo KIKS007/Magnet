@@ -19,8 +19,8 @@ public class ArenaColumn : MonoBehaviour
         rend = GetComponent<Renderer>();
         scale = transform.localScale;
 
-        GlobalVariables.Instance.OnStartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma];
-        GlobalVariables.Instance.OnRestartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma];
+        GlobalVariables.Instance.OnStartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma].gamma;
+        GlobalVariables.Instance.OnRestartMode += () => color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma].gamma;
 
         arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
     }
