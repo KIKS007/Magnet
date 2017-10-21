@@ -17,7 +17,9 @@ public class LogoArenaMaterial : MonoBehaviour
 
     public void SetMaterial()
     {
-        Material m = new Material(GetComponent<Image>().material);
+        var gv = FindObjectOfType<GlobalVariables>();
+
+        Material m = new Material(gv.staticArenaLogoMaterial);
 
         Texture t = GetComponent<Image>().mainTexture;
         m.SetTexture("_Texture", t);

@@ -18,27 +18,27 @@ public enum GameStateEnum
 
 public enum StartupType
 {
-Delayed,
+    Delayed,
     Wave,
     Done}
 ;
 
 public enum ModeSequenceType
 {
-Selection,
+    Selection,
     Random,
     Cocktail}
 ;
 
 public enum ModeObjective
 {
-LastMan,
+    LastMan,
     LeastDeath}
 ;
 
 public enum WhichMode
 {
-Bomb,
+    Bomb,
     Bounce,
     Burden,
     Crush,
@@ -104,7 +104,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
     public List<float> environementPanelAlpha = new List<float>();
 
     [Header("Arena Colors")]
+    public Material staticArenaLogoMaterial;
     public Color[] arenaColors = new Color[4];
+
+    [Header("Pillars Colors")]
+    public Color[] pillarsColors = new Color[4];
 
     [Header("Startup")]
     public StartupType Startup = StartupType.Wave;
@@ -413,7 +417,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
         environementChroma = newChroma;
 
         panelRenderer.materials[0].DOFloat(environementPanelAlpha[newChromaIndex], "_Opacity", envrionementTransition);
-        panelPillarRenderer.materials[2].DOColor(arenaColors[newChromaIndex], "_EmissionColor", envrionementTransition);
+        panelPillarRenderer.materials[2].DOColor(pillarsColors[newChromaIndex], "_EmissionColor", envrionementTransition);
 
         if (!setup)
         {
