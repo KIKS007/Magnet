@@ -9,6 +9,9 @@ using DarkTonic.MasterAudio;
 
 public class MenuCameraMovement : MonoBehaviour
 {
+    public System.Action OnFarPosition;
+    public System.Action OnClosePosition;
+
     public Ease cameraEaseMovement = Ease.OutQuad;
     public bool tweening = false;
 
@@ -79,6 +82,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator StartFarPosition()
     {
+        if (OnFarPosition != null)
+            OnFarPosition();
+
         MenuManager.Instance.ShowLogo();
 
         StopPreviousMovement();
@@ -95,6 +101,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator StartPosition()
     {
+        if (OnClosePosition != null)
+            OnClosePosition();
+        
         StartCoroutine(MenuManager.Instance.HideLogo(MenuManager.Instance.startScreen));
 	
         StopPreviousMovement();
