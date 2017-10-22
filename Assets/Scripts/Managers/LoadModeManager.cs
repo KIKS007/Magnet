@@ -156,6 +156,8 @@ public class LoadModeManager : Singleton<LoadModeManager>
                 break;
         }
 
+        GlobalVariables.Instance.slowMotionCamera.StopPauseSlowMotion();
+
         if (!instantly)
             yield return StartCoroutine(cameraMovement.NewPlayPosition());
     }
