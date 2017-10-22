@@ -36,6 +36,9 @@ public class PlayersFXAnimations : MonoBehaviour
     [Header("Dash Available FX")]
     public ParticleSystem dashAvailableFX;
 
+    [Header("Dash Ongle FX")]
+    public Transform dashOngleFX;
+
     [Header("Player Mesh")]
     public Transform playerMesh;
     public float leanSpeed;
@@ -62,6 +65,8 @@ public class PlayersFXAnimations : MonoBehaviour
     protected Color initialEmission;
     protected float stunEmissionValue = 0.2f;
     protected Color playerColor;
+    protected Material dashOngleMaterial;
+    protected float dashOngleAlpha;
     [HideInInspector]
     public float distance;
     [HideInInspector]
@@ -75,16 +80,25 @@ public class PlayersFXAnimations : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
+        if (dashOngleFX != null)
+        {
+            dashOngleMaterial = dashOngleFX.GetChild(0).GetComponent<Renderer>().material;
+            dashOngleAlpha = dashOngleMaterial.GetColor("_TintColor").a;
+        }
+        
         playerScript = GetComponent<PlayersGameplay>();
         playerSoundsScript = GetComponent<PlayersSounds>();
 
         playerScript.OnShoot += ShootFX;
         playerScript.OnDashAvailable += DashAvailableFX;
         playerScript.OnDash += StopDashAvailable;
+        playerScript.OnDashEnd += DisableDashFX;
         playerScript.OnStun += () => StartCoroutine(StunFX());
         playerScript.OnDash += EnableDashFX;
         playerScript.OnDeath += RemoveAttractionRepulsionFX;
         playerScript.OnSafe += () => StartCoroutine(SafeFX());
+
+        DisableDashFX();
 
         SetupMaterials();
 
@@ -146,9 +160,6 @@ public class PlayersFXAnimations : MonoBehaviour
             dashAvailableFX.startRotation = transform.rotation.eulerAngles.y;
         }
 
-        if (dashFX != null && playerScript.dashState != DashState.Dashing)
-            DisableDashFX();
-
         LeanMesh();
     }
 
@@ -199,14 +210,42 @@ public class PlayersFXAnimations : MonoBehaviour
 
     protected virtual void EnableDashFX()
     {
+        StartCoroutine(DashOngleFx());
+
+        if (dashOngleFX != null)
+        {
+            dashOngleFX.gameObject.SetActive(true);
+            dashOngleMaterial.DOFade(dashOngleAlpha, "_TintColor", 0.1f);
+        } 
+
         if (dashFX != null)
             dashFX.Play();
+    }
+
+    protected virtual IEnumerator DashOngleFx()
+    {
+        if (dashOngleFX == null)
+            yield break;
+
+        while (playerScript.dashState == DashState.Dashing)
+        {
+            dashOngleFX.LookAt(transform.position + playerScript.playerRigidbody.velocity);
+            dashOngleFX.localRotation = dashOngleFX.localRotation;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     protected virtual void DisableDashFX()
     {
         if (dashFX != null)
             dashFX.Stop();
+
+        if (dashOngleFX != null)
+            dashOngleMaterial.DOFade(0, "_TintColor", 0.1f).OnComplete(() =>
+                {
+                    dashOngleFX.gameObject.SetActive(false);
+                });
     }
 
     protected virtual void ShootFX()
