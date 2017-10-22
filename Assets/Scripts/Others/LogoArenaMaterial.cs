@@ -11,7 +11,7 @@ public class LogoArenaMaterial : MonoBehaviour
     [ButtonAttribute]
     void SetAllMaterial()
     {
-        foreach (var m in FindObjectsOfType<LogoArenaMaterial>())
+        foreach (var m in Resources.FindObjectsOfTypeAll<LogoArenaMaterial> ())
             m.SetMaterial();
     }
 

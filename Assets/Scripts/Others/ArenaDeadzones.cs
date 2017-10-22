@@ -128,10 +128,10 @@ public class ArenaDeadzones : MonoBehaviour
                 column.GetChild(i).tag = initialTag;
                 column.GetChild(i).GetComponent<Collider>().enabled = true;
 
-                Color color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma].gamma * normalEmission;
+                Color color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma] * normalEmission;
 
                 column.GetChild(i).GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
-                column.GetChild(i).GetComponent<Renderer>().material.color = color.gamma;
+                column.GetChild(i).GetComponent<Renderer>().material.color = color;
 
                 column.GetChild(i).localScale = initialScale;
 
@@ -212,8 +212,8 @@ public class ArenaDeadzones : MonoBehaviour
             {
                 for (int i = 0; i < column.childCount; i++)
                 {
-                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor.gamma * deadlyEmission, "_EmissionColor", d.duration).SetUpdate(false).SetId("ArenaDeadzone");
-                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor.gamma, d.duration).SetUpdate(false).SetId("ArenaDeadzone");
+                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor * deadlyEmission, "_EmissionColor", d.duration).SetUpdate(false).SetId("ArenaDeadzone");
+                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor, d.duration).SetUpdate(false).SetId("ArenaDeadzone");
 
                     /*	if(i == 0)
 						column.GetChild (i).DOScaleX (xScale, d.duration).SetUpdate (false);
@@ -227,8 +227,8 @@ public class ArenaDeadzones : MonoBehaviour
                 {
                     Color color = GlobalVariables.Instance.arenaColors[(int)GlobalVariables.Instance.environementChroma];
 
-                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(color.gamma * deadlyEmission, "_EmissionColor", d.duration).SetUpdate(false).SetId("ArenaDeadzone");
-                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(color.gamma, d.duration).SetUpdate(false).SetId("ArenaDeadzone");
+                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(color * deadlyEmission, "_EmissionColor", d.duration).SetUpdate(false).SetId("ArenaDeadzone");
+                    column.GetChild(i).GetComponent<Renderer>().material.DOColor(color, d.duration).SetUpdate(false).SetId("ArenaDeadzone");
 					
                     /*if(i == 0)
 						column.GetChild (i).DOScale (initialScale, d.duration).SetUpdate (false);
@@ -248,8 +248,8 @@ public class ArenaDeadzones : MonoBehaviour
             column.GetChild(i).tag = "DeadZone";
             column.GetChild(i).GetComponent<Collider>().enabled = true;
 
-            column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor.gamma * deadlyEmission, "_EmissionColor", transitionDuration).SetUpdate(false).SetId("ArenaDeadzone");
-            column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor.gamma, transitionDuration).SetUpdate(false).SetId("ArenaDeadzone");
+            column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor * deadlyEmission, "_EmissionColor", transitionDuration).SetUpdate(false).SetId("ArenaDeadzone");
+            column.GetChild(i).GetComponent<Renderer>().material.DOColor(deadlyColor, transitionDuration).SetUpdate(false).SetId("ArenaDeadzone");
 
             column.GetChild(i).DOScaleZ(zScale, transitionDuration).SetUpdate(false).SetId("ArenaDeadzone");
 
