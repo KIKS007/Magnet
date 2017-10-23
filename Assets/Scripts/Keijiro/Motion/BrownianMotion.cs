@@ -132,14 +132,12 @@ namespace Klak.Motion
 
         void Start()
         {
-            Debug.Log("OnStart");
             _time = new float[6];
             Rehash();
         }
 
         void OnEnable()
         {
-            Debug.Log("OnEnable");
             _initialPosition = transform.localPosition;
             _initialRotation = transform.localRotation;
         }

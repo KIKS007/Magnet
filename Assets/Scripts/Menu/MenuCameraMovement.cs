@@ -192,7 +192,10 @@ public class MenuCameraMovement : MonoBehaviour
     void EnableBrowianMotion(bool lookatMenu = true)
     {
         browianMotion._initialPosition = transform.position;
-        //browianMotion.enabled = true;
+
+        if (!browianMotion.enabled)
+            browianMotion.enabled = true;
+
         browianMotion.enablePositionNoise = true;
 
         if (lookatMenu)
