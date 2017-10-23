@@ -6,6 +6,8 @@ using Sirenix.OdinInspector;
 
 public class MenuEnviroColor : MonoBehaviour
 {
+    public bool useArenaColors = true;
+
     private Color[] colors = new Color[4];
 
     private Text text;
@@ -31,10 +33,13 @@ public class MenuEnviroColor : MonoBehaviour
     {
         gv = FindObjectOfType<GlobalVariables>();
 
-        colors[0] = gv.uiMaterial.GetColor("_PURPLECHROMAIdle");
-        colors[1] = gv.uiMaterial.GetColor("_BLUECHROMAIdle");
-        colors[2] = gv.uiMaterial.GetColor("_GREENCHROMAIdle");
-        colors[3] = gv.uiMaterial.GetColor("_ORANGECHROMAIdle");
+        if (!useArenaColors)
+        {
+            colors[0] = gv.uiMaterial.GetColor("_PURPLECHROMAIdle");
+            colors[1] = gv.uiMaterial.GetColor("_BLUECHROMAIdle");
+            colors[2] = gv.uiMaterial.GetColor("_GREENCHROMAIdle");
+            colors[3] = gv.uiMaterial.GetColor("_ORANGECHROMAIdle");
+        }
 
         text = GetComponent<Text>();
 
@@ -46,9 +51,15 @@ public class MenuEnviroColor : MonoBehaviour
     void UpdateColor()
     {
         if (text != null)
+        if (!useArenaColors)
             text.color = colors[(int)gv.environementChroma];
+        else
+            text.color = gv.arenaColors[(int)gv.environementChroma];
 
         if (image != null)
+        if (!useArenaColors)
             image.color = colors[(int)gv.environementChroma];
+        else
+            image.color = gv.arenaColors[(int)gv.environementChroma];
     }
 }
