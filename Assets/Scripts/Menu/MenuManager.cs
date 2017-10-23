@@ -611,6 +611,8 @@ public class MenuManager : Singleton <MenuManager>
     {
         currentMenu = whichMenu;
 
+        whichMenu.OnShow();
+
         if (!whichMenu.gameObject.activeSelf)
             whichMenu.gameObject.SetActive(true);
 		
@@ -764,6 +766,8 @@ public class MenuManager : Singleton <MenuManager>
         StartCoroutine(HideSecondaryContent(whichMenu));
 
         yield return new WaitForSecondsRealtime(animationDuration);
+
+        whichMenu.OnHide();
 
         currentMenu = null;
     }
