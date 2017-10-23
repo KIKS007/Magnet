@@ -134,6 +134,8 @@ public class MovableScript : MonoBehaviour
         CheckPlayerThatThrew();
 
         LowVelocity();
+
+        HighVelocity();
     }
 
     protected virtual void SetSpeedState()
@@ -169,7 +171,7 @@ public class MovableScript : MonoBehaviour
         }
     }
 
-    protected virtual void LowVelocity()
+    protected virtual void HighVelocity()
     {
         if (hold == false && currentVelocity > 0)
         {
@@ -178,9 +180,17 @@ public class MovableScript : MonoBehaviour
                 if (slowMoTrigger == null)
                     slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();
 
-                slowMoTrigger.triggerEnabled = true;
+                if (tag == "ThrownMovable" || tag == "DeadCube")
+                    slowMoTrigger.triggerEnabled = true;
             }
-            else if (currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
+        }
+    }
+
+    protected virtual void LowVelocity()
+    {
+        if (hold == false && currentVelocity > 0)
+        {
+            if (currentVelocity < limitVelocity && gameObject.tag == "ThrownMovable")
             {
                 if (slowMoTrigger == null)
                     slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();

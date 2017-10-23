@@ -3,106 +3,102 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class MovableBounce : MovableScript 
+public class MovableBounce : MovableScript
 {
-	private int wallBounces = 0;
+    private int wallBounces = 0;
 
-	protected override void LowVelocity () 
-	{
-		if(hold == false && currentVelocity > 0)
-		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			else if(currentVelocity < limitVelocity)
-			{
-				if(gameObject.tag == "DeadCube")
-				{
-					ToNeutralColor ();
+    protected override void LowVelocity()
+    {
+        if (hold == false && currentVelocity > 0)
+        {
+            if (currentVelocity < limitVelocity)
+            {
+                if (gameObject.tag == "DeadCube")
+                {
+                    ToNeutralColor();
 					
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
+                    slowMoTrigger.triggerEnabled = false;
+                    gameObject.tag = "Movable";
 
-					wallBounces = 0;
-				}
+                    wallBounces = 0;
+                }
+                else if (gameObject.tag == "ThrownMovable")
+                {
+                    slowMoTrigger.triggerEnabled = false;
+                    gameObject.tag = "Movable";
+                }
+            }
+        }
+    }
 
-				else if(gameObject.tag == "ThrownMovable")
-				{
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-				}
-			}
-		}
-	}
+    protected override void HitPlayer(Collision other)
+    {
+        if (other.collider.tag == "Player" && tag == "ThrownMovable")
+        {
+            PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay>();
 
-	protected override void HitPlayer (Collision other)
-	{
-		if(other.collider.tag == "Player" && tag == "ThrownMovable")
-		{
-			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+            if (playerScript.playerState == PlayerState.Stunned)
+                return;
 
-			if (playerScript.playerState == PlayerState.Stunned)
-				return;
-
-			if(playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
-			{
-				playerScript.StunVoid(true);
+            if (playerThatThrew == null || other.gameObject.name != playerThatThrew.name)
+            {
+                playerScript.StunVoid(true);
 				
-				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);	
+                InstantiateParticles(other.contacts[0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors[(int)playerScript.playerName]);	
 				
-				if(playerThatThrew != null)
-					StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
-			}				
-		}
+                if (playerThatThrew != null)
+                    StatsManager.Instance.PlayersHits(playerThatThrew, other.gameObject);
+            }				
+        }
 
-		if(other.collider.tag == "Player" && tag == "DeadCube")
-		{
-			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+        if (other.collider.tag == "Player" && tag == "DeadCube")
+        {
+            PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay>();
 
-			if (playerScript.playerState == PlayerState.Dead)
-				return;
+            if (playerScript.playerState == PlayerState.Dead)
+                return;
 
-			if (wallBounces > 1)
-				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_BOUNCE);
+            if (wallBounces > 1)
+                SteamAchievements.Instance.UnlockAchievement(AchievementID.ACH_BOUNCE);
 
-			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+            playerScript.Death(DeathFX.All, other.contacts[0].point, playerThatThrew);
 
-			PlayerKilled ();
+            PlayerKilled();
 
-			if (playerThatThrew != null)
-				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+            if (playerThatThrew != null)
+                StatsManager.Instance.PlayersHits(playerThatThrew, other.gameObject);
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+            InstantiateParticles(other.contacts[0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors[(int)playerScript.playerName]);
 
-			GlobalMethods.Instance.Explosion (transform.position);
-		}
-	}
+            GlobalMethods.Instance.Explosion(transform.position);
+        }
+    }
 
-	protected override void HitWall (Collision other)
-	{
-		wallBounces++;
+    protected override void HitWall(Collision other)
+    {
+        wallBounces++;
 
-		if(canPlaySound)
-			StartCoroutine(HitSound ());
+        if (canPlaySound)
+            StartCoroutine(HitSound());
 		
-		if (tag != "ThrownMovable")
-			return;
+        if (tag != "ThrownMovable")
+            return;
 		
-		DeadlyTransition ();
+        DeadlyTransition();
 
-	}
+    }
 
-	void DeadlyTransition ()
-	{
-		ToDeadlyColor (0.1f);
+    void DeadlyTransition()
+    {
+        ToDeadlyColor(0.1f);
 
-		tag = "DeadCube";
-	}
+        tag = "DeadCube";
+    }
 
-	public override void OnRelease ()
-	{
-		ToNeutralColor();
+    public override void OnRelease()
+    {
+        ToNeutralColor();
 
-		OnReleaseEventVoid ();
-	}
+        OnReleaseEventVoid();
+    }
 }
