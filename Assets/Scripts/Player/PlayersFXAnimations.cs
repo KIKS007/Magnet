@@ -38,6 +38,12 @@ public class PlayersFXAnimations : MonoBehaviour
 
     [Header("Dash Ongle FX")]
     public Transform dashOngleFX;
+    
+    [Header("Stun Mesh")]
+    public Transform stunMesh;
+
+    protected float stunMeshGrowthDuration = 0.25f;
+    protected float stunMeshGrowth = 1.3f;
 
     [Header("Player Mesh")]
     public Transform playerMesh;
@@ -71,6 +77,7 @@ public class PlayersFXAnimations : MonoBehaviour
     public float distance;
     [HideInInspector]
     public List<GameObject> attractionRepulsionFX = new List<GameObject>();
+    protected Vector3 initialStunMeshScale = Vector3.one;
 
     protected virtual void Awake()
     {
@@ -97,6 +104,7 @@ public class PlayersFXAnimations : MonoBehaviour
         playerScript.OnDash += EnableDashFX;
         playerScript.OnDeath += RemoveAttractionRepulsionFX;
         playerScript.OnSafe += () => StartCoroutine(SafeFX());
+        playerScript.OnSafeEnd += OnSafeEnd;
 
         DisableDashFX();
 
@@ -107,6 +115,10 @@ public class PlayersFXAnimations : MonoBehaviour
 
     protected virtual void Setup()
     {
+        playerMesh.gameObject.SetActive(true);
+        if (stunMesh != null)
+            stunMesh.gameObject.SetActive(false);
+
         playerColor = GlobalVariables.Instance.playersColors[(int)playerScript.playerName];
 
         SetupMaterials();
@@ -137,6 +149,12 @@ public class PlayersFXAnimations : MonoBehaviour
         for (int i = 0; i < playerMaterials.Count; i++)
             if (playerMaterials[i] != null)
                 playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
+
+        if (stunMesh != null && gameObject.layer == LayerMask.NameToLayer("Safe"))
+        {
+            stunMesh.gameObject.SetActive(true);
+            playerMesh.gameObject.SetActive(false);
+        }
     }
 	
     // Update is called once per frame
@@ -337,6 +355,16 @@ public class PlayersFXAnimations : MonoBehaviour
 
     protected virtual IEnumerator SafeFX()
     {
+        if (stunMesh != null)
+        {
+            stunMesh.localScale = initialStunMeshScale;
+
+            stunMesh.gameObject.SetActive(true);
+            playerMesh.gameObject.SetActive(false);
+
+            stunMesh.DOScale(initialStunMeshScale * stunMeshGrowth, stunMeshGrowthDuration).SetLoops(-1, LoopType.Yoyo);
+        }
+
         while (gameObject.layer == LayerMask.NameToLayer("Safe"))
         {
             for (int i = 0; i < playerMaterials.Count; i++)
@@ -356,14 +384,22 @@ public class PlayersFXAnimations : MonoBehaviour
 
             yield return new WaitForSeconds(safeDurationBetween);
         }
+    }
+
+    protected virtual void OnSafeEnd()
+    {
+        if (stunMesh != null)
+        {
+            stunMesh.gameObject.SetActive(false);
+            playerMesh.gameObject.SetActive(true);
+            DOTween.Kill(stunMesh);
+        }
 
         for (int i = 0; i < playerMaterials.Count; i++)
             playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
 
         playerSoundsScript.StunON();
     }
-
-
 
     public virtual IEnumerator AttractionFX(GameObject whichCube)
     {

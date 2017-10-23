@@ -7,6 +7,7 @@ public class AIFXAnimations : PlayersFXAnimations
     [Header("AI")]
     public Transform trails;
     public Transform meshes;
+    public Transform stunMeshes;
     public Transform dashDispo;
     public Transform dash;
 
@@ -14,31 +15,9 @@ public class AIFXAnimations : PlayersFXAnimations
 
     protected override void Start()
     {
-        if (dashOngleFX != null)
-        {
-            dashOngleMaterial = dashOngleFX.GetChild(0).GetComponent<Renderer>().material;
-            dashOngleAlpha = dashOngleMaterial.GetColor("_TintColor").a;
-        }
-
-        playerScript = GetComponent<PlayersGameplay>();
-        playerSoundsScript = GetComponent<PlayersSounds>();
-
-        playerScript.OnShoot += ShootFX;
-        playerScript.OnDashAvailable += DashAvailableFX;
-        playerScript.OnDash += StopDashAvailable;
-        playerScript.OnDashEnd += DisableDashFX;
-        playerScript.OnStun += () => StartCoroutine(StunFX());
-        playerScript.OnDash += EnableDashFX;
-        playerScript.OnDeath += RemoveAttractionRepulsionFX;
-        playerScript.OnSafe += () => StartCoroutine(SafeFX());
-
         aiScript = (AIGameplay)playerScript;
 
-        DisableDashFX();
-
-        SetupMaterials();
-
-        Setup();
+        base.Start();
     }
 
     public void AISetup()
@@ -52,10 +31,13 @@ public class AIFXAnimations : PlayersFXAnimations
         SetupPlayer(trails);
 
         playerMesh = SetupPlayer(meshes).transform;
+        stunMesh = SetupPlayer(stunMeshes).transform;
         dashAvailableFX = SetupPlayer(dashDispo).GetComponent<ParticleSystem>();
         dashFX = SetupPlayer(dash).GetComponent<ParticleSystem>();
 
         playerColorMaterial = GlobalVariables.Instance.playersMaterials[(int)aiScript.playerName];
+
+        stunMesh.gameObject.SetActive(false);
 
         base.Setup();
     }

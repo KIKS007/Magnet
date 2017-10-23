@@ -44,8 +44,8 @@ public enum DeathFX
     None,
     Explosion,
     Particles,
-    All}
-;
+    All
+}
 
 public delegate void EventHandler();
 
@@ -889,6 +889,7 @@ public class PlayersGameplay : MonoBehaviour
     public event EventHandler OnDeath;
     public event EventHandler OnTaunt;
     public event EventHandler OnSafe;
+    public event EventHandler OnSafeEnd;
 
     public event EventHandler OnPlayerstateChange;
 
@@ -973,6 +974,12 @@ public class PlayersGameplay : MonoBehaviour
     {
         if (OnDash != null)
             OnDash();
+    }
+
+    public void OnSafeEndVoid()
+    {
+        if (OnSafeEnd != null)
+            OnSafeEnd();
     }
 
     #endregion
