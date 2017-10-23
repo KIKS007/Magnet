@@ -259,21 +259,9 @@ namespace Replay
             isRecording = true;
             isReplaying = false;
 
-            StartCoroutine(RecordingCleaningParticles());
-
             if (OnRecordingStart != null)
                 OnRecordingStart();
 
-        }
-
-        IEnumerator RecordingCleaningParticles()
-        {
-            while (isRecording && !isReplaying)
-            {
-                yield return new WaitForSecondsRealtime(3f);
-                
-                StartCoroutine(CleanParticles());
-            }
         }
 
         public void StopRecording()
@@ -281,8 +269,6 @@ namespace Replay
             _endTime = Time.time;
             isRecording = false;
             isReplaying = false;
-
-            StopCoroutine(RecordingCleaningParticles());
 
             if (OnRecordingStop != null)
                 OnRecordingStop();

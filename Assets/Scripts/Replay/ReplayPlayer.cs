@@ -18,8 +18,9 @@ namespace Replay
 {
     public class ReplayPlayer : ReplayComponent
     {
-        public List<DashData> dashData = new List<DashData>();
-        public List<StunData> stunData = new List<StunData>();
+        public List<BoolData> dashData = new List<BoolData>();
+        public List<BoolData> stunData = new List<BoolData>();
+        public List<BoolData> safeData = new List<BoolData>();
 
         private PlayersGameplay playerScript;
         private PlayersFXAnimations playerFXScript;
@@ -34,6 +35,9 @@ namespace Replay
             playerScript.OnDashAvailable += DashDispo;
             playerScript.OnDash += Dash;
             playerScript.OnDashEnd += DashEnd;
+            playerScript.OnSafe += SafeStart;
+            playerScript.OnSafeEnd += SafeEnd;
+            playerScript.OnDeath += DashEnd;
 
             playerFXScript.OnStunFXON += StunON;
             playerFXScript.OnStunFXOFF += StunOFF;
@@ -43,20 +47,21 @@ namespace Replay
         {
             base.OnClear();
 
-            dashData = new List<DashData>();
-            stunData = new List<StunData>();
+            dashData = new List<BoolData>();
+            stunData = new List<BoolData>();
+            safeData = new List<BoolData>();
         }
 
         void Dash()
         {
             if (ReplayManager.Instance.isRecording)
-                dashData.Add(new DashData(true));
+                dashData.Add(new BoolData(true));
         }
 
         void DashEnd()
         {
             if (ReplayManager.Instance.isRecording)
-                dashData.Add(new DashData(false));
+                dashData.Add(new BoolData(false));
         }
 
         void DashDispo()
@@ -68,21 +73,34 @@ namespace Replay
         void StunON()
         {
             if (ReplayManager.Instance.isRecording)
-                stunData.Add(new StunData(true));
+                stunData.Add(new BoolData(true));
         }
 
         void StunOFF()
         {
             if (ReplayManager.Instance.isRecording)
-                stunData.Add(new StunData(false));
+                stunData.Add(new BoolData(false));
+        }
+
+        void SafeStart()
+        {
+            if (ReplayManager.Instance.isRecording)
+                safeData.Add(new BoolData(true));
+        }
+
+        void SafeEnd()
+        {
+            if (ReplayManager.Instance.isRecording)
+                safeData.Add(new BoolData(false));
         }
 
         public override void OnRecordingStart()
         {
             base.OnRecordingStart();
 
-            dashData.Add(new DashData(false));
-            stunData.Add(new StunData(true));
+            dashData.Add(new BoolData(false));
+            stunData.Add(new BoolData(true));
+            safeData.Add(new BoolData(false));
         }
 
         public override void Replay(float t)
@@ -107,7 +125,8 @@ namespace Replay
                 playerFXScript.dashFX.Stop();
 
 
-            enable = stunData[0].enabled;
+            if (stunData.Count > 0)
+                enable = stunData[0].enabled;
 
             foreach (var d in stunData)
             {
@@ -123,6 +142,36 @@ namespace Replay
                 playerFXScript.StunON();
             else
                 playerFXScript.StunOFF();
+
+            if (safeData.Count > 0)
+                enable = safeData[0].enabled;
+
+            foreach (var d in safeData)
+            {
+                if (d.time <= t)
+                    enable = d.enabled;
+                else
+                {
+                    break;
+                }
+            }
+
+            if (enable)
+            {
+                if (playerFXScript.playerMesh.gameObject.activeSelf)
+                    playerFXScript.playerMesh.gameObject.SetActive(false);
+
+                if (!playerFXScript.stunMesh.gameObject.activeSelf)
+                    playerFXScript.stunMesh.gameObject.SetActive(true);
+            }
+            else
+            {
+                if (playerFXScript.stunMesh.gameObject.activeSelf)
+                    playerFXScript.stunMesh.gameObject.SetActive(false);
+
+                if (!playerFXScript.playerMesh.gameObject.activeSelf)
+                    playerFXScript.playerMesh.gameObject.SetActive(true);
+            }
         }
 
         protected override void OnDestroy()
@@ -141,31 +190,21 @@ namespace Replay
             playerScript.OnDashAvailable -= DashDispo;
             playerScript.OnDash -= Dash;
             playerScript.OnDashEnd -= DashEnd;
+            playerScript.OnSafe -= SafeStart;
+            playerScript.OnSafeEnd -= SafeEnd;
+            playerScript.OnDeath -= DashEnd;
 
             playerFXScript.OnStunFXON -= StunON;
             playerFXScript.OnStunFXOFF -= StunOFF;
         }
 
         [Serializable]
-        public class DashData
+        public class BoolData
         {
             public float time;
             public bool enabled;
 
-            public DashData(bool enable)
-            {
-                time = ReplayManager.Instance.GetCurrentTime();
-                enabled = enable;
-            }
-        }
-
-        [Serializable]
-        public class StunData
-        {
-            public float time;
-            public bool enabled;
-
-            public StunData(bool enable)
+            public BoolData(bool enable)
             {
                 time = ReplayManager.Instance.GetCurrentTime();
                 enabled = enable;
