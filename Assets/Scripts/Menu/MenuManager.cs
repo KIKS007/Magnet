@@ -1288,6 +1288,8 @@ public class MenuManager : Singleton <MenuManager>
 
         ReplayManager.Instance.StartReplay();
 
+        eventSyst.SetSelectedGameObject(null);
+
         StartCoroutine(cameraMovement.NewPlayPosition());
 
         DOVirtual.DelayedCall(cameraMovement.newMovementDuration, () =>
