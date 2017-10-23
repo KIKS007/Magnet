@@ -14,18 +14,27 @@ public class AIFXAnimations : PlayersFXAnimations
 
     protected override void Start()
     {
+        if (dashOngleFX != null)
+        {
+            dashOngleMaterial = dashOngleFX.GetChild(0).GetComponent<Renderer>().material;
+            dashOngleAlpha = dashOngleMaterial.GetColor("_TintColor").a;
+        }
+
         playerScript = GetComponent<PlayersGameplay>();
         playerSoundsScript = GetComponent<PlayersSounds>();
 
         playerScript.OnShoot += ShootFX;
         playerScript.OnDashAvailable += DashAvailableFX;
         playerScript.OnDash += StopDashAvailable;
+        playerScript.OnDashEnd += DisableDashFX;
         playerScript.OnStun += () => StartCoroutine(StunFX());
         playerScript.OnDash += EnableDashFX;
         playerScript.OnDeath += RemoveAttractionRepulsionFX;
         playerScript.OnSafe += () => StartCoroutine(SafeFX());
 
         aiScript = (AIGameplay)playerScript;
+
+        DisableDashFX();
 
         SetupMaterials();
 
