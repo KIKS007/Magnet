@@ -78,6 +78,8 @@ public class PlayersFXAnimations : MonoBehaviour
     [HideInInspector]
     public List<GameObject> attractionRepulsionFX = new List<GameObject>();
     protected Vector3 initialStunMeshScale = Vector3.one;
+    [HideInInspector]
+    public bool stunned = false;
 
     protected virtual void Awake()
     {
@@ -120,6 +122,7 @@ public class PlayersFXAnimations : MonoBehaviour
             stunMesh.gameObject.SetActive(false);
 
         playerColor = GlobalVariables.Instance.playersColors[(int)playerScript.playerName];
+        stunned = false;
 
         SetupMaterials();
 
@@ -155,6 +158,8 @@ public class PlayersFXAnimations : MonoBehaviour
             stunMesh.gameObject.SetActive(true);
             playerMesh.gameObject.SetActive(false);
         }
+
+        stunned = false;
     }
 	
     // Update is called once per frame
@@ -314,7 +319,8 @@ public class PlayersFXAnimations : MonoBehaviour
         for (int i = 0; i < playerMaterials.Count; i++)
             playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
 
-        playerSoundsScript.StunEND();
+        if (!ReplayManager.Instance.isReplaying)
+            playerSoundsScript.StunEND();
 
         if (OnStunFXON != null)
             OnStunFXON();
@@ -328,7 +334,10 @@ public class PlayersFXAnimations : MonoBehaviour
         for (int i = 0; i < playerMaterials.Count; i++)
             playerMaterials[i].material.SetColor("_EmissionColor", initialEmission);
 
-        playerSoundsScript.StunON(); 
+        stunned = true;
+
+        if (!ReplayManager.Instance.isReplaying)
+            playerSoundsScript.StunON(); 
     }
 
     public virtual void StunOFF()
@@ -339,7 +348,10 @@ public class PlayersFXAnimations : MonoBehaviour
         for (int i = 0; i < playerMaterials.Count; i++)
             playerMaterials[i].material.SetColor("_EmissionColor", initialEmission * stunEmissionValue);
 
-        playerSoundsScript.StunOFF();
+        stunned = false;
+
+        if (!ReplayManager.Instance.isReplaying)
+            playerSoundsScript.StunOFF();
     }
 
     protected virtual void DashAvailableFX()

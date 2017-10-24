@@ -139,9 +139,15 @@ namespace Replay
             }
 
             if (enable)
-                playerFXScript.StunON();
+            {
+                if (!playerFXScript.stunned)
+                    playerFXScript.StunON();
+            }
             else
-                playerFXScript.StunOFF();
+            {
+                if (playerFXScript.stunned)
+                    playerFXScript.StunOFF();
+            }
 
             if (safeData.Count > 0)
                 enable = safeData[0].enabled;
