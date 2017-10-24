@@ -129,6 +129,9 @@ public class MenuManager : Singleton <MenuManager>
         ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange();
         ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadsChange();
 
+        OnStartModeClick += ShowStaticModesLogos;
+        GlobalVariables.Instance.OnRestartMode += ShowStaticModesLogos;
+
         GlobalVariables.Instance.OnGamepadDisconnected += GamepadDisconnected;
         GlobalVariables.Instance.OnMenu += HideStaticModesLogos;
         GlobalVariables.Instance.OnStartMode += ModeLogo;
@@ -171,7 +174,6 @@ public class MenuManager : Singleton <MenuManager>
                 resumeButtons.DOAnchorPosX(resumeButtonsPositions.y, animationDuration).SetEase(easeMenu);
         };
 
-        OnStartModeClick += ShowStaticModesLogos;
 
         resumeButtons.DOAnchorPosX(resumeButtonsPositions.x, 0).SetEase(easeMenu);
 
