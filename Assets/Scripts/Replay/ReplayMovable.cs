@@ -58,7 +58,7 @@ namespace Replay
 
         IEnumerator Enable()
         {
-            yield return new WaitUntil(() => GetComponent<MovableScript>() == null);
+            yield return new WaitUntil(() => GetComponent<MovableScript>() != null);
 
             if (cubeScript == null)
                 cubeScript = GetComponent<MovableScript>();
@@ -120,7 +120,7 @@ namespace Replay
         {
             base.OnReplayStart();
 
-            DeadlyEnable(deadlyData[0].enabled);
+            DeadlyEnable(false);
         }
 
         public override void Replay(float t)
@@ -136,7 +136,10 @@ namespace Replay
                 text.text = timer.Get(t).ToString();
             }
 
-            bool enable = deadlyData[0].enabled;
+            bool enable = false;
+
+            if (t < deadlyData[0].time)
+                DeadlyEnable(false);
 
             foreach (var d in deadlyData)
             {
