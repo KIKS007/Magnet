@@ -159,6 +159,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
     void Start()
     {
+        playlistCont.mixerChannel.audioMixer.SetFloat("LowPassWet", -80f);
+        playlistCont.mixerChannel.audioMixer.SetFloat("HighPassWet", -80f);
+
         slowMo = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>();
 
         StartCoroutine(MusicVolumeChange());
@@ -866,7 +869,8 @@ public class SoundsManager : Singleton<SoundsManager>
     {
         if (!lowPassEnabled)
             return;
-
+        
+        playlistCont.mixerChannel.audioMixer.SetFloat("LowPassWet", 0f);
         playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", lowPassFrquency, duration).SetEase(Ease.OutQuad).SetId("LowPass");
     }
 
@@ -875,17 +879,24 @@ public class SoundsManager : Singleton<SoundsManager>
         if (!lowPassEnabled)
             return;
 
+        playlistCont.mixerChannel.audioMixer.SetFloat("LowPassWet", 0f);
         playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", lowPassFrquency, lowPassTweenDuration).SetEase(Ease.OutQuad).SetId("LowPass");
     }
 
     public void ResetLowPass()
     {
-        playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", 22000f, lowPassTweenDuration).SetEase(Ease.OutQuad).SetId("LowPass");
+        playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", 22000f, lowPassTweenDuration).SetEase(Ease.OutQuad).SetId("LowPass").OnComplete(() =>
+            {
+                playlistCont.mixerChannel.audioMixer.SetFloat("LowPassWet", -80f);
+            });
     }
 
     public void ResetLowPass(float duration)
     {
-        playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", 22000f, duration).SetEase(Ease.OutQuad).SetId("LowPass");
+        playlistCont.mixerChannel.audioMixer.DOSetFloat("LowPass", 22000f, duration).SetEase(Ease.OutQuad).SetId("LowPass").OnComplete(() =>
+            {
+                playlistCont.mixerChannel.audioMixer.SetFloat("LowPassWet", -80f);
+            });
     }
 
     public void HighPass(float frequency)
@@ -893,12 +904,18 @@ public class SoundsManager : Singleton<SoundsManager>
         if (!highPassEnabled)
             return;
 
-        playlistCont.mixerChannel.audioMixer.DOSetFloat("HighPass", frequency, highPassTweenDuration).SetEase(Ease.OutQuad).SetId("HighPass");
+        playlistCont.mixerChannel.audioMixer.DOSetFloat("HighPass", frequency, highPassTweenDuration).SetEase(Ease.OutQuad).SetId("HighPass").OnComplete(() =>
+            {
+                playlistCont.mixerChannel.audioMixer.SetFloat("HighPassWet", -80f);
+            });
     }
 
     public void ResetHighPass()
     {
-        playlistCont.mixerChannel.audioMixer.DOSetFloat("HighPass", 10f, highPassTweenDuration).SetEase(Ease.OutQuad).SetId("HighPass");
+        playlistCont.mixerChannel.audioMixer.DOSetFloat("HighPass", 10f, highPassTweenDuration).SetEase(Ease.OutQuad).SetId("HighPass").OnComplete(() =>
+            {
+                playlistCont.mixerChannel.audioMixer.SetFloat("HighPassWet", -80f);
+            });
     }
 
     public override void OnDestroy()

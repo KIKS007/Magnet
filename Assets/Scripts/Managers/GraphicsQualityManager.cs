@@ -208,13 +208,11 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     void OnEnable()
     {
-
         if (GlobalVariables.Instance.GameState == GameStateEnum.Paused)
         {
             slowmoScript = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>();
             slowmoScript.StopPauseSlowMotion();
         }
-
     }
 
     public void OnShow()
