@@ -105,6 +105,12 @@ public class MenuCameraMovement : MonoBehaviour
         EnableBrowianMotion(false);
     }
 
+    public void MenuPositionGraphics()
+    {
+        transform.DOMove(newMenuPosition, newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newMenuRotation, newMovementDuration, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+    }
+
     public IEnumerator StartPosition()
     {
         if (GlobalVariables.Instance.demoEnabled)
@@ -212,9 +218,12 @@ public class MenuCameraMovement : MonoBehaviour
         }
     }
 
-    void EnableBrowianMotion(bool lookatMenu = true)
+    public void EnableBrowianMotion(bool lookatMenu = true)
     {
         if (GlobalVariables.Instance.demoEnabled)
+            return;
+
+        if (!GraphicsQualityManager.Instance.browianMotionEnabled)
             return;
         
         browianMotion._initialPosition = transform.position;
@@ -230,7 +239,7 @@ public class MenuCameraMovement : MonoBehaviour
         DOTween.To(() => browianMotion.positionFrequency, x => browianMotion.positionFrequency = x, browianInitialFrequency, newMovementDuration);
     }
 
-    void DisableBrowianMotion()
+    public void DisableBrowianMotion()
     {
         if (GlobalVariables.Instance.demoEnabled)
             return;

@@ -52,6 +52,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     private ContrastVignette slowMoVignetting;
     private BrownianMotion browianMotion;
 
+    [HideInInspector]
+    public bool browianMotionEnabled = true;
 
     // Use this for initialization
     void Start()
@@ -75,15 +77,55 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         bloomSlider.onValueChanged.AddListener(Bloom);
         shadowsSlider.onValueChanged.AddListener(Shadows);
 
-        ambiantOcclusionToggle.onValueChanged.AddListener((bool arg0) => postProcessProfile.ambientOcclusion.enabled = arg0);
-        blurToggle.onValueChanged.AddListener((bool arg0) => postProcessProfile.motionBlur.enabled = arg0);
-        grainToggle.onValueChanged.AddListener((bool arg0) => postProcessProfile.grain.enabled = arg0);
-        vignettingToggle.onValueChanged.AddListener((bool arg0) => postProcessProfile.vignette.enabled = arg0);
+        ambiantOcclusionToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                postProcessProfile.ambientOcclusion.enabled = arg0;
+                EnableApplyButton();
+            });
+        blurToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                postProcessProfile.motionBlur.enabled = arg0;
+                EnableApplyButton();
+            });
+        grainToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                postProcessProfile.grain.enabled = arg0;
+                EnableApplyButton();
+            });
+        vignettingToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                postProcessProfile.vignette.enabled = arg0;
+                EnableApplyButton();
+            });
 
-        cameraMotionToggle.onValueChanged.AddListener((bool arg0) => browianMotion.enabled = arg0);
-        rgbToggle.onValueChanged.AddListener((bool arg0) => rgbSplit.enabled = arg0);
-        distorsionToggle.onValueChanged.AddListener((bool arg0) => distorsion.enabled = arg0);
-        slowMoVignettingToggle.onValueChanged.AddListener((bool arg0) => slowMoVignetting.enabled = arg0);
+        cameraMotionToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                browianMotion.enabled = arg0;
+                browianMotionEnabled = arg0;
+
+                if (!arg0 && MenuManager.Instance.currentMenu != null)
+                    GlobalVariables.Instance.menuCameraMovement.MenuPositionGraphics();
+
+                if (arg0)
+                    GlobalVariables.Instance.menuCameraMovement.EnableBrowianMotion();
+                
+                EnableApplyButton();
+            });
+        rgbToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                rgbSplit.enabled = arg0;
+                EnableApplyButton();
+            });
+        distorsionToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                distorsion.enabled = arg0;
+                EnableApplyButton();
+            });
+        slowMoVignettingToggle.onValueChanged.AddListener((bool arg0) =>
+            {
+                slowMoVignetting.enabled = arg0;
+                EnableApplyButton();
+            });
 
 
         if (PlayerPrefs.HasKey("QualityLevel"))
@@ -229,7 +271,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
             SaveData();
     }
 
-    void EnableApplyButton()
+    public void EnableApplyButton()
     {
         apply = false;
         applyButton.SetActive(true);
