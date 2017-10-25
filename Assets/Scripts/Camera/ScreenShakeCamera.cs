@@ -4,109 +4,131 @@ using System.Collections.Generic;
 using System;
 using DG.Tweening;
 
-public enum FeedbackType {Default, Death, Stun, DashStun, ModeEnd, Startup, Hold, Shoot, Dash, Wave, ButtonClick};
-
-public class ScreenShakeCamera : MonoBehaviour 
+public enum FeedbackType
 {
-	public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings> ();
+    Default,
+    Death,
+    Stun,
+    DashStun,
+    ModeEnd,
+    Startup,
+    Hold,
+    Shoot,
+    Dash,
+    Wave,
+    ButtonClick}
+;
 
-	[Header ("Common Settings")]
-	public int shakeVibrato = 100;
-	public float shakeRandomness = 45;
+public class ScreenShakeCamera : MonoBehaviour
+{
+    public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings>();
 
-	[Header ("Test")]
-	public FeedbackType whichScreenShakeTest = FeedbackType.Default;
-	public bool shake;
-	public bool resetShake;
+    [Header("Common Settings")]
+    public int shakeVibrato = 100;
+    public float shakeRandomness = 45;
 
-	[Header ("Lerp")]
-	public float lerp = 0.1f;
+    [Header("Test")]
+    public FeedbackType whichScreenShakeTest = FeedbackType.Default;
+    public bool shake;
+    public bool resetShake;
 
-	void Start ()
-	{
-		GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines ();
-	}
+    [Header("Lerp")]
+    public float lerp = 0.1f;
 
-	// Update is called once per frame
-	void Update () 
-	{
-		if(shake)
-		{
-			shake = false;
-			CameraShaking(whichScreenShakeTest);
-		}
+    void Start()
+    {
+        GlobalVariables.Instance.OnEndMode += () => StopAllCoroutines();
+    }
 
-		if(resetShake)
-		{
-			resetShake = false;
-			ResetCameraRotation();
-		}
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        if (shake)
+        {
+            shake = false;
+            CameraShaking(whichScreenShakeTest);
+        }
 
-	public void CameraShaking (FeedbackType whichSlowMo = FeedbackType.Default)
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+        if (resetShake)
+        {
+            resetShake = false;
+            ResetCameraRotation();
+        }
+    }
 
-		DOTween.Kill ("ResetScreenShake");
-		StopAllCoroutines ();
+    public void CameraShaking(FeedbackType whichSlowMo = FeedbackType.Default)
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+            return;
 
-		float shakeDuration = 0;
-		Vector3 shakeStrenth = Vector3.zero;
-		bool exactType = true;
+        DOTween.Kill("ResetScreenShake");
+        StopAllCoroutines();
 
-		for(int i = 0; i < screenShakeList.Count; i++)
-		{
-			if(screenShakeList[i].whichScreenShake == whichSlowMo)
-			{
-				shakeDuration = screenShakeList [i].shakeDuration;
-				shakeStrenth = screenShakeList [i].shakeStrenth;
-				exactType = true;
-				break;
-			}
-		}
+        float shakeDuration = 0;
+        Vector3 shakeStrenth = Vector3.zero;
+        bool exactType = true;
 
-		if(!exactType)
-		{
-			shakeDuration = screenShakeList [0].shakeDuration;
-			shakeStrenth = screenShakeList [0].shakeStrenth;
-		}
+        for (int i = 0; i < screenShakeList.Count; i++)
+        {
+            if (screenShakeList[i].whichScreenShake == whichSlowMo)
+            {
+                shakeDuration = screenShakeList[i].shakeDuration;
+                shakeStrenth = screenShakeList[i].shakeStrenth;
+                exactType = true;
+                break;
+            }
+        }
 
-		shake = false;
+        if (!exactType)
+        {
+            shakeDuration = screenShakeList[0].shakeDuration;
+            shakeStrenth = screenShakeList[0].shakeStrenth;
+        }
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			transform.DOShakeRotation (shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete (ResetCameraRotation).SetUpdate (false);
-	}
+        shake = false;
 
-	void ResetCameraRotation ()
-	{
-		StartCoroutine (ResetCameraRotationCoroutine ());
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+            transform.DOShakeRotation(shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete(ResetCameraRotation).SetUpdate(false);
+    }
 
-		/*//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
+    void ResetCameraRotation()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
+        StartCoroutine(ResetCameraRotationCoroutine());
+
+        /*//Debug.Log ("Rotation : " + transform.rotation.eulerAngles);
 		if (DOTween.IsTweening ("ScreenShake"))
 			return;
 
 		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
 			transform.DORotate(new Vector3 (90.0f, 0.0f, 0.0f), 1f, RotateMode.Fast).SetId("ResetScreenShake").SetUpdate (false).SetDelay (0.2f);*/
-	}
+    }
 
-	IEnumerator ResetCameraRotationCoroutine ()
-	{
-		while(transform.localEulerAngles != new Vector3 (90.0f, 0.0f, 0.0f) && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-		{
-			transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)), lerp);
+    public IEnumerator ResetCameraRotationCoroutine()
+    {
+        while (transform.localEulerAngles != new Vector3(90.0f, 0.0f, 0.0f) && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+        {
+            if (GlobalVariables.Instance.demoEnabled)
+                yield break;
+            
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(90.0f, 0.0f, 0.0f)), lerp);
 
-			yield return new WaitForEndOfFrame ();
-		}
-	}
+            yield return new WaitForEndOfFrame();
+        }
+    }
 	
 }
 
 [Serializable]
 public class SlowMotionSettings
 {
-	public FeedbackType whichScreenShake = FeedbackType.Default;
+    public FeedbackType whichScreenShake = FeedbackType.Default;
 
-	public float shakeDuration = 0.5f;
-	public Vector3 shakeStrenth = new Vector3 (1, 0, 1);
+    public float shakeDuration = 0.5f;
+    public Vector3 shakeStrenth = new Vector3(1, 0, 1);
 }

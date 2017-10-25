@@ -13,28 +13,28 @@ public enum GameStateEnum
     Menu,
     Playing,
     Paused,
-    EndMode}
-;
+    EndMode
+}
 
 public enum StartupType
 {
     Delayed,
     Wave,
-    Done}
-;
+    Done
+}
 
 public enum ModeSequenceType
 {
     Selection,
     Random,
-    Cocktail}
-;
+    Cocktail
+}
 
 public enum ModeObjective
 {
     LastMan,
-    LeastDeath}
-;
+    LeastDeath
+}
 
 public enum WhichMode
 {
@@ -50,16 +50,16 @@ public enum WhichMode
     Push,
     Tutorial,
     None,
-    Default}
-;
+    Default
+}
 
 public enum EnvironementChroma
 {
     Purple,
     Blue,
     Green,
-    Orange}
-;
+    Orange
+}
 
 public class GlobalVariables : Singleton<GlobalVariables>
 {
@@ -73,6 +73,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
     [Header("Game State")]
     public GameStateEnum GameState = GameStateEnum.Menu;
     public bool FirstGameLaunch = true;
+
+    [Header("Demo State")]
+    public bool demoEnabled = false;
 
     [Header("Modes")]
     public WhichMode firstSceneToLoad;

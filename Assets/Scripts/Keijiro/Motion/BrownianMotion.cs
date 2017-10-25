@@ -144,6 +144,9 @@ namespace Klak.Motion
 
         void Update()
         {
+            if (GlobalVariables.Instance.demoEnabled)
+                return;
+
             var dt = Time.unscaledDeltaTime;
 
             if (_enablePositionNoise)

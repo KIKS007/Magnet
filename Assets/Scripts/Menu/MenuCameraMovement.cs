@@ -72,6 +72,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public void ToggleFarPosition()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
         if (farPosition)
             StartCoroutine(StartPosition());
         else
@@ -82,6 +85,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator StartFarPosition()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
         if (OnFarPosition != null)
             OnFarPosition();
 
@@ -101,6 +107,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator StartPosition()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
         if (OnClosePosition != null)
             OnClosePosition();
         
@@ -123,6 +132,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator NewMenuPosition()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+
         StopPreviousMovement();
 
         DOVirtual.DelayedCall(newMovementDuration * 0.5f, () => slowMo.StopEffects());
@@ -144,6 +156,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator NewPlayPosition()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
         DisableBrowianMotion();
         StopPreviousMovement();
 
@@ -157,6 +172,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     public IEnumerator NewRestartRotation()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
         StopPreviousMovement();
 
         MasterAudio.PlaySound(SoundsManager.Instance.winSound);
@@ -165,6 +183,8 @@ public class MenuCameraMovement : MonoBehaviour
         transform.DORotate(new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase(cameraEaseMovement).SetId("MenuCamera");
 
         yield return new WaitForSecondsRealtime(newMovementDuration);
+
+        StartCoroutine(GlobalVariables.Instance.screenShakeCamera.ResetCameraRotationCoroutine());
 
         //transform.DORotate(newPlayRotation, 0.5f, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
     }
@@ -184,6 +204,9 @@ public class MenuCameraMovement : MonoBehaviour
     {
         while (browianMotion.enablePositionNoise)
         {
+            if (GlobalVariables.Instance.demoEnabled)
+                yield break;
+            
             transform.LookAt(bobbingLookTarget);
             yield return new WaitForEndOfFrame();
         }
@@ -191,6 +214,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     void EnableBrowianMotion(bool lookatMenu = true)
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
         browianMotion._initialPosition = transform.position;
 
         if (!browianMotion.enabled)
@@ -206,6 +232,9 @@ public class MenuCameraMovement : MonoBehaviour
 
     void DisableBrowianMotion()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
         browianMotion.enablePositionNoise = false;
         DOTween.To(() => browianMotion.positionFrequency, x => browianMotion.positionFrequency = x, 0, newMovementDuration);
     }

@@ -32,6 +32,9 @@ public class DynamicCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+
         if (ReplayManager.Instance.isReplaying)
             return;
 
