@@ -43,7 +43,7 @@ public class DemoCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (demoEnabled && startPosition != startPositionTemp && target)
+        if (demoEnabled && startPosition != startPositionTemp && target != null)
         {
             startPositionTemp = startPosition;
             transform.position = target.position + startPosition;
@@ -140,10 +140,10 @@ public class DemoCamera : MonoBehaviour
     {
         if (demoEnabled)
         {
-            if (target && followTarget)
+            if (target != null && followTarget)
                 parent.transform.position = Vector3.Lerp(parent.transform.position, target.position, positionLerp);
 
-            if (target && lookAt)
+            if (target != null && lookAt)
                 transform.LookAt(target);
 
             if (target == null && lookAt)

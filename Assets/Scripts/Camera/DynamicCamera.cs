@@ -61,6 +61,9 @@ public class DynamicCamera : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
         if (ReplayManager.Instance.isReplaying)
             return;
         
