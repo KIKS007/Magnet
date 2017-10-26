@@ -150,6 +150,8 @@ public class MenuManager : Singleton <MenuManager>
 
             escBackButton.SetActive(true);
 
+            HidePassFightButton();
+
             if (resumeButtons.anchoredPosition.x != resumeButtonsPositions.x)
                 resumeButtons.DOAnchorPosX(resumeButtonsPositions.x, animationDuration).SetEase(easeMenu);
         };
@@ -1221,8 +1223,8 @@ public class MenuManager : Singleton <MenuManager>
 
     void ShowPassFightButton()
     {
-        passFightButton.gameObject.SetActive(true);
         passFightButton.localScale = Vector3.zero;
+        passFightButton.gameObject.SetActive(true);
 
         passFightButton.DOScale(1, animationDuration).SetEase(easeMenu);
     }
