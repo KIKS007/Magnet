@@ -153,6 +153,10 @@ public class SlowMotionCamera : MonoBehaviour
         if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
             return;
 
+
+        if (DOTween.IsTweening("StartSlowMotion") || DOTween.IsTweening("StopSlowMotion"))
+            return;
+
         StopCoroutine(SlowMotionDuration(slowMoNumber));
         DOTween.Kill("StopSlowMotion");
 
@@ -468,6 +472,19 @@ public class SlowMotionCamera : MonoBehaviour
             DOTween.To(() => lensDistorsion.Scale, x => lensDistorsion.Scale = x, 1, duration).SetEase(easetype).SetId("StopSlowMotion");
         }
 
+    }
+
+    void OnDestroy()
+    {
+        var vignette = postProcess.vignette.settings;
+        vignette.intensity = vignetteInitialIntensity;
+
+        postProcess.vignette.settings = vignette;
+
+        var chormatic = postProcess.chromaticAberration.settings;
+        chormatic.intensity = chromaticAberrationInitialIntensity;
+
+        postProcess.chromaticAberration.settings = chormatic;
     }
 }
 
