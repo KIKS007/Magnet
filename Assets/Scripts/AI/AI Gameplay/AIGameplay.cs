@@ -8,501 +8,506 @@ using Replay;
 using DG.Tweening;
 using GameAnalyticsSDK;
 
-public enum AILevel { Easy, Normal , Hard};
-
-public class AIGameplay : PlayersGameplay 
+public enum AILevel
 {
-	[Header ("AI")]
-	public AILevel aiLevel;
-	public LayerMask playerLayer = 1 << 12;
-	public GameObject[] aiZones = new GameObject[3];
+    Easy,
+    Normal,
+    Hard}
+;
 
-	[Header ("AI Elements")]
-	public List<GameObject> closerPlayers = new List<GameObject> ();
-	public List<GameObject> closerCubes = new List<GameObject> ();
-	public List<GameObject> thrownDangerousCubes = new List<GameObject> ();
-	public List<GameObject> dangerousCubes = new List<GameObject> ();
-	public List<GameObject> objectives = new List<GameObject> ();
+public class AIGameplay : PlayersGameplay
+{
+    [Header("AI")]
+    public AILevel aiLevel;
+    public LayerMask playerLayer = 1 << 12;
+    public GameObject[] aiZones = new GameObject[3];
 
-	[Header ("AI Cubes Velocity")]
-	public float dangerousCubeVelocity = 50f;
+    [Header("AI Elements")]
+    public List<GameObject> closerPlayers = new List<GameObject>();
+    public List<GameObject> closerCubes = new List<GameObject>();
+    public List<GameObject> thrownDangerousCubes = new List<GameObject>();
+    public List<GameObject> dangerousCubes = new List<GameObject>();
+    public List<GameObject> objectives = new List<GameObject>();
 
-	[Header ("AI Target")]
-	public Transform holdTarget;
-	public Transform shootTarget;
+    [Header("AI Cubes Velocity")]
+    public float dangerousCubeVelocity = 50f;
 
-	[Header ("AI States")]
-	public bool isAimingShootTarget;
-	public bool isAimingHoldTarget;
-	public bool isAttracting;
-	public bool isRepelling;
+    [Header("AI Target")]
+    public Transform holdTarget;
+    public Transform shootTarget;
 
-	[Header ("AI Delay")]
-	public List<AIComponentsDelay> aiComponentsDelay = new List<AIComponentsDelay> ();
+    [Header("AI States")]
+    public bool isAimingShootTarget;
+    public bool isAimingHoldTarget;
+    public bool isAttracting;
+    public bool isRepelling;
 
-	[Header ("AI Debug")]
-	public bool dashLayerEnabled = true;
-	public bool movementLayerEnabled = true;
-	public bool shootLayerEnabled = true;
-	public bool aimLayerEnabled = true;
+    [Header("AI Delay")]
+    public List<AIComponentsDelay> aiComponentsDelay = new List<AIComponentsDelay>();
 
-	[HideInInspector]
-	public Animator aiAnimator;
-	[HideInInspector]
-	public Vector3 dashMovement;
+    [Header("AI Debug")]
+    public bool dashLayerEnabled = true;
+    public bool movementLayerEnabled = true;
+    public bool shootLayerEnabled = true;
+    public bool aimLayerEnabled = true;
 
-	protected ArenaDeadzones arenaDeadzones;
+    [HideInInspector]
+    public Animator aiAnimator;
+    [HideInInspector]
+    public Vector3 dashMovement;
 
-	protected override void Awake ()
-	{
-		controllerNumber = -2;
-		base.Awake ();
-	}
+    protected ArenaDeadzones arenaDeadzones;
 
-	protected override void Start ()
-	{
-		base.Start ();
+    protected override void Awake()
+    {
+        controllerNumber = -2;
+        base.Awake();
+    }
 
-		//Setup (playerName, aiLevel);
+    protected override void Start()
+    {
+        base.Start();
 
-		arenaDeadzones = FindObjectOfType<ArenaDeadzones> ();
+        //Setup (playerName, aiLevel);
 
-		GlobalVariables.Instance.ListPlayers ();
-	}
+        arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
 
-	public void Setup (PlayerName playerName, AILevel level)
-	{
-		this.playerName = playerName;
-		aiLevel = level;
+        GlobalVariables.Instance.ListPlayers();
+    }
 
-		name += " " + ((int)playerName + 1).ToString ();
+    public void Setup(PlayerName playerName, AILevel level)
+    {
+        this.playerName = playerName;
+        aiLevel = level;
 
-		SetupZones ();
+        name += " " + ((int)playerName + 1).ToString();
 
-		aiAnimator = GetComponent<Animator> ();
+        SetupZones();
 
-		if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains (gameObject) && SceneManager.GetActiveScene ().name == "Scene Testing")
-			GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add (gameObject);
+        aiAnimator = GetComponent<Animator>();
 
-		GetComponent<AIFXAnimations> ().AISetup ();
-	}
+        if (!GlobalVariables.Instance.dynamicCamera.targetsList.Contains(gameObject) && SceneManager.GetActiveScene().name == "Scene Testing")
+            GlobalVariables.Instance.dynamicCamera.otherTargetsList.Add(gameObject);
 
-	protected virtual void SetupZones ()
-	{
-		for (int i = 0; i < aiZones.Length; i++)
-		{
-			if (i != (int)aiLevel)
-				aiZones [i].SetActive (false);
-			else
-				aiZones [i].SetActive (true);
-		}
-	}
+        GetComponent<AIFXAnimations>().AISetup();
+    }
 
-	protected override IEnumerator Startup ()
-	{
-		playerState = PlayerState.Startup;
+    protected virtual void SetupZones()
+    {
+        for (int i = 0; i < aiZones.Length; i++)
+        {
+            if (i != (int)aiLevel)
+                aiZones[i].SetActive(false);
+            else
+                aiZones[i].SetActive(true);
+        }
+    }
 
-		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+    protected override IEnumerator Startup()
+    {
+        playerState = PlayerState.Startup;
 
-		switch (GlobalVariables.Instance.Startup)
-		{
-		case StartupType.Delayed:
-			yield return new WaitForSeconds (GlobalVariables.Instance.delayedStartupDuration);
-			break;
-		case StartupType.Wave:
-			yield return new WaitForSeconds (0.25f);
-			playerFX.WaveFX ();
-			yield return new WaitForSeconds (GlobalVariables.Instance.delayBetweenWavesFX * 4);
-			break;
-		}
+        yield return new WaitUntil(() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		GlobalVariables.Instance.Startup = StartupType.Done;
-		playerState = PlayerState.None;
-	}
+        switch (GlobalVariables.Instance.Startup)
+        {
+            case StartupType.Delayed:
+                yield return new WaitForSeconds(GlobalVariables.Instance.delayedStartupDuration);
+                break;
+            case StartupType.Wave:
+                yield return new WaitForSeconds(0.25f);
+                playerFX.WaveFX();
+                yield return new WaitForSeconds(GlobalVariables.Instance.delayBetweenWavesFX * 4);
+                break;
+        }
 
-	protected override void OnEnable ()
-	{
-		movement = Vector3.zero;
+        GlobalVariables.Instance.Startup = StartupType.Done;
+        playerState = PlayerState.None;
+    }
 
-		closerPlayers.Clear ();
-		closerCubes.Clear ();
+    protected override void OnEnable()
+    {
+        movement = Vector3.zero;
 
-		base.OnEnable ();
-	}
+        closerPlayers.Clear();
+        closerCubes.Clear();
 
-	protected override void Update ()
-	{
-		if (ReplayManager.Instance.isReplaying)
-			return;
+        base.OnEnable();
+    }
 
-		FindCloserElements ();
+    protected override void Update()
+    {
+        if (ReplayManager.Instance.isReplaying)
+            return;
 
-		FindDangerousCubes ();
+        FindCloserElements();
 
-		SetAnimatorParameters ();
+        FindDangerousCubes();
 
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
-		{
-			//Stunned Rotation
-			if (playerState == PlayerState.Stunned)
-				transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
+        SetAnimatorParameters();
 
-			//Reset Attraction - Repulsion State
-			if (playerState == PlayerState.Attracting && !isAttracting)
-				playerState = PlayerState.None;
+        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
+        {
+            //Stunned Rotation
+            if (playerState == PlayerState.Stunned)
+                transform.Rotate(0, stunnedRotation * Time.deltaTime, 0, Space.World);
 
-			if (playerState == PlayerState.Repulsing && !isRepelling)
-				playerState = PlayerState.None;
+            //Reset Attraction - Repulsion State
+            if (playerState == PlayerState.Attracting && !isAttracting)
+                playerState = PlayerState.None;
 
-			//On Attracted - On Repulsed Events
-			OnAttractedOnRepulsed();
-		}
-	}
+            if (playerState == PlayerState.Repulsing && !isRepelling)
+                playerState = PlayerState.None;
 
-	protected virtual void FindCloserElements ()
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+            //On Attracted - On Repulsed Events
+            OnAttractedOnRepulsed();
+        }
+    }
 
-		closerPlayers.Clear ();
+    protected virtual void FindCloserElements()
+    {
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+            return;
 
-		foreach (var item in GlobalVariables.Instance.AlivePlayersList) 
-		{
-			if(item.activeSelf)
-				closerPlayers.Add (item);	
-		}
+        closerPlayers.Clear();
 
-		closerPlayers = closerPlayers.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+        foreach (var item in GlobalVariables.Instance.AlivePlayersList)
+        {
+            if (item.activeSelf)
+                closerPlayers.Add(item);	
+        }
 
-		closerPlayers.Remove (gameObject);
+        closerPlayers = closerPlayers.OrderBy(x => Vector3.Distance(transform.position, x.transform.position)).ToList();
 
-		closerCubes.Clear ();
+        closerPlayers.Remove(gameObject);
 
-		foreach (GameObject g in GlobalVariables.Instance.AllMovables)
-			if (g.tag != "DeadCube" && g.tag != "Suggestible")
-				closerCubes.Add (g);
+        closerCubes.Clear();
 
-		closerCubes = closerCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
+        foreach (GameObject g in GlobalVariables.Instance.AllMovables)
+            if (g.tag != "DeadCube" && g.tag != "Suggestible")
+                closerCubes.Add(g);
 
-		if(holdMovableTransform != null && closerCubes.Contains (holdMovableTransform.gameObject))
-			closerCubes.Remove (holdMovableTransform.gameObject);
-	}
+        closerCubes = closerCubes.OrderBy(x => Vector3.Distance(transform.position, x.transform.position)).ToList();
 
-	protected virtual void FindDangerousCubes ()
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+        if (holdMovableTransform != null && closerCubes.Contains(holdMovableTransform.gameObject))
+            closerCubes.Remove(holdMovableTransform.gameObject);
+    }
 
-		thrownDangerousCubes.Clear ();
-		dangerousCubes.Clear ();
+    protected virtual void FindDangerousCubes()
+    {
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+            return;
 
-		//dangerousCubes.AddRange (arenaDeadzones.deadlyColumns);
+        thrownDangerousCubes.Clear();
+        dangerousCubes.Clear();
 
-		foreach(GameObject cube in GlobalVariables.Instance.AllMovables)
-		{
-			if(cube.tag == "DeadCube" || cube.tag == "Suggestible")
-			{
-				if (holdMovableTransform && cube == holdMovableTransform.gameObject)
-					continue;
+        //dangerousCubes.AddRange (arenaDeadzones.deadlyColumns);
 
-				dangerousCubes.Add (cube);
+        foreach (GameObject cube in GlobalVariables.Instance.AllMovables)
+        {
+            if (cube.tag == "DeadCube" || cube.tag == "Suggestible")
+            {
+                if (holdMovableTransform && cube == holdMovableTransform.gameObject)
+                    continue;
 
-				dangerousCubes = dangerousCubes.OrderBy (x => Vector3.Distance (transform.position, x.transform.position)).ToList ();
-			}
+                dangerousCubes.Add(cube);
 
-			RaycastHit hitInfo;
-			Rigidbody rigidbody = cube.GetComponent<Rigidbody> ();
+                dangerousCubes = dangerousCubes.OrderBy(x => Vector3.Distance(transform.position, x.transform.position)).ToList();
+            }
 
-			if (rigidbody == null)
-				continue;
+            RaycastHit hitInfo;
+            Rigidbody rigidbody = cube.GetComponent<Rigidbody>();
 
-			if(rigidbody.velocity.magnitude > dangerousCubeVelocity)
-			{
-				if(Physics.Raycast (cube.transform.position, rigidbody.velocity, out hitInfo, 2000f, playerLayer))
-				{
-					if(hitInfo.collider.gameObject == gameObject)
-						thrownDangerousCubes.Add (cube);
-				}
-			}
-		}
-	}
+            if (rigidbody == null)
+                continue;
 
-	protected virtual void SetAnimatorParameters ()
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return;
+            if (rigidbody.velocity.magnitude > dangerousCubeVelocity)
+            {
+                if (Physics.Raycast(cube.transform.position, rigidbody.velocity, out hitInfo, 2000f, playerLayer))
+                {
+                    if (hitInfo.collider.gameObject == gameObject)
+                        thrownDangerousCubes.Add(cube);
+                }
+            }
+        }
+    }
+
+    protected virtual void SetAnimatorParameters()
+    {
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+            return;
 		
-		aiAnimator.SetBool ("canDash", dashState == DashState.CanDash);
-		aiAnimator.SetBool ("isDashing", dashState != DashState.CanDash);
+        aiAnimator.SetBool("canDash", dashState == DashState.CanDash);
+        aiAnimator.SetBool("isDashing", dashState != DashState.CanDash);
 
-		aiAnimator.SetBool ("isStunned", playerState == PlayerState.Stunned);
+        aiAnimator.SetBool("isStunned", playerState == PlayerState.Stunned);
 
-		aiAnimator.SetBool ("canHold", holdState == HoldState.CanHold);
-		aiAnimator.SetBool ("isHolding", holdState == HoldState.Holding);
+        aiAnimator.SetBool("canHold", holdState == HoldState.CanHold);
+        aiAnimator.SetBool("isHolding", holdState == HoldState.Holding);
 
-		aiAnimator.SetBool ("hasShootTarget", shootTarget != null);
-		aiAnimator.SetBool ("hasHoldTarget", holdTarget != null);
+        aiAnimator.SetBool("hasShootTarget", shootTarget != null);
+        aiAnimator.SetBool("hasHoldTarget", holdTarget != null);
 
-		aiAnimator.SetInteger ("thrownDangerousCubes", thrownDangerousCubes.Count);
+        aiAnimator.SetInteger("thrownDangerousCubes", thrownDangerousCubes.Count);
 
-		aiAnimator.SetInteger ("attractedCubes", cubesAttracted.Count);
-		aiAnimator.SetInteger ("repulsedCubes", cubesRepulsed.Count);
+        aiAnimator.SetInteger("attractedCubes", cubesAttracted.Count);
+        aiAnimator.SetInteger("repulsedCubes", cubesRepulsed.Count);
 
-		aiAnimator.SetInteger ("closerPlayersCount", closerPlayers.Count);
-		aiAnimator.SetInteger ("closerCubesCount", closerCubes.Count);
+        aiAnimator.SetInteger("closerPlayersCount", closerPlayers.Count);
+        aiAnimator.SetInteger("closerCubesCount", closerCubes.Count);
 
-		if(closerPlayers.Count > 0)
-			aiAnimator.SetFloat ("closerPlayerDistance", Vector3.Distance (transform.position, closerPlayers [0].transform.position));
-		else
-			aiAnimator.SetFloat ("closerPlayerDistance", 666);
+        if (closerPlayers.Count > 0)
+            aiAnimator.SetFloat("closerPlayerDistance", Vector3.Distance(transform.position, closerPlayers[0].transform.position));
+        else
+            aiAnimator.SetFloat("closerPlayerDistance", 666);
 
-		if(closerCubes.Count > 0)
-			aiAnimator.SetFloat ("closerCubeDistance", Vector3.Distance (transform.position, closerCubes [0].transform.position));
-		else
-			aiAnimator.SetFloat ("closerCubeDistance", 666);
+        if (closerCubes.Count > 0)
+            aiAnimator.SetFloat("closerCubeDistance", Vector3.Distance(transform.position, closerCubes[0].transform.position));
+        else
+            aiAnimator.SetFloat("closerCubeDistance", 666);
 
-		aiAnimator.SetFloat ("distanceFromCenter", Vector3.Distance (Vector3.zero, transform.position));
+        aiAnimator.SetFloat("distanceFromCenter", Vector3.Distance(Vector3.zero, transform.position));
 
-		if(dangerousCubes.Count != 0)
-			aiAnimator.SetFloat ("closerDangerousCubeDistance", Vector3.Distance (dangerousCubes [0].transform.position, transform.position));
-		else
-			aiAnimator.SetFloat ("closerDangerousCubeDistance", 666);
+        if (dangerousCubes.Count != 0)
+            aiAnimator.SetFloat("closerDangerousCubeDistance", Vector3.Distance(dangerousCubes[0].transform.position, transform.position));
+        else
+            aiAnimator.SetFloat("closerDangerousCubeDistance", 666);
 
-		if(shootTarget != null)
-			aiAnimator.SetFloat ("playerTargetDistance", Vector3.Distance (shootTarget.position, transform.position));
-		else
-			aiAnimator.SetFloat ("playerTargetDistance", 666);
+        if (shootTarget != null)
+            aiAnimator.SetFloat("playerTargetDistance", Vector3.Distance(shootTarget.position, transform.position));
+        else
+            aiAnimator.SetFloat("playerTargetDistance", 666);
 
-		if(holdTarget != null)
-			aiAnimator.SetFloat ("cubeTargetDistance", Vector3.Distance (holdTarget.position, transform.position));
-		else
-			aiAnimator.SetFloat ("cubeTargetDistance", 666);
-	}
+        if (holdTarget != null)
+            aiAnimator.SetFloat("cubeTargetDistance", Vector3.Distance(holdTarget.position, transform.position));
+        else
+            aiAnimator.SetFloat("cubeTargetDistance", 666);
+    }
 
-	protected override void FixedUpdate ()
-	{
-		if (ReplayManager.Instance.isReplaying)
-			return;
+    protected override void FixedUpdate()
+    {
+        if (ReplayManager.Instance.isReplaying)
+            return;
 
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
-		{
-			//Movement
-			if (dashState != DashState.Dashing)
-			{
-				movement.Normalize ();
+        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing && playerState != PlayerState.Startup)
+        {
+            //Movement
+            if (dashState != DashState.Dashing)
+            {
+                movement.Normalize();
 
-				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
-				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-			}
+                float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
+                playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
+            }
 
-			//No Forces
-			velocity = playerRigidbody.velocity.magnitude;
+            //No Forces
+            velocity = playerRigidbody.velocity.magnitude;
 
-			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
-				playerThatHit = null;
+            if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
+                playerThatHit = null;
 			
-			//Hold Movable
-			if (holdState == HoldState.Holding)
-			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
+            //Hold Movable
+            if (holdState == HoldState.Holding)
+            {
+                holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+                holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
 
-				OnHoldingVoid ();
-			}
+                OnHoldingVoid();
+            }
 
-			//Gravity
-			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
+            //Gravity
+            playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
 
-			//Attraction
-			if (cubesAttracted.Count > 0)
-			{
-				for (int i = 0; i < cubesAttracted.Count; i++)
-					Attraction(cubesAttracted[i]);
-			}
+            //Attraction
+            if (cubesAttracted.Count > 0)
+            {
+                for (int i = 0; i < cubesAttracted.Count; i++)
+                    Attraction(cubesAttracted[i]);
+            }
 
-			//Repulse
-			if (cubesRepulsed.Count > 0)
-			{
-				for (int i = 0; i < cubesRepulsed.Count; i++)
-					Repulsion(cubesRepulsed[i]);
-			}
-		}
-	}
+            //Repulse
+            if (cubesRepulsed.Count > 0)
+            {
+                for (int i = 0; i < cubesRepulsed.Count; i++)
+                    Repulsion(cubesRepulsed[i]);
+            }
+        }
+    }
 
-	public override void SetupController ()
-	{
-		controllerNumber = GlobalVariables.Instance.PlayersControllerNumber [(int)playerName];
+    public override void SetupController()
+    {
+        controllerNumber = GlobalVariables.Instance.PlayersControllerNumber[(int)playerName];
 
-		if (controllerNumber == -1)
-		{
-			gameObject.SetActive(false);
-		}
-		else
-			SetupSkin ();
-	}
+        if (controllerNumber == -1)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+            SetupSkin();
+    }
 
-	protected virtual void SetupSkin ()
-	{
+    protected virtual void SetupSkin()
+    {
 		
-	}
+    }
 
-	public override IEnumerator Dash ()
-	{
-		dashState = DashState.Dashing;
+    public override IEnumerator Dash()
+    {
+        dashState = DashState.Dashing;
 
-		OnDashVoid ();
+        OnDashVoid();
 
-		dashMovement.Normalize ();
+        dashMovement.Normalize();
 
-		float dashSpeedTemp = dashSpeed;
+        float dashSpeedTemp = dashSpeed;
 
-		StartCoroutine(DashEnd());
+        StartCoroutine(DashEnd());
 
-		DOTween.To (()=> dashSpeedTemp, x=> dashSpeedTemp = x, 0, dashDuration).SetEase (dashEase).SetUpdate (false);
+        DOTween.To(() => dashSpeedTemp, x => dashSpeedTemp = x, 0, dashDuration).SetEase(dashEase).SetUpdate(false);
 
-		while (dashSpeedTemp > 0)
-		{
-			playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor;
+        while (dashSpeedTemp > 0)
+        {
+            playerRigidbody.velocity = dashMovement * dashSpeedTemp * Time.fixedDeltaTime * (1 / Time.fixedDeltaTime);
 
-			yield return new WaitForFixedUpdate();
-		}
+            yield return new WaitForFixedUpdate();
+        }
 
-		dashMovement = Vector3.zero;
-	}
+        dashMovement = Vector3.zero;
+    }
 
-	protected override IEnumerator DeathCoroutine ()
-	{
-		playerState = PlayerState.Dead;
+    protected override IEnumerator DeathCoroutine()
+    {
+        playerState = PlayerState.Dead;
 
-		GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
-		GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
+        GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.Death);
+        GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.Death);
 
-		GameAnalytics.NewDesignEvent("Bot:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
-			StatsManager.Instance.playersStats [playerName.ToString ()].playersStats [WhichStat.LifeDuration.ToString ()]);
+        GameAnalytics.NewDesignEvent("Bot:" + name + ":" + GlobalVariables.Instance.CurrentModeLoaded.ToString() + ":LifeDuration", 
+            StatsManager.Instance.playersStats[playerName.ToString()].playersStats[WhichStat.LifeDuration.ToString()]);
 
-		PlayerStats (playerThatHit);
+        PlayerStats(playerThatHit);
 
-		if(gettingMovable || holdState == HoldState.Holding)
-		{
-			yield return new WaitWhile(() => gettingMovable == true);
+        if (gettingMovable || holdState == HoldState.Holding)
+        {
+            yield return new WaitWhile(() => gettingMovable == true);
 
-			holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
-			holdMovableTransform.tag = "Movable";
-			holdMovableTransform.SetParent(null);
-			holdMovableTransform.SetParent(movableParent);
-			holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
-			holdMovableTransform.GetComponent<MovableScript>().OnRelease();	
-		}
+            holdMovableTransform.gameObject.GetComponent<MovableScript>().hold = false;
+            holdMovableTransform.tag = "Movable";
+            holdMovableTransform.SetParent(null);
+            holdMovableTransform.SetParent(movableParent);
+            holdMovableTransform.GetComponent<MovableScript>().AddRigidbody();
+            holdMovableTransform.GetComponent<MovableScript>().OnRelease();	
+        }
 
-		holdState = HoldState.CannotHold;
+        holdState = HoldState.CannotHold;
 
-		gameObject.SetActive(false);
+        gameObject.SetActive(false);
 
-		RemoveFromAIObjectives ();
+        RemoveFromAIObjectives();
 
-		if(GlobalVariables.Instance != null)
-			GlobalVariables.Instance.ListPlayers ();
+        if (GlobalVariables.Instance != null)
+            GlobalVariables.Instance.ListPlayers();
 
-		GlobalVariables.Instance.lastManManager.PlayerDeath (playerName, gameObject);
+        GlobalVariables.Instance.lastManManager.PlayerDeath(playerName, gameObject);
 		
-		OnDeathVoid ();
-	}
+        OnDeathVoid();
+    }
 
-	protected override void OnCollisionStay (Collision other)
-	{
-		if (ReplayManager.Instance.isReplaying)
-			return;
+    protected override void OnCollisionStay(Collision other)
+    {
+        if (ReplayManager.Instance.isReplaying)
+            return;
 		
-		if(playerState == PlayerState.Startup)
-			return;
+        if (playerState == PlayerState.Startup)
+            return;
 
-		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			Death(DeathFX.All, other.contacts[0].point);
+        if (other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer("Safe"))
+        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+            Death(DeathFX.All, other.contacts[0].point);
 
-		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-		{
-			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+        if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+        {
+            PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay>();
 			
-			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-			{
-				playersHit.Add(other.gameObject);
-				playerScript.StunVoid(false);
-				playerScript.playerThatHit = this;
+            if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+            {
+                playersHit.Add(other.gameObject);
+                playerScript.StunVoid(false);
+                playerScript.playerThatHit = this;
 
-				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
-				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
-			}
-		}
-	}
+                GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+                GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+            }
+        }
+    }
 
-	protected override void OnCollisionEnter (Collision other)
-	{
-		if (ReplayManager.Instance.isReplaying)
-			return;
+    protected override void OnCollisionEnter(Collision other)
+    {
+        if (ReplayManager.Instance.isReplaying)
+            return;
 		
-		if(playerState == PlayerState.Startup)
-			return;
+        if (playerState == PlayerState.Startup)
+            return;
 
-		if(other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer ("Safe"))
-		if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			Death(DeathFX.All, other.contacts[0].point);
+        if (other.gameObject.tag == "DeadZone" && gameObject.layer != LayerMask.NameToLayer("Safe"))
+        if (playerState != PlayerState.Dead && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+            Death(DeathFX.All, other.contacts[0].point);
 
-		if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
-		{
-			PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay> ();
+        if (other.collider.tag != "HoldMovable" && other.gameObject.tag == "Player")
+        {
+            PlayersGameplay playerScript = other.gameObject.GetComponent<PlayersGameplay>();
 
-			if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
-			{
-				playersHit.Add(other.gameObject);
-				playerScript.StunVoid(false);
-				playerScript.playerThatHit = this;
+            if (playerScript.playerState != PlayerState.Stunned && dashState == DashState.Dashing && !playersHit.Contains(other.gameObject))
+            {
+                playersHit.Add(other.gameObject);
+                playerScript.StunVoid(false);
+                playerScript.playerThatHit = this;
 
-				GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
-				GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
-			}
-		}
+                GlobalVariables.Instance.screenShakeCamera.CameraShaking(FeedbackType.DashStun);
+                GlobalVariables.Instance.zoomCamera.Zoom(FeedbackType.DashStun);
+            }
+        }
 
-		if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
-		{
-			other.collider.GetComponent<MovableScript> ().player.GetComponent<PlayersGameplay> ().playerThatHit = this;
-			//other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
-		}
+        if (other.collider.tag == "HoldMovable" && dashState == DashState.Dashing)
+        {
+            other.collider.GetComponent<MovableScript>().player.GetComponent<PlayersGameplay>().playerThatHit = this;
+            //other.gameObject.GetComponent<PlayersGameplay> ().playerThatHit = this;
+        }
 
-		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Movables"))
-		{
-			MovableScript script = other.collider.gameObject.GetComponent<MovableScript> ();
+        if (other.collider.gameObject.layer == LayerMask.NameToLayer("Movables"))
+        {
+            MovableScript script = other.collider.gameObject.GetComponent<MovableScript>();
 
-			if (script != null && script.playerThatThrew != null)
-				playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay> ();
-		}
+            if (script != null && script.playerThatThrew != null)
+                playerThatHit = script.playerThatThrew.GetComponent<PlayersGameplay>();
+        }
 
-		if(other.collider.gameObject.layer == LayerMask.NameToLayer ("Walls"))
-			aiAnimator.SetTrigger ("touchedWall");
-	}
+        if (other.collider.gameObject.layer == LayerMask.NameToLayer("Walls"))
+            aiAnimator.SetTrigger("touchedWall");
+    }
 
-	public override void OnHoldMovable (GameObject movable, bool forceHold = false)
-	{
-		base.OnHoldMovable (movable, forceHold);
+    public override void OnHoldMovable(GameObject movable, bool forceHold = false)
+    {
+        base.OnHoldMovable(movable, forceHold);
 
-		if(closerCubes.Contains (movable))
-			closerCubes.Remove (movable);
-	}
+        if (closerCubes.Contains(movable))
+            closerCubes.Remove(movable);
+    }
 }
 
 [System.Serializable]
 public class AIRandomAngle
 {
-	[Range (0, 45)]
-	public float randomAngleMin;
-	[Range (0, 45)]
-	public float randomAngleMax;
+    [Range(0, 45)]
+    public float randomAngleMin;
+    [Range(0, 45)]
+    public float randomAngleMax;
 }
 
 [System.Serializable]
 public class AIComponentsDelay
 {
-	[MinMaxSliderAttribute (0, 2)]
-	public Vector2[] delays = new Vector2[3];
-	public List<AIComponents> components = new List<AIComponents> ();
+    [MinMaxSliderAttribute(0, 2)]
+    public Vector2[] delays = new Vector2[3];
+    public List<AIComponents> components = new List<AIComponents>();
 }

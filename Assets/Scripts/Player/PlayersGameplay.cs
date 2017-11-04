@@ -723,7 +723,7 @@ public class PlayersGameplay : MonoBehaviour
 
         while (dashSpeedTemp > 0)
         {
-            playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * GlobalVariables.Instance.fixedDeltaFactor;
+            playerRigidbody.velocity = movementTemp * dashSpeedTemp * Time.fixedDeltaTime * (1 / Time.fixedDeltaTime);
 
             yield return new WaitForFixedUpdate();
         }
