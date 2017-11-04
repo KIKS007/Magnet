@@ -5,389 +5,567 @@ using DG.Tweening;
 using Rewired;
 using UnityEngine.UI;
 
-public class MenuChoosePlayer : MonoBehaviour 
+public class MenuChoosePlayer : MonoBehaviour
 {
-	[Header ("Tween")]
-	public float tweenDuration = 0.2f;
-	public Ease tweenEase = Ease.OutQuad;
+    [Header("Tween")]
+    public float tweenDuration = 0.2f;
+    public Ease tweenEase = Ease.OutQuad;
 
-	[Header ("Scale")]
-	public float punchScale = 0.5f;
+    [Header("Play Button")] 
+    public RectTransform playButton;
+    public Vector2 playButtonYPos;
 
-	[Header ("Rects")]
-	public RectTransform[] playersLogos = new RectTransform[0];
-	public RectTransform[] controllers = new RectTransform[0];
+    [Header("Players")]
+    public bool[] hasJoined = new bool[5];
+    public RectTransform[] playersPanel = new RectTransform[4];
 
-	[Header ("Positions")]
-	public float controllersOffPositionGap;
+    [Header("Controllers")]
+    public bool usePlayerColor = true;
+    public Vector2 controllersPosition = new Vector2();
+    public RectTransform[] controllersRect = new RectTransform [4];
 
-	[Header ("Play Button")] 
-	public RectTransform playButton; 
-	public Vector2 playButtonYPos; 
+    [Header("No Controllers Text")]
+    public CanvasGroup[] noControllersTexts = new CanvasGroup[4];
+    public CanvasGroup[] noControllersPluggedTexts = new CanvasGroup[4];
 
-	private List<List<Button>> aiButtons = new List<List<Button>> ();
-	private float controllersOnPosition;
-	private float[] playersLogosInitialPos = new float[4];
-	private bool[] hasJoined = new bool[5];
-	public bool[] aiHasJoined = new bool[4];
-	private float playerChangeMovement;
-	private bool noInput = false;
-	private bool canPlay = false;
-	private Button playButtonComponent;
+    [Header("Options")]
+    public GameObject gamesCout;
+    public GameObject environementChroma;
+    public GameObject livesCount;
 
-	public event EventHandler OnControllerChange; 
+    [Header("AI")]
+    public Transform[] aiButtonsParent = new Transform[4];
+    public bool[] aiHasJoined = new bool[4];
 
-	// Use this for initialization
-	void Awake () 
-	{
-		ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn (obj.controllerId, true);
-		ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff (obj.controllerId);
 
-		playButtonComponent = playButton.GetComponent<Button> ();
+    private List<List<Button>> aiButtons = new List<List<Button>>();
+    private float controllersOnPosition;
+    private float playerChangeMovement;
+    private bool noInput = false;
+    private bool canPlay = false;
+    private Button playButtonComponent;
+    private float mouseInitialXPos;
 
-		controllersOnPosition = controllers [0].anchoredPosition.y;
-		playerChangeMovement = controllers [1].anchoredPosition.x - controllers [0].anchoredPosition.x;
+    public event EventHandler OnControllerChange;
 
-		SetupAIButtons ();
+    // Use this for initialization
+    void Awake()
+    {
+        ReInput.ControllerConnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOn(obj.controllerId, true);
+        ReInput.ControllerDisconnectedEvent += (ControllerStatusChangedEventArgs obj) => GamepadOff(obj.controllerId);
 
-		for (int i = 0; i < playersLogos.Length; i++)
-			playersLogosInitialPos [i] = playersLogos [i].anchoredPosition.x;
+        MenuManager.Instance.OnStartModeClick += NoInput;
 
-		for (int i = 1; i < controllers.Length; i++)
-			Leave (i);
+        playButtonComponent = playButton.GetComponent<Button>();
 
-		if (ReInput.controllers.Joysticks.Count < 2)
-			Join (0);
-		else
-			Leave (0);
-	}
+        mouseInitialXPos = controllersRect[0].anchoredPosition.x;
 
-	void Start ()
-	{
-		noInput = false;
+        SetupAIButtons();
+
+        for (int i = 1; i < 4; i++)
+            noControllersTexts[i].DOFade(0, tweenDuration);
+
+        for (int i = 1; i < controllersRect.Length; i++)
+            Leave(i);
+
+        if (ReInput.controllers.Joysticks.Count < 2)
+            Join(0);
+        else
+            Leave(0);
+    }
+
+    void Start()
+    {
+        noInput = false;
 	
-		List<int> connectedJoystick = new List<int> ();
+        List<int> connectedJoystick = new List<int>();
 
-		if(ReInput.controllers.joystickCount > 0)
-			foreach (var j in ReInput.controllers.GetJoysticks ())
-				connectedJoystick.Add (j.id);
+        if (ReInput.controllers.joystickCount > 0)
+            foreach (var j in ReInput.controllers.GetJoysticks ())
+                connectedJoystick.Add(j.id);
 
-		for(int i = 0; i < 4; i++)
-		{
-			if(connectedJoystick.Contains (i))
-				GamepadOn (i, true);
-			else
-				GamepadOff (i);
-		}
+        for (int i = 0; i < 4; i++)
+        {
+            if (connectedJoystick.Contains(i))
+                GamepadOn(i, true);
+            else
+                GamepadOff(i);
+        }
 
-		CheckCanPlay ();
-	}
+        CheckCanPlay();
 
-	void OnEnable ()
-	{
-		noInput = false;
+        SetupControllersColors();
+    }
 
-		List<int> connectedJoystick = new List<int> ();
+    void OnEnable()
+    {
+        noInput = false;
 
-		if(ReInput.controllers.joystickCount > 0)
-			foreach (var j in ReInput.controllers.GetJoysticks ())
-				connectedJoystick.Add (j.id);
+        List<int> connectedJoystick = new List<int>();
 
-		for(int i = 0; i < 4; i++)
-		{
-			if(connectedJoystick.Contains (i))
-				GamepadOn (i);
-			else
-				GamepadOff (i);
-		}
+        if (ReInput.controllers.joystickCount > 0)
+            foreach (var j in ReInput.controllers.GetJoysticks ())
+                connectedJoystick.Add(j.id);
 
-		CheckCanPlay ();
-	}
+        for (int i = 0; i < 4; i++)
+        {
+            if (connectedJoystick.Contains(i))
+                GamepadOn(i);
+            else
+                GamepadOff(i);
+        }
 
-	void SetupAIButtons ()
-	{
-		aiButtons.Clear ();
+        if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+        {
+            for (int i = 0; i < aiHasJoined.Length; i++)
+                if (aiHasJoined[i])
+                    AILeave(i);
 
-		foreach(RectTransform t in playersLogos)
-		{
-			aiButtons.Add (new List<Button> ());
+            foreach (var t in aiButtonsParent)
+                t.gameObject.SetActive(false);
 
-			foreach(Transform child in t.GetChild (1))
-				aiButtons [aiButtons.Count - 1].Add (child.GetComponent<Button> ());
-		}
+            gamesCout.SetActive(false);
+            livesCount.SetActive(false);
+        }
+        else
+        {
+            foreach (var t in aiButtonsParent)
+                t.gameObject.SetActive(true);
 
-		for(int listIndex = 0; listIndex < aiButtons.Count; listIndex++)
-		{
-			for(int i = 0; i < aiButtons [listIndex].Count; i++)
-			{
-				aiButtons [listIndex] [i].gameObject.SetActive (i == 0);
+            gamesCout.SetActive(true);
+            livesCount.SetActive(true);
+        }
 
-				int player = listIndex;
-				int level = i;
+        playButtonComponent.GetComponent<MenuButtonAnimationsAndSounds>().OnDeselect();
 
-				if(i == 3)
-					aiButtons [listIndex] [i].onClick.AddListener (()=> AILeave (player));
-				else
-					aiButtons [listIndex] [i].onClick.AddListener (()=> AIJoin (player, level));
-			}
-		}
-	}
+        CheckCanPlay();
+    }
 
-	// Update is called once per frame
-	void Update () 
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput)
-			CheckInput ();
+    void SetupAIButtons()
+    {
+        aiButtons.Clear();
 
-		if (!canPlay && playButtonComponent.interactable || MenuManager.Instance.isTweening)
-			playButtonComponent.interactable = false;
-	}
+        foreach (RectTransform t in aiButtonsParent)
+        {
+            aiButtons.Add(new List<Button>());
 
-	void CheckInput ()
-	{
-		for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-		{
-			if (GlobalVariables.Instance.rewiredPlayers [i].GetButtonDown ("UI Join Leave"))
-			{
-				if(hasJoined [i])
-					Leave (i);
-				else
-				{
-					if (hasJoined [0] && i == 4)
-						Leave (0);
+            foreach (Transform child in t)
+                aiButtons[aiButtons.Count - 1].Add(child.GetComponent<Button>());
+        }
+
+        for (int listIndex = 0; listIndex < aiButtons.Count; listIndex++)
+        {
+            for (int i = 0; i < aiButtons[listIndex].Count; i++)
+            {
+                aiButtons[listIndex][i].gameObject.SetActive(i == 0);
+
+                int player = listIndex;
+                int level = i;
+
+                if (i == 3)
+                    aiButtons[listIndex][i].onClick.AddListener(() => AILeave(player));
+                else
+                    aiButtons[listIndex][i].onClick.AddListener(() => AIJoin(player, level));
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Menu && gameObject.activeSelf == true && !noInput)
+            CheckInput();
+
+        if (!canPlay && playButtonComponent.interactable || MenuManager.Instance.isTweening)
+            playButtonComponent.interactable = false;
+
+    }
+
+    void CheckInput()
+    {
+        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+        {
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Join Leave"))
+            {
+                if (hasJoined[i])
+                    Leave(i);
+                else
+                {
+                    if (hasJoined[0] && i == 4)
+                        Leave(0);
 					
-					Join (i);
-				}
-			}
+                    Join(i);
+                }
+            }
 
-		}
-	}
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start"))
+            {
+                if (canPlay && playButtonComponent.interactable)
+                {
+                    playButtonComponent.GetComponent<MenuButtonAnimationsAndSounds>().ShaderHighlightClick();
+                    playButtonComponent.onClick.Invoke();
+                }
+            }
 
-	void UpdateSettings ()
-	{
-		ChangePlayersPosition ();
-		UpdateControllerNumber ();
-		UpdatePlayersControllers ();
-		GlobalVariables.Instance.UpdateGamepadList ();
-		CheckCanPlay ();
+        }
+    }
 
-		UpdateBotsCount ();
+    void UpdateSettings()
+    {
+        ChangePlayersPosition();
+        UpdateNoControllerTexts();
+        UpdateControllerNumber();
+        UpdatePlayersControllers();
+        GlobalVariables.Instance.UpdateGamepadList();
+        CheckCanPlay();
 
-		if (OnControllerChange != null) 
-			OnControllerChange (); 
-	}
+        UpdateBotsCount();
 
-	void UpdatePlayersControllers () 
-	{ 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Menu && GlobalVariables.Instance.Players[0] != null) 
-		{ 
-			for(int i = 0; i < GlobalVariables.Instance.Players.Length; i++) 
-			{ 
-				if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1) 
-					GlobalVariables.Instance.Players[i].SetActive (true); 
+        if (OnControllerChange != null)
+            OnControllerChange(); 
+    }
 
-				GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().SetupController (); 
-			} 
-		} 
-	} 
+    void UpdatePlayersControllers()
+    { 
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Menu && GlobalVariables.Instance.Players[0] != null)
+        { 
+            for (int i = 0; i < GlobalVariables.Instance.Players.Length; i++)
+            { 
+                if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+                    GlobalVariables.Instance.Players[i].SetActive(true); 
 
-	void UpdateControllerNumber ()
-	{
-		if(hasJoined [0])
-		{
-			GlobalVariables.Instance.PlayersControllerNumber [0] = 0;
+                GlobalVariables.Instance.Players[i].GetComponent<PlayersGameplay>().SetupController(); 
+            } 
+        } 
+    }
 
-			for(int i = 1; i < hasJoined.Length - 1; i++)
-				if(hasJoined [i])
-					GlobalVariables.Instance.PlayersControllerNumber [i] = i;
-				else
-					GlobalVariables.Instance.PlayersControllerNumber [i] = -1;
-		}
-		else
-		{
-			for(int i = 1; i < hasJoined.Length; i++)
-				if(hasJoined [i])
-					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = i;
-				else
-					GlobalVariables.Instance.PlayersControllerNumber [i - 1] = -1;
-		}
+    void UpdateControllerNumber()
+    {
+        if (hasJoined[0])
+        {
+            GlobalVariables.Instance.PlayersControllerNumber[0] = 0;
 
-		/*//Allow to play Alone and choose any character 
+            for (int i = 1; i < hasJoined.Length - 1; i++)
+                if (hasJoined[i])
+                    GlobalVariables.Instance.PlayersControllerNumber[i] = i;
+                else
+                    GlobalVariables.Instance.PlayersControllerNumber[i] = -1;
+        }
+        else
+        {
+            for (int i = 1; i < hasJoined.Length; i++)
+                if (hasJoined[i])
+                    GlobalVariables.Instance.PlayersControllerNumber[i - 1] = i;
+                else
+                    GlobalVariables.Instance.PlayersControllerNumber[i - 1] = -1;
+        }
+
+        /*//Allow to play Alone and choose any character 
 		if(ReInput.controllers.GetControllerCount(ControllerType.Joystick) == 0) 
 			GlobalVariables.Instance.PlayersControllerNumber[1] = 1; */
-	}
+    }
 
-	void ChangePlayersPosition ()
-	{
-		if(!hasJoined [0])
-		{
-			for(int i = 0; i < playersLogos.Length; i++)
-				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i] + playerChangeMovement, tweenDuration).SetEase (tweenEase);
-		}
-		else
-		{
-			for(int i = 0; i < playersLogos.Length; i++)
-				playersLogos [i].DOAnchorPosX (playersLogosInitialPos [i], tweenDuration).SetEase (tweenEase);
-		}
-	}
+    void ChangePlayersPosition()
+    {
+        if (!hasJoined[0])
+        {
+            for (int i = 1; i < controllersRect.Length; i++)
+                controllersRect[i].DOAnchorPosX(playersPanel[i - 1].anchoredPosition.x, tweenDuration).SetEase(tweenEase);
 
-	void CheckCanPlay () 
-	{
-		if(gameObject.activeSelf)
-			StartCoroutine (WaitEndMenuAnimation ()); 
-	} 
+            DOVirtual.DelayedCall(tweenDuration * 0.5f, SetupControllersColors);
+        }
+        else
+        {
+            for (int i = 1; i < controllersRect.Length - 1; i++)
+                controllersRect[i].DOAnchorPosX(playersPanel[i].anchoredPosition.x, tweenDuration).SetEase(tweenEase);
 
-	IEnumerator WaitEndMenuAnimation () 
-	{ 
-		if(MenuManager.Instance.isTweening)
-			yield return new WaitWhile (() => MenuManager.Instance.isTweening); 
+            controllersRect[4].DOAnchorPosX(playersPanel[3].anchoredPosition.x + (playersPanel[3].anchoredPosition.x - playersPanel[2].anchoredPosition.x), tweenDuration).SetEase(tweenEase);
 
-		int playersCount = 0;
+            DOVirtual.DelayedCall(tweenDuration * 0.5f, SetupControllersColors);
+        }
+    }
 
-		for (int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
-			if (GlobalVariables.Instance.PlayersControllerNumber [i] != -1)
-				playersCount++;
+    void CheckCanPlay()
+    {
+        if (gameObject.activeSelf)
+            StartCoroutine(WaitEndMenuAnimation()); 
+    }
 
-		playersCount += GlobalVariables.Instance.NumberOfBots;
+    IEnumerator WaitEndMenuAnimation()
+    { 
+        if (MenuManager.Instance.isTweening)
+            yield return new WaitWhile(() => MenuManager.Instance.isTweening); 
 
-		if(playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y) 
-		{ 
-			canPlay = true;
+        int playersCount = 0;
 
-			DOTween.Kill ("PlayButton");
+        for (int i = 0; i < GlobalVariables.Instance.PlayersControllerNumber.Length; i++)
+            if (GlobalVariables.Instance.PlayersControllerNumber[i] != -1)
+                playersCount++;
 
-			playButton.gameObject.SetActive (true);
-			playButton.GetComponent<Button> ().interactable = true; 
-			MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
-			playButton.GetComponent<Button> ().Select (); 
-			playButton.DOAnchorPosY (playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton"); 
-		} 
+        playersCount += GlobalVariables.Instance.NumberOfBots;
 
-		if(playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x) 
-		{ 
-			canPlay = false;
+        if (GlobalVariables.Instance.CurrentModeLoaded != WhichMode.Tutorial)
+        {
+            if (playersCount > 1 && playButton.anchoredPosition.y != playButtonYPos.y)
+            { 
+                canPlay = true;
+				
+                DOTween.Kill("PlayButton");
+				
+                playButton.gameObject.SetActive(true);
+                playButton.GetComponent<Button>().interactable = true; 
+				
+                /*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+			playButton.GetComponent<Button> ().Select (); */
+				
+                playButton.DOAnchorPosY(playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId("PlayButton"); 
+            } 
+			
+            if (playersCount < 2 && playButton.anchoredPosition.y != playButtonYPos.x)
+            { 
+                canPlay = false;
+				
+                DOTween.Kill("PlayButton");
+				
+                playButton.GetComponent<Button>().interactable = false; 
+                playButton.DOAnchorPosY(playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId("PlayButton").OnComplete(() => playButton.gameObject.SetActive(false)); 
+            } 
+        }
+        else
+        {
+            if (playersCount > 0 && playButton.anchoredPosition.y != playButtonYPos.y)
+            { 
+                canPlay = true;
+				
+                DOTween.Kill("PlayButton");
+				
+                playButton.gameObject.SetActive(true);
+                playButton.GetComponent<Button>().interactable = true; 
+				
+                /*MenuManager.Instance.eventSyst.SetSelectedGameObject (null);
+			playButton.GetComponent<Button> ().Select (); */
+				
+                playButton.DOAnchorPosY(playButtonYPos.y, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId("PlayButton"); 
+            } 
+			
+            if (playersCount == 0 && playButton.anchoredPosition.y != playButtonYPos.x)
+            { 
+                canPlay = false;
+				
+                DOTween.Kill("PlayButton");
+				
+                playButton.GetComponent<Button>().interactable = false; 
+                playButton.DOAnchorPosY(playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId("PlayButton").OnComplete(() => playButton.gameObject.SetActive(false)); 
+            } 
+        }
 
-			DOTween.Kill ("PlayButton");
+        yield return 0;
+    }
 
-			playButton.GetComponent<Button> ().interactable = false; 
-			playButton.DOAnchorPosY (playButtonYPos.x, MenuManager.Instance.animationDuration).SetEase(MenuManager.Instance.easeMenu).SetId ("PlayButton").OnComplete (()=> playButton.gameObject.SetActive (false)); 
-		} 
+    void AIJoin(int player, int level)
+    {
+        aiHasJoined[player] = true;
+        GlobalVariables.Instance.aiEnabled[player] = true;
+        GlobalVariables.Instance.aiLevels[player] = (AILevel)level;
 
-		yield return 0;
-	} 
+        if (hasJoined[0])
+            Leave((int)player);
+        else
+            Leave((int)player + 1);
 
-	void PunchPlayersScale (int controller)
-	{
-//		if(hasJoined [0])
-//			playersLogos [controller].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-//		else
-//			playersLogos [controller - 1].DOPunchScale (Vector3.one * punchScale, tweenDuration).SetEase (tweenEase);
-	}
+        if (player == 0 && hasJoined[1])
+            Leave(1);
 
-	void AIJoin (int player, int level)
-	{
-		aiHasJoined [player] = true;
-		GlobalVariables.Instance.aiEnabled [player] = true;
-		GlobalVariables.Instance.aiLevels [player] = (AILevel)level;
+        UpdateBotsCount();
+        UpdateSettings();
+    }
 
-		if (hasJoined [0])
-			Leave ((int)player);
-		else
-			Leave ((int)player + 1);
+    void AILeave(int player)
+    {
+        aiHasJoined[player] = false;
+        GlobalVariables.Instance.aiEnabled[player] = false;
 
-		if (player == 0 && hasJoined [1])
-			Leave (1);
+        for (int i = 0; i < aiButtons[player].Count; i++)
+            aiButtons[player][i].gameObject.SetActive(i == 0);
 
-		UpdateBotsCount ();
-		UpdateSettings ();
-	}
+        UpdateBotsCount();
+        UpdateSettings();
+    }
 
-	void AILeave (int player)
-	{
-		aiHasJoined [player] = false;
-		GlobalVariables.Instance.aiEnabled [player] = false;
+    void UpdateBotsCount()
+    {
+        int botsCount = 0;
 
-		for (int i = 0; i < aiButtons [player].Count; i++)
-			aiButtons [player] [i].gameObject.SetActive (i == 0);
+        foreach (var b in aiHasJoined)
+            if (b)
+                botsCount++;
 
-		UpdateBotsCount ();
-		UpdateSettings ();
-	}
+        GlobalVariables.Instance.NumberOfBots = botsCount;
 
-	void UpdateBotsCount ()
-	{
-		int botsCount = 0;
+    }
 
-		foreach (var b in aiHasJoined)
-			if (b)
-				botsCount++;
+    public void ToggleJoinLeave(int controller)
+    {
+        if (noInput)
+            return;
 
-		GlobalVariables.Instance.NumberOfBots = botsCount;
+        if (hasJoined[controller])
+            Leave(controller);
+        else
+            Join(controller);
+    }
 
-	}
+    void Join(int controller)
+    {
+        hasJoined[controller] = true;
+        //controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
 
-	public void ToggleJoinLeave (int controller)
-	{
-		if (noInput)
-			return;
+        if (controller != 0)
+            controllersRect[controller].DOAnchorPosY(controllersPosition.y, tweenDuration).SetEase(tweenEase).OnComplete(CheckCanPlay);
+        else
+        {
+            controllersRect[controller].DOAnchorPosX(playersPanel[0].anchoredPosition.x, tweenDuration * 0.5f).SetEase(tweenEase);
+            controllersRect[controller].DOAnchorPosY(controllersPosition.y, tweenDuration * 0.5f).SetEase(tweenEase).OnComplete(CheckCanPlay).SetDelay(tweenDuration * 0.5f);
+        }
 
-		if (hasJoined [controller])
-			Leave (controller);
-		else
-			Join (controller);
-	}
+        UpdateSettings();
 
-	void Join (int controller)
-	{
-		hasJoined [controller] = true;
-		controllers [controller].DOAnchorPosY (controllersOnPosition, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+        if (hasJoined[0])
+            AILeave(controller);
+        else
+            AILeave(controller - 1);
 
-		UpdateSettings ();
-		PunchPlayersScale (controller);
+        if (controller == 0)
+        {
+            for (int i = 1; i < 4; i++)
+            {
+                if (controller == 0 && aiHasJoined[i] && hasJoined[i])
+                    AILeave(i);
+            }
+        }
+    }
 
-		if (hasJoined [0])
-			AILeave (controller);
-		else
-			AILeave (controller - 1);
+    void Leave(int controller)
+    {
+        hasJoined[controller] = false;
+        //controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
 
-		if(controller == 0 && aiHasJoined [1] && hasJoined [1])
-			AILeave (1);
-	}
+        if (controller != 0)
+            controllersRect[controller].DOAnchorPosY(controllersPosition.x, tweenDuration).SetEase(tweenEase).OnComplete(CheckCanPlay);
+        else
+        {
+            controllersRect[controller].DOAnchorPosY(controllersPosition.x, tweenDuration * 0.5f).SetEase(tweenEase);
+            controllersRect[controller].DOAnchorPosX(mouseInitialXPos, tweenDuration * 0.5f).SetEase(tweenEase).OnComplete(CheckCanPlay).SetDelay(tweenDuration * 0.5f);
+        }
 
-	void Leave (int controller)
-	{
-		hasJoined [controller] = false;
-		controllers [controller].DOAnchorPosY (controllersOnPosition - controllersOffPositionGap, tweenDuration).SetEase (tweenEase).OnComplete (CheckCanPlay);
+        UpdateSettings();
+    }
 
-		UpdateSettings ();
-	}
-
-	void GamepadOn (int gamepad, bool forceJoin = false)
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
-			return;
+    void GamepadOn(int gamepad, bool forceJoin = false)
+    {
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+            return;
 		
-		controllers [gamepad + 1].GetComponent<Button> ().interactable = true;
+        //controllers [gamepad + 1].GetComponent<Button> ().interactable = true;
 
-		if (hasJoined [0] && gamepad == 3)
-			Leave (0);
+        controllersRect[gamepad + 1].GetComponent<Button>().interactable = true;
+        controllersRect[gamepad + 1].gameObject.SetActive(true);
 
-		if(forceJoin)
-			Join (gamepad + 1);
-	}
+        if (hasJoined[0] && gamepad == 3)
+            Leave(0);
 
-	void GamepadOff (int gamepad)
-	{
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
-			return;
-		
-		Leave (gamepad + 1);
+        if (forceJoin)
+            Join(gamepad + 1);
+    }
 
-		controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
-	}
+    void GamepadOff(int gamepad)
+    {
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Menu)
+            return;
 
-	public void NoInput ()
-	{
-		noInput = true;
-	}
+        Leave(gamepad + 1);
+
+        controllersRect[gamepad + 1].GetComponent<Button>().interactable = false;
+        controllersRect[gamepad + 1].gameObject.SetActive(false);
+
+        //controllers [gamepad + 1].GetComponent<Button> ().interactable = false;
+    }
+
+    void UpdateNoControllerTexts()
+    {
+        if (hasJoined[0])
+        {
+            noControllersTexts[0].DOFade(0, tweenDuration);
+            noControllersPluggedTexts[0].DOFade(0, tweenDuration);
+
+            for (int i = 1; i < 4; i++)
+            {
+                if (hasJoined[i] || aiHasJoined[i])
+                {
+                    noControllersTexts[i].DOFade(0, tweenDuration);
+                    noControllersPluggedTexts[i].DOFade(0, tweenDuration);
+                }
+                else
+                {
+                    if (ReInput.controllers.joystickCount >= i)
+                    {
+                        noControllersTexts[i].DOFade(1, tweenDuration);
+                        noControllersPluggedTexts[i].DOFade(0, tweenDuration);
+                    }
+                    else
+                    {
+                        noControllersTexts[i].DOFade(0, tweenDuration);
+                        noControllersPluggedTexts[i].DOFade(1, tweenDuration);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 1; i < 5; i++)
+            {
+                if (hasJoined[i] || aiHasJoined[i - 1])
+                {
+                    noControllersTexts[i - 1].DOFade(0, tweenDuration);
+                    noControllersPluggedTexts[i - 1].DOFade(0, tweenDuration);
+                }
+                else
+                {
+                    if (ReInput.controllers.joystickCount >= i)
+                    {
+                        noControllersTexts[i - 1].DOFade(1, tweenDuration);
+                        noControllersPluggedTexts[i - 1].DOFade(0, tweenDuration);
+                    }
+                    else
+                    {
+                        noControllersTexts[i - 1].DOFade(0, tweenDuration);
+                        noControllersPluggedTexts[i - 1].DOFade(1, tweenDuration);
+                    }
+                }
+
+            }			
+        }
+
+    }
+
+    void SetupControllersColors()
+    {
+        if (!usePlayerColor)
+            return;
+
+        for (int i = 1; i < controllersRect.Length; i++)
+        {
+            MenuShaderElement menuShaderElement = controllersRect[i].GetComponent<MenuShaderElement>();
+
+            int playerColor = hasJoined[0] ? i : i - 1;
+
+            menuShaderElement.playerColor = (PlayerName)playerColor;
+            menuShaderElement.ShaderColorChange();
+        }
+    }
+
+    public void NoInput()
+    {
+        noInput = true;
+    }
 }

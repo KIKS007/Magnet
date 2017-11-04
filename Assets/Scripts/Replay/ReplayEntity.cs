@@ -15,205 +15,273 @@ using Sirenix.OdinInspector;
 
 namespace Replay
 {
-	public class ReplayEntity : ReplayComponent
-	{
-		[Header ("Settings")]
-		public bool recordPosition = true;
-		public bool recordRotation = true;
-		public bool recordScale = true;
-		public bool recordEnable = true;
+    public class ReplayEntity : ReplayComponent
+    {
+        [Header("Settings")]
+        public bool recordPosition = true;
+        public bool recordRotation = true;
+        public bool recordScale = true;
+        public bool recordEnable = true;
 
-		[Header ("Data")]
-		public RecordData data = new RecordData ();
+        [Header("Data")]
+        public RecordData data = new RecordData();
+        public List<EnableData> enableData = new List<EnableData>();
 
-		private Rigidbody rigidBody;
-		private NavMeshAgent agent;
-		private Animator animator;
+        private Rigidbody rigidBody;
+        private NavMeshAgent agent;
+        private Animator animator;
 
-		protected override void Start ()
-		{
-			base.Start ();
+        private LayerMask initialLayer;
 
-			rigidBody = GetComponent<Rigidbody> ();
-			agent = GetComponent<NavMeshAgent> ();
-			animator = GetComponent<Animator> ();
-		}
+        protected override void Start()
+        {
+            base.Start();
 
-		protected override void OnEnable ()
-		{
-			base.OnEnable ();
+            initialLayer = gameObject.layer;
 
-			if(recordEnable)
-				data.AddEnable (true);
-		}
+            rigidBody = GetComponent<Rigidbody>();
+            agent = GetComponent<NavMeshAgent>();
+            animator = GetComponent<Animator>();
+        }
 
-		void OnDisable ()
-		{
-			if(gameObject && recordEnable && !ReplayManager.applicationIsQuitting)
-				data.AddEnable (false);
-		}
+        protected override void OnEnable()
+        {
+            base.OnEnable();
 
-		public override void OnClear ()
-		{
-			base.OnClear ();
-			data = new RecordData ();
-		}
+            if (ReplayManager.Instance.isRecording && gameObject.layer == LayerMask.NameToLayer("Movables") && recordScale)
+                data.scale.Add(Vector3.zero);
 
-		protected override void Recording ()
-		{
-			base.Recording ();
+            if (ReplayManager.Instance.isRecording && recordEnable)
+                enableData.Add(new EnableData(true));
+        }
 
-			if(recordPosition)
-				data.position.Add (transform.position);
+        void OnDisable()
+        {
+            if (GlobalVariables.applicationIsQuitting)
+                return;
+            
+            if (ReplayManager.Instance.isRecording && recordEnable)
+                enableData.Add(new EnableData(false));
+        }
 
-			if(recordRotation)
-				data.rotation.Add (transform.rotation);
+        public override void OnClear()
+        {
+            base.OnClear();
+            data = new RecordData();
+            enableData = new List<EnableData>();
+        }
 
-			if(recordScale)
-				data.scale.Add (transform.localScale);
-		}
+        public override void OnRecordingStart()
+        {
+            base.OnRecordingStart();
 
-		public override void OnReplayStart ()
-		{
-			base.OnReplayStart ();
+            if (recordEnable)
+                enableData.Add(new EnableData(gameObject.activeSelf));
+        }
 
-			data.AddEnable (true);
+        protected override void Recording()
+        {
+            base.Recording();
 
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
+            if (recordPosition)
+                data.position.Add(transform.position);
+				
+            if (recordRotation)
+                data.rotation.Add(transform.rotation);
+				
+            if (recordScale)
+                data.scale.Add(transform.localScale);
 
-			rigidBody = GetComponent<Rigidbody> ();
+            //enableData.Add(new EnableData(transform, gameObject.activeSelf));
+        }
 
-			if (rigidBody != null)
-				rigidBody.isKinematic = true;
+        public override void OnRecordingStop()
+        {
+            base.OnRecordingStop();
 
-			if (agent)
-				agent.enabled = false;
+            if (recordEnable)
+                enableData.Add(new EnableData(gameObject.activeSelf));
+        }
 
-			if (animator)
-				animator.enabled = false;	
-		}
+        public override void OnReplayStart()
+        {
+            base.OnReplayStart();
 
-		public override void OnReplayStop ()
-		{
-			base.OnReplayStop ();
+            if (recordEnable)
+            {
+                if (tag == "Player" && GlobalVariables.Instance.EnabledPlayersList.Contains(gameObject) || tag != "Player")
+                    SetEnable(enableData[0].enabled);
+            }
 
-			rigidBody = GetComponent<Rigidbody> ();
+            rigidBody = GetComponent<Rigidbody>();
 
-			if (rigidBody != null)
-				rigidBody.isKinematic = false;
+            if (rigidBody != null)
+                rigidBody.isKinematic = true;
 
-			if (agent)
-				agent.enabled = true;
+            if (agent)
+                agent.enabled = false;
 
-			if (animator)
-				animator.enabled = true;	
-		}
+            if (animator)
+                animator.enabled = false;	
+        }
 
-		public override void Replay (float t)
-		{
-			base.Replay (t);
+        void SetEnable(bool enable)
+        {
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
 
-			ReplayManager.Instance.SetCurveConstant (data.enabled);
+            if (enable)
+                SetLayerRecursively(gameObject, initialLayer);
+            else
+                SetLayerRecursively(gameObject, LayerMask.NameToLayer("Disabled"));
+        }
 
-			if(recordPosition && data.position.x.keys.Length > 0)
-				transform.position = data.position.Get (t);
-			
-			if(recordRotation && data.rotation.x.keys.Length > 0)
-				transform.rotation = data.rotation.Get (t);
-			
-			if(recordScale && data.scale.x.keys.Length > 0)
-				transform.localScale = data.scale.Get (t);
+        void SetLayerRecursively(GameObject obj, int newLayer)
+        {
+            if (null == obj)
+            {
+                return;
+            }
 
-			if(recordEnable && data.enabled.keys.Length > 0)
-				data.SetEnable (t, transform.gameObject);
-		}
-	}
+            obj.layer = newLayer;
 
-	[Serializable]
-	public class TimelinedVector3
-	{
-		public AnimationCurve x;
-		public AnimationCurve y;
-		public AnimationCurve z;
+            foreach (Transform child in obj.transform)
+            {
+                if (null == child)
+                {
+                    continue;
+                }
+                SetLayerRecursively(child.gameObject, newLayer);
+            }
+        }
 
-		public void Add (Vector3 v)
-		{
-			x.AddKey (ReplayManager.Instance.GetCurrentTime (), v.x);
-			y.AddKey (ReplayManager.Instance.GetCurrentTime (), v.y);
-			z.AddKey (ReplayManager.Instance.GetCurrentTime (), v.z);
-		}
+        public override void OnReplayStop()
+        {
+            base.OnReplayStop();
 
-		public Vector3 Get (float _time)
-		{
-			return new Vector3 (x.Evaluate (_time), y.Evaluate (_time), z.Evaluate (_time));
-		}
-	}
+            rigidBody = GetComponent<Rigidbody>();
 
-	[Serializable]
-	public class TimelinedQuaternion
-	{
-		public AnimationCurve x;
-		public AnimationCurve y;
-		public AnimationCurve z;
-		public AnimationCurve w;
+            if (rigidBody != null)
+                rigidBody.isKinematic = false;
 
-		public void Add (Quaternion v)
-		{
-			x.AddKey (ReplayManager.Instance.GetCurrentTime (), v.x);
-			y.AddKey (ReplayManager.Instance.GetCurrentTime (), v.y);
-			z.AddKey (ReplayManager.Instance.GetCurrentTime (), v.z);
-			w.AddKey (ReplayManager.Instance.GetCurrentTime (), v.w);
-		}
+            if (agent)
+                agent.enabled = true;
 
-		public Quaternion Get (float _time)
-		{
-			return new Quaternion (x.Evaluate (_time), y.Evaluate (_time), z.Evaluate (_time), w.Evaluate (_time));
-		}
-	}
+            if (animator)
+                animator.enabled = true;	
+        }
 
-	[Serializable]
-	public class RecordData
-	{
-		public TimelinedVector3 position;
-		public TimelinedQuaternion rotation;
-		public TimelinedVector3 scale;
-		public AnimationCurve enabled;
+        public override void Replay(float t)
+        {
+            base.Replay(t);
 
-		public void Add (Transform t)
-		{
-			position.Add (t.position);
-			rotation.Add (t.rotation);
-			scale.Add (t.localScale);
-		}
+            if (recordPosition && data.position.x.keys.Length > 0)
+                transform.position = data.position.Get(t);
+				
+            if (recordRotation && data.rotation.x.keys.Length > 0)
+                transform.rotation = data.rotation.Get(t);
+				
+            if (recordScale && data.scale.x.keys.Length > 0)
+                transform.localScale = data.scale.Get(t);
 
-		public void Set (float _time, Transform _transform)
-		{
-			_transform.position = position.Get (_time);
-			_transform.rotation = rotation.Get (_time);
-			_transform.localScale = scale.Get (_time);
+            /* for(int i = enableData.Count - 1; i >= 0; i--)
+            {
+                
+            }*/
 
-			SetEnable (_time, _transform.gameObject);
-		}
+            if (recordEnable)
+            {
+                bool enable = enableData[0].enabled;
+                
+                foreach (var d in enableData)
+                {
+                    if (d.time <= t)
+                        enable = d.enabled;
+                    else
+                    {
+                        break;
+                    }
+                }
+                
+                SetEnable(enable);
+            }
+        }
+    }
 
-		public void AddEnable (bool enable)
-		{
-			if(enabled != null)
-				enabled.AddKey (ReplayManager.Instance.GetCurrentTime (), enable ? 1f : 0f);
-		}
+    [Serializable]
+    public class EnableData
+    {
+        public float time;
+        public bool enabled;
 
-		public void AddEnable (bool enable, float _time)
-		{
-			if(enabled != null)
-				enabled.AddKey (_time, enable ? 1f : 0f);
-		}
+        public EnableData(bool enable)
+        {
+            time = ReplayManager.Instance.GetCurrentTime();
+            enabled = enable;
+        }
+    }
 
-		public void SetEnable (float _time, GameObject _gameobject)
-		{
-			if(enabled.Evaluate (_time) > 0.5f && !_gameobject.activeSelf)
-				_gameobject.SetActive (true);
+    [Serializable]
+    public class TimelinedVector3
+    {
+        public AnimationCurve x = new AnimationCurve();
+        public AnimationCurve y = new AnimationCurve();
+        public AnimationCurve z = new AnimationCurve();
 
-			if(enabled.Evaluate (_time) < 0.5f && _gameobject.activeSelf)
-				_gameobject.SetActive (false);
-		}
-	}
+        public void Add(Vector3 v)
+        {
+            x.AddKey(ReplayManager.Instance.GetCurrentTime(), v.x);
+            y.AddKey(ReplayManager.Instance.GetCurrentTime(), v.y);
+            z.AddKey(ReplayManager.Instance.GetCurrentTime(), v.z);
+        }
+
+        public Vector3 Get(float _time)
+        {
+            return new Vector3(x.Evaluate(_time), y.Evaluate(_time), z.Evaluate(_time));
+        }
+    }
+
+    [Serializable]
+    public class TimelinedQuaternion
+    {
+        public AnimationCurve x = new AnimationCurve();
+        public AnimationCurve y = new AnimationCurve();
+        public AnimationCurve z = new AnimationCurve();
+        public AnimationCurve w = new AnimationCurve();
+
+        public void Add(Quaternion v)
+        {
+            x.AddKey(ReplayManager.Instance.GetCurrentTime(), v.x);
+            y.AddKey(ReplayManager.Instance.GetCurrentTime(), v.y);
+            z.AddKey(ReplayManager.Instance.GetCurrentTime(), v.z);
+            w.AddKey(ReplayManager.Instance.GetCurrentTime(), v.w);
+        }
+
+        public Quaternion Get(float _time)
+        {
+            return new Quaternion(x.Evaluate(_time), y.Evaluate(_time), z.Evaluate(_time), w.Evaluate(_time));
+        }
+    }
+
+    [Serializable]
+    public class RecordData
+    {
+        public TimelinedVector3 position = new TimelinedVector3();
+        public TimelinedQuaternion rotation = new TimelinedQuaternion();
+        public TimelinedVector3 scale = new TimelinedVector3();
+
+        public void Add(Transform t)
+        {
+            position.Add(t.position);
+            rotation.Add(t.rotation);
+            scale.Add(t.localScale);
+        }
+
+        public void Set(float _time, Transform _transform)
+        {
+            _transform.position = position.Get(_time);
+            _transform.rotation = rotation.Get(_time);
+            _transform.localScale = scale.Get(_time);
+        }
+    }
 }

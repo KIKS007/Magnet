@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-#pragma warning disable 0618
 
 namespace UnityStandardAssets.Effects
 {
@@ -16,9 +15,10 @@ namespace UnityStandardAssets.Effects
             var systems = GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem system in systems)
             {
-                system.startSize *= multiplier;
-                system.startSpeed *= multiplier;
-                system.startLifetime *= Mathf.Lerp(multiplier, 1, 0.5f);
+				ParticleSystem.MainModule mainModule = system.main;
+				mainModule.startSizeMultiplier *= multiplier;
+                mainModule.startSpeedMultiplier *= multiplier;
+                mainModule.startLifetimeMultiplier *= Mathf.Lerp(multiplier, 1, 0.5f);
                 system.Clear();
                 system.Play();
             }

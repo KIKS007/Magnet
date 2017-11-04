@@ -3,85 +3,102 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class MovablePush : MovableScript 
+public class MovablePush : MovableScript
 {
-	private float deadlyDelay = 0.01f;
+    private float deadlyDelay = 0.01f;
 
-	private GameObject playerThatThrewTemp;
+    private GameObject playerThatThrewTemp;
+    public static List<PlayersGameplay> dashingPlayers = new List<PlayersGameplay>();
 
-	protected override void LowVelocity () 
-	{
-		if(hold == false && currentVelocity > 0)
-		{
-			if(currentVelocity > higherVelocity)
-				higherVelocity = currentVelocity;
-
-			else if(currentVelocity < limitVelocity)
-			{
-				if(gameObject.tag == "DeadCube")
-				{
-					ToNeutralColor ();
+    protected override void LowVelocity()
+    {
+        if (hold == false && currentVelocity > 0)
+        {
+            if (currentVelocity < limitVelocity)
+            {
+                if (gameObject.tag == "DeadCube")
+                {
+                    ToNeutralColor();
 					
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-				}
+                    slowMoTrigger.triggerEnabled = false;
+                    gameObject.tag = "Movable";
+                }
+                else if (gameObject.tag == "ThrownMovable")
+                {
+                    slowMoTrigger.triggerEnabled = false;
+                    gameObject.tag = "Movable";
+                }
+            }
+        }
+    }
 
-				else if(gameObject.tag == "ThrownMovable")
-				{
-					slowMoTrigger.triggerEnabled = false;
-					gameObject.tag = "Movable";
-				}
-			}
-		}
-	}
+    protected override void HitPlayer(Collision other)
+    {
+        base.HitPlayer(other);
 
-	protected override void HitPlayer (Collision other)
-	{
-		base.HitPlayer (other);
+        if (other.collider.tag == "Player" && tag != "DeadCube")
+        {
+            PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay>();
 
-		if(other.collider.tag == "Player" && tag != "DeadCube")
-		{
-			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+            if (playerScript.playerState == PlayerState.Stunned)
+                return;
 
-			if (playerScript.playerState == PlayerState.Stunned)
-				return;
+            if (playerScript.dashState != DashState.Dashing)
+                return;
 
-			if (playerScript.dashState != DashState.Dashing)
-				return;
+            if (!SteamAchievements.Instance.Achieved(AchievementID.ACH_PUSH))
+                StartCoroutine(DashingPlayerCoroutine(playerScript));
 
-			playerThatThrew = other.gameObject;
-			playerThatThrewTemp = other.gameObject;
+            playerThatThrew = other.gameObject;
+            playerThatThrewTemp = other.gameObject;
 
-			DOTween.Kill ("PushNull"+ gameObject.GetInstanceID ());
-			DOVirtual.DelayedCall (0.5f, ()=> playerThatThrewTemp = null).SetId ("PushNull"+ gameObject.GetInstanceID ());
+            DOTween.Kill("PushNull" + gameObject.GetInstanceID());
+            DOVirtual.DelayedCall(0.5f, () => playerThatThrewTemp = null).SetId("PushNull" + gameObject.GetInstanceID());
 
-			DeadlyTransition ();
+            DeadlyTransition();
 			
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
-		}
+            InstantiateParticles(other.contacts[0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors[(int)playerScript.playerName]);
+        }
 
-		if(other.collider.tag == "Player" && tag == "DeadCube" && other.gameObject != playerThatThrewTemp)
-		{
-			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+        if (other.collider.tag == "Player" && tag == "DeadCube" && other.gameObject != playerThatThrewTemp)
+        {
+            PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay>();
 
-			if (playerScript.playerState == PlayerState.Dead)
-				return;
+            if (playerScript.playerState == PlayerState.Dead)
+                return;
 
-			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
+            playerScript.Death(DeathFX.All, other.contacts[0].point, playerThatThrew);
 
-			if (playerThatThrew != null)
-				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
+            PlayerKilled();
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+            if (playerThatThrew != null)
+                StatsManager.Instance.PlayersHits(playerThatThrew, other.gameObject);
 
-			GlobalMethods.Instance.Explosion (transform.position);
-		}
-	}
+            InstantiateParticles(other.contacts[0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors[(int)playerScript.playerName]);
 
-	void DeadlyTransition ()
-	{
-		ToDeadlyColor (0.1f);
+            GlobalMethods.Instance.Explosion(transform.position);
+        }
+    }
 
-		DOVirtual.DelayedCall (deadlyDelay, ()=> tag = "DeadCube").SetUpdate (true);
-	}
+    IEnumerator DashingPlayerCoroutine(PlayersGameplay p)
+    {
+        if (!dashingPlayers.Contains(p))
+            dashingPlayers.Add(p);
+        else
+        {
+            SteamAchievements.Instance.UnlockAchievement(AchievementID.ACH_PUSH);
+            yield break;
+        }
+
+        yield return new WaitWhile(() => p.dashState == DashState.Dashing);
+
+        dashingPlayers.Remove(p);
+    }
+
+    void DeadlyTransition()
+    {
+        ToDeadlyColor(0.1f);
+
+        DOVirtual.DelayedCall(deadlyDelay, () => tag = "DeadCube").SetUpdate(true);
+    }
 }

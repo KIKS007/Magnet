@@ -156,8 +156,8 @@ public class PlayersTutorial : PlayersGameplay
 			//Hold Movable
 			if (holdState == HoldState.Holding)
 			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
 
 				OnHoldingVoid ();
 			}
@@ -307,5 +307,17 @@ public class PlayersTutorial : PlayersGameplay
 			GlobalVariables.Instance.ListPlayers ();
 		
 //		GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (gameObject, 1f, true);
+	}
+
+	protected override void TurningGamepad ()
+	{
+		if((tutorialManager.tutorialState & TutorialState.Aim) == TutorialState.Aim)
+			base.TurningGamepad ();
+	}
+
+	protected override void TurningMouse ()
+	{
+		if((tutorialManager.tutorialState & TutorialState.Aim) == TutorialState.Aim)
+			base.TurningMouse ();
 	}
 }

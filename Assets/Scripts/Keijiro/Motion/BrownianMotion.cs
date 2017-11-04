@@ -50,52 +50,62 @@ namespace Klak.Motion
 
         #region Public Properties And Methods
 
-        public bool enablePositionNoise {
+        public bool enablePositionNoise
+        {
             get { return _enablePositionNoise; }
             set { _enablePositionNoise = value; }
         }
 
-        public bool enableRotationNoise {
+        public bool enableRotationNoise
+        {
             get { return _enableRotationNoise; }
             set { _enableRotationNoise = value; }
         }
 
-        public float positionFrequency {
+        public float positionFrequency
+        {
             get { return _positionFrequency; }
             set { _positionFrequency = value; }
         }
 
-        public float rotationFrequency {
+        public float rotationFrequency
+        {
             get { return _rotationFrequency; }
             set { _rotationFrequency = value; }
         }
 
-        public float positionAmplitude {
+        public float positionAmplitude
+        {
             get { return _positionAmplitude; }
             set { _positionAmplitude = value; }
         }
 
-        public float rotationAmplitude {
+        public float rotationAmplitude
+        {
             get { return _rotationAmplitude; }
             set { _rotationAmplitude = value; }
         }
 
-        public Vector3 positionScale {
+        public Vector3 positionScale
+        {
             get { return _positionScale; }
             set { _positionScale = value; }
         }
 
-        public Vector3 rotationScale {
+        public Vector3 rotationScale
+        {
             get { return _rotationScale; }
             set { _rotationScale = value; }
         }
 
-        public int positionFractalLevel {
+        public int positionFractalLevel
+        {
             get { return _positionFractalLevel; }
             set { _positionFractalLevel = value; }
         }
 
-        public int rotationFractalLevel {
+        public int rotationFractalLevel
+        {
             get { return _rotationFractalLevel; }
             set { _rotationFractalLevel = value; }
         }
@@ -134,7 +144,10 @@ namespace Klak.Motion
 
         void Update()
         {
-			var dt = Time.unscaledDeltaTime;
+            if (GlobalVariables.Instance.demoEnabled)
+                return;
+
+            var dt = Time.unscaledDeltaTime;
 
             if (_enablePositionNoise)
             {
@@ -142,14 +155,14 @@ namespace Klak.Motion
                     _time[i] += _positionFrequency * dt;
 
                 var n = new Vector3(
-                    Perlin.Fbm(_time[0], _positionFractalLevel),
-                    Perlin.Fbm(_time[1], _positionFractalLevel),
-                    Perlin.Fbm(_time[2], _positionFractalLevel));
+                            Perlin.Fbm(_time[0], _positionFractalLevel),
+                            Perlin.Fbm(_time[1], _positionFractalLevel),
+                            Perlin.Fbm(_time[2], _positionFractalLevel));
 
                 n = Vector3.Scale(n, _positionScale);
                 n *= _positionAmplitude * _fbmNorm;
 
-				transform.localPosition = Vector3.Lerp (transform.localPosition, _initialPosition + n, 0.01f);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, _initialPosition + n, 0.01f);
             }
 
             if (_enableRotationNoise)
@@ -158,9 +171,9 @@ namespace Klak.Motion
                     _time[i + 3] += _rotationFrequency * dt;
 
                 var n = new Vector3(
-                    Perlin.Fbm(_time[3], _rotationFractalLevel),
-                    Perlin.Fbm(_time[4], _rotationFractalLevel),
-                    Perlin.Fbm(_time[5], _rotationFractalLevel));
+                            Perlin.Fbm(_time[3], _rotationFractalLevel),
+                            Perlin.Fbm(_time[4], _rotationFractalLevel),
+                            Perlin.Fbm(_time[5], _rotationFractalLevel));
 
                 n = Vector3.Scale(n, _rotationScale);
                 n *= _rotationAmplitude * _fbmNorm;

@@ -10,14 +10,17 @@ using System;
 public class MenuEndMode : SerializedMonoBehaviour 
 {
 	[Header ("Scoreboard")]
-	public List<ScoreboardPosition> scoreboardPosition = new List<ScoreboardPosition> ();
 	public List<Text> scoreboardPlayers = new List<Text> ();
-	public List<float> scoreScales = new List<float> ();
 
 	[Header ("Panels")]
 	public List<RectTransform> playersPanels = new List<RectTransform> ();
 	public List<ScoreboardPosition> playersPanelsPosition = new List<ScoreboardPosition> ();
 	public List<float> playersPanelsYPos = new List<float> ();
+	public List<Transform> statsLinesParent = new List<Transform> ();
+
+	[Header ("Player Crowns")]
+	public Ease playersCrownsEase = Ease.OutQuad;
+	public List<RectTransform> playersCrowns = new List<RectTransform> ();
 
 	[Header ("Player Position")]
 	public List<GameObjectList> playersPositions = new List<GameObjectList> ();
@@ -36,17 +39,29 @@ public class MenuEndMode : SerializedMonoBehaviour
 	public Ease scoreTweenEase;
 	public Ease panelTweenEase;
 
+	[Header ("Buttons")]
+	public GameObject restartButton;
+	public GameObject nextButton;
+
 	private List<int> scores = new List<int> ();
 	private Dictionary<int, int> previousScales = new Dictionary<int, int> ();
 	private List<RectTransform> enabledPanels = new List<RectTransform> ();
+	private MenuComponent menuComponent;
 
 	// Use this for initialization
 	void Start () 
 	{
+		menuComponent = GetComponent<MenuComponent> ();
+
 		GlobalVariables.Instance.OnEndMode += ()=> {
 
 			if(GlobalVariables.Instance.CurrentGamesCount == GlobalVariables.Instance.GamesCount)
 				StartCoroutine (PlayersPanels ());
+
+			if(GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection)
+				menuComponent.selectable = restartButton;
+			else
+				menuComponent.selectable = nextButton;
 		};
 
 		GlobalVariables.Instance.OnMenu += ()=> 
@@ -65,7 +80,13 @@ public class MenuEndMode : SerializedMonoBehaviour
 		if(GlobalVariables.Instance.NumberOfPlayers == 0)
 			yield break;
 
+		restartButton.SetActive (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection);
+		nextButton.SetActive (GlobalVariables.Instance.ModeSequenceType != ModeSequenceType.Selection);
+
 		enabledPanels.Clear ();
+
+		foreach (var r in playersCrowns)
+			r.gameObject.SetActive (false);
 
 		foreach (RectTransform panel in playersPanels)
 		{
@@ -116,10 +137,23 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 		yield return new WaitWhile (()=> MenuManager.Instance.isTweening);
 
+		if (GlobalVariables.Instance.ModeSequenceType == ModeSequenceType.Selection)
+			restartButton.GetComponent<Button> ().Select ();
+		else
+			nextButton.GetComponent<Button> ().Select ();
+
 		List<string> keys = playersStats.Keys.ToList ();
 
 		scores.Clear ();
 		previousScales.Clear ();
+
+		if(GlobalVariables.Instance.GamesCount == 1)
+		if(StatsManager.Instance.winnerName != WhichPlayer.Draw && StatsManager.Instance.winnerName != WhichPlayer.None)
+		{
+			playersCrowns [(int)StatsManager.Instance.winnerName].gameObject.SetActive (true);
+			playersCrowns [(int)StatsManager.Instance.winnerName].transform.localScale = Vector3.zero;
+			playersCrowns [(int)StatsManager.Instance.winnerName].DOScale (1, 0.5f).SetEase (playersCrownsEase).SetDelay (0.2f);
+		}
 
 		for (int i = 0; i < keys.Count; i++)
 			scores.Add (playersStats [keys [i]].playersStats [WhichStat.Wins.ToString ()]);
@@ -156,23 +190,23 @@ public class MenuEndMode : SerializedMonoBehaviour
 			}
 		}
 
+		//Remove Previous Stats
+		foreach (Transform t in statsLinesParent)
+		{
+			if(t.childCount > 0)
+				foreach (Transform c in t)
+					Destroy (c.gameObject);
+		}
+
 		foreach(RectTransform r in enabledPanels)
 		{
-			//Remove Previous Stats
-			List<Transform> children = new List<Transform> ();
-
-			foreach (Transform child in r.transform.GetChild (0))
-				children.Add (child);
-			
-			children.ForEach (child => Destroy (child.gameObject));
-
 			int playerIndex = playersPanels.FindIndex (x => x == r);
 
 			for(int i = 0; i < modesStats [modesStatsIndex].modesStats.Count; i++)
 			{
 				Vector3 position = new Vector3 (statsPrefab.GetComponent<RectTransform> ().anchoredPosition.x, initialYPos - statsGapHeight * i, 0);
 
-				GameObject statsClone = Instantiate (statsPrefab, statsPrefab.transform.position, statsPrefab.transform.rotation, r.transform.GetChild (0));
+				GameObject statsClone = Instantiate (statsPrefab, statsPrefab.transform.position, statsPrefab.transform.rotation, statsLinesParent [playerIndex]);
 				statsClone.GetComponent<RectTransform> ().anchoredPosition3D = position;
 
 				string text = StatsManager.Instance.statsText.FirstOrDefault (x=> x.Value == modesStats [modesStatsIndex].modesStats [i]).Key;
@@ -180,6 +214,9 @@ public class MenuEndMode : SerializedMonoBehaviour
 
 				GlobalMethods.Instance.ReplaceInText (statsClone.GetComponent<Text> (), 
 					StatsManager.Instance.playersStats [((WhichPlayer)playerIndex).ToString ()].playersStats [modesStats [modesStatsIndex].modesStats [i].ToString ()].ToString ());
+
+				statsClone.GetComponent<StatsFeedback> ().whichStat = modesStats [modesStatsIndex].modesStats [i];
+				statsClone.GetComponent<StatsFeedback> ().whichPlayer = (WhichPlayer)playerIndex;
 			}
 		}
 	}

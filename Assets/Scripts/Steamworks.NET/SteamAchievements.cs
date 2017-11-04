@@ -8,16 +8,8 @@ using System;
 
 public class SteamAchievements : Singleton<SteamAchievements>
 {
-	[PropertyOrder(-2)]
-	[ButtonAttribute]
-	public void UpdateAchievementsEnum ()
-	{
-		File.WriteAllText ("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \n \t", AchievementsIDs.ToArray ()) +" \n };" );
-	}
-
 	[HideInEditorMode]
-	[ValueDropdown ("AchievementsIDs")]
-	public string achievementToUnlock;
+	public AchievementID achievementToUnlock;
 	[PropertyOrder(-1)]
 	[ButtonGroup("1", -1)]
 	[HideInEditorMode]
@@ -35,17 +27,16 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		SteamUserStats.RequestCurrentStats ();
 	}
 
-	[Header ("Achievements IDs")]
-	public List<string> AchievementsIDs = new List<string> ();
+	[Header ("Achievements File")]
+	public TextAsset AchievementsIDFile;
 
-	[Header ("Achievements List")]
-	[HideInEditorMode]
+	[Header ("Achievements")]
+	public bool debugMode = true;
+	//[HideInEditorMode]
 	public List<Achievement> Achievements = new List<Achievement> ();
 
 	// Our GameID
 	private CGameID m_GameID;
-
-	private bool achievementsEventSetup = false;
 
 	protected Callback<UserStatsReceived_t> m_UserStatsReceived;
 	protected Callback<UserStatsStored_t> m_UserStatsStored;
@@ -54,17 +45,47 @@ public class SteamAchievements : Singleton<SteamAchievements>
 	// Use this for initialization
 	void Start ()
 	{
-		if (!SteamManager.Initialized)
+		if (!SteamManager.Initialized && !debugMode)
 			return;
 
-		UpdateAchievementsEnum ();
+		if (SteamManager.Initialized)
+		{
+			string name = SteamFriends.GetPersonaName ();
+			Debug.Log (name);
+		}
 
-		string name = SteamFriends.GetPersonaName ();
-		Debug.Log (name);
+		LoadAchievementsID ();
+		
+		SetupAchievementsEvents ();
+
+		UnlockAchievement (AchievementID.ACH_LAUNCH_GAME);
+	}
+
+	[PropertyOrder(-2)]
+	[ButtonAttribute]
+	void UpdateAchievementsID ()
+	{
+		var text = AchievementsIDFile.text;
+		var IDs = new List<string> ();
+
+		foreach (var line in text.Split ("\n"[0]))
+			IDs.Add (line);
+
+		File.WriteAllText ("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \t", IDs.ToArray ()) +" \n };" );
+	}
+
+	void LoadAchievementsID ()
+	{
+		var text = AchievementsIDFile.text;
+		var IDs = new List<string> ();
 
 		Achievements.Clear ();
 
-		foreach(string s in AchievementsIDs)
+		foreach (var line in text.Split ("\n"[0]))
+			if(line != "")
+				IDs.Add (line);
+
+		foreach(string s in IDs)
 			Achievements.Add (new Achievement (s));
 	}
 
@@ -83,6 +104,108 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		StartCoroutine (GetSteamData ());
 	}
 
+	void SetupAchievementsEvents ()
+	{
+		GlobalVariables.Instance.OnStartMode += LaunchMode;
+		GlobalVariables.Instance.OnEndMode += EndMode;
+
+		MenuManager.Instance.OnQuitGame += ()=> UnlockAchievement (AchievementID.ACH_QUIT_GAME);
+		GlobalVariables.Instance.OnEnvironementChromaChange += () => 
+		{
+			if(GlobalVariables.Instance.environementChroma != EnvironementChroma.Purple)
+				UnlockAchievement (AchievementID.ACH_CHROMA);
+		};
+
+		StatsManager.Instance.OnPlayerSuicide += (PlayersGameplay obj) => 
+		{
+			if (obj.GetType () != typeof(AIGameplay) && !obj.GetType ().IsSubclassOf (typeof(AIGameplay)))
+				UnlockAchievement (AchievementID.ACH_SUICIDE);
+		};
+	}
+
+	void LaunchMode ()
+	{
+		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+			UnlockAchievement (AchievementID.ACH_LAUNCH_TUTORIAL);
+
+		else
+		{
+			switch (GlobalVariables.Instance.ModeSequenceType)
+			{
+			case ModeSequenceType.Selection:
+				UnlockAchievement (AchievementID.ACH_LAUNCH_SELECTION);
+				break;
+			case ModeSequenceType.Cocktail:
+				UnlockAchievement (AchievementID.ACH_LAUNCH_COCKTAIL);
+				break;
+			case ModeSequenceType.Random:
+				UnlockAchievement (AchievementID.ACH_LAUNCH_RANDOM);
+				break;
+			}
+
+			string mode = GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ();
+			UnlockAchievement ("ACH_LAUNCH_" + mode);
+
+
+			bool allUnlocked = true;
+
+			foreach (string value in Enum.GetNames(typeof(WhichMode)))
+			{
+				if (value == WhichMode.Default.ToString () || value == WhichMode.None.ToString () || value == WhichMode.Tutorial.ToString ())
+					continue;
+
+				if (!Achieved ("ACH_LAUNCH_" + value.ToUpper ()))
+					allUnlocked = false;
+			}
+
+			if (allUnlocked && !Achieved (AchievementID.ACH_LAUNCH_EACH_MODE))
+				UnlockAchievement (AchievementID.ACH_LAUNCH_EACH_MODE);
+		}
+
+		if (GlobalVariables.Instance.NumberOfBots == 4)
+			UnlockAchievement (AchievementID.ACH_FOUR_BOTS);
+
+		if (GlobalVariables.Instance.NumberOfBots == 2 && GlobalVariables.Instance.NumberOfPlayers == 4)
+			UnlockAchievement (AchievementID.ACH_TWO_PLAYERS_TWO_BOTS);
+	}
+
+	void EndMode ()
+	{
+		Kills ();
+
+		if (GlobalVariables.Instance.NumberOfBots > 0 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == true && GlobalVariables.Instance.NumberOfBots != GlobalVariables.Instance.NumberOfPlayers)
+			UnlockAchievement (AchievementID.ACH_LOOSE_BOTS);
+
+		if (GlobalVariables.Instance.NumberOfBots == 3 && GlobalVariables.Instance.NumberOfPlayers == 4 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == false)
+		{
+			bool success = true;
+
+			foreach (var p in GlobalVariables.Instance.Players)
+				if (p.GetComponent<AIGameplay> () != null && p.GetComponent<AIGameplay> ().aiLevel != AILevel.Hard)
+				{
+					success = false;
+					break;
+				}
+
+			if (success)
+				UnlockAchievement (AchievementID.ACH_WIN_THREE_HARD_BOTS);
+		}
+	}
+
+	void Kills ()
+	{
+		if(GlobalVariables.Instance.LivesCount == 1)
+		{
+			foreach (var p in StatsManager.Instance.playersStats)
+				if (!p.Value.isBot && p.Value.playersStats [WhichStat.RoundKills.ToString ()] - p.Value.playersStats [WhichStat.Suicides.ToString ()] == 3)
+					UnlockAchievement (AchievementID.ACH_KILL_ALL_PLAYERS);
+		}
+
+		if (StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].playersStats [WhichStat.RoundKills.ToString ()] == 0)
+			UnlockAchievement (AchievementID.ACH_WIN_NO_KILL);
+	}
+
+	#region Achievements Settings
 	IEnumerator GetSteamData ()
 	{
 		bool bSuccess = false;
@@ -107,19 +230,26 @@ public class SteamAchievements : Singleton<SteamAchievements>
 		while (!bSuccess);
 	}
 
-	void SetupAchievementsEvents ()
-	{
-		achievementsEventSetup = true;
-
-		if (!Achieved (AchievementID.ACH_WIN_ONE_GAME))
-			GlobalVariables.Instance.OnStartMode += () => UnlockAchievement (AchievementID.ACH_WIN_ONE_GAME);
-	}
-
 	public bool Achieved (AchievementID id)
 	{
 		foreach(var a in Achievements)
 		{
 			if(a.achievementID == id)
+			{
+				if(a.achieved)
+					return true;
+				else
+					return false;
+			}
+		}
+		return false;
+	}
+
+	public bool Achieved (string id)
+	{
+		foreach(var a in Achievements)
+		{
+			if(a.achievementID.ToString () == id)
 			{
 				if(a.achieved)
 					return true;
@@ -140,6 +270,8 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 		achievement.achieved = true;
 
+		LastAchievement ();
+
 		// mark it down
 		SteamUserStats.SetAchievement(achievement.achievementID.ToString ());
 
@@ -148,18 +280,40 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 	public void UnlockAchievement(string achievementID) 
 	{
-		if (!SteamManager.Initialized)
+		if (!SteamManager.Initialized && !debugMode)
 			return;
-		
+
+		bool achivementFound = false;
+
 		foreach (var a in Achievements)
 			if (a.achievementID.ToString () == achievementID)
 			{
+				achivementFound = true;
+
 				if (a.achieved)
+				{
+					if (debugMode)
+						Debug.Log ("Already unlocked: " + a.achievementID.ToString ());
 					return;
+				}
 
 				a.achieved = true;
+
+				LastAchievement ();
+
+				if (debugMode)
+				{
+					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
+					return;
+				}
 				break;
 			}
+
+		if(!achivementFound)
+		{
+			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
+			return;
+		}
 
 		// mark it down
 		SteamUserStats.SetAchievement(achievementID);
@@ -169,23 +323,59 @@ public class SteamAchievements : Singleton<SteamAchievements>
 
 	public void UnlockAchievement(AchievementID achievementID) 
 	{
-		if (!SteamManager.Initialized)
+		if (!SteamManager.Initialized && !debugMode)
 			return;
-		
+
+		bool achivementFound = false;
+
 		foreach (var a in Achievements)
 			if (a.achievementID == achievementID)
 			{
+				achivementFound = true;
+
 				if (a.achieved)
+				{
+					if (debugMode)
+						Debug.Log ("Already unlocked: " + a.achievementID.ToString ());
 					return;
+				}
 
 				a.achieved = true;
+
+				LastAchievement ();
+
+				if (debugMode)
+				{
+					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
+					return;
+				}
 				break;
 			}
+
+		if(!achivementFound)
+		{
+			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
+			return;
+		}
 
 		// mark it down
 		SteamUserStats.SetAchievement(achievementID.ToString ());
 
 		StartCoroutine (StoreSteamData ());
+	}
+
+	void LastAchievement ()
+	{
+		int count = 0;
+
+		foreach (var a in Achievements)
+			if (a.achieved)
+				count++;
+
+		Debug.Log (count);
+
+		if (count == 42 && !Achieved (AchievementID.ACH_42))
+			UnlockAchievement (AchievementID.ACH_42);
 	}
 
 	//-----------------------------------------------------------------------------
@@ -222,9 +412,7 @@ public class SteamAchievements : Singleton<SteamAchievements>
 				}
 
 				StartCoroutine (StoreSteamData ());
-				
-				if (!achievementsEventSetup)
-					SetupAchievementsEvents ();
+			
 			}
 			else 
 			{
@@ -281,6 +469,7 @@ public class SteamAchievements : Singleton<SteamAchievements>
 			}
 		}
 	}
+	#endregion
 
 	[System.Serializable]
 	public class Achievement 

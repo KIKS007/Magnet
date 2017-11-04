@@ -43,6 +43,7 @@ public class AIBomb : AIGameplay
 	{
 		base.FindDangerousCubes ();
 
-		dangerousCubes.Add (bomb);
+		if(bombScript.playerHolding != gameObject)
+			dangerousCubes.Add (bomb);
 	}
 }

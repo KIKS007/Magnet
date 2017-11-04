@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
@@ -26,9 +27,20 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	
 	public void Enable ()
 	{
-		activate = true;
+		menuAnims.selected = true;
+		menuAnims.forcedHighlight = true;
 
-		menuAnims.ShaderClick ();
+		menuAnims.ShaderColorChange ();
+
+		menuAnims.OnDeselect ();
+
+		//menuAnims.ShaderHighlight ();
+
+//		menuAnims.selectableComponent.interactable = false;
+
+//		menuAnims.ShaderClick (true);
+
+		activate = true;
 
 		if (!GlobalVariables.Instance.selectedCocktailModes.Contains (mode))
 			GlobalVariables.Instance.selectedCocktailModes.Add (mode);
@@ -36,7 +48,16 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 
 	public void Disable ()
 	{
-		menuAnims.ShaderClick ();
+		menuAnims.selected = false;
+		menuAnims.forcedHighlight = false;
+
+		menuAnims.ShaderColorChange ();
+
+		//menuAnims.ShaderHighlight ();
+
+//		menuAnims.selectableComponent.interactable = true;
+
+//		menuAnims.ShaderClick (false);
 
 		activate = false;
 
@@ -67,7 +88,10 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 	{
 		foreach (MenuCocktailButton button in allButtons)
 			if(!button.activate)
+			{
 				button.Enable ();
+				button.menuAnims.ShaderColorChange ();
+			}
 	}
 
 	public void DeselectAll ()
@@ -78,15 +102,22 @@ public class MenuCocktailButton : MonoBehaviour, IPointerClickHandler, ISubmitHa
 			{
 				if(button.activate)
 					button.Disable ();
+
+				button.menuAnims.ShaderColorChange ();
 			}
 			else
 			{
 				if(!button.activate)
 					button.Enable ();
+
+				button.menuAnims.ShaderColorChange ();
 			}
 		}
 
 		if (GlobalVariables.Instance.selectedCocktailModes.Count == 0)
+		{
 			transform.parent.GetChild (0).GetComponent<MenuCocktailButton> ().Enable ();
+			transform.parent.GetChild (0).GetComponent<MenuCocktailButton> ().menuAnims.ShaderColorChange ();
+		}
 	}
 }

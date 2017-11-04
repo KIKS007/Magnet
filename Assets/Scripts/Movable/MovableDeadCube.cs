@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class MovableDeadCube : MovableScript
 {
+	public bool hasKilled = false;
+
 	public override void OnEnable ()
 	{
 		tag = "DeadCube";
@@ -43,6 +45,14 @@ public class MovableDeadCube : MovableScript
 			
 			playerScript.Death (DeathFX.All, other.contacts [0].point, playerThatThrew);
 
+			if (hasKilled && GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Pool)
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_POOL);
+			
+			if (!hasKilled)
+				hasKilled = true;
+
+			PlayerKilled ();
+
 			if (playerThatThrew != null)
 				StatsManager.Instance.PlayersHits (playerThatThrew, other.gameObject);
 
@@ -50,5 +60,13 @@ public class MovableDeadCube : MovableScript
 
 			GlobalMethods.Instance.Explosion (transform.position);
 		}
+	}
+
+	protected override void Update ()
+	{
+		base.Update ();
+
+		if (currentVelocity < limitVelocity && hasKilled)
+			hasKilled = false;
 	}
 }

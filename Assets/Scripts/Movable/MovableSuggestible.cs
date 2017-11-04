@@ -5,8 +5,19 @@ using DarkTonic.MasterAudio;
 
 public class MovableSuggestible : MovableScript 
 {
+	public static MovableSuggestible testingMovable = null;
+
 	public override void Start ()
 	{
+		if (testingMovable == null)
+		{
+			testingMovable = this;
+
+			if (!SteamAchievements.Instance.Achieved (AchievementID.ACH_FLOW))
+				StartCoroutine (CheckFlowAchievement ());
+		}
+
+
 		gameObject.tag = "Suggestible";
 		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
 		ToDeadlyColor ();
@@ -23,6 +34,8 @@ public class MovableSuggestible : MovableScript
 
 			playerScript.Death (DeathFX.All, other.contacts [0].point);
 
+			PlayerKilled ();
+
 			foreach (GameObject g in attracedBy)
 				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
 
@@ -32,6 +45,29 @@ public class MovableSuggestible : MovableScript
 			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 
 			GlobalMethods.Instance.Explosion (transform.position);
+		}
+	}
+
+	IEnumerator CheckFlowAchievement ()
+	{
+		while (true)
+		{
+			int right = 0;
+			int left = 0;
+
+			foreach (var m in GlobalVariables.Instance.AllMovables)
+				if (m.transform.position.x > 0)
+					right++;
+				else
+					left++;
+
+			if (right == GlobalVariables.Instance.AllMovables.Count || left == GlobalVariables.Instance.AllMovables.Count)
+			{
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_FLOW);
+				yield break;
+			}
+
+			yield return new WaitForSecondsRealtime (1);
 		}
 	}
 }

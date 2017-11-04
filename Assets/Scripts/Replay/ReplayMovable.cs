@@ -12,84 +12,219 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.AI;
 using Sirenix.OdinInspector;
+using UnityEngine.UI;
 
 
 namespace Replay
 {
-	public class ReplayMovable : ReplayComponent
-	{
-		[Header ("Data")]
-		public TimelinedMovableColor colors = new TimelinedMovableColor ();
+    public class ReplayMovable : ReplayComponent
+    {
+        [Header("Data")]
+        public TimelinedMovableColor colors = new TimelinedMovableColor();
+        public TimelinedBombTimer timer = new TimelinedBombTimer();
+        public List<DeadlyData> deadlyData = new List<DeadlyData>();
 
-		[HideInInspector]
-		public Material cubeMaterial;
+        [HideInInspector]
+        public Material cubeMaterial;
 
-		protected MovableScript cubeScript;
+        protected MovableScript cubeScript;
+        protected BombManager bombManager;
+        protected Text text;
 
-		protected override void Start ()
-		{
-			base.Start ();
+        protected override void Start()
+        {
+            base.Start();
 
-			cubeScript = GetComponent<MovableScript> ();
+            cubeScript = GetComponent<MovableScript>();
 
-			cubeMaterial = transform.GetChild (1).GetComponent<Renderer> ().material;
-		}
+            cubeMaterial = transform.GetChild(1).GetComponent<Renderer>().material;
 
-		public override void OnClear ()
-		{
-			base.OnClear ();
-			colors = new TimelinedMovableColor ();
-		}
+            bombManager = FindObjectOfType<BombManager>();
 
-		protected override void Recording ()
-		{
-			RecordColors ();
-		}
+            if (bombManager != null)
+                text = GetComponentInChildren<Text>();
 
-		void RecordColors ()
-		{
-			float b = cubeMaterial.GetFloat ("_LerpBLUE");
-			float p = cubeMaterial.GetFloat ("_LerpPINK");
-			float g = cubeMaterial.GetFloat ("_LerpGREEN");
-			float y = cubeMaterial.GetFloat ("_LerpYELLOW");
-			float r = cubeMaterial.GetFloat ("_LerpRED");
+            cubeScript.OnNeutral += () => deadlyData.Add(new DeadlyData(false));
+            cubeScript.OnDeadly += () => deadlyData.Add(new DeadlyData(true));
+        }
 
-			colors.Add (b, p, g, y, r);
-		}
+        protected override void OnEnable()
+        {
+            base.OnEnable();
 
-		public override void Replay (float t)
-		{
-			if(colors.blue.keys.Length > 0)
-				colors.Set (t, cubeMaterial);
-		}
-	}
+            if (ReplayManager.Instance.isRecording)
+                StartCoroutine(Enable());
+        }
 
-	[Serializable]
-	public class TimelinedMovableColor
-	{
-		public AnimationCurve blue;
-		public AnimationCurve pink;
-		public AnimationCurve green;
-		public AnimationCurve yellow;
-		public AnimationCurve red;
+        IEnumerator Enable()
+        {
+            yield return new WaitUntil(() => GetComponent<MovableScript>() != null);
 
-		public void Add (float b, float p, float g, float y, float r)
-		{
-			float time = ReplayManager.Instance.GetCurrentTime ();
-			blue.AddKey (time, b);
-			pink.AddKey (time, p);
-			green.AddKey (time, g);
-			yellow.AddKey (time, y);
-			red.AddKey (time, r);
-		}
+            if (cubeScript == null)
+                cubeScript = GetComponent<MovableScript>();
 
-		public void Set (float _time, Material _material)
-		{
-			_material.SetFloat ("_LerpBLUE", blue.Evaluate (_time));
-			_material.SetFloat ("_LerpPINK", pink.Evaluate (_time));
-			_material.SetFloat ("_LerpGREEN", green.Evaluate (_time));
-			_material.SetFloat ("_LerpYELLOW", yellow.Evaluate (_time));
-			_material.SetFloat ("_LerpRED", red.Evaluate (_time));
-		}
-	}
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
+        }
+
+        void OnDisable()
+        {
+            if (GlobalVariables.applicationIsQuitting)
+                return;
+
+            if (ReplayManager.Instance.isRecording && cubeScript != null)
+                deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
+        }
+
+        public override void OnClear()
+        {
+            base.OnClear();
+            colors = new TimelinedMovableColor();
+            timer = new TimelinedBombTimer();
+            deadlyData = new List<DeadlyData>();
+        }
+
+        public override void OnRecordingStart()
+        {
+            base.OnRecordingStart();
+
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
+        }
+
+        protected override void Recording()
+        {
+            RecordColors();
+
+            if (bombManager != null)
+                timer.Add(Mathf.RoundToInt(bombManager.timer));
+        }
+
+        public override void OnRecordingStop()
+        {
+            base.OnRecordingStop();
+
+            deadlyData.Add(new DeadlyData(cubeScript.cubeColor == CubeColor.Deadly));
+        }
+
+        void RecordColors()
+        {
+            float b = cubeMaterial.GetFloat("_LerpBLUE");
+            float p = cubeMaterial.GetFloat("_LerpPINK");
+            float g = cubeMaterial.GetFloat("_LerpGREEN");
+            float y = cubeMaterial.GetFloat("_LerpYELLOW");
+            float r = cubeMaterial.GetFloat("_LerpRED");
+
+            colors.Add(b, p, g, y, r);
+        }
+
+        public override void OnReplayStart()
+        {
+            base.OnReplayStart();
+
+            DeadlyEnable(false);
+        }
+
+        public override void Replay(float t)
+        {
+            if (colors.blue.keys.Length > 0)
+                colors.Set(t, cubeMaterial);
+
+            if (bombManager != null)
+            {
+                if (text == null)
+                    text = GetComponentInChildren<Text>();
+
+                text.text = timer.Get(t).ToString();
+            }
+
+            bool enable = false;
+
+            if (t < deadlyData[0].time)
+                DeadlyEnable(false);
+
+            foreach (var d in deadlyData)
+            {
+                if (d.time <= t)
+                    enable = d.enabled;
+                else
+                {
+                    break;
+                }
+            }
+
+            DeadlyEnable(enable);
+        }
+
+        void DeadlyEnable(bool enable)
+        {
+            if (enable)
+            {
+                cubeScript.deadlyParticle.Play();
+                cubeScript.deadlyParticle2.Play();
+            }
+            else
+            {
+                cubeScript.deadlyParticle.Stop();
+                cubeScript.deadlyParticle2.Stop();
+            }
+        }
+    }
+
+    [Serializable]
+    public class DeadlyData
+    {
+        public float time;
+        public bool enabled;
+
+        public DeadlyData(bool enable)
+        {
+            time = ReplayManager.Instance.GetCurrentTime();
+            enabled = enable;
+        }
+    }
+
+    [Serializable]
+    public class TimelinedMovableColor
+    {
+        public AnimationCurve blue = new AnimationCurve();
+        public AnimationCurve pink = new AnimationCurve();
+        public AnimationCurve green = new AnimationCurve();
+        public AnimationCurve yellow = new AnimationCurve();
+        public AnimationCurve red = new AnimationCurve();
+
+        public void Add(float b, float p, float g, float y, float r)
+        {
+            float time = ReplayManager.Instance.GetCurrentTime();
+            blue.AddKey(time, b);
+            pink.AddKey(time, p);
+            green.AddKey(time, g);
+            yellow.AddKey(time, y);
+            red.AddKey(time, r);
+        }
+
+        public void Set(float _time, Material _material)
+        {
+            _material.SetFloat("_LerpBLUE", blue.Evaluate(_time));
+            _material.SetFloat("_LerpPINK", pink.Evaluate(_time));
+            _material.SetFloat("_LerpGREEN", green.Evaluate(_time));
+            _material.SetFloat("_LerpYELLOW", yellow.Evaluate(_time));
+            _material.SetFloat("_LerpRED", red.Evaluate(_time));
+        }
+    }
+
+    [Serializable]
+    public class TimelinedBombTimer
+    {
+        public AnimationCurve timer = new AnimationCurve();
+
+        public void Add(int t)
+        {
+            float time = ReplayManager.Instance.GetCurrentTime();
+            timer.AddKey(time, t);
+        }
+
+        public float Get(float _time)
+        {
+            return timer.Evaluate(_time);
+        }
+    }
 }

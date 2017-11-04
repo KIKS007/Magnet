@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 4eb40652bf09a004ea3a6edea6a3f408
+timeCreated: 1508597057
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _IsolineTexture: {fileID: 2800000, guid: 0840826e9ffcb5a4bae0e648cb6c5010, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

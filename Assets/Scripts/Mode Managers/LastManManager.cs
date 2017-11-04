@@ -79,13 +79,18 @@ public class LastManManager : MonoBehaviour
 		}
 
 		//Spawn Play if has lives left
-		if (playerScript.livesCount != 0 && !gameEndLoopRunning) 
+		if (playerScript.livesCount > 0 && !gameEndLoopRunning) 
 		{
 			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
 			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
 		} 
 		else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations> () == null)
+		{
+			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
 			PlayerDeadCube (playerScript);
+		}
+
+		GlobalVariables.Instance.OnPlayerDeathEvent ();
 	}
 
 	public virtual void PlayerDeadCube (PlayersGameplay playerScript)
@@ -121,6 +126,8 @@ public class LastManManager : MonoBehaviour
 			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
 			yield return new WaitForSecondsRealtime (endGameDelay);
+
+			StatsManager.Instance.UpdatePlayerTotalStats ();
 
 //			MenuManager.Instance.endModeMenu.EndMode (whichMode);
 			MenuManager.Instance.ShowEndMode ();

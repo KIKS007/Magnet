@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class NumberOfLives : MonoBehaviour 
 {
-	public GameObject increaseButton;
-	public GameObject decreaseButton;
+	public Button increaseButton;
+	public Button decreaseButton;
 
 	[MinMaxSliderAttribute (1, 99)]
 	public Vector2 livesCountBounds;
@@ -23,7 +24,7 @@ public class NumberOfLives : MonoBehaviour
 		input = GetComponent<InputField> ();
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void GetValue ()
@@ -38,43 +39,62 @@ public class NumberOfLives : MonoBehaviour
 
 		GlobalVariables.Instance.LivesCountChange (value);
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Increase ()
 	{
 		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount + 1);
 
+		if(GlobalVariables.Instance.LivesCount > livesCountBounds.y)
+			GlobalVariables.Instance.LivesCountChange ((int)livesCountBounds.x);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Decrease ()
 	{
 		GlobalVariables.Instance.LivesCountChange (GlobalVariables.Instance.LivesCount - 1);
 
+		if(GlobalVariables.Instance.LivesCount < livesCountBounds.x)
+			GlobalVariables.Instance.LivesCountChange ((int)livesCountBounds.y);
+
 		input.text = GlobalVariables.Instance.LivesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void CheckBounds ()
 	{
 		if (GlobalVariables.Instance.LivesCount <= livesCountBounds.x)
-			decreaseButton.SetActive (false);
+			DisableButton (decreaseButton);
 		else
-			decreaseButton.SetActive (true);
+			EnableButton (decreaseButton);
 
 		if (GlobalVariables.Instance.LivesCount >= livesCountBounds.y)
-			increaseButton.SetActive (false);
-
+			DisableButton (increaseButton);
 		else
-			increaseButton.SetActive (true);
+			EnableButton (increaseButton);
+	}
+
+	void EnableButton (Button button)
+	{
+		button.gameObject.SetActive (true);
+		button.interactable = true;
+	}
+
+	void DisableButton (Button button)
+	{
+		button.gameObject.SetActive (false);
+		button.interactable = false;
 	}
 
 	void SaveData ()
 	{
+		input = GetComponent<InputField> ();
+
 		int value = 0;
 
 		if (!int.TryParse (input.text, out value) || value == 0)

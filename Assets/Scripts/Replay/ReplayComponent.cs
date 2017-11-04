@@ -2,106 +2,94 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 namespace Replay
 {
-	public class ReplayComponent : MonoBehaviour 
-	{
-		[Header ("Record Rate")]
-		public bool overrideRecordRate = false;
-		[ShowIfAttribute ("overrideRecordRate")]
-		public int recordRate = 120;
+    public class ReplayComponent : MonoBehaviour
+    {
+        protected virtual void Start()
+        {
+            SetEvents();
+        }
 
-		protected virtual void Start ()
-		{
-			ReplayManager.Instance.OnClear += OnClear;
-			SetEvents ();
-		}
-
-		public virtual void OnClear ()
-		{
-			SetEvents ();
-		}
-
-		public virtual void SetEvents ()
-		{
-			ReplayManager.Instance.OnReplayTimeChange += Replay;
-
-			ReplayManager.Instance.OnRecordingStart += OnRecordingStart;
-			ReplayManager.Instance.OnRecordingStop += OnRecordingStop;
-
-			ReplayManager.Instance.OnReplayStart += OnReplayStart;
-			ReplayManager.Instance.OnReplayStop += OnReplayStop;
-		}
-
-		protected virtual void OnEnable ()
-		{
-			StartCoroutine (RecordingRate ());
-		}
-
-		protected virtual void Update ()
-		{
-			if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
-				Replay (ReplayManager.Instance.GetReplayTime ());
-		}
-
-		public virtual void OnRecordingStart ()
-		{
+        public virtual void OnClear()
+        {
 			
-		}
+        }
 
-		protected virtual IEnumerator RecordingRate ()
-		{
-			while (true) 
-			{
-				int recordRate = ReplayManager.Instance.recordRate;
+        public virtual void SetEvents()
+        {
+            ReplayManager.Instance.OnReplayTimeChange += Replay;
 
-				if (overrideRecordRate)
-					recordRate = this.recordRate;
+            ReplayManager.Instance.OnRecordingStart += OnRecordingStart;
+            ReplayManager.Instance.OnRecordingStop += OnRecordingStop;
 
-				yield return new WaitForSeconds (1 / recordRate);
+            ReplayManager.Instance.OnReplayStart += OnReplayStart;
+            ReplayManager.Instance.OnReplayStop += OnReplayStop;
 
-				if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains (GlobalVariables.Instance.GameState)) 
-					Recording ();
-			}
-		}
+            ReplayManager.Instance.OnClear += OnClear;
+        }
 
-		protected virtual void Recording ()
-		{
+        protected virtual void OnEnable()
+        {
+            
+        }
+
+        public virtual void OnRecordingStart()
+        {
+            
+        }
+
+        protected virtual void Update()
+        {
+            if (ReplayManager.Instance.isRecording)
+            {
+                if (ReplayManager.Instance.isRecording && !ReplayManager.Instance.noRecordStates.Contains(GlobalVariables.Instance.GameState))
+                    Recording();
+            }
+
+            if (ReplayManager.Instance.isReplaying && !ReplayManager.Instance.isPaused)
+                Replay(ReplayManager.Instance.GetReplayTime());
+        }
+
+        protected virtual void Recording()
+        {
 			
-		}
+        }
 
-		public virtual void OnRecordingStop ()
-		{
+        public virtual void OnRecordingStop()
+        {
 
-		}
+        }
 
-		public virtual void OnReplayStart ()
-		{
-		}
+        public virtual void OnReplayStart()
+        {
+            //gameObject.SetActive(true);
+        }
 
-		public virtual void Replay (float t)
-		{
-			//Debug.Log (t + " " + name);
-		}
+        public virtual void Replay(float t)
+        {
+            //Debug.Log (t + " " + name);
+        }
 
-		public virtual void OnReplayStop ()
-		{
-		}
+        public virtual void OnReplayStop()
+        {
+        }
 
-		protected virtual void OnDestroy ()
-		{
-			if (GlobalVariables.applicationIsQuitting)
-				return;
+        protected virtual void OnDestroy()
+        {
+            if (GlobalVariables.applicationIsQuitting)
+                return;
 
-			ReplayManager.Instance.OnReplayTimeChange -= Replay;
+            ReplayManager.Instance.OnReplayTimeChange -= Replay;
 
-			ReplayManager.Instance.OnRecordingStart -= OnRecordingStart;
-			ReplayManager.Instance.OnRecordingStop -= OnRecordingStop;
+            ReplayManager.Instance.OnRecordingStart -= OnRecordingStart;
+            ReplayManager.Instance.OnRecordingStop -= OnRecordingStop;
 
-			ReplayManager.Instance.OnReplayStart -= OnReplayStart;
-			ReplayManager.Instance.OnReplayStop -= OnReplayStop;
-		}
-	}
+            ReplayManager.Instance.OnReplayStart -= OnReplayStart;
+            ReplayManager.Instance.OnReplayStop -= OnReplayStop;
+        }
+    }
 }
 

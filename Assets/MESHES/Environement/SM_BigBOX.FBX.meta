@@ -1,0 +1,256 @@
+fileFormatVersion: 2
+guid: 2c55c2d0c6299be4abf01be4e7d391fa
+timeCreated: 1505675225
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: BigCircles
+    100002: Box001
+    100004: Box002
+    100006: Box003
+    100008: Box004
+    100010: Box005
+    100012: Box006
+    100014: Box008
+    100016: Box009
+    100018: Cylinder001
+    100020: Cylinder005
+    100022: Cylinder006
+    100024: Cylinder007
+    100026: Cylinder008
+    100028: Cylinder009
+    100030: Cylinder010
+    100032: Cylinder011
+    100034: Cylinder012
+    100036: Cylinder013
+    100038: Cylinder014
+    100040: Object001
+    100042: Object002
+    100044: Object003
+    100046: Object004
+    100048: Object005
+    100050: Object006
+    100052: Object007
+    100054: Object008
+    100056: Object009
+    100058: Object010
+    100060: Object011
+    100062: Object012
+    100064: Object013
+    100066: Plane001
+    100068: //RootNode
+    100070: SmallCircles
+    400000: BigCircles
+    400002: Box001
+    400004: Box002
+    400006: Box003
+    400008: Box004
+    400010: Box005
+    400012: Box006
+    400014: Box008
+    400016: Box009
+    400018: Cylinder001
+    400020: Cylinder005
+    400022: Cylinder006
+    400024: Cylinder007
+    400026: Cylinder008
+    400028: Cylinder009
+    400030: Cylinder010
+    400032: Cylinder011
+    400034: Cylinder012
+    400036: Cylinder013
+    400038: Cylinder014
+    400040: Object001
+    400042: Object002
+    400044: Object003
+    400046: Object004
+    400048: Object005
+    400050: Object006
+    400052: Object007
+    400054: Object008
+    400056: Object009
+    400058: Object010
+    400060: Object011
+    400062: Object012
+    400064: Object013
+    400066: Plane001
+    400068: //RootNode
+    400070: SmallCircles
+    2300000: BigCircles
+    2300002: Box001
+    2300004: Box002
+    2300006: Box003
+    2300008: Box004
+    2300010: Box005
+    2300012: Box006
+    2300014: Box008
+    2300016: Box009
+    2300018: Cylinder001
+    2300020: Cylinder005
+    2300022: Cylinder006
+    2300024: Cylinder007
+    2300026: Cylinder008
+    2300028: Cylinder009
+    2300030: Cylinder010
+    2300032: Cylinder011
+    2300034: Cylinder012
+    2300036: Cylinder013
+    2300038: Cylinder014
+    2300040: Object001
+    2300042: Object002
+    2300044: Object003
+    2300046: Object004
+    2300048: Object005
+    2300050: Object006
+    2300052: Object007
+    2300054: Object008
+    2300056: Object009
+    2300058: Object010
+    2300060: Object011
+    2300062: Object012
+    2300064: Object013
+    2300066: Plane001
+    2300068: SmallCircles
+    3300000: BigCircles
+    3300002: Box001
+    3300004: Box002
+    3300006: Box003
+    3300008: Box004
+    3300010: Box005
+    3300012: Box006
+    3300014: Box008
+    3300016: Box009
+    3300018: Cylinder001
+    3300020: Cylinder005
+    3300022: Cylinder006
+    3300024: Cylinder007
+    3300026: Cylinder008
+    3300028: Cylinder009
+    3300030: Cylinder010
+    3300032: Cylinder011
+    3300034: Cylinder012
+    3300036: Cylinder013
+    3300038: Cylinder014
+    3300040: Object001
+    3300042: Object002
+    3300044: Object003
+    3300046: Object004
+    3300048: Object005
+    3300050: Object006
+    3300052: Object007
+    3300054: Object008
+    3300056: Object009
+    3300058: Object010
+    3300060: Object011
+    3300062: Object012
+    3300064: Object013
+    3300066: Plane001
+    3300068: SmallCircles
+    4300000: Box001
+    4300002: Object001
+    4300004: Object002
+    4300006: Object003
+    4300008: Object004
+    4300010: Object005
+    4300012: Object006
+    4300014: Object007
+    4300016: Object008
+    4300018: Object009
+    4300020: Object010
+    4300022: Plane001
+    4300024: Cylinder001
+    4300026: Cylinder005
+    4300028: Cylinder006
+    4300030: Cylinder007
+    4300032: Cylinder008
+    4300034: Cylinder009
+    4300036: Cylinder010
+    4300038: Cylinder011
+    4300040: Cylinder012
+    4300042: Cylinder013
+    4300044: Box002
+    4300046: Box003
+    4300048: Box004
+    4300050: Box005
+    4300052: Box006
+    4300054: Object011
+    4300056: Object012
+    4300058: Box008
+    4300060: Object013
+    4300062: Cylinder014
+    4300064: Box009
+    4300066: BigCircles
+    4300068: SmallCircles
+    7400000: Take 001
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

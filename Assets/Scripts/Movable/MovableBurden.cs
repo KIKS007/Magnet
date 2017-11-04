@@ -83,12 +83,12 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> targetPlayer && targetPlayer.GetComponent<PlayersGameplay> ().playerState == PlayerState.Startup);
 
-		while(targetPlayer != null && Vector3.Distance(targetPlayer.transform.position, transform.position) > 0.5f)
+		while(targetPlayer != null)
 		{
 			Vector3 direction = (targetPlayer.transform.position - transform.position);
 			direction.Normalize ();
 			
-			rigidbodyMovable.AddForce(direction * trackSpeed, ForceMode.Impulse);
+			rigidbodyMovable.AddForce(direction * trackSpeed * 200 * Time.fixedDeltaTime, ForceMode.Impulse);
 
 			if(GlobalVariables.Instance.GameState != GameStateEnum.Playing)
 				yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
@@ -125,6 +125,10 @@ public class MovableBurden : MovableScript
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
 				StopTrackingPlayer ();
+
+				PlayerKilled ();
+
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_BURDEN);
 			}
 
 			else
@@ -132,6 +136,9 @@ public class MovableBurden : MovableScript
 				playerScript.Death (DeathFX.All, other.contacts [0].point);
 				InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
 				Explode ();
+
+				PlayerKilled ();
+
 
 				for (int i = 0; i < otherMovables.Count; i++)
 					if (otherMovables [i].targetPlayer == other.gameObject)
@@ -163,7 +170,7 @@ public class MovableBurden : MovableScript
 
 		yield return new WaitWhile (()=> GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		yield return new WaitWhile (() => targetPlayer == null || targetPlayer.activeSelf);
+		yield return new WaitWhile (() => targetPlayer == null || !targetPlayer.activeSelf);
 
 		if (targetPlayer == null)
 			yield break;

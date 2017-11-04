@@ -5,9 +5,10 @@ using UnityEngine.UI;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
 
-public class SongBanner : MonoBehaviour 
+public class SongBanner : MonoBehaviour
 {
-	[Header ("Banner")]
+	[Header("Banner")]
+	public Ease bannerEase = Ease.Linear;
 	public float bannerSpeed;
 	public float bannerPauseDuration;
 
@@ -22,58 +23,79 @@ public class SongBanner : MonoBehaviour
 	private PlaylistController playlistController;
 
 	// Use this for initialization
-	void Start () 
+	void Awake()
 	{
-		playlistController = FindObjectOfType<PlaylistController> ();
+		playlistController = FindObjectOfType<PlaylistController>();
 
-		maskBannerRect = GetComponent<RectTransform> ();
-		songRect = transform.GetChild (0).GetComponent<RectTransform> ();
-		songText = transform.GetChild (0).GetComponent<Text> ();
+		maskBannerRect = GetComponent<RectTransform>();
+		songRect = transform.GetChild(0).GetComponent<RectTransform>();
+		songText = transform.GetChild(0).GetComponent<Text>();
 
-		playlistController.SongChanged += (newSongName) => {
-			StopAllCoroutines ();
-			StartCoroutine (SongChanged (newSongName));
-		};
-
-		StartCoroutine (WaitForPlaylist ());
+		playlistController.SongChanged += SongChangedVoid;
 	}
 
-	IEnumerator WaitForPlaylist ()
+	void OnEnable()
 	{
-		yield return new WaitUntil (() => playlistController.HasPlaylist);
+		playlistController = FindObjectOfType<PlaylistController>();
+		songText = transform.GetChild(0).GetComponent<Text>();
 
-		StartCoroutine (SongChanged (playlistController.PlaylistName));
+		if (playlistController.CurrentPlaylistClip)
+			songText.text = playlistController.CurrentPlaylistClip.name;
+
+		StartCoroutine(WaitForPlaylist());
 	}
 
-	IEnumerator SongChanged (string newSongName)
+	void OnDestroy()
 	{
-		DOTween.Kill ("SongBanner");
+		playlistController.SongChanged -= SongChangedVoid;
+	}
 
-		Tween tween = songRect.DOAnchorPosX (leftPosition, 10000f).SetSpeedBased ().SetUpdate (false);
-		yield return tween.WaitForCompletion ();
+	void SongChangedVoid(string name)
+	{
+		if (!gameObject.activeSelf || !gameObject.activeInHierarchy)
+			return;
+		
+		StopAllCoroutines();
+		StartCoroutine(SongChanged(name));
+	}
+
+	IEnumerator WaitForPlaylist()
+	{
+		yield return new WaitUntil(() => playlistController.CurrentPlaylistClip != null);
+
+		StartCoroutine(SongChanged(playlistController.CurrentPlaylistClip.name));
+	}
+
+	IEnumerator SongChanged(string newSongName)
+	{
+		DOTween.Kill("SongBanner");
+
+		Tween tween = songRect.DOAnchorPosX(leftPosition, 10000f).SetSpeedBased().SetUpdate(true);
+		yield return tween.WaitForCompletion();
 
 		songText.text = newSongName;
 
-		yield return new WaitForEndOfFrame ();
+		yield return new WaitForEndOfFrame();
 
 		centerPosition = 0;
 		leftPosition = -songRect.sizeDelta.x;
 		rightPosition = maskBannerRect.sizeDelta.x;
 
-		Show ();
+		Show();
 	}
 
-	void Show ()
+	void Show()
 	{
-		songRect.anchoredPosition = new Vector2 (rightPosition, songRect.anchoredPosition.y);
+		songRect.anchoredPosition = new Vector2(rightPosition, songRect.anchoredPosition.y);
 		
-		songRect.DOAnchorPosX (centerPosition, bannerSpeed).SetSpeedBased ().SetEase (Ease.OutQuad).OnComplete (()=> {
-			DOVirtual.DelayedCall (bannerPauseDuration, ()=> Hide ()).SetId ("SongBanner").SetUpdate (false);
-		}).SetId ("SongBanner").SetUpdate (false);
+		songRect.DOAnchorPosX(centerPosition, bannerSpeed).SetSpeedBased().SetEase(bannerEase).OnComplete(() =>
+			{
+				DOVirtual.DelayedCall(bannerPauseDuration, () => Hide()).SetId("SongBanner").SetUpdate(true);
+			}).SetId("SongBanner").SetUpdate(true);
 	}
 
-	void Hide ()
+	void Hide()
 	{
-		songRect.DOAnchorPosX (leftPosition, bannerSpeed).SetSpeedBased ().OnComplete (Show).SetId ("SongBanner").SetUpdate (false);
+		songRect.DOAnchorPosX(leftPosition, bannerSpeed).SetSpeedBased().OnComplete(Show).SetId("SongBanner").SetUpdate(true);
 	}
 }

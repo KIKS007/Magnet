@@ -3,300 +3,316 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using DG.Tweening;
+using UnityEngine.UI;
 
 [Flags]
-public enum TutorialState 
-{ 
-	Movement = 1, 
-	Dash = 2, 
-	DashHit = 4, 
-	AttractRepel = 8, 
-	Shoot = 16, 
-	DeadlyWall = 32,
+public enum TutorialState
+{
+    Movement = 1,
+    Dash = 2,
+    DashHit = 4,
+    Aim = 8,
+    AttractRepel = 16,
+    Shoot = 32,
+    DeadlyWall = 64,
+    ReincarnatedCube = 128,
 
-	DashStep = Movement | Dash,
-	DashHitStep = Movement | Dash | DashHit,
-	AttractRepelStep = Movement | Dash | DashHit | AttractRepel,
-	ShootStep = Movement | Dash | DashHit | AttractRepel | Shoot,
-	DeadlyWallStep = Movement | Dash | DashHit | AttractRepel | Shoot | DeadlyWall
+    DashStep = 
+		Movement | Dash,
+    DashHitStep = 
+		Movement | Dash | DashHit,
+    AimStep = 
+		Movement | Dash | DashHit | Aim,
+    AttractRepelStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel,
+    ShootStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot,
+    DeadlyWallStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot | DeadlyWall,
+    ReincarnatedCubeStep = 
+		Movement | Dash | DashHit | Aim | AttractRepel | Shoot | DeadlyWall | ReincarnatedCube
 }
 
-public class TutorialManager : MonoBehaviour 
+public class TutorialManager : MonoBehaviour
 {
-	[PropertyOrder (-1)]
-	[ButtonAttribute] 
-	void NextStep ()
-	{
-		StopAllCoroutines ();
+    public TutorialState tutorialState = TutorialState.DeadlyWall;
 
-		switch (tutorialState)
-		{
-		case TutorialState.Movement:
-			StartCoroutine (DashStep ());
-			break;
-		case TutorialState.DashStep:
-			StartCoroutine (DashHitStep ());
-			break;
-		case TutorialState.DashHitStep:
-			StartCoroutine (AttractRepelStep ());
-			break;
-		case TutorialState.AttractRepelStep:
-			StartCoroutine (ShootStep ());
-			break;
-		case TutorialState.ShootStep:
-			StartCoroutine (DeadlyWallStep ());
-			break;
-		}
-	}
+    [Header("Infos")]
+    public float tweenDuration = 0.5f;
+    public float delayDuration = 0.2f;
+    public List<TutorialStep> tutorialSteps = new List<TutorialStep>();
 
-	public TutorialState tutorialState = TutorialState.Movement;
+    [Header("Intro")]
+    public float introWaitDuration;
 
-	[Header ("Players")]
-	public List<PlayerTutorialStats> PlayerStats = new List<PlayerTutorialStats> ();
+    [Header("MOVEMENT")]
+    public float movingTime = 6;
 
-	[Header ("MOVEMENT")]
-	public float movingTime = 6;
-
-	[Header ("DASH")]
-	public int dashCount = 3;
+    [Header("DASH")]
+    public int dashCount = 3;
 	
-	[Header ("DASH Hit")]
-	public int dashHitCount = 3;
+    [Header("DASH Hit")]
+    public int dashHitCount = 3;
 
-	[Header ("ATTRACT / REPEL")]
-	public float durationBetweenSpawn = 0.1f;
-	public float attractTime = 4;
-	public float repelTime = 3;
+    [Header("ATTRACT / REPEL")]
+    public float attractTime = 4;
+    public float repelTime = 3;
 
-	[Header ("SHOOTS")]
-	public int shootsCount = 5;
-	public int hitsCount = 4;
+    [Header("SHOOTS")]
+    public int shootsCount = 5;
+    public int hitsCount = 4;
 
-	[Header ("DEADLY WALLS")]
-	public ArenaDeadzones arena;
-	public int livesCount = 4;
+    [Header("DEADLY WALLS")]
+    public ArenaDeadzones arena;
+    public int livesCount = 4;
 
-	[Header ("DEAD CUBES")]
-	public float timeBeforePlayerRespawn = 2;
-	public bool oneDeadCube = false;
-	public MovableScript movableExampleScript;
+    [Header("DEAD CUBES")]
+    public float timeBeforePlayerRespawn = 2;
+    public bool oneDeadCube = false;
+    public MovableScript movableExampleScript;
 
-	private List<PlayersTutorial> playersScript = new List<PlayersTutorial> ();
-	private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations> ();
+    [Header("Next Previous")]
+    public float transitionDuration = 0.5f;
+    public Collider nextCollider;
+    public Collider previousCollider;
 
-	private ZoomCamera zoomCamera;
+    private List<PlayersTutorial> playersScript = new List<PlayersTutorial>();
+    private List<PlayersFXAnimations> playersFX = new List<PlayersFXAnimations>();
 
-	// Use this for initialization
-	void Start () 
-	{
-		zoomCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<ZoomCamera> ();
-		StartCoroutine (WaitPlaying ());
-	}
+    public int tutorialInfosIndex = -1;
+    private Transform previousPanel = null;
+    private Vector3 colliderInitialScale;
 
-	void Update ()
-	{
-		for(int i = 0; i < playersScript.Count; i++)
-		{
-			PlayerStats [i].movingTime = playersScript [i].movingTime;
-			PlayerStats [i].dashCount = playersScript [i].dashCount;
-			PlayerStats [i].dashHitCount = playersScript [i].dashHitCount;
-			PlayerStats [i].attractTime = playersScript [i].attractTime;
-			PlayerStats [i].repelTime = playersScript [i].repelTime;
-			PlayerStats [i].shootsCount = playersScript [i].shootsCount;
-			PlayerStats [i].hitsCount = playersScript [i].hitsCount;
-			PlayerStats [i].deathCount = playersScript [i].deathCount;
-		}
-	}
+    // Use this for initialization
+    void Start()
+    {
+        colliderInitialScale = nextCollider.transform.GetChild(0).localScale;
 
-	IEnumerator WaitPlaying ()
-	{
-		yield return new WaitUntil (() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
+        arena = FindObjectOfType<ArenaDeadzones>();
 
-		playersScript.Clear ();
+        foreach (var t in tutorialSteps)
+        {
+            t.panel.localScale = Vector3.zero;
+            t.panel.gameObject.SetActive(true);
+        }
 
-		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
-		{
-			playersScript.Add (g.GetComponent<PlayersTutorial> ());
-			playersFX.Add (g.GetComponent<PlayersFXAnimations> ());
-			PlayerStats.Add (new PlayerTutorialStats ());
-		}
+        StartCoroutine(WaitPlaying());
+    }
 
-		foreach (PlayersTutorial p in playersScript)
-			p.livesCount = livesCount;
+    IEnumerator ShowInfos()
+    {
+        previousPanel = tutorialSteps[tutorialInfosIndex].panel;
 
-		StartCoroutine (MovementStep ());
-	}
+        tutorialSteps[tutorialInfosIndex].panel.localScale = Vector3.zero;
+        tutorialSteps[tutorialInfosIndex].panel.DOScale(1, tweenDuration).SetEase(MenuManager.Instance.easeMenu).SetUpdate(false);
 
-	IEnumerator MovementStep ()
-	{
-		tutorialState = TutorialState.Movement;
+        yield return new WaitForSeconds(tweenDuration);
+    }
 
-		yield return new WaitUntil (()=>
-			{ 
-				bool pass = true;
-				
-				foreach(PlayersTutorial p in playersScript)
-					if(p.movingTime < movingTime)
-						pass = false;
+    IEnumerator WaitPlaying()
+    {
+        nextCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
+        previousCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
 
-				return pass;
-			});
+        //nextCollider.enabled = false;
+        //previousCollider.enabled = false;
 
-		StartCoroutine (DashStep ());
-	}
+        nextCollider.transform.GetChild(0).DOScale(0, 0).SetEase(Ease.OutQuad);
+        previousCollider.transform.GetChild(0).DOScale(0, 0).SetEase(Ease.OutQuad);
 
-	IEnumerator DashStep ()
-	{
-		tutorialState |= TutorialState.Dash;
+        yield return new WaitUntil(() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-		zoomCamera.Zoom (FeedbackType.Startup);
-		Waves ();
+        DOVirtual.DelayedCall(0.01f, () =>
+            {
+                arena.Reset();
+            });
 
-		yield return new WaitUntil (()=>
-			{ 
-				bool pass = true;
+        playersScript.Clear();
 
-				foreach(PlayersTutorial p in playersScript)
-					if(p.dashCount < dashCount)
-						pass = false;
+        foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+        {
+            playersScript.Add(g.GetComponent<PlayersTutorial>());
+            playersFX.Add(g.GetComponent<PlayersFXAnimations>());
+        }
 
-				return pass;
-			});
+        foreach (PlayersTutorial p in playersScript)
+            p.livesCount = livesCount;
 
-		StartCoroutine (DashHitStep ());
-	}
+        tutorialInfosIndex = -1;
 
-	IEnumerator DashHitStep ()
-	{
-		tutorialState |= TutorialState.DashHit;
+        Next();
 
-		zoomCamera.Zoom (FeedbackType.Startup);
-		Waves ();
+        /*yield return StartCoroutine (ShowInfos ());
 
-		yield return new WaitUntil (()=>
-			{ 
-				bool pass = true;
+		yield return new WaitForSeconds (introWaitDuration);
 
-				foreach(PlayersTutorial p in playersScript)
-					if(p.dashHitCount < dashHitCount)
-						pass = false;
+		StartCoroutine (MovementStep ());*/
+    }
 
-				return pass;
-			});
-		
-		StartCoroutine (AttractRepelStep ());
-	}
+    void Waves()
+    {
+        foreach (PlayersFXAnimations f in playersFX)
+            f.WaveFX(true);
+    }
 
-	IEnumerator AttractRepelStep ()
-	{
-		tutorialState |= TutorialState.AttractRepel;
+    public virtual void PlayerDeath(PlayerName playerName, GameObject player)
+    {
+        PlayersGameplay playerScript = player.GetComponent<PlayersGameplay>();
 
-		if(GlobalVariables.Instance.AllMovables.Count > 0)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray (), durationBetweenSpawn);
+        playerScript.livesCount--;
 
-		zoomCamera.Zoom (FeedbackType.Startup);
-		Waves ();
+        GlobalVariables.Instance.ListPlayers();
 
-		yield return new WaitUntil (()=>
-			{ 
-				bool pass = true;
+        //Spawn Play if has lives left
+        if (playerScript.livesCount != 0)
+        {
+            GlobalMethods.Instance.SpawnDeathText(playerName, player, playerScript.livesCount);
+            GlobalMethods.Instance.SpawnExistingPlayerRandomVoid(player, timeBeforePlayerRespawn, true);
+        }
+        else
+        {
+            GlobalMethods.Instance.SpawnPlayerDeadCubeVoid(playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
 
-				foreach(PlayersTutorial p in playersScript)
-					if(p.attractTime < attractTime || p.repelTime < repelTime)
-						pass = false;
+            if (!oneDeadCube)
+            {
+                oneDeadCube = true;
+            }
+        }
 
-				return pass;
-			});
+    }
 
-		StartCoroutine (ShootStep ());
-	}
+    void OnDestroy()
+    {
+        if (!GlobalVariables.applicationIsQuitting && arena)
+            arena.Setup();
+    }
 
-	IEnumerator ShootStep ()
-	{
-		tutorialState |= TutorialState.Shoot;
+    [ButtonGroup]
+    public void Previous()
+    {
+        if (tutorialInfosIndex == 0)
+            return;
 
-		zoomCamera.Zoom (FeedbackType.Startup);
-		Waves ();
+        tutorialInfosIndex--;
 
-		yield return new WaitUntil (()=>
-			{ 
-				bool pass = true;
+        nextCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
+        previousCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
 
-				foreach(PlayersTutorial p in playersScript)
-					if(p.shootsCount < shootsCount)
-						pass = false;
+        DOVirtual.DelayedCall(0.2f, () =>
+            {
+			
+                nextCollider.transform.GetChild(0).DOScale(0, transitionDuration).SetEase(Ease.OutQuad);
+                previousCollider.transform.GetChild(0).DOScale(0, transitionDuration).SetEase(Ease.OutQuad);
+            });
 
-				return pass;
-			});
 
-		StartCoroutine (DeadlyWallStep ());
-	}
+        if ((int)tutorialSteps[tutorialInfosIndex].state != 0)
+            tutorialState = tutorialSteps[tutorialInfosIndex].state;
 
-	IEnumerator DeadlyWallStep ()
-	{
-		arena.enabled = true;
-		arena.Setup ();
+        switch (tutorialSteps[tutorialInfosIndex].state)
+        {
+            case TutorialState.AimStep:
 
-		tutorialState |= TutorialState.DeadlyWall;
+                tutorialState = TutorialState.AimStep;
 
-		zoomCamera.Zoom (FeedbackType.Startup);
-		Waves ();
+                if (GlobalVariables.Instance.AllMovables.Count > 0 && GlobalVariables.Instance.AllMovables[0].activeSelf)
+                    foreach (var m in GlobalVariables.Instance.AllMovables)
+                    {
+                        float scale = m.transform.localScale.x;
 
-		yield return 0;
-	}
+                        m.transform.DOScale(0, 0.2f).SetEase(Ease.OutQuad).OnComplete(() =>
+                            {
+                                m.gameObject.SetActive(false);
+                                m.transform.localScale = new Vector3(scale, scale, scale);
+                            });
+                    }
 
-	void Waves ()
-	{
-		foreach (PlayersFXAnimations f in playersFX)
-			f.WaveFX (true);
-	}
+                break;
+            case TutorialState.ShootStep:
 
-	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
-	{
-		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
+                tutorialState = TutorialState.ShootStep;
 
-		playerScript.livesCount--;
+                arena.Reset();
 
-		GlobalVariables.Instance.ListPlayers ();
+                break;
+        }
 
-		//Spawn Play if has lives left
-		if(playerScript.livesCount != 0)
-		{
-			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
-			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
-		}
-		else 
-		{
-			GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
+        StartCoroutine(WaitTutorial());
+    }
 
-			if(!oneDeadCube)
-			{
-				oneDeadCube = true;
-			}
-		}
-	}
-}
+    [ButtonGroup]
+    public void Next()
+    {
+        if (tutorialInfosIndex == tutorialSteps.Count - 1)
+            return;
 
-[System.Serializable]
-public class PlayerTutorialStats
-{
-	[Header ("MOVEMENT")]
-	public float movingTime = 0;
+        tutorialInfosIndex++;
 
-	[Header ("DASH")]
-	public int dashCount = 0;
+        nextCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
+        previousCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = false;
 
-	[Header ("DASH Hit")]
-	public int dashHitCount = 0;
+        DOVirtual.DelayedCall(0.2f, () =>
+            {
 
-	[Header ("ATTRACT / REPEL")]
-	public float attractTime = 0;
-	public float repelTime = 0;
+                nextCollider.transform.GetChild(0).DOScale(0, transitionDuration).SetEase(Ease.OutQuad);
+                previousCollider.transform.GetChild(0).DOScale(0, transitionDuration).SetEase(Ease.OutQuad);
 
-	[Header ("SHOOTS")]
-	public int shootsCount = 0;
-	public int hitsCount = 0;
+            });
 
-	[Header ("DEADLY WALLS")]
-	public int deathCount = 0;
+        if ((int)tutorialSteps[tutorialInfosIndex].state != 0)
+            tutorialState = tutorialSteps[tutorialInfosIndex].state;
+
+        switch (tutorialSteps[tutorialInfosIndex].state)
+        {
+            case TutorialState.AttractRepelStep:
+
+                if (GlobalVariables.Instance.AllMovables.Count > 0 && !GlobalVariables.Instance.AllMovables[0].activeSelf)
+                    GlobalMethods.Instance.RandomPositionMovablesVoid(GlobalVariables.Instance.AllMovables.ToArray());
+
+                break;
+
+            case TutorialState.DeadlyWallStep:
+
+                tutorialState = TutorialState.DeadlyWallStep;
+
+                arena.Setup();
+
+                break;
+        }
+
+        StartCoroutine(WaitTutorial());
+    }
+
+    IEnumerator WaitTutorial()
+    {
+        if (previousPanel != null && previousPanel.localScale == Vector3.one)
+        {
+            previousPanel.DOScale(0, tweenDuration).SetEase(MenuManager.Instance.easeMenu).SetUpdate(false);
+            yield return new WaitForSeconds(tweenDuration);
+        }
+
+        yield return StartCoroutine(ShowInfos());
+
+        if (tutorialInfosIndex != tutorialSteps.Count - 1)
+            nextCollider.transform.GetChild(0).DOScale(colliderInitialScale, transitionDuration).SetEase(Ease.OutQuad);
+
+        if (tutorialInfosIndex > 0)
+            previousCollider.transform.GetChild(0).DOScale(colliderInitialScale, transitionDuration).SetEase(Ease.OutQuad);
+
+        yield return new WaitForSeconds(transitionDuration * 0.1f);
+
+        nextCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = true;
+        previousCollider.GetComponent<TutorialColliderEventTrigger>().eventEnabled = true;
+
+        //nextCollider.enabled = true;
+        //previousCollider.enabled = true;
+    }
+
+    [System.Serializable]
+    public class TutorialStep
+    {
+        public TutorialState state;
+        public Transform panel;
+    }
 }

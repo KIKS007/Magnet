@@ -3,220 +3,300 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using Klak.Motion;
+using Sirenix.OdinInspector;
+using System.Collections.Generic;
+using DarkTonic.MasterAudio;
 
-public class MenuCameraMovement : MonoBehaviour 
+public class MenuCameraMovement : MonoBehaviour
 {
-	public Ease cameraEaseMovement = Ease.OutQuad;
-	public bool tweening = false;
+    public System.Action OnFarPosition;
+    public System.Action OnClosePosition;
 
-	[Header ("Start Screen")]
-	public RectTransform startScreenText;
-	public float startScreenDuration = 0.5f;
-	public float textOffScreenY = -700;
-	public float logoNewScale = 0.4f;
+    public Ease cameraEaseMovement = Ease.OutQuad;
+    public bool tweening = false;
 
-	[Header ("Bobbing")]
-	public Vector3 bobbingLookTarget;
+    [Header("Bobbing")]
+    public Vector3 bobbingLookTarget;
 
-	[Header ("Logo Movements")]
-	public RectTransform menuLogo;
-	public float logoMovementDuration = 1f;
-	public Vector2 logoNewPos = new Vector2 (0, 365);
-	public Vector2 logoHiddenPos = new Vector2 (0, 500);
+    [Header("Start")]
+    public List<Vector3> newStartPositions = new List<Vector3>();
+    public List<Vector3> newStartRotations = new List<Vector3>();
 
-	[Header ("Start")]
-	public Vector3 startRotation;
-	public Vector3 newStartPosition;
+    [Header("Movements")]
+    public Vector3 newMenuPosition;
+    public Vector3 newPlayPosition;
+    public float newMovementDuration = 0.8f;
 
-	[Header ("Movements")]
-	public Vector3 newMenuPosition;
-	public Vector3 newPlayPosition;
-	public float newMovementDuration = 0.8f;
+    [Header("Rotations")]
+    public Vector3 newMenuRotation;
+    public Vector3 newPlayRotation = new Vector3(90.0f, 0.0f, 0.0f);
 
-	private Vector3 positionOnPause = Vector3.zero;
-	private SlowMotionCamera slowMo;
-	private BrownianMotion browianMotion;
-	private float browianInitialFrequency;
+    private Vector3 positionOnPause = Vector3.zero;
+    private SlowMotionCamera slowMo;
+    private BrownianMotion browianMotion;
+    private float browianInitialFrequency;
 
-	// Use this for initialization
-	void Awake () 
-	{
-		slowMo = GetComponent<SlowMotionCamera> ();
-		browianMotion = GetComponent<BrownianMotion> ();
-		browianInitialFrequency = browianMotion.positionFrequency;
+    public bool farPosition = true;
 
-		if(SceneManager.GetActiveScene ().name != "Scene Testing")
-		{
-			transform.position = newStartPosition;
-			transform.rotation = Quaternion.Euler (startRotation);
-			EnableBrowianMotion ();
-		}
-		else
-		{
-			transform.position = newPlayPosition;
-			transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
-			browianMotion.enabled = false;
-		}
+    // Use this for initialization
+    void Awake()
+    {
+        slowMo = GetComponent<SlowMotionCamera>();
+        browianMotion = GetComponent<BrownianMotion>();
+        browianInitialFrequency = browianMotion.positionFrequency;
 
-		//StartCoroutine (NewMenuPosition ());
+        GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
+        GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
+    }
 
-		if(menuLogo != null)
-		{
-			menuLogo.transform.parent.gameObject.SetActive (true);
-			startScreenText.transform.parent.gameObject.SetActive (true);
+    void Start()
+    {
+        if (SceneManager.GetActiveScene().name != "Scene Testing")
+        {
+            transform.position = newStartPositions[(int)GlobalVariables.Instance.environementChroma];
+            transform.rotation = Quaternion.Euler(newStartRotations[(int)GlobalVariables.Instance.environementChroma]);
+            EnableBrowianMotion(false);
+        }
+        else
+        {
+            transform.position = newPlayPosition;
+            transform.rotation = Quaternion.Euler(newPlayRotation);
+            browianMotion.enabled = false;
+        }
+    }
 
-			menuLogo.gameObject.SetActive (true);
-			startScreenText.gameObject.SetActive (true);
-		}
-		else
-			Debug.LogWarning ("No Menu Logo");
+    void Update()
+    {
+        tweening = DOTween.IsTweening("MenuCamera");
+    }
 
+    public void ToggleFarPosition()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
+        if (farPosition)
+            StartCoroutine(StartPosition());
+        else
+            StartCoroutine(StartFarPosition());
 
-		GlobalVariables.Instance.OnEndMode += () => positionOnPause = Vector3.zero;
-		GlobalVariables.Instance.OnMenu += () => positionOnPause = Vector3.zero;
-	}
+        MasterAudio.PlaySound(SoundsManager.Instance.gameStartSound);
+    }
 
-	void Update ()
-	{
-		tweening = DOTween.IsTweening ("MenuCamera");
-	}
+    public IEnumerator StartFarPosition()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
+        if (OnFarPosition != null)
+            OnFarPosition();
 
-	public IEnumerator HideLogo ()
-	{
-		if(menuLogo != null)
-			menuLogo.DOAnchorPos (logoHiddenPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
+        MenuManager.Instance.ShowLogo();
+
+        StopPreviousMovement();
+
+        farPosition = true;
+
+        transform.DOMove(newStartPositions[(int)GlobalVariables.Instance.environementChroma], newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newStartRotations[(int)GlobalVariables.Instance.environementChroma], newMovementDuration, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+
+        yield return new WaitForSecondsRealtime(newMovementDuration);
+
+        EnableBrowianMotion(false);
+    }
+
+    public void MenuPositionGraphics()
+    {
+        transform.DOMove(newMenuPosition, newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newMenuRotation, newMovementDuration, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+    }
+
+    public IEnumerator StartPosition()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
+        if (OnClosePosition != null)
+            OnClosePosition();
+        
+        StartCoroutine(MenuManager.Instance.HideLogo(MenuManager.Instance.startScreen));
+	
+        StopPreviousMovement();
+
+        farPosition = false;
+
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+            positionOnPause = transform.position;
+
+        transform.DOMove(newMenuPosition, newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newMenuRotation, newMovementDuration, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+
+        yield return new WaitForSecondsRealtime(newMovementDuration);
+
+        EnableBrowianMotion();
+    }
+
+    public IEnumerator NewMenuPosition()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+
+        StopPreviousMovement();
+
+        DOVirtual.DelayedCall(newMovementDuration * 0.5f, () => slowMo.StopEffects());
+
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+            positionOnPause = transform.position;
+
+        transform.rotation = Quaternion.Euler(newPlayRotation);
+
+        transform.DOMove(newMenuPosition, newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newMenuRotation, newMovementDuration, RotateMode.FastBeyond360).SetEase(cameraEaseMovement).SetId("MenuCamera");
+
+        yield return new WaitForSecondsRealtime(newMovementDuration);
+
+        MasterAudio.PlaySound(SoundsManager.Instance.winSound);
+
+        EnableBrowianMotion();
+    }
+
+    public IEnumerator NewPlayPosition()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
+        DisableBrowianMotion();
+        StopPreviousMovement();
+
+        Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
+
+        transform.DOMove(position, newMovementDuration * 0.9f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(newPlayRotation, newMovementDuration, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+
+        yield return new WaitForSecondsRealtime(newMovementDuration);
+    }
+
+    public IEnumerator NewRestartRotation()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            yield break;
+        
+        StopPreviousMovement();
+
+        MasterAudio.PlaySound(SoundsManager.Instance.winSound);
+
+        transform.DOMove(newPlayPosition, newMovementDuration * 0.5f).SetEase(cameraEaseMovement).SetId("MenuCamera");
+        transform.DORotate(new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase(cameraEaseMovement).SetId("MenuCamera");
+
+        yield return new WaitForSecondsRealtime(newMovementDuration);
+
+        StartCoroutine(GlobalVariables.Instance.screenShakeCamera.ResetCameraRotationCoroutine());
+
+        //transform.DORotate(newPlayRotation, 0.5f, RotateMode.Fast).SetEase(cameraEaseMovement).SetId("MenuCamera");
+    }
+
+    void StopPreviousMovement()
+    {
+        DisableBrowianMotion();
+
+        if (DOTween.IsTweening("ScreenShake"))
+            DOTween.Kill("ScreenShake");
 		
-		yield return new WaitForSecondsRealtime (logoMovementDuration);
-	}
+        if (DOTween.IsTweening("MenuCamera"))
+            DOTween.Kill("MenuCamera");
+    }
 
-	public IEnumerator ShowLogo ()
-	{
-		if(menuLogo != null)
-			menuLogo.DOAnchorPos (logoNewPos, logoMovementDuration).SetEase (cameraEaseMovement).SetId ("Logo");
-		
-		yield return new WaitForSecondsRealtime (logoMovementDuration);
-	}
+    IEnumerator LookAtTarget()
+    {
+        while (browianMotion.enablePositionNoise)
+        {
+            if (GlobalVariables.Instance.demoEnabled)
+                yield break;
+            
+            transform.LookAt(bobbingLookTarget);
+            yield return new WaitForEndOfFrame();
+        }
+    }
 
-	public IEnumerator StartPosition ()
-	{
-		StopPreviousMovement ();
+    public void EnableBrowianMotion(bool lookatMenu = true)
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
 
-		if(menuLogo != null)
-		{
-			startScreenText.DOAnchorPosY (textOffScreenY, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera").OnComplete (()=> Destroy (startScreenText.gameObject));
-			menuLogo.DOSizeDelta (menuLogo.sizeDelta * logoNewScale, startScreenDuration).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		}
+        if (!GraphicsQualityManager.Instance.browianMotionEnabled)
+            return;
+        
+        browianMotion._initialPosition = transform.position;
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			positionOnPause = transform.position;
+        if (!browianMotion.enabled)
+            browianMotion.enabled = true;
 
-		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+        browianMotion.enablePositionNoise = true;
 
-		yield return new WaitForSecondsRealtime (newMovementDuration);
+        if (lookatMenu)
+            StartCoroutine(LookAtTarget());
 
-		EnableBrowianMotion ();
-	}
+        DOTween.To(() => browianMotion.positionFrequency, x => browianMotion.positionFrequency = x, browianInitialFrequency, newMovementDuration);
+    }
 
-	public IEnumerator NewMenuPosition ()
-	{
-		StopPreviousMovement ();
+    public void DisableBrowianMotion()
+    {
+        if (GlobalVariables.Instance.demoEnabled)
+            return;
+        
+        browianMotion.enablePositionNoise = false;
+        DOTween.To(() => browianMotion.positionFrequency, x => browianMotion.positionFrequency = x, 0, newMovementDuration);
+    }
 
-		DOVirtual.DelayedCall (newMovementDuration * 0.5f, ()=> StopSlowMotion ());
+    [ButtonGroupAttribute("a", -1)]
+    void MenuPosition()
+    {
+        StartCoroutine(NewMenuPosition());
+    }
 
-		StartCoroutine (ShowLogo ());
+    [ButtonGroupAttribute("a", -1)]
+    void PlayPosition()
+    {
+        StartCoroutine(NewPlayPosition());
+    }
 
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-			positionOnPause = transform.position;
 
-		transform.rotation = Quaternion.Euler (new Vector3 (90f, 0f, 0f));
+    [ButtonGroupAttribute("b", -1)]
+    public void EditorMenuPosition()
+    {
+        transform.position = newMenuPosition;
+        transform.rotation = Quaternion.Euler(newMenuRotation);
+    }
 
-		transform.DOMove (newMenuPosition, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (Vector3.zero, newMovementDuration, RotateMode.FastBeyond360).SetEase (cameraEaseMovement).SetId ("MenuCamera");
+    [ButtonGroupAttribute("b", -1)]
+    public void EditorPlayPosition()
+    {
+        transform.position = newPlayPosition;
+        transform.rotation = Quaternion.Euler(newPlayRotation);
+    }
 
-		yield return new WaitForSecondsRealtime (newMovementDuration);
-
-		EnableBrowianMotion ();
-	}
-
-	public IEnumerator NewPlayPosition ()
-	{
-		DisableBrowianMotion ();
-		StopPreviousMovement ();
-
-		StartCoroutine (HideLogo ());
-
-		Vector3 position = positionOnPause != Vector3.zero ? positionOnPause : newPlayPosition;
-
-		transform.DOMove (position, newMovementDuration * 0.9f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (new Vector3 (90f, 0f, 0f), newMovementDuration, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-
-		yield return new WaitForSecondsRealtime (newMovementDuration);
-	}
-
-	public IEnumerator NewRestartRotation ()
-	{
-		StopPreviousMovement ();
-		
-		transform.DOMove (newPlayPosition, newMovementDuration * 0.5f).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-		transform.DORotate (new Vector3(-360f, 0f, 0f), newMovementDuration, RotateMode.LocalAxisAdd).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-
-		yield return new WaitForSecondsRealtime (newMovementDuration);
-
-		transform.DORotate (new Vector3 (90f, 0f, 0f), 0.5f, RotateMode.Fast).SetEase (cameraEaseMovement).SetId ("MenuCamera");
-	}
-
-	void StopSlowMotion ()
-	{
-		slowMo.StopEffects ();
-	}
-
-	void StopPreviousMovement ()
-	{
-		DisableBrowianMotion ();
-
-		if (DOTween.IsTweening ("ScreenShake"))
-			DOTween.Kill ("ScreenShake");
-		
-		if (DOTween.IsTweening ("MenuCamera"))
-			DOTween.Kill ("MenuCamera");
-	}
-
-	IEnumerator LookAtTarget ()
-	{
-		while(browianMotion.enablePositionNoise)
-		{
-			transform.LookAt (bobbingLookTarget);
-			yield return new WaitForEndOfFrame ();
-		}
-	}
-
-	void EnableBrowianMotion ()
-	{
-		browianMotion._initialPosition = transform.position;
-		//browianMotion.enabled = true;
-		browianMotion.enablePositionNoise = true;
-		StartCoroutine (LookAtTarget ());
-		DOTween.To (()=> browianMotion.positionFrequency, x=> browianMotion.positionFrequency =x, browianInitialFrequency, newMovementDuration);
-	}
-
-	void DisableBrowianMotion ()
-	{
-		browianMotion.enablePositionNoise = false;
-		DOTween.To (()=> browianMotion.positionFrequency, x=> browianMotion.positionFrequency =x, 0, newMovementDuration);
-	}
-
-	[ContextMenu ("Menu Position")]
-	public void EditorMenuPosition ()
-	{
-		transform.position = newMenuPosition;
-		transform.rotation = Quaternion.Euler (Vector3.zero);
-	}
-
-	[ContextMenu ("Play Position")]
-	public void EditorPlayPosition ()
-	{
-		transform.position = newPlayPosition;
-		transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
-	}
+    [ButtonGroupAttribute("c", -1)]
+    public void EditorFarPosition()
+    {
+        if (transform.position == newStartPositions[0])
+        {
+            transform.position = newStartPositions[1];
+            transform.rotation = Quaternion.Euler(newStartRotations[1]);
+        }
+        else if (transform.position == newStartPositions[1])
+        {
+            transform.position = newStartPositions[2];
+            transform.rotation = Quaternion.Euler(newStartRotations[2]);
+        }
+        else if (transform.position == newStartPositions[2])
+        {
+            transform.position = newStartPositions[3];
+            transform.rotation = Quaternion.Euler(newStartRotations[3]);
+        }
+        else
+        {
+            transform.position = newStartPositions[0];
+            transform.rotation = Quaternion.Euler(newStartRotations[0]);
+        }
+    }
 }

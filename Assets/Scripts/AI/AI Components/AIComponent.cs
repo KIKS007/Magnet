@@ -3,110 +3,110 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class AIComponent : MonoBehaviour 
+public class AIComponent : MonoBehaviour
 {
-	public bool stuckAvoidance = false;
-	[ShowIf ("stuckAvoidance")]
-	public float stuckDelay;
-	[ShowIf ("stuckAvoidance")]
-	public string animatorTrigger;
+    public bool stuckAvoidance = false;
+    [ShowIf("stuckAvoidance")]
+    public float stuckDelay;
+    [ShowIf("stuckAvoidance")]
+    public string animatorTrigger;
 
-	[HideInInspector]
-	public float enableDelay = 0;
+    [HideInInspector]
+    public float enableDelay = 0;
 
-	protected AIGameplay AIScript;
-	protected bool componentEnabled = true;
+    protected AIGameplay AIScript;
+    protected bool componentEnabled = true;
 
-	// Use this for initialization
-	protected virtual void Awake () 
-	{
-		AIScript = GetComponent<AIGameplay> ();
-	}
+    // Use this for initialization
+    protected virtual void Awake()
+    {
+        AIScript = GetComponent<AIGameplay>();
+    }
 
-	protected virtual void OnEnable ()
-	{
-		StartCoroutine (OnEnableDelay ());
-	}
+    protected virtual void OnEnable()
+    {
+        StartCoroutine(OnEnableDelay());
+    }
 
-	IEnumerator OnEnableDelay ()
-	{
-		componentEnabled = false;
+    IEnumerator OnEnableDelay()
+    {
+        componentEnabled = false;
 
-		foreach (var l in AIScript.aiComponentsDelay) 
-		{
-			if(l.components.Contains ( (AIComponents) System.Enum.Parse (typeof(AIComponents), this.GetType ().ToString () )) )
-			{
-				enableDelay =  Random.Range (l.delays [(int)AIScript.aiLevel].x, l.delays [(int)AIScript.aiLevel].y);
-				break;
-			}
-		}
+        foreach (var l in AIScript.aiComponentsDelay)
+        {
+            if (l.components.Contains((AIComponents)System.Enum.Parse(typeof(AIComponents), this.GetType().ToString())))
+            {
+                enableDelay = Random.Range(l.delays[(int)AIScript.aiLevel].x, l.delays[(int)AIScript.aiLevel].y);
+                break;
+            }
+        }
 
-		if(enableDelay > 0)
-			yield return new WaitForSecondsRealtime (enableDelay);
+        if (enableDelay > 0)
+            yield return new WaitForSecondsRealtime(enableDelay);
 
-		componentEnabled = true;
+        componentEnabled = true;
 
-		if (stuckAvoidance)
-			StartCoroutine (StuckDelay ());
+        if (stuckAvoidance)
+            StartCoroutine(StuckDelay());
 
-		Enable ();
+        Enable();
 
-		yield return 0;
-	}
+        yield return 0;
+    }
 
-	protected virtual bool CanPlay ()
-	{
-		if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
-			return false;
+    protected virtual bool CanPlay()
+    {
+        if (AIScript.playerState == PlayerState.Dead || AIScript.playerState == PlayerState.Startup || AIScript.playerState == PlayerState.Stunned)
+            return false;
 
-		if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
-			return false;
+        if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+            return false;
 
-		if (!componentEnabled)
-			return false;
+        if (!componentEnabled)
+            return false;
 
 
-		return true;
-	}
+        return true;
+    }
 
-	IEnumerator StuckDelay ()
-	{
-		yield return new WaitForSecondsRealtime (stuckDelay);
+    IEnumerator StuckDelay()
+    {
+        yield return new WaitForSecondsRealtime(stuckDelay);
 
-		AIScript.aiAnimator.SetTrigger (animatorTrigger);
-	}
+        AIScript.aiAnimator.SetTrigger(animatorTrigger);
+    }
 
-	protected virtual void Enable ()
-	{
+    protected virtual void Enable()
+    {
 		
-	}
+    }
 
-	protected virtual void Update ()
-	{
+    protected virtual void Update()
+    {
 		
-	}
+    }
 
-	protected virtual void OnDisable ()
-	{
-		StopAllCoroutines ();
-		componentEnabled = true;
-	}
+    protected virtual void OnDisable()
+    {
+        StopAllCoroutines();
+        componentEnabled = true;
+    }
 
-	protected virtual bool DangerousCubes (Vector3 movement)
-	{
-		int layer = 1 << LayerMask.NameToLayer ("Movables") | 1 << LayerMask.NameToLayer ("IgnoreMovables");
-		RaycastHit hit;
+    protected virtual bool DangerousCubes(Vector3 movement)
+    {
+        int layer = 1 << LayerMask.NameToLayer("Movables") | 1 << LayerMask.NameToLayer("IgnoreMovables");
+        RaycastHit hit;
 
-		movement.y = 0;
+        movement.y = 0;
 
-		Physics.SphereCast (transform.position, 1.3f, movement, out hit, 11f, layer);
+        Physics.SphereCast(transform.position, 1.3f, movement, out hit, 11f, layer);
 
-		if (hit.collider == null)
-			return false;
+        if (hit.collider == null)
+            return false;
 
-		if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible" || hit.collider.gameObject.tag == "DeadZone")
-			return true;
-		else
-			return false;
-	}
+        if (hit.collider.gameObject.tag == "DeadCube" || hit.collider.gameObject.tag == "Suggestible" || hit.collider.gameObject.tag == "DeadZone")
+            return true;
+        else
+            return false;
+    }
 }

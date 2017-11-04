@@ -6,106 +6,160 @@ using Sirenix.OdinInspector;
 
 namespace Replay
 {
-	public class ReplayParticles : ReplayComponent 
-	{
-		[Header ("Data")]
-		public List<TimelinedParticles> particles = new List<TimelinedParticles> ();
+    public class ReplayParticles : ReplayComponent
+    {
+        public bool listParticle = true;
 
-		protected ParticleSystem particleSys;
+        [Header("Data")]
+        public List<TimelinedParticles> particles = new List<TimelinedParticles>();
 
-		protected override void Start ()
-		{
-			particleSys = GetComponent<ParticleSystem> ();
+        private List<TimelinedParticles> _particles = new List<TimelinedParticles>();
 
-			foreach (Transform child in transform)
-				if (child.GetComponent<ParticleSystem> () != null)
-					child.gameObject.AddComponent<ReplayParticles> ();
+        protected ParticleSystem particleSys;
+        protected float listRecordEpsilon = 0.008f;
 
-			base.Start ();
+        protected override void Start()
+        {
+            if (!ReplayManager.Instance.replayEnabled)
+                return;
 
-			if (GetComponent<ParticlesAutoDestroy> () != null)
-				Destroy (GetComponent<ParticlesAutoDestroy> ());
-		}
+            listRecordEpsilon = ReplayManager.Instance.listRecordEpsilon;
 
-		public override void OnClear ()
-		{
-			base.OnClear ();
-			particles.Clear ();
-		}
+            if (GetComponent<ParticlesAutoDestroy>())
+            {
+                GetComponent<ParticlesAutoDestroy>().replayParticles = true;
+            }
 
-		public override void OnRecordingStart ()
-		{
-			base.OnRecordingStart ();
+            particleSys = GetComponent<ParticleSystem>();
 
-			particles = new List<TimelinedParticles> ();
+            if (listParticle)
+                ReplayManager.Instance.particlesReplay.Add(new ReplayManager.Particles(particleSys));
 
-			if (particleSys != null)
-				particles.Add (new TimelinedParticles (particleSys));
-			else
-				Debug.LogWarning ("No ParticleSystem!"); 
-		}
+            base.Start();
+        }
 
-		protected override void Recording ()
-		{
-			base.Recording ();
+        public override void OnClear()
+        {
+            if (listParticle)
+                return;
 
-			particles.Add (new TimelinedParticles (particleSys));
-		}
+            base.OnClear();
+            particles.Clear();
+        }
 
-		public override void OnReplayStart ()
-		{
-			base.OnReplayStart ();
-
-			particleSys.Play (true);
-			particleSys.Pause (true);
-		}
-
-		public override void OnReplayStop ()
-		{
-			base.OnReplayStop ();
-
-		}
-
-		public override void Replay (float t)
-		{
-			base.Replay (t);
-
-			if(particles == null)
-			{
-				Debug.LogWarning ("No Particles!");
-				return;
-			}
-
-			if (particles.Count == 0)
-				return;
+        public override void OnRecordingStart()
+        {
+            if (listParticle)
+                return;
 			
-			if (t < particles [0].time)
-				particleSys.Clear ();
+            base.OnRecordingStart();
 
-			foreach(var p in particles)
-			{
-				if(Mathf.Abs (p.time - t) < 0.008f)
-				{
-					particleSys.SetParticles (p.particles, p.particles.Length);
-					break;
-				}
-			}
-		}
-	}
+            particles = new List<TimelinedParticles>();
 
-	[Serializable]
-	public class TimelinedParticles 
-	{
-		public float time;
-		public ParticleSystem.Particle[] particles = new ParticleSystem.Particle[0];
+            if (particleSys != null)
+                particles.Add(new TimelinedParticles(particleSys));
+            else
+                Debug.LogWarning("No ParticleSystem!"); 
+        }
 
-		public TimelinedParticles (ParticleSystem _ps)
-		{
-			time = ReplayManager.Instance.GetCurrentTime ();
+        protected override void Recording()
+        {
+            if (listParticle)
+                return;
+			
+            base.Recording();
 
-			particles = new ParticleSystem.Particle[_ps.particleCount];
-			_ps.GetParticles (particles);
-		}
-	}
+            particles.Add(new TimelinedParticles(particleSys));
+        }
+
+        public override void OnReplayStart()
+        {
+            if (listParticle)
+                return;
+			
+            gameObject.SetActive(true);
+
+            _particles = new List<TimelinedParticles>(particles);
+
+            base.OnReplayStart();
+
+            particleSys.Play(true);
+            particleSys.Pause(true);
+        }
+
+        public override void OnReplayStop()
+        {
+            if (listParticle)
+                return;
+			
+            base.OnReplayStop();
+
+        }
+
+        public override void Replay(float t)
+        {
+            if (listParticle)
+                return;
+			
+            base.Replay(t);
+
+            if (particles == null || particles.Count == 0)
+            {
+                Debug.LogWarning("No Particles!");
+                return;
+            }
+
+            if (t > particles[particles.Count - 1].time)
+            {
+                particleSys.Clear();
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+                return;
+            }
+
+
+            if (t < particles[0].time)
+            {
+                particleSys.Clear();
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+                return;
+            }
+
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
+            TimelinedParticles timelinedParticles = null;
+
+            foreach (var p in _particles)
+            {
+                if (Mathf.Abs(p.time - t) < listRecordEpsilon)
+                {
+                    timelinedParticles = p;
+
+                    particleSys.SetParticles(p.particles, p.particles.Length);
+                    break;
+                }
+            }
+
+            if (timelinedParticles != null)
+                _particles.Remove(timelinedParticles);
+        }
+    }
+
+    [Serializable]
+    public class TimelinedParticles
+    {
+        public float time;
+        public ParticleSystem.Particle[] particles = new ParticleSystem.Particle[0];
+
+        public TimelinedParticles(ParticleSystem _ps)
+        {
+            time = ReplayManager.Instance.GetCurrentTime();
+
+            particles = new ParticleSystem.Particle[_ps.particleCount];
+            _ps.GetParticles(particles);
+        }
+    }
 }
 

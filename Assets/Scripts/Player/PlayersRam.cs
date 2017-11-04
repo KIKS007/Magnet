@@ -17,20 +17,20 @@ public class PlayersRam : PlayersGameplay
 			if (velocity < noForcesThreshold && playerThatHit != null && playerState != PlayerState.Stunned)
 				playerThatHit = null;
 
+			//Hold Movable
+			if (holdState == HoldState.Holding)
+			{
+				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold * Time.fixedDeltaTime);
+				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold * Time.fixedDeltaTime);
+
+				OnHoldingVoid ();
+			}
+
 			if (dashState != DashState.Dashing)
 			{
 				float speedTemp = playerState != PlayerState.Stunned ? speed : stunnedSpeed;
 
 				playerRigidbody.MovePosition(transform.position + movement * speedTemp * Time.fixedDeltaTime);
-			}
-
-
-			if (holdState == HoldState.Holding)
-			{
-				holdMovableTransform.position = Vector3.Lerp(holdMovableTransform.position, magnetPoint.transform.position, lerpHold);
-				holdMovableTransform.transform.rotation = Quaternion.Lerp(holdMovableTransform.rotation, transform.rotation, lerpHold);
-
-				OnHoldingVoid ();
 			}
 
 			playerRigidbody.AddForce(-Vector3.up * gravity, ForceMode.Acceleration);
@@ -46,6 +46,25 @@ public class PlayersRam : PlayersGameplay
 				for (int i = 0; i < cubesRepulsed.Count; i++)
 					Repulsion(cubesRepulsed[i]);
 			}
+		}
+	}
+
+	public override void StunVoid (bool cubeHit)
+	{
+		base.StunVoid (cubeHit);
+
+		if(!SteamAchievements.Instance.Achieved (AchievementID.ACH_RAM))
+		{
+			int playersCount = 0; 
+
+			foreach (var p in GlobalVariables.Instance.Players)
+				if (p.GetComponent<PlayersGameplay> ().playerState != PlayerState.Stunned)
+					return;
+				else
+					playersCount++;
+
+			if (playersCount > 2)
+				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_RAM);
 		}
 	}
 }

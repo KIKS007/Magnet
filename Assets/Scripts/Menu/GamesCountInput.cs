@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GamesCountInput : MonoBehaviour 
 {
-	public GameObject increaseButton;
-	public GameObject decreaseButton;
+	public Button increaseButton;
+	public Button decreaseButton;
 
 	private InputField input;
 	private Vector2 bounds = new Vector2 (1, 99);
@@ -51,7 +52,7 @@ public class GamesCountInput : MonoBehaviour
 			previousModeSequence = GlobalVariables.Instance.ModeSequenceType;
 		};
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void OnEnable ()
@@ -91,37 +92,56 @@ public class GamesCountInput : MonoBehaviour
 
 		GlobalVariables.Instance.GamesCount = value;
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Increase ()
 	{
 		GlobalVariables.Instance.GamesCount++;
+		
+		if (GlobalVariables.Instance.GamesCount > bounds.y)
+			GlobalVariables.Instance.GamesCount = (int)bounds.x;
+
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	public void Decrease ()
 	{
 		GlobalVariables.Instance.GamesCount--;
+
+		if (GlobalVariables.Instance.GamesCount < bounds.x)
+			GlobalVariables.Instance.GamesCount = (int)bounds.y;
+		
 		input.text = GlobalVariables.Instance.GamesCount.ToString ();
 
-		CheckBounds ();
+		//CheckBounds ();
 	}
 
 	void CheckBounds ()
 	{
 		if (GlobalVariables.Instance.GamesCount <= bounds.x)
-			decreaseButton.SetActive (false);
+			DisableButton (decreaseButton);
 		else
-			decreaseButton.SetActive (true);
+			EnableButton (decreaseButton);
 		
 		if (GlobalVariables.Instance.GamesCount >= bounds.y)
-			increaseButton.SetActive (false);
-
+			DisableButton (increaseButton);
 		else
-			increaseButton.SetActive (true);
+			EnableButton (increaseButton);
+	}
+
+	void EnableButton (Button button)
+	{
+		button.gameObject.SetActive (true);
+		button.interactable = true;
+	}
+
+	void DisableButton (Button button)
+	{
+		button.gameObject.SetActive (false);
+		button.interactable = false;
 	}
 
 	void SaveData ()

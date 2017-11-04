@@ -4,6 +4,8 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
+using DarkTonic.MasterAudio;
 
 public class MenuKickstarter : MonoBehaviour 
 {
@@ -40,6 +42,17 @@ public class MenuKickstarter : MonoBehaviour
 			allBackers.Add (b.GetComponent<RectTransform> ());
 	}
 
+	[Button]
+	void Sort ()
+	{
+		var backersText = backersParent.GetComponentsInChildren<Text> ().ToList ();
+
+		backersText = backersText.OrderBy (x => x.text).ToList ();
+
+		for (int i = 0; i < backersText.Count; i++)
+			backersText [i].transform.SetSiblingIndex (i);
+	}
+
 	void Update ()
 	{
 		if(rec1 && rec2)
@@ -66,8 +79,15 @@ public class MenuKickstarter : MonoBehaviour
 		backersSpawned.Clear ();
 		spawnFails = 0;
 
-		foreach(var b in allBackers)
+		yield return new WaitUntil (() => !MenuManager.Instance.isTweening);
+
+		while(backersSpawned.Count != allBackers.Count)
 		{
+			RectTransform b = allBackers [Random.Range (0, allBackers.Count)];
+
+			while(backersSpawned.Contains (b))
+				b = allBackers [Random.Range (0, allBackers.Count)];
+
 			bool validPosition = true;
 			Rect rect1 = new Rect ();
 			Rect rect2 = new Rect ();
@@ -76,6 +96,9 @@ public class MenuKickstarter : MonoBehaviour
 
 			do
 			{
+				if(MenuManager.Instance.isTweening)
+					yield break;
+
 				tries++;
 
 				if(tries >= spawnTries)
@@ -102,10 +125,12 @@ public class MenuKickstarter : MonoBehaviour
 			}
 			while (!validPosition);
 
-			if (validPosition) {
+			if (validPosition) 
+			{
 				backersSpawned.Add (b);
 				Spawn (b);
-			} else
+			} 
+			else
 				b.gameObject.SetActive (false);
 
 			yield return new WaitForSecondsRealtime (spawnDelay);
@@ -121,5 +146,7 @@ public class MenuKickstarter : MonoBehaviour
 		backer.gameObject.SetActive (true);
 
 		backer.DOScale (scale, spawnDuration).SetEase (spawnEase);
+
+		MasterAudio.PlaySound (SoundsManager.Instance.backerPopSound);
 	}
 }
