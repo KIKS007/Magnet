@@ -144,6 +144,11 @@ public class MenuManager : Singleton <MenuManager>
             StopCoroutine(PassFight());
         };
 
+        GlobalVariables.Instance.OnEndMode += () =>
+        {
+            GlobalVariables.Instance.SetMouseVisibility(mouseControl);
+        };
+        
         GlobalVariables.Instance.OnMenu += () =>
         {
             playText.text = "PLAY";
@@ -360,6 +365,8 @@ public class MenuManager : Singleton <MenuManager>
         for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
         //for (int i = 0; i < 2; i++)
         {
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Submit"))
+
             //Quit Far Position
             if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
             {
@@ -513,13 +520,20 @@ public class MenuManager : Singleton <MenuManager>
         if (!mouseControl)
         {
             if (Mathf.Abs(Input.GetAxis("Mouse X")) > 0 || Mathf.Abs(Input.GetAxis("Mouse Y")) > 0)
+            {
                 mouseControl = true;
+                GlobalVariables.Instance.SetMouseVisibility(true);
+            }
         }
         else
         {
             for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
                 if (GlobalVariables.Instance.rewiredPlayers[i] != null && GlobalVariables.Instance.rewiredPlayers[i].GetAxis("UI Vertical") != 0)
+                {
                     mouseControl = false;
+                    GlobalVariables.Instance.SetMouseVisibility(false);
+                    break;
+                }
         }
     }
 

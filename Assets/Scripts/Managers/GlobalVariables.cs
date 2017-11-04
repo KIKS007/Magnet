@@ -236,8 +236,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
         LoadModeManager.Instance.OnLevelUnloaded += UpdateGamepadList;
 
-        OnPlaying += () => SetMouseVisibility();
-        OnRestartMode += () => SetMouseVisibility();
+        OnPlaying += () => SetMouseGameplayVisibility();
+        OnRestartMode += () => SetMouseGameplayVisibility();
         OnPlaying += UpdatePlayedModes;
         OnMenu += () => Startup = StartupType.Wave;
         OnEndMode += () => Startup = StartupType.Delayed;
@@ -600,14 +600,32 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     public void SetPlayerMouseCursor()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
         Cursor.SetCursor(mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.Auto);
     }
 
-    public void SetMouseVisibility(bool forcedHide = false)
+    public void SetMouseGameplayVisibility(bool forcedHide = false)
     {
         if (forcedHide || PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
+        {
+            if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
+        else
+        {
+            if (Cursor.lockState != CursorLockMode.None)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+    }
+
+    public void SetMouseVisibility(bool visible)
+    {
+        if (!visible)
         {
             if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
             {

@@ -87,7 +87,7 @@ public class LastManManager : MonoBehaviour
         else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations>() == null)
         {
             if (playerScript.controllerNumber == 0)
-                GlobalVariables.Instance.SetMouseVisibility(true);
+                GlobalVariables.Instance.SetMouseGameplayVisibility(true);
 
             GlobalMethods.Instance.SpawnDeathText(playerName, player, playerScript.livesCount);
             PlayerDeadCube(playerScript);
