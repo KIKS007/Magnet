@@ -96,7 +96,7 @@ public class ScreenShakeCamera : MonoBehaviour
         shake = false;
 
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-            transform.DOShakeRotation(shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete(ResetCameraRotation).SetUpdate(false);
+            transform.DOShakeRotation(shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete(ResetCameraRotation).SetUpdate(true);
     }
 
     void ResetCameraRotation()
