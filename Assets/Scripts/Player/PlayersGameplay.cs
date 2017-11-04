@@ -850,9 +850,6 @@ public class PlayersGameplay : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        if (controllerNumber == 0 && GlobalVariables.Instance != null && GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-            GlobalVariables.Instance.SetMouseVisibility(true);
-
         StopCoroutine(OnPlayerStateChange());
         StopCoroutine(OnDashAvailableEvent());
     }

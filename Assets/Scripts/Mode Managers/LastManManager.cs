@@ -5,132 +5,134 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class LastManManager : MonoBehaviour 
+public class LastManManager : MonoBehaviour
 {
-	[Header ("Settings")]
-	public WhichMode whichMode;
-	public float endGameDelay = 2;
-	public float endGameDelayInstantRestart = 3;
+    [Header("Settings")]
+    public WhichMode whichMode;
+    public float endGameDelay = 2;
+    public float endGameDelayInstantRestart = 3;
 
-	[Header ("Death Count")]
-	public float timeBeforePlayerRespawn = 2;
+    [Header("Death Count")]
+    public float timeBeforePlayerRespawn = 2;
 
-	[Header ("Cubes Spawn")]
-	public bool spawnCubes = true;
+    [Header("Cubes Spawn")]
+    public bool spawnCubes = true;
 
-	[Header ("Dead Cube")]
-	public MovableScript movableExampleScript;
-	public bool playerDeadCube = true;
+    [Header("Dead Cube")]
+    public MovableScript movableExampleScript;
+    public bool playerDeadCube = true;
 
-	protected bool gameEndLoopRunning = false;
+    protected bool gameEndLoopRunning = false;
 
-	protected virtual void OnEnable () 
-	{
-		StopCoroutine (WaitForBeginning ());
-		StartCoroutine (WaitForBeginning ());
-	}
+    protected virtual void OnEnable()
+    {
+        StopCoroutine(WaitForBeginning());
+        StartCoroutine(WaitForBeginning());
+    }
 
-	protected virtual IEnumerator WaitForBeginning ()
-	{
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+    protected virtual IEnumerator WaitForBeginning()
+    {
+        yield return new WaitWhile(() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
-			g.GetComponent<PlayersGameplay> ().livesCount = GlobalVariables.Instance.LivesCount;
+        foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+            g.GetComponent<PlayersGameplay>().livesCount = GlobalVariables.Instance.LivesCount;
 
-		if(GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
-			GlobalMethods.Instance.RandomPositionMovablesVoid (GlobalVariables.Instance.AllMovables.ToArray ());
-	}
+        if (GlobalVariables.Instance.AllMovables.Count > 0 && spawnCubes)
+            GlobalMethods.Instance.RandomPositionMovablesVoid(GlobalVariables.Instance.AllMovables.ToArray());
+    }
 
-	public virtual void PlayerDeath (PlayerName playerName, GameObject player)
-	{
-		PlayersGameplay playerScript = player.GetComponent<PlayersGameplay> ();
+    public virtual void PlayerDeath(PlayerName playerName, GameObject player)
+    {
+        PlayersGameplay playerScript = player.GetComponent<PlayersGameplay>();
 
-		playerScript.livesCount--;
+        playerScript.livesCount--;
 		
-		GlobalVariables.Instance.ListPlayers ();
+        GlobalVariables.Instance.ListPlayers();
 
-		//Check Game End
-		int playersCount = 0;
-		GameObject lastPlayer = null;
+        //Check Game End
+        int playersCount = 0;
+        GameObject lastPlayer = null;
 
-		foreach(GameObject g in GlobalVariables.Instance.EnabledPlayersList)
-			if(g.GetComponent<PlayersGameplay> ().livesCount != 0)
-			{
-				playersCount++;
-				lastPlayer = g;
-			}
+        foreach (GameObject g in GlobalVariables.Instance.EnabledPlayersList)
+            if (g.GetComponent<PlayersGameplay>().livesCount != 0)
+            {
+                playersCount++;
+                lastPlayer = g;
+            }
 
-		if(playersCount == 1 && gameEndLoopRunning == false)
-		{
-			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(lastPlayer.GetComponent<PlayersGameplay> ().playerName);
+        if (playersCount == 1 && gameEndLoopRunning == false)
+        {
+            gameEndLoopRunning = true;
+            StatsManager.Instance.Winner(lastPlayer.GetComponent<PlayersGameplay>().playerName);
 
-			StartCoroutine (GameEnd ());
-			return;
-		}
+            StartCoroutine(GameEnd());
+            return;
+        }
 
-		if(playersCount == 0 && gameEndLoopRunning == false)
-		{
-			gameEndLoopRunning = true;
-			StatsManager.Instance.Winner(WhichPlayer.Draw);
+        if (playersCount == 0 && gameEndLoopRunning == false)
+        {
+            gameEndLoopRunning = true;
+            StatsManager.Instance.Winner(WhichPlayer.Draw);
 
-			StartCoroutine (GameEnd ());
-			return;
-		}
+            StartCoroutine(GameEnd());
+            return;
+        }
 
-		//Spawn Play if has lives left
-		if (playerScript.livesCount > 0 && !gameEndLoopRunning) 
-		{
-			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
-			GlobalMethods.Instance.SpawnExistingPlayerRandomVoid (player, timeBeforePlayerRespawn, true);
-		} 
-		else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations> () == null)
-		{
-			GlobalMethods.Instance.SpawnDeathText (playerName, player, playerScript.livesCount);
-			PlayerDeadCube (playerScript);
-		}
+        //Spawn Play if has lives left
+        if (playerScript.livesCount > 0 && !gameEndLoopRunning)
+        {
+            GlobalMethods.Instance.SpawnDeathText(playerName, player, playerScript.livesCount);
+            GlobalMethods.Instance.SpawnExistingPlayerRandomVoid(player, timeBeforePlayerRespawn, true);
+        }
+        else if (playerDeadCube && !gameEndLoopRunning && player.GetComponent<AIFXAnimations>() == null)
+        {
+            if (playerScript.controllerNumber == 0)
+                GlobalVariables.Instance.SetMouseVisibility(true);
 
-		GlobalVariables.Instance.OnPlayerDeathEvent ();
-	}
+            GlobalMethods.Instance.SpawnDeathText(playerName, player, playerScript.livesCount);
+            PlayerDeadCube(playerScript);
+        }
 
-	public virtual void PlayerDeadCube (PlayersGameplay playerScript)
-	{
-		GlobalMethods.Instance.SpawnPlayerDeadCubeVoid (playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
-	}
+        GlobalVariables.Instance.OnPlayerDeathEvent();
+    }
 
-	protected virtual IEnumerator GameEnd ()
-	{
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
+    public virtual void PlayerDeadCube(PlayersGameplay playerScript)
+    {
+        GlobalMethods.Instance.SpawnPlayerDeadCubeVoid(playerScript.playerName, playerScript.controllerNumber, movableExampleScript);
+    }
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
+    protected virtual IEnumerator GameEnd()
+    {
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
 
-		GlobalVariables.Instance.CurrentGamesCount--;
+        GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
-		if(SceneManager.GetActiveScene().name == "Scene Testing")
-		{
-			yield return new WaitForSecondsRealtime (endGameDelay);
+        GlobalVariables.Instance.CurrentGamesCount--;
 
-			LoadModeManager.Instance.RestartSceneVoid (false);
-		}
+        if (SceneManager.GetActiveScene().name == "Scene Testing")
+        {
+            yield return new WaitForSecondsRealtime(endGameDelay);
 
-		else if(GlobalVariables.Instance.CurrentGamesCount > 0)
-		{
-			yield return new WaitForSecondsRealtime (endGameDelayInstantRestart);
+            LoadModeManager.Instance.RestartSceneVoid(false);
+        }
+        else if (GlobalVariables.Instance.CurrentGamesCount > 0)
+        {
+            yield return new WaitForSecondsRealtime(endGameDelayInstantRestart);
 
-			LoadModeManager.Instance.RestartSceneVoid (true);
-		}
-		else
-		{
-			GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
+            LoadModeManager.Instance.RestartSceneVoid(true);
+        }
+        else
+        {
+            GlobalVariables.Instance.CurrentGamesCount = GlobalVariables.Instance.GamesCount;
 
-			yield return new WaitForSecondsRealtime (endGameDelay);
+            yield return new WaitForSecondsRealtime(endGameDelay);
 
-			StatsManager.Instance.UpdatePlayerTotalStats ();
+            StatsManager.Instance.UpdatePlayerTotalStats();
 
 //			MenuManager.Instance.endModeMenu.EndMode (whichMode);
-			MenuManager.Instance.ShowEndMode ();
-		}
-	}
+            MenuManager.Instance.ShowEndMode();
+        }
+    }
 }

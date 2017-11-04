@@ -3,74 +3,74 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class TrainingManager : MonoBehaviour 
+public class TrainingManager : MonoBehaviour
 {
-	public WhichMode whichMode;
+    public WhichMode whichMode;
 
-	public List<GameObject> playersList = new List<GameObject>();
+    public List<GameObject> playersList = new List<GameObject>();
 
-	public float timeBeforeEndGame = 2;
+    public float timeBeforeEndGame = 2;
 
-	private bool gameEndLoopRunning = false;
+    private bool gameEndLoopRunning = false;
 
-	void Start ()
-	{
-		StartCoroutine (WaitForBeginning ());
-	}
+    void Start()
+    {
+        StartCoroutine(WaitForBeginning());
+    }
 
-	IEnumerator WaitForBeginning ()
-	{
-		GameObject[] allMovables = GameObject.FindGameObjectsWithTag ("Movable");
+    IEnumerator WaitForBeginning()
+    {
+        GameObject[] allMovables = GameObject.FindGameObjectsWithTag("Movable");
 
-		for (int i = 0; i < allMovables.Length; i++)
-			allMovables [i].SetActive (false);
+        for (int i = 0; i < allMovables.Length; i++)
+            allMovables[i].SetActive(false);
 
-		yield return new WaitWhile (() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
+        yield return new WaitWhile(() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
-		GlobalMethods.Instance.RandomPositionMovablesVoid (allMovables);
-	}
+        GlobalMethods.Instance.RandomPositionMovablesVoid(allMovables);
+    }
 
-	// Update is called once per frame
-	void Update () 
-	{
-		if(GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-			FindManikin ();
+    // Update is called once per frame
+    void Update()
+    {
+        if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
+            FindManikin();
 
-	}
+    }
 
-	void FindManikin ()
-	{
-		GameObject[] manikinTemp = GameObject.FindGameObjectsWithTag("Player");
-		playersList.Clear ();
+    void FindManikin()
+    {
+        GameObject[] manikinTemp = GameObject.FindGameObjectsWithTag("Player");
+        playersList.Clear();
 
-		for(int i = 0; i < manikinTemp.Length; i++)
-		{
-			if (manikinTemp [i].GetComponent<PlayersManikin> () != null)
-				playersList.Add (manikinTemp [i].gameObject);
-		}
+        for (int i = 0; i < manikinTemp.Length; i++)
+        {
+            if (manikinTemp[i].GetComponent<PlayersManikin>() != null)
+                playersList.Add(manikinTemp[i].gameObject);
+        }
 
-		if(playersList.Count == 0 && gameEndLoopRunning == false)
-		{
-			gameEndLoopRunning = true;
+        if (playersList.Count == 0 && gameEndLoopRunning == false)
+        {
+            gameEndLoopRunning = true;
 
-			StartCoroutine (GameEnd ());
-		}
-	}
+            StartCoroutine(GameEnd());
+        }
+    }
 
-	IEnumerator GameEnd ()
-	{
-		GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
+    IEnumerator GameEnd()
+    {
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
+        
+        GlobalVariables.Instance.GameState = GameStateEnum.EndMode;
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>().StartEndGameSlowMotion();
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ScreenShakeCamera>().CameraShaking(FeedbackType.ModeEnd);
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ZoomCamera>().Zoom(FeedbackType.ModeEnd);
+        yield return new WaitForSecondsRealtime(timeBeforeEndGame);
 
-		yield return new WaitForSecondsRealtime (timeBeforeEndGame);
-
-		if(SceneManager.GetActiveScene().name != "Scene Testing")
-		{
-			MenuManager.Instance.ShowEndMode ();
+        if (SceneManager.GetActiveScene().name != "Scene Testing")
+        {
+            MenuManager.Instance.ShowEndMode();
 //			MenuManager.Instance.endModeMenu.EndMode (whichMode);
-		}
-	}	
+        }
+    }
 }
