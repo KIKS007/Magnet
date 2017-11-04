@@ -127,7 +127,18 @@ public class AIGameplay : PlayersGameplay
 
     protected override void OnEnable()
     {
+        dashLayerEnabled = false;
+        DOVirtual.DelayedCall(1f, () =>
+            {
+                dashLayerEnabled = true;
+            });
+
         movement = Vector3.zero;
+
+        if (playerRigidbody == null)
+            playerRigidbody = GetComponent<Rigidbody>();
+
+        playerRigidbody.velocity = Vector3.zero;
 
         closerPlayers.Clear();
         closerCubes.Clear();
