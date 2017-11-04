@@ -143,7 +143,7 @@ public class MenuCameraMovement : MonoBehaviour
 
         StopPreviousMovement();
 
-        DOVirtual.DelayedCall(newMovementDuration * 0.5f, () => slowMo.StopEffects());
+        DOVirtual.DelayedCall(newMovementDuration * 0.5f, () => slowMo.StopEffects(true));
 
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.Paused)
             positionOnPause = transform.position;
