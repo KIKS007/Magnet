@@ -21,6 +21,8 @@ public enum FeedbackType
 
 public class ScreenShakeCamera : MonoBehaviour
 {
+    public bool screenShakeEnabled = true;
+
     public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings>();
 
     [Header("Common Settings")]
@@ -58,6 +60,9 @@ public class ScreenShakeCamera : MonoBehaviour
 
     public void CameraShaking(FeedbackType whichSlowMo = FeedbackType.Default)
     {
+        if (!screenShakeEnabled)
+            return;
+
         if (GlobalVariables.Instance.demoEnabled)
             return;
         

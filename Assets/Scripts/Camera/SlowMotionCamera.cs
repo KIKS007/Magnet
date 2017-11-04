@@ -220,8 +220,6 @@ public class SlowMotionCamera : MonoBehaviour
         if (!slowMoEnabled)
             return;
 
-        DOTween.Kill("StopSlowMotion");
-
         if (OnPauseSlowMotionStart != null)
             OnPauseSlowMotionStart();
 
@@ -230,6 +228,8 @@ public class SlowMotionCamera : MonoBehaviour
 
         DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
         DOTween.To(() => Time.fixedDeltaTime, x => Time.fixedDeltaTime = x, 0, timeTweenPause).SetEase(easetype).SetId("StartSlowMotion");
+
+        StopEffects();
     }
 
     public void StopPauseSlowMotion()
