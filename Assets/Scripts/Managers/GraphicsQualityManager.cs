@@ -185,6 +185,9 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         if (PlayerPrefs.HasKey("Gamma"))
             gammaSlider.value = PlayerPrefs.GetFloat("Gamma");
 
+        if (PlayerPrefs.HasKey("Shake"))
+            shakeSlider.value = PlayerPrefs.GetFloat("Shake");
+
         //Advanced
         if (PlayerPrefs.HasKey("Antialiasing"))
         {
@@ -202,12 +205,6 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         {
             Shadows(PlayerPrefs.GetInt("Shadows"));
             shadowsSlider.value = PlayerPrefs.GetInt("Shadows");
-        }
-
-        if (PlayerPrefs.HasKey("Shake"))
-        {
-            Shake(PlayerPrefs.GetInt("Shake"));
-            shakeSlider.value = PlayerPrefs.GetInt("Shake");
         }
 
 
@@ -256,6 +253,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         PlayerPrefs.SetFloat("Brightness", (float)brightnessSlider.value);
         PlayerPrefs.SetFloat("Contrast", (float)contrastSlider.value);
         PlayerPrefs.SetFloat("Gamma", (float)gammaSlider.value);
+        PlayerPrefs.SetFloat("Shake", (float)shakeSlider.value);
 
         PlayerPrefs.SetFloat("Bloom", slowmoScript.bloomInitialIntensity);
     }
