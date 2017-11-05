@@ -52,7 +52,6 @@ public class MenuComponent : MonoBehaviour
 
     void Awake()
     {
-        //SetupMenu ();
     }
 
     #region Setup
@@ -139,6 +138,9 @@ public class MenuComponent : MonoBehaviour
         SetupButtonsNavigation(underMenusButtons);
 
         EnableSecondaryContentParent();
+
+        if (menuButton != null)
+            menuButton.gameObject.SetActive(false);
     }
 
     void EnableUnderMenus()

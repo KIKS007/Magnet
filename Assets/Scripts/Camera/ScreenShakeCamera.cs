@@ -22,8 +22,6 @@ public enum FeedbackType
 public class ScreenShakeCamera : MonoBehaviour
 {
     public bool screenShakeEnabled = true;
-
-    [Range(0, 200)]
     public int screenShakeFactor = 100;
 
     public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings>();

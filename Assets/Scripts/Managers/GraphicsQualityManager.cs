@@ -333,7 +333,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     void Shake(float value)
     {
-        GlobalVariables.Instance.screenShakeCamera.screenShakeFactor = (int)value;
+        GlobalVariables.Instance.screenShakeCamera.screenShakeFactor = (int)value * 10;
         EnableApplyButton();
     }
 
@@ -383,7 +383,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         contrastSlider.value = 0;
         gammaSlider.value = 1;
         bloomSlider.value = 1f;
-        shakeSlider.value = 200f;
+        shakeSlider.value = 20f;
 
         ambiantOcclusionToggle.isOn = true;
         blurToggle.isOn = true;

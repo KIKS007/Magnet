@@ -43,6 +43,9 @@ public class ScrollbarValue : MonoBehaviour
         if (percentage)
             arg *= 100;
 
+        if (addPercentageSign)
+            arg *= 10;
+
         if (count == 0)
             text.text = arg.ToString();
         else
