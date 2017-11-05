@@ -17,14 +17,14 @@ public class MovableBounce : MovableScript
                 {
                     ToNeutralColor();
 					
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
                     gameObject.tag = "Movable";
 
                     wallBounces = 0;
                 }
                 else if (gameObject.tag == "ThrownMovable")
                 {
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
                     gameObject.tag = "Movable";
                 }
             }

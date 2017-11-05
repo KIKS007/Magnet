@@ -415,7 +415,7 @@ public class PlayersGameplay : MonoBehaviour
 
         MovableScript movableScript = holdMovableTransform.gameObject.GetComponent<MovableScript>();
 
-        movableScript.slowMoTrigger.triggerEnabled = true;
+        movableScript.slowMoTrigger.SetEnabled(true);
 
         movableScript.hold = false;
         holdMovableTransform.transform.SetParent(null);

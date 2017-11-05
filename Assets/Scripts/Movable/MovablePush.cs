@@ -20,12 +20,12 @@ public class MovablePush : MovableScript
                 {
                     ToNeutralColor();
 					
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
                     gameObject.tag = "Movable";
                 }
                 else if (gameObject.tag == "ThrownMovable")
                 {
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
                     gameObject.tag = "Movable";
                 }
             }

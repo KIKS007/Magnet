@@ -56,7 +56,7 @@ public class MovablePlayer : MovableScript
                     if (slowMoTrigger == null)
                         slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();
 
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
 
                     gameObject.tag = "Movable";
                 }

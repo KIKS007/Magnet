@@ -53,7 +53,7 @@ public class MovableStar : MovableScript
                 {
                     ToNeutralColor();
 
-                    slowMoTrigger.triggerEnabled = false;
+                    slowMoTrigger.SetEnabled(false);
                     gameObject.tag = "Movable";
                 }
             }

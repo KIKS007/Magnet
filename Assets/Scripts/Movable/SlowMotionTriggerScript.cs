@@ -10,11 +10,19 @@ public class SlowMotionTriggerScript : MonoBehaviour
 
     private SlowMotionCamera slowMotionCamera;
     private MovableScript movableScript;
+    private Collider collider;
 
     void Start()
     {
+        collider = GetComponent<Collider>();
         slowMotionCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>();
         movableScript = transform.parent.GetComponent<MovableScript>();
+    }
+
+    public void SetEnabled(bool enable)
+    {
+        triggerEnabled = enable;
+        collider.enabled = enable;
     }
 
     void OnTriggerEnter(Collider other)

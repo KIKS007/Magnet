@@ -181,7 +181,7 @@ public class MovableScript : MonoBehaviour
                     slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();
 
                 if (tag == "ThrownMovable" || tag == "DeadCube")
-                    slowMoTrigger.triggerEnabled = true;
+                    slowMoTrigger.SetEnabled(true);
             }
         }
     }
@@ -195,7 +195,7 @@ public class MovableScript : MonoBehaviour
                 if (slowMoTrigger == null)
                     slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();
 				
-                slowMoTrigger.triggerEnabled = false;
+                slowMoTrigger.SetEnabled(false);
 				
                 gameObject.tag = "Movable";
             }
