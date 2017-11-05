@@ -148,6 +148,11 @@ public class MenuManager : Singleton <MenuManager>
         {
             GlobalVariables.Instance.SetMouseVisibility(mouseControl);
         };
+
+        GlobalVariables.Instance.OnPause += () =>
+        {
+            GlobalVariables.Instance.SetMouseVisibility(mouseControl);
+        };
         
         GlobalVariables.Instance.OnMenu += () =>
         {
