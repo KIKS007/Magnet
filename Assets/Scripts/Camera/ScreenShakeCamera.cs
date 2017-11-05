@@ -23,6 +23,9 @@ public class ScreenShakeCamera : MonoBehaviour
 {
     public bool screenShakeEnabled = true;
 
+    [Range(0, 200)]
+    public int screenShakeFactor = 100;
+
     public List<SlowMotionSettings> screenShakeList = new List<SlowMotionSettings>();
 
     [Header("Common Settings")]
@@ -96,7 +99,7 @@ public class ScreenShakeCamera : MonoBehaviour
         shake = false;
 
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing)
-            transform.DOShakeRotation(shakeDuration, shakeStrenth, shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete(ResetCameraRotation).SetUpdate(true);
+            transform.DOShakeRotation(shakeDuration, shakeStrenth * (screenShakeFactor / 100), shakeVibrato, shakeRandomness).SetId("ScreenShake").OnComplete(ResetCameraRotation).SetUpdate(true);
     }
 
     void ResetCameraRotation()

@@ -28,11 +28,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     public Slider contrastSlider;
     public Slider gammaSlider;
     public Slider bloomSlider;
+    public Slider shakeSlider;
 
     [Header("Advanced Toggles")]
     public Toggle ambiantOcclusionToggle;
     public Toggle blurToggle;
-    public Toggle grainToggle;
+    public Toggle analogTVToggle;
     public Toggle vignettingToggle;
     public Toggle cameraMotionToggle;
     public Toggle rgbToggle;
@@ -51,6 +52,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     private RGBSplit rgbSplit;
     private ContrastVignette slowMoVignetting;
     private BrownianMotion browianMotion;
+    private AnalogTV analogTV;
 
     [HideInInspector]
     public bool browianMotionEnabled = true;
@@ -58,14 +60,17 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     // Use this for initialization
     void Start()
     {
-        postProcessProfile = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PostProcessingBehaviour>().profile;
-        bloom = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Bloom>();
-        distorsion = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<LensDistortionBlur>();
-        rgbSplit = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<RGBSplit>();
-        slowMoVignetting = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<ContrastVignette>();
+        var camera = GameObject.FindGameObjectWithTag("MainCamera");
+
+        postProcessProfile = camera.GetComponent<PostProcessingBehaviour>().profile;
+        bloom = camera.GetComponent<Bloom>();
+        distorsion = camera.GetComponent<LensDistortionBlur>();
+        rgbSplit = camera.GetComponent<RGBSplit>();
+        slowMoVignetting = camera.GetComponent<ContrastVignette>();
         bcgScript = FindObjectOfType<BrightnessContrastGamma>();
-        slowmoScript = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<SlowMotionCamera>();
-        browianMotion = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<BrownianMotion>();
+        slowmoScript = camera.GetComponent<SlowMotionCamera>();
+        browianMotion = camera.GetComponent<BrownianMotion>();
+        analogTV = camera.GetComponent<AnalogTV>();
 
         //Video
         brightnessSlider.onValueChanged.AddListener(Brightness);
@@ -76,6 +81,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         antialiasingSlider.onValueChanged.AddListener(AntiAliasing);
         bloomSlider.onValueChanged.AddListener(Bloom);
         shadowsSlider.onValueChanged.AddListener(Shadows);
+        shakeSlider.onValueChanged.AddListener(Shake);
 
         ambiantOcclusionToggle.onValueChanged.AddListener((bool arg0) =>
             {
@@ -87,9 +93,9 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
                 postProcessProfile.motionBlur.enabled = arg0;
                 EnableApplyButton();
             });
-        grainToggle.onValueChanged.AddListener((bool arg0) =>
+        analogTVToggle.onValueChanged.AddListener((bool arg0) =>
             {
-                postProcessProfile.grain.enabled = arg0;
+                analogTV.enabled = arg0;
                 EnableApplyButton();
             });
         vignettingToggle.onValueChanged.AddListener((bool arg0) =>
@@ -198,6 +204,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
             shadowsSlider.value = PlayerPrefs.GetInt("Shadows");
         }
 
+        if (PlayerPrefs.HasKey("Shake"))
+        {
+            Shake(PlayerPrefs.GetInt("Shake"));
+            shakeSlider.value = PlayerPrefs.GetInt("Shake");
+        }
+
 
         if (PlayerPrefs.HasKey("AmbientOcclusion"))
             ambiantOcclusionToggle.isOn = PlayerPrefs.GetInt("AmbientOcclusion") == 1 ? true : false;
@@ -205,8 +217,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         if (PlayerPrefs.HasKey("Blur"))
             blurToggle.isOn = PlayerPrefs.GetInt("Blur") == 1 ? true : false;
 
-        if (PlayerPrefs.HasKey("Grain"))
-            grainToggle.isOn = PlayerPrefs.GetInt("Grain") == 1 ? true : false;
+        if (PlayerPrefs.HasKey("Analog"))
+            analogTVToggle.isOn = PlayerPrefs.GetInt("Analog") == 1 ? true : false;
 
         if (PlayerPrefs.HasKey("Vignetting"))
             vignettingToggle.isOn = PlayerPrefs.GetInt("Vignetting") == 1 ? true : false;
@@ -231,7 +243,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
         PlayerPrefs.SetInt("AmbientOcclusion", ambiantOcclusionToggle.isOn == true ? 1 : 0);
         PlayerPrefs.SetInt("Blur", blurToggle.isOn == true ? 1 : 0);
-        PlayerPrefs.SetInt("Grain", grainToggle.isOn == true ? 1 : 0);
+        PlayerPrefs.SetInt("Analog", analogTVToggle.isOn == true ? 1 : 0);
         PlayerPrefs.SetInt("Vignetting", vignettingToggle.isOn == true ? 1 : 0);
 
         PlayerPrefs.SetInt("CameraMotion", cameraMotionToggle.isOn == true ? 1 : 0);
@@ -319,6 +331,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         EnableApplyButton();
     }
 
+    void Shake(float value)
+    {
+        GlobalVariables.Instance.screenShakeCamera.screenShakeFactor = (int)value;
+        EnableApplyButton();
+    }
+
     void Brightness(float value)
     {
         bcgScript.Brightness = (float)brightnessSlider.value;
@@ -365,10 +383,11 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         contrastSlider.value = 0;
         gammaSlider.value = 1;
         bloomSlider.value = 1f;
+        shakeSlider.value = 200f;
 
         ambiantOcclusionToggle.isOn = true;
         blurToggle.isOn = true;
-        grainToggle.isOn = true;
+        analogTVToggle.isOn = true;
         vignettingToggle.isOn = true;
         cameraMotionToggle.isOn = true;
         rgbToggle.isOn = true;
