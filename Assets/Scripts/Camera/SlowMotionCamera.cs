@@ -460,8 +460,6 @@ public class SlowMotionCamera : MonoBehaviour
         if (!mirrorEffectEnabled)
             return;
 
-        float duration = endMode ? pauseStopTimeTweenEffect : timeTweenEffect;
-
         if (mirrorScript == null)
             mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
 

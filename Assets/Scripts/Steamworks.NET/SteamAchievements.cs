@@ -8,483 +8,485 @@ using System;
 
 public class SteamAchievements : Singleton<SteamAchievements>
 {
-	[HideInEditorMode]
-	public AchievementID achievementToUnlock;
-	[PropertyOrder(-1)]
-	[ButtonGroup("1", -1)]
-	[HideInEditorMode]
-	public void UnlockAchievementTest ()
-	{
-		UnlockAchievement(achievementToUnlock);
-	}
+    [HideInEditorMode]
+    public AchievementID achievementToUnlock;
 
-	[HideInEditorMode]
-	[PropertyOrder(-1)]
-	[ButtonGroup("1", -1)]
-	public void ResetAchievements ()
-	{
-		SteamUserStats.ResetAllStats (true);
-		SteamUserStats.RequestCurrentStats ();
-	}
+    [PropertyOrder(-1)]
+    [ButtonGroup("1", -1)]
+    [HideInEditorMode]
+    public void UnlockAchievementTest()
+    {
+        UnlockAchievement(achievementToUnlock);
+    }
 
-	[Header ("Achievements File")]
-	public TextAsset AchievementsIDFile;
+    [HideInEditorMode]
+    [PropertyOrder(-1)]
+    [ButtonGroup("1", -1)]
+    public void ResetAchievements()
+    {
+        SteamUserStats.ResetAllStats(true);
+        SteamUserStats.RequestCurrentStats();
+    }
 
-	[Header ("Achievements")]
-	public bool debugMode = true;
-	//[HideInEditorMode]
-	public List<Achievement> Achievements = new List<Achievement> ();
+    [Header("Achievements File")]
+    public TextAsset AchievementsIDFile;
 
-	// Our GameID
-	private CGameID m_GameID;
+    [Header("Achievements")]
+    public bool debugMode = true;
+    //[HideInEditorMode]
+    public List<Achievement> Achievements = new List<Achievement>();
 
-	protected Callback<UserStatsReceived_t> m_UserStatsReceived;
-	protected Callback<UserStatsStored_t> m_UserStatsStored;
-	protected Callback<UserAchievementStored_t> m_UserAchievementStored;
+    // Our GameID
+    private CGameID m_GameID;
 
-	// Use this for initialization
-	void Start ()
-	{
-		if (!SteamManager.Initialized && !debugMode)
-			return;
+    protected Callback<UserStatsReceived_t> m_UserStatsReceived;
+    protected Callback<UserStatsStored_t> m_UserStatsStored;
+    protected Callback<UserAchievementStored_t> m_UserAchievementStored;
 
-		if (SteamManager.Initialized)
-		{
-			string name = SteamFriends.GetPersonaName ();
-			Debug.Log (name);
-		}
+    // Use this for initialization
+    void Start()
+    {
+        if (!SteamManager.Initialized && !debugMode)
+            return;
 
-		LoadAchievementsID ();
+        if (SteamManager.Initialized)
+        {
+            string name = SteamFriends.GetPersonaName();
+            Debug.Log(name);
+        }
+
+        LoadAchievementsID();
 		
-		SetupAchievementsEvents ();
+        SetupAchievementsEvents();
 
-		UnlockAchievement (AchievementID.ACH_LAUNCH_GAME);
-	}
+        UnlockAchievement(AchievementID.ACH_LAUNCH_GAME);
+    }
 
-	[PropertyOrder(-2)]
-	[ButtonAttribute]
-	void UpdateAchievementsID ()
-	{
-		var text = AchievementsIDFile.text;
-		var IDs = new List<string> ();
+    [PropertyOrder(-2)]
+    [ButtonAttribute]
+    void UpdateAchievementsID()
+    {
+        var text = AchievementsIDFile.text;
+        var IDs = new List<string>();
 
-		foreach (var line in text.Split ("\n"[0]))
-			IDs.Add (line);
+        foreach (var line in text.Split ("\n"[0]))
+            IDs.Add(line);
 
-		File.WriteAllText ("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \t", IDs.ToArray ()) +" \n };" );
-	}
+        File.WriteAllText("Assets/SCRIPTS/Steamworks.NET/SteamAchievementsEnum.cs", "public enum AchievementID  \n {  \n\t" + string.Join(", \t", IDs.ToArray()) + " \n };");
+    }
 
-	void LoadAchievementsID ()
-	{
-		var text = AchievementsIDFile.text;
-		var IDs = new List<string> ();
+    void LoadAchievementsID()
+    {
+        var text = AchievementsIDFile.text;
+        var IDs = new List<string>();
 
-		Achievements.Clear ();
+        Achievements.Clear();
 
-		foreach (var line in text.Split ("\n"[0]))
-			if(line != "")
-				IDs.Add (line);
+        foreach (var line in text.Split ("\n"[0]))
+            if (line != "")
+                IDs.Add(line);
 
-		foreach(string s in IDs)
-			Achievements.Add (new Achievement (s));
-	}
+        foreach (string s in IDs)
+            Achievements.Add(new Achievement(s));
+    }
 
-	void OnEnable() 
-	{
-		if (!SteamManager.Initialized)
-			return;
+    void OnEnable()
+    {
+        if (!SteamManager.Initialized)
+            return;
 
-		// Cache the GameID for use in the Callbacks
-		m_GameID = new CGameID(SteamUtils.GetAppID());
+        // Cache the GameID for use in the Callbacks
+        m_GameID = new CGameID(SteamUtils.GetAppID());
 
-		m_UserStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
-		m_UserStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
-		m_UserAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
+        m_UserStatsReceived = Callback<UserStatsReceived_t>.Create(OnUserStatsReceived);
+        m_UserStatsStored = Callback<UserStatsStored_t>.Create(OnUserStatsStored);
+        m_UserAchievementStored = Callback<UserAchievementStored_t>.Create(OnAchievementStored);
 
-		StartCoroutine (GetSteamData ());
-	}
+        StartCoroutine(GetSteamData());
+    }
 
-	void SetupAchievementsEvents ()
-	{
-		GlobalVariables.Instance.OnStartMode += LaunchMode;
-		GlobalVariables.Instance.OnEndMode += EndMode;
+    void SetupAchievementsEvents()
+    {
+        GlobalVariables.Instance.OnStartMode += LaunchMode;
+        GlobalVariables.Instance.OnEndMode += EndMode;
 
-		MenuManager.Instance.OnQuitGame += ()=> UnlockAchievement (AchievementID.ACH_QUIT_GAME);
-		GlobalVariables.Instance.OnEnvironementChromaChange += () => 
-		{
-			if(GlobalVariables.Instance.environementChroma != EnvironementChroma.Purple)
-				UnlockAchievement (AchievementID.ACH_CHROMA);
-		};
+        MenuManager.Instance.OnQuitGame += () => UnlockAchievement(AchievementID.ACH_QUIT_GAME);
+        GlobalVariables.Instance.OnEnvironementChromaChange += () =>
+        {
+            if (GlobalVariables.Instance.environementChroma != EnvironementChroma.Purple)
+                UnlockAchievement(AchievementID.ACH_CHROMA);
+        };
 
-		StatsManager.Instance.OnPlayerSuicide += (PlayersGameplay obj) => 
-		{
-			if (obj.GetType () != typeof(AIGameplay) && !obj.GetType ().IsSubclassOf (typeof(AIGameplay)))
-				UnlockAchievement (AchievementID.ACH_SUICIDE);
-		};
-	}
+        StatsManager.Instance.OnPlayerSuicide += (PlayersGameplay obj) =>
+        {
+            if (obj.GetType() != typeof(AIGameplay) && !obj.GetType().IsSubclassOf(typeof(AIGameplay)))
+                UnlockAchievement(AchievementID.ACH_SUICIDE);
+        };
+    }
 
-	void LaunchMode ()
-	{
-		if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
-			UnlockAchievement (AchievementID.ACH_LAUNCH_TUTORIAL);
+    void LaunchMode()
+    {
+        if (GlobalVariables.Instance.CurrentModeLoaded == WhichMode.Tutorial)
+            UnlockAchievement(AchievementID.ACH_LAUNCH_TUTORIAL);
+        else
+        {
+            switch (GlobalVariables.Instance.ModeSequenceType)
+            {
+                case ModeSequenceType.Selection:
+                    UnlockAchievement(AchievementID.ACH_LAUNCH_SELECTION);
+                    break;
+                case ModeSequenceType.Cocktail:
+                    UnlockAchievement(AchievementID.ACH_LAUNCH_COCKTAIL);
+                    break;
+                case ModeSequenceType.Random:
+                    UnlockAchievement(AchievementID.ACH_LAUNCH_RANDOM);
+                    break;
+            }
 
-		else
-		{
-			switch (GlobalVariables.Instance.ModeSequenceType)
-			{
-			case ModeSequenceType.Selection:
-				UnlockAchievement (AchievementID.ACH_LAUNCH_SELECTION);
-				break;
-			case ModeSequenceType.Cocktail:
-				UnlockAchievement (AchievementID.ACH_LAUNCH_COCKTAIL);
-				break;
-			case ModeSequenceType.Random:
-				UnlockAchievement (AchievementID.ACH_LAUNCH_RANDOM);
-				break;
-			}
-
-			string mode = GlobalVariables.Instance.CurrentModeLoaded.ToString ().ToUpper ();
-			UnlockAchievement ("ACH_LAUNCH_" + mode);
+            string mode = GlobalVariables.Instance.CurrentModeLoaded.ToString().ToUpper();
+            UnlockAchievement("ACH_LAUNCH_" + mode);
 
 
-			bool allUnlocked = true;
+            bool allUnlocked = true;
 
-			foreach (string value in Enum.GetNames(typeof(WhichMode)))
-			{
-				if (value == WhichMode.Default.ToString () || value == WhichMode.None.ToString () || value == WhichMode.Tutorial.ToString ())
-					continue;
+            foreach (string value in Enum.GetNames(typeof(WhichMode)))
+            {
+                if (value == WhichMode.Default.ToString() || value == WhichMode.None.ToString() || value == WhichMode.Tutorial.ToString())
+                    continue;
 
-				if (!Achieved ("ACH_LAUNCH_" + value.ToUpper ()))
-					allUnlocked = false;
-			}
+                if (!Achieved("ACH_LAUNCH_" + value.ToUpper()))
+                    allUnlocked = false;
+            }
 
-			if (allUnlocked && !Achieved (AchievementID.ACH_LAUNCH_EACH_MODE))
-				UnlockAchievement (AchievementID.ACH_LAUNCH_EACH_MODE);
-		}
+            if (allUnlocked && !Achieved(AchievementID.ACH_LAUNCH_EACH_MODE))
+                UnlockAchievement(AchievementID.ACH_LAUNCH_EACH_MODE);
+        }
 
-		if (GlobalVariables.Instance.NumberOfBots == 4)
-			UnlockAchievement (AchievementID.ACH_FOUR_BOTS);
+        if (GlobalVariables.Instance.NumberOfBots == 4)
+            UnlockAchievement(AchievementID.ACH_FOUR_BOTS);
 
-		if (GlobalVariables.Instance.NumberOfBots == 2 && GlobalVariables.Instance.NumberOfPlayers == 4)
-			UnlockAchievement (AchievementID.ACH_TWO_PLAYERS_TWO_BOTS);
-	}
+        if (GlobalVariables.Instance.NumberOfBots == 2 && GlobalVariables.Instance.NumberOfPlayers == 4)
+            UnlockAchievement(AchievementID.ACH_TWO_PLAYERS_TWO_BOTS);
+    }
 
-	void EndMode ()
-	{
-		Kills ();
+    void EndMode()
+    {
+        Kills();
 
-		if (GlobalVariables.Instance.NumberOfBots > 0 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == true && GlobalVariables.Instance.NumberOfBots != GlobalVariables.Instance.NumberOfPlayers)
-			UnlockAchievement (AchievementID.ACH_LOOSE_BOTS);
+        if (GlobalVariables.Instance.NumberOfBots > 0 && StatsManager.Instance.playersStats[StatsManager.Instance.winnerName.ToString()].isBot == true && GlobalVariables.Instance.NumberOfBots != GlobalVariables.Instance.NumberOfPlayers)
+            UnlockAchievement(AchievementID.ACH_LOOSE_BOTS);
 
-		if (GlobalVariables.Instance.NumberOfBots == 3 && GlobalVariables.Instance.NumberOfPlayers == 4 && StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].isBot == false)
-		{
-			bool success = true;
+        if (GlobalVariables.Instance.NumberOfBots == 3 && GlobalVariables.Instance.NumberOfPlayers == 4 && StatsManager.Instance.playersStats[StatsManager.Instance.winnerName.ToString()].isBot == false)
+        {
+            bool success = true;
 
-			foreach (var p in GlobalVariables.Instance.Players)
-				if (p.GetComponent<AIGameplay> () != null && p.GetComponent<AIGameplay> ().aiLevel != AILevel.Hard)
-				{
-					success = false;
-					break;
-				}
+            foreach (var p in GlobalVariables.Instance.Players)
+                if (p.GetComponent<AIGameplay>() != null && p.GetComponent<AIGameplay>().aiLevel != AILevel.Hard)
+                {
+                    success = false;
+                    break;
+                }
 
-			if (success)
-				UnlockAchievement (AchievementID.ACH_WIN_THREE_HARD_BOTS);
-		}
-	}
+            if (success)
+                UnlockAchievement(AchievementID.ACH_WIN_THREE_HARD_BOTS);
+        }
+    }
 
-	void Kills ()
-	{
-		if(GlobalVariables.Instance.LivesCount == 1)
-		{
-			foreach (var p in StatsManager.Instance.playersStats)
-				if (!p.Value.isBot && p.Value.playersStats [WhichStat.RoundKills.ToString ()] - p.Value.playersStats [WhichStat.Suicides.ToString ()] == 3)
-					UnlockAchievement (AchievementID.ACH_KILL_ALL_PLAYERS);
-		}
+    void Kills()
+    {
+        if (GlobalVariables.Instance.LivesCount == 1)
+        {
+            foreach (var p in StatsManager.Instance.playersStats)
+                if (!p.Value.isBot && p.Value.playersStats[WhichStat.RoundKills.ToString()] - p.Value.playersStats[WhichStat.Suicides.ToString()] == 3)
+                    UnlockAchievement(AchievementID.ACH_KILL_ALL_PLAYERS);
+        }
 
-		if (StatsManager.Instance.playersStats [StatsManager.Instance.winnerName.ToString ()].playersStats [WhichStat.RoundKills.ToString ()] == 0)
-			UnlockAchievement (AchievementID.ACH_WIN_NO_KILL);
-	}
+        if (StatsManager.Instance.playersStats[StatsManager.Instance.winnerName.ToString()].playersStats[WhichStat.RoundKills.ToString()] == 0)
+            UnlockAchievement(AchievementID.ACH_WIN_NO_KILL);
+    }
 
-	#region Achievements Settings
-	IEnumerator GetSteamData ()
-	{
-		bool bSuccess = false;
+    #region Achievements Settings
 
-		do
-		{
-			bSuccess = SteamUserStats.RequestCurrentStats();
-			yield return new WaitForEndOfFrame ();
-		}
-		while (!bSuccess);
-	}
+    IEnumerator GetSteamData()
+    {
+        bool bSuccess = false;
 
-	IEnumerator StoreSteamData ()
-	{
-		bool bSuccess = false;
+        do
+        {
+            bSuccess = SteamUserStats.RequestCurrentStats();
+            yield return new WaitForEndOfFrame();
+        }
+        while (!bSuccess);
+    }
 
-		do
-		{
-			bSuccess = SteamUserStats.StoreStats();
-			yield return new WaitForEndOfFrame ();
-		}
-		while (!bSuccess);
-	}
+    IEnumerator StoreSteamData()
+    {
+        bool bSuccess = false;
 
-	public bool Achieved (AchievementID id)
-	{
-		foreach(var a in Achievements)
-		{
-			if(a.achievementID == id)
-			{
-				if(a.achieved)
-					return true;
-				else
-					return false;
-			}
-		}
-		return false;
-	}
+        do
+        {
+            bSuccess = SteamUserStats.StoreStats();
+            yield return new WaitForEndOfFrame();
+        }
+        while (!bSuccess);
+    }
 
-	public bool Achieved (string id)
-	{
-		foreach(var a in Achievements)
-		{
-			if(a.achievementID.ToString () == id)
-			{
-				if(a.achieved)
-					return true;
-				else
-					return false;
-			}
-		}
-		return false;
-	}
+    public bool Achieved(AchievementID id)
+    {
+        foreach (var a in Achievements)
+        {
+            if (a.achievementID == id)
+            {
+                if (a.achieved)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        return false;
+    }
 
-	public void UnlockAchievement(Achievement achievement) 
-	{
-		if (!SteamManager.Initialized)
-			return;
+    public bool Achieved(string id)
+    {
+        foreach (var a in Achievements)
+        {
+            if (a.achievementID.ToString() == id)
+            {
+                if (a.achieved)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        return false;
+    }
+
+    public void UnlockAchievement(Achievement achievement)
+    {
+        if (!SteamManager.Initialized)
+            return;
 		
-		if (achievement.achieved)
-			return;
+        if (achievement.achieved)
+            return;
 
-		achievement.achieved = true;
+        achievement.achieved = true;
 
-		LastAchievement ();
+        LastAchievement();
 
-		// mark it down
-		SteamUserStats.SetAchievement(achievement.achievementID.ToString ());
+        // mark it down
+        SteamUserStats.SetAchievement(achievement.achievementID.ToString());
 
-		StartCoroutine (StoreSteamData ());
-	}
+        StartCoroutine(StoreSteamData());
+    }
 
-	public void UnlockAchievement(string achievementID) 
-	{
-		if (!SteamManager.Initialized && !debugMode)
-			return;
+    public void UnlockAchievement(string achievementID)
+    {
+        if (!SteamManager.Initialized && !debugMode)
+            return;
 
-		bool achivementFound = false;
+        bool achivementFound = false;
 
-		foreach (var a in Achievements)
-			if (a.achievementID.ToString () == achievementID)
-			{
-				achivementFound = true;
+        foreach (var a in Achievements)
+            if (a.achievementID.ToString() == achievementID)
+            {
+                achivementFound = true;
 
-				if (a.achieved)
-				{
-					if (debugMode)
-						Debug.Log ("Already unlocked: " + a.achievementID.ToString ());
-					return;
-				}
+                if (a.achieved)
+                {
+                    if (debugMode)
+                        Debug.Log("Already unlocked: " + a.achievementID.ToString());
+                    return;
+                }
 
-				a.achieved = true;
+                a.achieved = true;
 
-				LastAchievement ();
+                LastAchievement();
 
-				if (debugMode)
-				{
-					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
-					return;
-				}
-				break;
-			}
+                if (debugMode)
+                {
+                    Debug.Log("Unlocked: " + a.achievementID.ToString());
+                    return;
+                }
+                break;
+            }
 
-		if(!achivementFound)
-		{
-			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
-			return;
-		}
+        if (!achivementFound)
+        {
+            Debug.LogWarning("Achievement Not Found " + achievementID + " !");
+            return;
+        }
 
-		// mark it down
-		SteamUserStats.SetAchievement(achievementID);
+        // mark it down
+        SteamUserStats.SetAchievement(achievementID);
 
-		StartCoroutine (StoreSteamData ());
-	}
+        StartCoroutine(StoreSteamData());
+    }
 
-	public void UnlockAchievement(AchievementID achievementID) 
-	{
-		if (!SteamManager.Initialized && !debugMode)
-			return;
+    public void UnlockAchievement(AchievementID achievementID)
+    {
+        if (!SteamManager.Initialized && !debugMode)
+            return;
 
-		bool achivementFound = false;
+        bool achivementFound = false;
 
-		foreach (var a in Achievements)
-			if (a.achievementID == achievementID)
-			{
-				achivementFound = true;
+        foreach (var a in Achievements)
+            if (a.achievementID == achievementID)
+            {
+                achivementFound = true;
 
-				if (a.achieved)
-				{
-					if (debugMode)
-						Debug.Log ("Already unlocked: " + a.achievementID.ToString ());
-					return;
-				}
+                if (a.achieved)
+                {
+                    if (debugMode)
+                        Debug.Log("Already unlocked: " + a.achievementID.ToString());
+                    return;
+                }
 
-				a.achieved = true;
+                a.achieved = true;
 
-				LastAchievement ();
+                LastAchievement();
 
-				if (debugMode)
-				{
-					Debug.Log ("Unlocked: " + a.achievementID.ToString ());
-					return;
-				}
-				break;
-			}
+                if (debugMode)
+                {
+                    Debug.Log("Unlocked: " + a.achievementID.ToString());
+                    return;
+                }
+                break;
+            }
 
-		if(!achivementFound)
-		{
-			Debug.LogWarning ("Achievement Not Found " + achievementID + " !");
-			return;
-		}
+        if (!achivementFound)
+        {
+            Debug.LogWarning("Achievement Not Found " + achievementID + " !");
+            return;
+        }
 
-		// mark it down
-		SteamUserStats.SetAchievement(achievementID.ToString ());
+        // mark it down
+        SteamUserStats.SetAchievement(achievementID.ToString());
 
-		StartCoroutine (StoreSteamData ());
-	}
+        StartCoroutine(StoreSteamData());
+    }
 
-	void LastAchievement ()
-	{
-		int count = 0;
+    void LastAchievement()
+    {
+        int count = 0;
 
-		foreach (var a in Achievements)
-			if (a.achieved)
-				count++;
+        foreach (var a in Achievements)
+            if (a.achieved)
+                count++;
 
-		Debug.Log (count);
+        //Debug.Log (count);
 
-		if (count == 42 && !Achieved (AchievementID.ACH_42))
-			UnlockAchievement (AchievementID.ACH_42);
-	}
+        if (count == 42 && !Achieved(AchievementID.ACH_42))
+            UnlockAchievement(AchievementID.ACH_42);
+    }
 
-	//-----------------------------------------------------------------------------
-	// Purpose: We have stats data from Steam. It is authoritative, so update
-	//			our data with those results now.
-	//-----------------------------------------------------------------------------
-	void OnUserStatsReceived(UserStatsReceived_t pCallback) 
-	{
-		if (!SteamManager.Initialized)
-			return;
+    //-----------------------------------------------------------------------------
+    // Purpose: We have stats data from Steam. It is authoritative, so update
+    //			our data with those results now.
+    //-----------------------------------------------------------------------------
+    void OnUserStatsReceived(UserStatsReceived_t pCallback)
+    {
+        if (!SteamManager.Initialized)
+            return;
 
-		// we may get callbacks for other games' stats arriving, ignore them
-		if ((ulong)m_GameID == pCallback.m_nGameID) 
-		{
-			if (EResult.k_EResultOK == pCallback.m_eResult) 
-			{
-				Debug.Log("Received stats and achievements from Steam\n");
+        // we may get callbacks for other games' stats arriving, ignore them
+        if ((ulong)m_GameID == pCallback.m_nGameID)
+        {
+            if (EResult.k_EResultOK == pCallback.m_eResult)
+            {
+                Debug.Log("Received stats and achievements from Steam\n");
 
-				// load achievements
-				foreach (Achievement ach in Achievements) 
-				{
-					bool ret = SteamUserStats.GetAchievement(ach.achievementID.ToString (), out ach.achieved);
+                // load achievements
+                foreach (Achievement ach in Achievements)
+                {
+                    bool ret = SteamUserStats.GetAchievement(ach.achievementID.ToString(), out ach.achieved);
 
-					if (ret) 
-					{
-						ach.name = SteamUserStats.GetAchievementDisplayAttribute(ach.achievementID.ToString (), "name");
-						ach.description = SteamUserStats.GetAchievementDisplayAttribute(ach.achievementID.ToString (), "desc");
-						SteamUserStats.GetAchievement(ach.achievementID.ToString (), out ach.achieved);
-					}
-					else 
-					{
-						Debug.LogWarning("SteamUserStats.GetAchievement failed for Achievement " + ach.achievementID.ToString () + "\nIs it registered in the Steam Partner site?");
-					}
-				}
+                    if (ret)
+                    {
+                        ach.name = SteamUserStats.GetAchievementDisplayAttribute(ach.achievementID.ToString(), "name");
+                        ach.description = SteamUserStats.GetAchievementDisplayAttribute(ach.achievementID.ToString(), "desc");
+                        SteamUserStats.GetAchievement(ach.achievementID.ToString(), out ach.achieved);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("SteamUserStats.GetAchievement failed for Achievement " + ach.achievementID.ToString() + "\nIs it registered in the Steam Partner site?");
+                    }
+                }
 
-				StartCoroutine (StoreSteamData ());
+                StartCoroutine(StoreSteamData());
 			
-			}
-			else 
-			{
-				Debug.Log("RequestStats - failed, " + pCallback.m_eResult);
-			}
-		}
-	}
+            }
+            else
+            {
+                Debug.Log("RequestStats - failed, " + pCallback.m_eResult);
+            }
+        }
+    }
 
-	//-----------------------------------------------------------------------------
-	// Purpose: Our stats data was stored!
-	//-----------------------------------------------------------------------------
-	void OnUserStatsStored(UserStatsStored_t pCallback) 
-	{
-		// we may get callbacks for other games' stats arriving, ignore them
-		if ((ulong)m_GameID == pCallback.m_nGameID) 
-		{
-			if (EResult.k_EResultOK == pCallback.m_eResult) 
-			{
-				Debug.Log("StoreStats - success");
-			}
-			else if (EResult.k_EResultInvalidParam == pCallback.m_eResult) 
-			{
-				// One or more stats we set broke a constraint. They've been reverted,
-				// and we should re-iterate the values now to keep in sync.
-				Debug.Log("StoreStats - some failed to validate");
-				// Fake up a callback here so that we re-load the values.
-				UserStatsReceived_t callback = new UserStatsReceived_t();
-				callback.m_eResult = EResult.k_EResultOK;
-				callback.m_nGameID = (ulong)m_GameID;
-				OnUserStatsReceived(callback);
-			}
-			else 
-			{
-				Debug.Log("StoreStats - failed, " + pCallback.m_eResult);
-			}
-		}
-	}
+    //-----------------------------------------------------------------------------
+    // Purpose: Our stats data was stored!
+    //-----------------------------------------------------------------------------
+    void OnUserStatsStored(UserStatsStored_t pCallback)
+    {
+        // we may get callbacks for other games' stats arriving, ignore them
+        if ((ulong)m_GameID == pCallback.m_nGameID)
+        {
+            if (EResult.k_EResultOK == pCallback.m_eResult)
+            {
+                Debug.Log("StoreStats - success");
+            }
+            else if (EResult.k_EResultInvalidParam == pCallback.m_eResult)
+            {
+                // One or more stats we set broke a constraint. They've been reverted,
+                // and we should re-iterate the values now to keep in sync.
+                Debug.Log("StoreStats - some failed to validate");
+                // Fake up a callback here so that we re-load the values.
+                UserStatsReceived_t callback = new UserStatsReceived_t();
+                callback.m_eResult = EResult.k_EResultOK;
+                callback.m_nGameID = (ulong)m_GameID;
+                OnUserStatsReceived(callback);
+            }
+            else
+            {
+                Debug.Log("StoreStats - failed, " + pCallback.m_eResult);
+            }
+        }
+    }
 
-	//-----------------------------------------------------------------------------
-	// Purpose: An achievement was stored
-	//-----------------------------------------------------------------------------
-	void OnAchievementStored(UserAchievementStored_t pCallback) 
-	{
-		// We may get callbacks for other games' stats arriving, ignore them
-		if ((ulong)m_GameID == pCallback.m_nGameID) 
-		{
-			if (0 == pCallback.m_nMaxProgress) 
-			{
-				Debug.Log("Achievement '" + pCallback.m_rgchAchievementName + "' unlocked!");
-			}
-			else 
-			{
-				Debug.Log("Achievement '" + pCallback.m_rgchAchievementName + "' progress callback, (" + pCallback.m_nCurProgress + "," + pCallback.m_nMaxProgress + ")");
-			}
-		}
-	}
-	#endregion
+    //-----------------------------------------------------------------------------
+    // Purpose: An achievement was stored
+    //-----------------------------------------------------------------------------
+    void OnAchievementStored(UserAchievementStored_t pCallback)
+    {
+        // We may get callbacks for other games' stats arriving, ignore them
+        if ((ulong)m_GameID == pCallback.m_nGameID)
+        {
+            if (0 == pCallback.m_nMaxProgress)
+            {
+                Debug.Log("Achievement '" + pCallback.m_rgchAchievementName + "' unlocked!");
+            }
+            else
+            {
+                Debug.Log("Achievement '" + pCallback.m_rgchAchievementName + "' progress callback, (" + pCallback.m_nCurProgress + "," + pCallback.m_nMaxProgress + ")");
+            }
+        }
+    }
 
-	[System.Serializable]
-	public class Achievement 
-	{
-		public AchievementID achievementID;
-		public string name;
-		public string description;
-		public bool achieved;
+    #endregion
 
-		public Achievement(string achievementID, string name = "", string desc = "") 
-		{
-			this.achievementID = (AchievementID) Enum.Parse (typeof(AchievementID), achievementID);
-			this.name = name;
-			description = desc;
-			achieved = false;
-		}
-	}
+    [System.Serializable]
+    public class Achievement
+    {
+        public AchievementID achievementID;
+        public string name;
+        public string description;
+        public bool achieved;
+
+        public Achievement(string achievementID, string name = "", string desc = "")
+        {
+            this.achievementID = (AchievementID)Enum.Parse(typeof(AchievementID), achievementID);
+            this.name = name;
+            description = desc;
+            achieved = false;
+        }
+    }
 }
