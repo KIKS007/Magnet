@@ -414,7 +414,8 @@ public class MenuManager : Singleton <MenuManager>
                 //Unpause
                 else if (!cameraMovement.farPosition && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
                 {
-                    
+                    currentMenu.HideMenu();
+                    PauseResumeGame();
                 }
             }
         }
