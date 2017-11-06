@@ -370,8 +370,6 @@ public class MenuManager : Singleton <MenuManager>
         for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
         //for (int i = 0; i < 2; i++)
         {
-            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Submit"))
-
             //Quit Far Position
             if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
             {
