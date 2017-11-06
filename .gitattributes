@@ -1,1 +1,2 @@
 Assets/Scenes/Skins/Purple/LightingData.asset filter=lfs diff=lfs merge=lfs -text
+Assets/Scenes/Skins/Blue/LightingData.asset filter=lfs diff=lfs merge=lfs -text
