@@ -78,6 +78,7 @@ public class SlowMotionCamera : MonoBehaviour
 
     private float vignetteInitialIntensity;
     private float chromaticAberrationInitialIntensity;
+    private float motionBlurInitial;
 
     void Awake()
     {
@@ -95,10 +96,17 @@ public class SlowMotionCamera : MonoBehaviour
 
         vignetteInitialIntensity = postProcess.vignette.settings.intensity;
         chromaticAberrationInitialIntensity = postProcess.chromaticAberration.settings.intensity;
+        motionBlurInitial = postProcess.motionBlur.settings.shutterAngle;
+
+        DisableMotionBlur();
 
         GlobalVariables.Instance.OnEndMode += () => slowMoNumber = 0;
         GlobalVariables.Instance.OnMenu += () => slowMoNumber = 0;
         LoadModeManager.Instance.OnLevelLoaded += StopSlowMotion;
+
+        /*GlobalVariables.Instance.OnPause += DisableMotionBlur;
+        GlobalVariables.Instance.OnEndMode += DisableMotionBlur;
+        GlobalVariables.Instance.OnPlaying += EnableMotionBlur;*/
     }
 
     // Update is called once per frame
@@ -117,6 +125,26 @@ public class SlowMotionCamera : MonoBehaviour
         }
 
         timeScaleDebug = Time.timeScale;
+    }
+
+    public void DisableMotionBlur()
+    {
+        var motionBlur = postProcess.motionBlur.settings;
+
+        DOTween.To(() => motionBlur.shutterAngle, x => motionBlur.shutterAngle = x, 0, 0.5f).SetEase(easetype).OnUpdate(() =>
+            {
+                postProcess.motionBlur.settings = motionBlur;
+            });
+    }
+
+    public void EnableMotionBlur()
+    {
+        var motionBlur = postProcess.motionBlur.settings;
+
+        DOTween.To(() => motionBlur.shutterAngle, x => motionBlur.shutterAngle = x, motionBlurInitial, 0.5f).SetEase(easetype).OnUpdate(() =>
+            {
+                postProcess.motionBlur.settings = motionBlur;
+            });
     }
 
     public void StartEffects()
@@ -485,6 +513,10 @@ public class SlowMotionCamera : MonoBehaviour
         chormatic.intensity = chromaticAberrationInitialIntensity;
 
         postProcess.chromaticAberration.settings = chormatic;
+
+        var motionBlur = postProcess.motionBlur.settings;
+        motionBlur.shutterAngle = motionBlurInitial;
+        postProcess.motionBlur.settings = motionBlur;
     }
 }
 

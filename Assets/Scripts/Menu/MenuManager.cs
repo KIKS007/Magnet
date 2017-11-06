@@ -186,7 +186,6 @@ public class MenuManager : Singleton <MenuManager>
                 resumeButtons.DOAnchorPosX(resumeButtonsPositions.y, animationDuration).SetEase(easeMenu);
         };
 
-
         resumeButtons.DOAnchorPosX(resumeButtonsPositions.x, 0).SetEase(easeMenu);
 
         mainMenu.SetActive(true);
@@ -413,10 +412,7 @@ public class MenuManager : Singleton <MenuManager>
 
                 //Unpause
                 else if (!cameraMovement.farPosition && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
-                {
-                    currentMenu.HideMenu();
                     PauseResumeGame();
-                }
             }
         }
     }
