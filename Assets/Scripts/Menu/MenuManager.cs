@@ -410,6 +410,12 @@ public class MenuManager : Singleton <MenuManager>
 
                     break;
                 }
+
+                //Unpause
+                else if (!cameraMovement.farPosition && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
+                {
+                    
+                }
             }
         }
     }
