@@ -70,6 +70,12 @@ public class SoundsManager : Singleton<SoundsManager>
     public Button gameMusicButton;
     public Button personalMusicButton;
 
+    [Header("Volume Sounds")]
+    [SoundGroupAttribute]
+    public string volumeUpSound;
+    [SoundGroupAttribute]
+    public string volumeDownSound;
+
     [Header("Menu Sounds")]
     [SoundGroupAttribute]
     public string menuSubmit;
@@ -156,6 +162,9 @@ public class SoundsManager : Singleton<SoundsManager>
 
     public List<bool> musicsSelection = new List<bool>();
     public List<bool> loadedMusicsSelection = new List<bool>();
+
+    private bool volumeUpPlayed = false;
+    private bool volumeDownPlayed = false;
 
     void Start()
     {
@@ -257,6 +266,12 @@ public class SoundsManager : Singleton<SoundsManager>
 			
             if (GlobalVariables.Instance.rewiredPlayers[i].GetButton("Volume Down"))
                 MusicVolumeDown();
+
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonUp("Volume Up"))
+                volumeUpPlayed = false;
+
+            if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonUp("Volume Down"))
+                volumeDownPlayed = false;
         }
     }
 
@@ -624,17 +639,36 @@ public class SoundsManager : Singleton<SoundsManager>
 
     void MusicVolumeUp()
     {
-        MasterAudio.PlaylistMasterVolume += 0.02f;
+        if (MasterAudio.PlaylistMasterVolume < 1)
+            MasterAudio.PlaylistMasterVolume += 0.04f;
+        else
+        {
+            MasterAudio.PlaylistMasterVolume = 1f;
 
+            if (!volumeUpPlayed)
+            {
+                MasterAudio.PlaySound(volumeUpSound);
+                volumeUpPlayed = true;
+            }
+        }
+        
         UpdateAudioSettings();
     }
 
     void MusicVolumeDown()
     {
         if (MasterAudio.PlaylistMasterVolume > 0)
-            MasterAudio.PlaylistMasterVolume -= 0.02f;
+            MasterAudio.PlaylistMasterVolume -= 0.04f;
         else
+        {
             MasterAudio.PlaylistMasterVolume = 0;
+
+            if (!volumeDownPlayed)
+            {
+                MasterAudio.PlaySound(volumeDownSound);
+                volumeDownPlayed = true;
+            }
+        }
 
         UpdateAudioSettings();
     }
