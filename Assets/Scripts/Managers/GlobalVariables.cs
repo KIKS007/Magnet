@@ -600,7 +600,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     public void SetPlayerMouseCursor()
     {
-        Cursor.SetCursor(mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.Auto);
+		Cursor.SetCursor(mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.ForceSoftware);
     }
 
     public void SetMouseGameplayVisibility(bool forcedHide = false)
