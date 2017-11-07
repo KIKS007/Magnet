@@ -68,6 +68,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
         GameObject text = Instantiate(deathTextPrefab, position, deathTextPrefab.transform.rotation);
         //text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
         text.transform.GetChild(0).GetComponent<Outline>().effectColor = GlobalVariables.Instance.playersColors[(int)playerName];
+        text.transform.GetChild(0).GetComponent<Text>().color = GlobalVariables.Instance.playersColors[(int)playerName];
+
 
         if (count == 0)
             text.transform.GetChild(0).GetComponent<Text>().text = "Dead!";
