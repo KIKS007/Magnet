@@ -600,7 +600,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     public void SetPlayerMouseCursor()
     {
-		Cursor.SetCursor(mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.ForceSoftware);
+        Cursor.SetCursor(mouseCursor[(int)environementChroma], Vector2.zero, CursorMode.ForceSoftware);
     }
 
     public void SetMouseGameplayVisibility(bool forcedHide = false)
@@ -609,8 +609,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
         {
             if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
             {
-                Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
         else
@@ -621,6 +621,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
                 Cursor.visible = true;
             }
         }
+
+        SetPlayerMouseCursor();
     }
 
     public void SetMouseVisibility(bool visible)
@@ -629,8 +631,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
         {
             if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
             {
-                Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
         else
@@ -641,6 +643,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
                 Cursor.visible = true;
             }
         }
+
+        SetPlayerMouseCursor();
     }
 
     public void ChangeSequence(int modeSequence)
