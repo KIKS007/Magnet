@@ -4,6 +4,7 @@ using DG.Tweening;
 using DarkTonic.MasterAudio;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class GlobalMethods : Singleton<GlobalMethods>
 {
@@ -381,6 +382,8 @@ public class GlobalMethods : Singleton<GlobalMethods>
         GameObject feedback = Instantiate(feedbackPrefab, new Vector3(newPos.x, 0.6f, newPos.z), feedbackPrefab.transform.rotation) as GameObject;
         Vector3 scale = feedback.transform.localScale;
         feedback.transform.localScale = Vector3.zero;
+
+        SceneManager.MoveGameObjectToScene(feedback, SceneManager.GetSceneByName(GlobalVariables.Instance.CurrentModeLoaded.ToString()));
 
         feedback.transform.DOScale(scale, feedbackDuration).SetEase(Ease.OutElastic).SetUpdate(false);
 
