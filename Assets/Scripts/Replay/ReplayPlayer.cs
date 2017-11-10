@@ -107,7 +107,10 @@ namespace Replay
         {
             base.Replay(t);
 
-            bool enable = dashData[0].enabled;
+            bool enable = false;
+
+            if (dashData.Count > 0)
+                enable = dashData[0].enabled;
 
             foreach (var d in dashData)
             {

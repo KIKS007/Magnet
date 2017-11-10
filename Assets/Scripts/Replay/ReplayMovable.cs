@@ -138,7 +138,7 @@ namespace Replay
 
             bool enable = false;
 
-            if (t < deadlyData[0].time)
+            if (deadlyData.Count > 0 && t < deadlyData[0].time)
                 DeadlyEnable(false);
 
             foreach (var d in deadlyData)

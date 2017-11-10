@@ -56,6 +56,8 @@ namespace Replay
 
             particles = new List<TimelinedParticles>();
 
+            particleSys = GetComponent<ParticleSystem>();
+
             if (particleSys != null)
                 particles.Add(new TimelinedParticles(particleSys));
             else
@@ -77,6 +79,14 @@ namespace Replay
             if (listParticle)
                 return;
 			
+            if (particleSys == null)
+            {
+                particleSys = GetComponent<ParticleSystem>();
+
+                if (particleSys == null)
+                    return;
+            }
+
             gameObject.SetActive(true);
 
             _particles = new List<TimelinedParticles>(particles);
@@ -103,7 +113,10 @@ namespace Replay
 			
             base.Replay(t);
 
-            if (particles == null || particles.Count == 0)
+            if (particleSys == null)
+                particleSys = GetComponent<ParticleSystem>();
+
+            if (particles == null || particles.Count == 0 || particleSys == null)
             {
                 Debug.LogWarning("No Particles!");
                 return;

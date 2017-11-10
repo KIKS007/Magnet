@@ -147,8 +147,18 @@ namespace Replay
 
             _arenaDeadzones = FindObjectOfType<ArenaDeadzones>();
 
-            GlobalVariables.Instance.OnStartMode += ResetReplay;
-            GlobalVariables.Instance.OnRestartMode += ResetReplay;
+            GlobalVariables.Instance.OnStartMode += () =>
+            {
+                StopReplay(true);
+                ResetReplay();
+            };
+            
+            GlobalVariables.Instance.OnRestartMode += () =>
+            {
+                StopReplay(true);
+                ResetReplay();
+            };
+            
             GlobalVariables.Instance.OnEndMode += () =>
             {
                 DOVirtual.DelayedCall(GlobalVariables.Instance.lastManManager.endGameDelay, () =>
@@ -261,7 +271,6 @@ namespace Replay
 
             if (OnRecordingStart != null)
                 OnRecordingStart();
-
         }
 
         public void StopRecording()
@@ -360,13 +369,16 @@ namespace Replay
             isPaused = true;
         }
 
-        public void StopReplay()
+        public void StopReplay(bool reset = false)
         {
-            if (OnReplayTimeChange != null)
-                OnReplayTimeChange(_endTime);
-
-            if (OnReplayStop != null)
-                OnReplayStop();
+            if (!reset)
+            {
+                if (OnReplayTimeChange != null)
+                    OnReplayTimeChange(_endTime);
+                
+                if (OnReplayStop != null)
+                    OnReplayStop();
+            }
 
             isReplaying = false;
             isPaused = false;

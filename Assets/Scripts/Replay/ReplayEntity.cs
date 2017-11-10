@@ -110,7 +110,10 @@ namespace Replay
             if (recordEnable)
             {
                 if (tag == "Player" && GlobalVariables.Instance.EnabledPlayersList.Contains(gameObject) || tag != "Player")
-                    SetEnable(enableData[0].enabled);
+                {
+                    if (enableData.Count > 0)
+                        SetEnable(enableData[0].enabled);
+                }
             }
 
             rigidBody = GetComponent<Rigidbody>();
@@ -184,15 +187,13 @@ namespace Replay
             if (recordScale && data.scale.x.keys.Length > 0)
                 transform.localScale = data.scale.Get(t);
 
-            /* for(int i = enableData.Count - 1; i >= 0; i--)
-            {
-                
-            }*/
-
             if (recordEnable)
             {
-                bool enable = enableData[0].enabled;
-                
+                bool enable = false;
+
+                if (enableData.Count > 0)
+                    enable = enableData[0].enabled;
+
                 foreach (var d in enableData)
                 {
                     if (d.time <= t)
