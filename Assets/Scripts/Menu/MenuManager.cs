@@ -245,10 +245,13 @@ public class MenuManager : Singleton <MenuManager>
                 break;
             }	
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if (GlobalVariables.Instance.rewiredPlayers[i].GetAnyButton())
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
                 {
+                    if (i > 0)
+                        GlobalVariables.Instance.ChangeMenuGamepad(i);
+                    
                     startScreenInput = true;
                     break;
                 }
@@ -258,7 +261,7 @@ public class MenuManager : Singleton <MenuManager>
         }
         while (!startScreenInput);
 
-        VibrationManager.Instance.Vibrate(1, FeedbackType.ButtonClick);
+        VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
 
         MasterAudio.PlaySound(SoundsManager.Instance.gameStartSound);
 
@@ -269,7 +272,7 @@ public class MenuManager : Singleton <MenuManager>
         startScreen = false;
     }
 
-    public IEnumerator HideLogo(bool start = false)
+    public IEnumerator WaitToHideLogo(bool start = false)
     {
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -282,13 +285,10 @@ public class MenuManager : Singleton <MenuManager>
 
         do
         {
-            for (int i = 0; i < 2; i++)
+            if (GlobalVariables.Instance.rewiredPlayers[0].GetAnyButton() || GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAnyButton())
             {
-                if (GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
-                {
-                    startScreenInput = true;
-                    break;
-                }
+                startScreenInput = true;
+                break;
             }
 
             yield return 0;
@@ -298,20 +298,30 @@ public class MenuManager : Singleton <MenuManager>
         if (cameraMovement.farPosition)
             yield break;
 
-        logosParent.GetChild((int)GlobalVariables.Instance.environementChroma).transform.DOScale(Vector3.zero, animationDuration).SetEase(Ease.OutQuad);
+        VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
 
-        backButtons.DOAnchorPosX(-resumeButtonsPositions.y, animationDuration).SetEase(Ease.OutQuad);
+        HideLogo();
 
         yield return new WaitForSecondsRealtime(animationDuration);
 
         if (cameraMovement.farPosition)
             yield break;
 		
-        logosParent.GetChild((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive(false);
-
         ShowMenu(mainMenuScript);
 
         logoLoading = false;
+    }
+
+    void HideLogo()
+    {
+        logosParent.GetChild((int)GlobalVariables.Instance.environementChroma).transform.DOScale(Vector3.zero, animationDuration).SetEase(Ease.OutQuad).OnComplete(() =>
+            {
+
+                logosParent.GetChild((int)GlobalVariables.Instance.environementChroma).gameObject.SetActive(false);
+
+            });
+
+        backButtons.DOAnchorPosX(-resumeButtonsPositions.y, animationDuration).SetEase(Ease.OutQuad); 
     }
 
     public void ShowLogo()
@@ -367,21 +377,27 @@ public class MenuManager : Singleton <MenuManager>
             return;
 
         for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-        //for (int i = 0; i < 2; i++)
         {
             //Quit Far Position
-            if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown())
+            if (cameraMovement.farPosition && GlobalVariables.Instance.rewiredPlayers[i].GetAnyButtonDown() && GlobalVariables.Instance.GameState != GameStateEnum.Paused)
             {
-                if (cameraMovement.farPosition && GlobalVariables.Instance.GameState != GameStateEnum.Paused)
-                {
-                    cameraMovement.ToggleFarPosition();
+                if (i > 0)
+                    GlobalVariables.Instance.ChangeMenuGamepad(i);
 
-                    if (OnFarPosition != null)
-                        OnFarPosition();
+                cameraMovement.ToggleFarPosition();
 
-                    break;
-                }
+                if (OnFarPosition != null)
+                    OnFarPosition();
+
+                break;
             }
+        }
+
+        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+        //for (int i = 0; i < 2; i++)
+        {
+            if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
+                continue;
 
             if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel"))
             {
@@ -428,6 +444,9 @@ public class MenuManager : Singleton <MenuManager>
         for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
         //for (int i = 0; i < 2; i++)
         {
+            if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
+                continue;
+
             if (i == 0 && currentMenu == mainMenu && GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel"))
             {
                 currentMenu.HideMenu();
@@ -533,13 +552,11 @@ public class MenuManager : Singleton <MenuManager>
         }
         else
         {
-            for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-                if (GlobalVariables.Instance.rewiredPlayers[i] != null && GlobalVariables.Instance.rewiredPlayers[i].GetAxis("UI Vertical") != 0)
-                {
-                    mouseControl = false;
-                    GlobalVariables.Instance.SetMouseVisibility(false);
-                    break;
-                }
+            if (GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber] != null && GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAxis("UI Vertical") != 0)
+            {
+                mouseControl = false;
+                GlobalVariables.Instance.SetMouseVisibility(false);
+            }
         }
     }
 

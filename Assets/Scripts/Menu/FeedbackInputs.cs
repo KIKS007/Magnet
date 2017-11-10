@@ -8,7 +8,7 @@ public class FeedbackInputs : MonoBehaviour
 {
     public enum WhichButton
     {
-GamepadButton,
+        GamepadButton,
         KeyboardOrMouseButton,
         LeftJoystick,
         RightJoystick,
@@ -39,7 +39,6 @@ GamepadButton,
     public bool keyPressed;
 
     public Player mouseKeyboard;
-    public Player gamepad1;
 
     private RectTransform rect;
     private Vector2 initialPos;
@@ -93,13 +92,13 @@ GamepadButton,
 
     void GamepadButton()
     {
-        if (gamepad1.GetButtonDown(whichAction) && !keyPressed)
+        if (GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetButtonDown(whichAction) && !keyPressed)
         {
             Feedback();
             keyPressed = true;
         }
 
-        if (gamepad1.GetButtonUp(whichAction) && keyPressed)
+        if (GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetButtonUp(whichAction) && keyPressed)
         {
             ResetFeedback();
             keyPressed = false;
@@ -138,7 +137,7 @@ GamepadButton,
 
     void LeftJoystick()
     {
-        Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Move Horizontal"), gamepad1.GetAxisRaw("Move Vertical"));
+        Vector2 joystickMovement = new Vector2(GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAxisRaw("Move Horizontal"), GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAxisRaw("Move Vertical"));
 
         if (joystickMovement.magnitude != 0 && !keyPressed)
         {
@@ -158,7 +157,7 @@ GamepadButton,
 
     void RightJoystick()
     {
-        Vector2 joystickMovement = new Vector2(gamepad1.GetAxisRaw("Aim Horizontal"), gamepad1.GetAxisRaw("Aim Vertical"));
+        Vector2 joystickMovement = new Vector2(GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAxisRaw("Aim Horizontal"), GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetAxisRaw("Aim Vertical"));
 
         if (joystickMovement.magnitude != 0 && !keyPressed)
         {
@@ -202,13 +201,11 @@ GamepadButton,
     void GetPlayersEvent(ControllerStatusChangedEventArgs arg)
     {
         mouseKeyboard = GlobalVariables.Instance.rewiredPlayers[0]; 
-        gamepad1 = GlobalVariables.Instance.rewiredPlayers[1]; 
     }
 
     void GetPlayers()
     {
         mouseKeyboard = GlobalVariables.Instance.rewiredPlayers[0]; 
-        gamepad1 = GlobalVariables.Instance.rewiredPlayers[1]; 
     }
 
     void Feedback()

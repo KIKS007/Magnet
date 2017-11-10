@@ -119,7 +119,7 @@ public class MenuCameraMovement : MonoBehaviour
         if (OnClosePosition != null)
             OnClosePosition();
         
-        StartCoroutine(MenuManager.Instance.HideLogo(MenuManager.Instance.startScreen));
+        StartCoroutine(MenuManager.Instance.WaitToHideLogo(MenuManager.Instance.startScreen));
 	
         StopPreviousMovement();
 

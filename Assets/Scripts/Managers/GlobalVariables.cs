@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using Replay;
+using Rewired.Integration.UnityUI;
 
 public enum GameStateEnum
 {
@@ -121,6 +122,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     [Header("Controller Numbers")]
     public int[] PlayersControllerNumber = new int[4] { -1, -1, -1, -1 };
+
+    [Header("Menu Gamepad")]
+    public int menuGamepadNumber = 1;
+    public RewiredStandaloneInputModule rewiredInput;
 
     [Header("Gamepads")]
     public List<PlayerGamepad> gamepadsList = new List<PlayerGamepad>();
@@ -269,6 +274,16 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     void Start()
     {
+    }
+
+    public void ChangeMenuGamepad(int i)
+    {
+        List<int> ids = new List<int>();
+        ids.Add(0);
+        ids.Add(i);
+
+        rewiredInput.RewiredPlayerIds = ids.ToArray();
+        menuGamepadNumber = i;
     }
 
     void Update()

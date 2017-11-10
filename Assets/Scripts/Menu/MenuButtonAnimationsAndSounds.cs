@@ -326,7 +326,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
             return;
 		
         if (vibration)
-            VibrationManager.Instance.Vibrate(1, FeedbackType.ButtonClick);
+            VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
 		
         SoundsManager.Instance.MenuSubmit();
 		
@@ -412,7 +412,7 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
             return;
 		
         if (vibration)
-            VibrationManager.Instance.Vibrate(1, FeedbackType.ButtonClick);
+            VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
 		
         SoundsManager.Instance.MenuSubmit();
 		

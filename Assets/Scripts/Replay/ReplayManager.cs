@@ -216,9 +216,12 @@ namespace Replay
 
         void ReplayInputs()
         {
-            //for(int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+//            for (int i = 0; i < 2; i++)
             {
+                if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
+                    continue;
+
                 if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("PlayPause"))
                 {
                     playPauseButton.onClick.Invoke();
