@@ -33,9 +33,9 @@ namespace Replay
 
         private LayerMask initialLayer;
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
 
             initialLayer = gameObject.layer;
 

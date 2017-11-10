@@ -31,9 +31,9 @@ namespace Replay
         protected BombManager bombManager;
         protected Text text;
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
 
             cubeScript = GetComponent<MovableScript>();
 

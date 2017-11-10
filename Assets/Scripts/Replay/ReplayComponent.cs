@@ -8,7 +8,7 @@ namespace Replay
 {
     public class ReplayComponent : MonoBehaviour
     {
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             SetEvents();
         }

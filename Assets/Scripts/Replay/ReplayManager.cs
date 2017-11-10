@@ -371,6 +371,10 @@ namespace Replay
 
         public void StopReplay(bool reset = false)
         {
+            isReplaying = false;
+            isPaused = false;
+            transform.GetChild(0).gameObject.SetActive(false);
+
             if (!reset)
             {
                 if (OnReplayTimeChange != null)
@@ -379,10 +383,6 @@ namespace Replay
                 if (OnReplayStop != null)
                     OnReplayStop();
             }
-
-            isReplaying = false;
-            isPaused = false;
-            transform.GetChild(0).gameObject.SetActive(false);
         }
 
         void ResetReplay()
