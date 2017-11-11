@@ -16,9 +16,9 @@ namespace Replay
 
         protected Material material;
 
-        protected override void Awake()
+        protected override void Start()
         {
-            base.Awake();
+            base.Start();
 
             material = GetComponent<Renderer>().material;
         }

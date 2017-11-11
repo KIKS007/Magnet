@@ -18,7 +18,7 @@ namespace Replay
         protected ParticleSystem particleSys;
         protected float listRecordEpsilon = 0.008f;
 
-        protected override void Awake()
+        protected override void Start()
         {
             if (!ReplayManager.Instance.replayEnabled)
                 return;
@@ -35,7 +35,7 @@ namespace Replay
             if (listParticle)
                 ReplayManager.Instance.particlesReplay.Add(new ReplayManager.Particles(particleSys));
 
-            base.Awake();
+            base.Start();
         }
 
         public override void OnClear()

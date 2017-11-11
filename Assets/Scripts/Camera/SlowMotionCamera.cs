@@ -25,6 +25,7 @@ public class SlowMotionCamera : MonoBehaviour
     [Header("SlowMotion InGame")]
     public int slowMoNumber = 0;
     public float[] slowFactors = new float[4];
+    public float[] slowMotionDurationPlayers = new float[4];
     public float[] slowMotionDurations = new float[4];
     public float timeTween;
     public float timeTweenEffect;
@@ -216,7 +217,7 @@ public class SlowMotionCamera : MonoBehaviour
 
         if (OnAllSlowMotionStart != null)
             OnAllSlowMotionStart();
-
+        
         DOTween.To(() => Time.timeScale, x => Time.timeScale = x, initialTimeScale / slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
         DOTween.To(() => Time.fixedDeltaTime, x => Time.fixedDeltaTime = x, GlobalVariables.Instance.fixedDeltaTime / slowFactorTemp, timeTween).SetEase(easetype).SetId("StartSlowMotion");
 
@@ -347,25 +348,31 @@ public class SlowMotionCamera : MonoBehaviour
     {
         float slowMotionDurationTemp = 0;
 
+        float slowFactorTemp = 0;
+
         switch (slowMoNumber)
         {
             case 1:
-                slowMotionDurationTemp = slowMotionDurations[0];
+                slowFactorTemp = slowMotionDurations[0];
                 break;
             case 2:
-                slowMotionDurationTemp = slowMotionDurations[1];
+                slowFactorTemp = slowMotionDurations[1];
                 break;
             case 3:
-                slowMotionDurationTemp = slowMotionDurations[2];
+                slowFactorTemp = slowMotionDurations[2];
                 break;
             case 4:
-                slowMotionDurationTemp = slowMotionDurations[3];
+                slowFactorTemp = slowMotionDurations[3];
                 break;
             default:
-                slowMotionDurationTemp = slowMotionDurations[3];
+                slowFactorTemp = slowMotionDurations[3];
                 break;
         }
-	
+
+        slowMotionDurationTemp = slowMotionDurationPlayers[GlobalVariables.Instance.NumberOfAlivePlayers - 2] + slowFactorTemp;
+
+        Debug.Log("SlowMo Duration: " + slowMotionDurationTemp);
+
         yield return new WaitForSecondsRealtime(slowMotionDurationTemp + timeTween);
 
         if (slowMoNumberTest == slowMoNumber && GlobalVariables.Instance.GameState != GameStateEnum.Paused)

@@ -25,9 +25,9 @@ namespace Replay
         private PlayersGameplay playerScript;
         private PlayersFXAnimations playerFXScript;
 
-        protected override void Awake()
+        protected override void Start()
         {
-            base.Awake();
+            base.Start();
 
             playerScript = GetComponent<PlayersGameplay>();
             playerFXScript = GetComponent<PlayersFXAnimations>();
