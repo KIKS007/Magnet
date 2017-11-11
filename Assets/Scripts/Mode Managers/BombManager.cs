@@ -214,19 +214,25 @@ public class BombManager : LastManManager
             {
                 var players = new List<GameObject>();
 
-                foreach (var p in GlobalVariables.Instance.AlivePlayersList)
+                do
                 {
-                    var script = p.GetComponent<PlayersGameplay>();
+                    foreach (var p in GlobalVariables.Instance.AlivePlayersList)
+                    {
+                        var script = p.GetComponent<PlayersGameplay>();
+                        
+                        if (script.playerState == PlayerState.Dead || script.playerState == PlayerState.Stunned || script.holdState == HoldState.CannotHold)
+                            continue;
+                        
+                        players.Add(p);
+                    }
+                    
+                    GameObject player = players[Random.Range(0, players.Count)];
+                    player.GetComponent<PlayersGameplay>().OnHoldMovable(bomb);
+                    //Debug.Log ("Player Choice: " + player, player);
 
-                    if (script.playerState == PlayerState.Dead || script.playerState == PlayerState.Stunned || script.holdState == HoldState.CannotHold)
-                        continue;
-
-                    players.Add(p);
+                    yield return 0;
                 }
-
-                GameObject player = players[Random.Range(0, players.Count)];
-                player.GetComponent<PlayersGameplay>().OnHoldMovable(bomb);
-//				Debug.Log ("Player Choice: " + player, player);
+                while (players.Count == 0);
             }
         }
     }

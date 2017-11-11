@@ -115,8 +115,12 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         DOVirtual.DelayedCall(safeDuration, () =>
             {
-                player.GetComponent<PlayersGameplay>().OnSafeEndVoid();
-                player.layer = LayerMask.NameToLayer("Player");
+                if (player != null)
+                {
+                    player.GetComponent<PlayersGameplay>().OnSafeEndVoid();
+                    player.layer = LayerMask.NameToLayer("Player");
+                }
+
             }).SetUpdate(false);
 
         //SpawnParticles (player);
@@ -389,9 +393,15 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         yield return new WaitForSeconds(feedbackDuration + feedbackWaitDuration * 0.5f);
 
+        if (feedback == null)
+            yield break;
+
         feedback.transform.DOScale(0, feedbackDuration).SetEase(Ease.OutQuad).SetUpdate(false).OnComplete(() => Destroy(feedback));
 
         yield return new WaitForSeconds(feedbackWaitDuration * 0.5f);
+
+        if (feedback == null)
+            yield break;
 
         EnableGameObject(clone, newPos);
         ScaleGameObect(clone, tagTemp, movableScale, scaleDuration);
