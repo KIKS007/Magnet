@@ -216,6 +216,12 @@ public class BombManager : LastManManager
 
                 do
                 {
+                    if (gameEndLoopRunning)
+                        yield break;
+
+                    if (GlobalVariables.Instance.AlivePlayersList.Count < 2)
+                        yield break;
+
                     foreach (var p in GlobalVariables.Instance.AlivePlayersList)
                     {
                         var script = p.GetComponent<PlayersGameplay>();
@@ -225,10 +231,13 @@ public class BombManager : LastManManager
                         
                         players.Add(p);
                     }
-                    
-                    GameObject player = players[Random.Range(0, players.Count)];
-                    player.GetComponent<PlayersGameplay>().OnHoldMovable(bomb);
-                    //Debug.Log ("Player Choice: " + player, player);
+
+                    if (players.Count > 0)
+                    {
+                        GameObject player = players[Random.Range(0, players.Count)];
+                        player.GetComponent<PlayersGameplay>().OnHoldMovable(bomb);
+                        //Debug.Log ("Player Choice: " + player, player);
+                    }
 
                     yield return 0;
                 }

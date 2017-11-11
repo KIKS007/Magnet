@@ -344,8 +344,8 @@ public class MenuManager : Singleton <MenuManager>
 
     void OnApplicationFocus(bool value)
     {
-        if (!value && GlobalVariables.Instance.GameState == GameStateEnum.Playing && !Application.isEditor)
-            PauseResumeGame();	
+        /*if (!value && GlobalVariables.Instance.GameState == GameStateEnum.Playing && !Application.isEditor)
+            PauseResumeGame();	*/
     }
 
     #endregion

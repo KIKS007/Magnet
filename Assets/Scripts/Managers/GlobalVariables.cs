@@ -660,20 +660,29 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     public void SetMouseGameplayVisibility(bool forcedHide = false)
     {
-        if (forcedHide || PlayersControllerNumber[0] != 0 && PlayersControllerNumber[1] != 0 && PlayersControllerNumber[2] != 0 && PlayersControllerNumber[3] != 0)
-        {
-            if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
+        bool mouseController = false;
+
+        for (int i = 0; i < 4; i++)
+            if (PlayersControllerNumber[i] == 0)
             {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                mouseController = true;
+                break;
             }
-        }
-        else
+
+        if (mouseController && !forcedHide)
         {
             if (Cursor.lockState != CursorLockMode.None)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+            }
+        }
+        else
+        {
+            if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
 
