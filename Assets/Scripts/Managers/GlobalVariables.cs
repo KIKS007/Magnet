@@ -94,6 +94,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     [Header("Environement")]
     public EnvironementChroma environementChroma = EnvironementChroma.Purple;
+    public bool randomEnvironment = false;
     public float envrionementTransition = 0.5f;
     public float envrionementTransitionDelay = 0.5f;
     public Material uiMaterial;
@@ -346,10 +347,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
         int newChromaIndex = (int)environementChroma;
         newChromaIndex++;
 
-        if (newChromaIndex == System.Enum.GetValues(typeof(EnvironementChroma)).Length)
+        if (environementChromaText.text == "Random")
+        {
             newChromaIndex = 0;
+            randomEnvironment = false;
+        }
+        else if (newChromaIndex == System.Enum.GetValues(typeof(EnvironementChroma)).Length)
+        {
+            randomEnvironment = true;
+            environementChromaText.text = "Random";
+        }
+        else
+            randomEnvironment = false;
 
-        StartCoroutine(NewEnvironementChroma(newChromaIndex));
+        if (randomEnvironment)
+            environementLoading = false;
+        else
+            StartCoroutine(NewEnvironementChroma(newChromaIndex));
     }
 
     public void PreviousEnvironementChroma()
@@ -362,10 +376,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
         int newChromaIndex = (int)environementChroma;
         newChromaIndex--;
 
-        if (newChromaIndex < 0)
+        if (environementChromaText.text == "Random")
+        {
             newChromaIndex = System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1;
+            randomEnvironment = false;
+        }
+        else if (newChromaIndex < 0)
+        {
+            randomEnvironment = true;
+            environementChromaText.text = "Random";
+        }
+        else
+            randomEnvironment = false;
 
-        StartCoroutine(NewEnvironementChroma(newChromaIndex));
+        if (randomEnvironment)
+            environementLoading = false;
+        else
+            StartCoroutine(NewEnvironementChroma(newChromaIndex));
     }
 
     void LoadEnvironementChroma()
@@ -383,11 +410,25 @@ public class GlobalVariables : Singleton<GlobalVariables>
         PlayerPrefs.SetInt("EnvironementChromaIndex", (int)environementChroma);
     }
 
-    IEnumerator NewEnvironementChroma(int newChromaIndex, bool setup = false)
+    public IEnumerator LoadRandomEnvironment()
+    {
+        int randomChroma = Random.Range(0, System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1);
+
+        do
+        {
+            randomChroma = Random.Range(0, System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1);
+        }
+        while (randomChroma == (int)environementChroma);
+
+        yield return StartCoroutine(NewEnvironementChroma(randomChroma));
+    }
+
+    public IEnumerator NewEnvironementChroma(int newChromaIndex, bool setup = false)
     {
         bool alreadyLoaded = false;
 
-        environementChromaText.text = environementChromaNames[newChromaIndex];
+        if (!randomEnvironment)
+            environementChromaText.text = environementChromaNames[newChromaIndex];
 
         EnvironementChroma newChroma = (EnvironementChroma)newChromaIndex;
         Color color = skyboxLoadingRenderer.material.color;

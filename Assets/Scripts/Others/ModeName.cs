@@ -14,6 +14,8 @@ public class ModeName : MonoBehaviour
         MenuManager.Instance.OnStartModeClick += Set;
         GlobalVariables.Instance.OnStartMode += Set;
         GlobalVariables.Instance.OnRestartMode += Set;
+
+        Set();
     }
 
     void Set()

@@ -123,7 +123,7 @@ public class LoadModeManager : Singleton<LoadModeManager>
         for (int i = 0; i < SceneManager.sceneCount; i++)
             if (SceneManager.GetSceneAt(i).name != "Menu" && SceneManager.GetSceneAt(i).name != GlobalVariables.Instance.environementChroma.ToString())
                 yield return SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i).name);
-        
+
         DestroyParticules();
 
         yield return SceneManager.LoadSceneAsync(sceneToLoad.ToString(), LoadSceneMode.Additive);

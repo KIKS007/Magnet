@@ -1224,10 +1224,16 @@ public class MenuManager : Singleton <MenuManager>
             OnStartModeClick();
 
         mainCamera.GetComponent<SlowMotionCamera>().StopPauseSlowMotion();
-
+        
         currentMenu.HideMenu();
 
-        yield return new WaitForSecondsRealtime(animationDuration);
+        if (GlobalVariables.Instance.randomEnvironment)
+        {
+            yield return StartCoroutine(GlobalVariables.Instance.LoadRandomEnvironment());
+            ShowStaticModesLogos();
+        }
+        else
+            yield return new WaitForSecondsRealtime(animationDuration);
 
         MasterAudio.PlaySound(SoundsManager.Instance.closeMenuSound);
 
