@@ -643,7 +643,7 @@ public class SoundsManager : Singleton<SoundsManager>
     void MusicVolumeUp()
     {
         if (MasterAudio.PlaylistMasterVolume < 1)
-            MasterAudio.PlaylistMasterVolume += 0.04f;
+            MasterAudio.PlaylistMasterVolume += 0.02f;
         else
         {
             MasterAudio.PlaylistMasterVolume = 1f;
@@ -661,7 +661,7 @@ public class SoundsManager : Singleton<SoundsManager>
     void MusicVolumeDown()
     {
         if (MasterAudio.PlaylistMasterVolume > 0)
-            MasterAudio.PlaylistMasterVolume -= 0.04f;
+            MasterAudio.PlaylistMasterVolume -= 0.02f;
         else
         {
             MasterAudio.PlaylistMasterVolume = 0;
