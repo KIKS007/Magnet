@@ -390,6 +390,8 @@ namespace Replay
 
                 particlesReplay.RemoveAll(item => item.particles == null);
                 _attractionParticles.RemoveAll(item => item == null);
+
+                Resources.UnloadUnusedAssets();
             }
         }
 
@@ -431,7 +433,7 @@ namespace Replay
                     Destroy(p.particles.gameObject);
 
             foreach (var p in _attractionParticles)
-                if (p.particles != null)
+                if (p != null)
                     Destroy(p.gameObject);
 
             _attractionParticles.Clear();

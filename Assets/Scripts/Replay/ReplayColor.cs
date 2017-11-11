@@ -91,6 +91,15 @@ namespace Replay
                     _material.SetColor("_EmissionColor", color);
             }
         }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (material)
+                Destroy(material);
+        }
     }
+     
 }
 

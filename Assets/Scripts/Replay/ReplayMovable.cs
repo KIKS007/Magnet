@@ -173,6 +173,14 @@ namespace Replay
                 cubeScript.deadlyParticle2.Stop();
             }
         }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (cubeMaterial)
+                Destroy(cubeMaterial);
+        }
     }
 
     [Serializable]

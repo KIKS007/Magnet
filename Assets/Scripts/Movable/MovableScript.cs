@@ -6,6 +6,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using DarkTonic.MasterAudio;
 using Replay;
+using System.Reflection;
 
 public enum CubeColor
 {
@@ -495,6 +496,12 @@ public class MovableScript : MonoBehaviour
     {
         if (OnReleaseEvent != null)
             OnReleaseEvent();
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (cubeMaterial)
+            Destroy(cubeMaterial);
     }
 
     #endregion

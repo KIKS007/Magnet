@@ -589,12 +589,18 @@ public class PlayersFXAnimations : MonoBehaviour
     {
         Quaternion rotation = Quaternion.Euler(new Vector3(90, 0, 0));
 
-        GameObject wave = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform) as GameObject;
+        Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
 
         if (GetComponent<PlayersVibration>() != null)
             GetComponent<PlayersVibration>().Wave();
     }
 
+
+    protected virtual void OnDestroy()
+    {
+        if (dashOngleMaterial)
+            Destroy(dashOngleMaterial);
+    }
 
     public virtual GameObject DeathParticles(Vector3 position)
     {
