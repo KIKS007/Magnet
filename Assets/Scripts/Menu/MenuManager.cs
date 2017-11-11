@@ -80,6 +80,9 @@ public class MenuManager : Singleton <MenuManager>
     [Header("End Mode Menu")]
     public MenuComponent endModeMenu;
 
+    [Header("Modes Selection Menu")]
+    public MenuComponent modesSelectionMenu;
+
     [Header("REPULSE Logos")]
     public Transform logosParent;
 
@@ -373,6 +376,20 @@ public class MenuManager : Singleton <MenuManager>
         if (isTweening || DOTween.IsTweening("MenuCamera") || startScreen)
             return;
 
+        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !isTweening)
+            for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
+            {
+                if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
+                    continue;
+                
+                if (GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Cancel"))
+                {
+                    StartCoroutine(ReturnToSelection());
+                    break;
+                }
+            }
+
+
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
             return;
 
@@ -565,6 +582,12 @@ public class MenuManager : Singleton <MenuManager>
         if (isTweening || DOTween.IsTweening("MenuCamera") || startScreen)
             return;
 
+        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !isTweening)
+        {
+            StartCoroutine(ReturnToSelection());
+            return;
+        }
+            
         if (GlobalVariables.Instance.GameState == GameStateEnum.Playing || GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
             return;
 
@@ -1352,6 +1375,19 @@ public class MenuManager : Singleton <MenuManager>
                 ReplayManager.Instance.StopReplay();
                 eventSyst.SetSelectedGameObject(currentMenu.selectable);
             });
+    }
+
+    IEnumerator ReturnToSelection()
+    {
+        HideMenu(endModeMenu);
+
+        yield return new WaitForSecondsRealtime(animationDuration);
+
+        MasterAudio.PlaySound(SoundsManager.Instance.openMenuSound);
+
+        GlobalVariables.Instance.GameState = GameStateEnum.Menu;
+
+        ShowMenu(modesSelectionMenu);
     }
 
     #endregion
