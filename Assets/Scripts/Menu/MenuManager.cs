@@ -376,7 +376,7 @@ public class MenuManager : Singleton <MenuManager>
         if (isTweening || DOTween.IsTweening("MenuCamera") || startScreen)
             return;
 
-        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !isTweening)
+        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !ReplayManager.Instance.isReplaying)
             for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
             {
                 if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
@@ -582,7 +582,7 @@ public class MenuManager : Singleton <MenuManager>
         if (isTweening || DOTween.IsTweening("MenuCamera") || startScreen)
             return;
 
-        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !isTweening)
+        if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode && currentMenu == endModeMenu && !ReplayManager.Instance.isReplaying)
         {
             StartCoroutine(ReturnToSelection());
             return;

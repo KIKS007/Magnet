@@ -371,8 +371,6 @@ public class SlowMotionCamera : MonoBehaviour
 
         slowMotionDurationTemp = slowMotionDurationPlayers[GlobalVariables.Instance.NumberOfAlivePlayers - 2] + slowFactorTemp;
 
-        Debug.Log("SlowMo Duration: " + slowMotionDurationTemp);
-
         yield return new WaitForSecondsRealtime(slowMotionDurationTemp + timeTween);
 
         if (slowMoNumberTest == slowMoNumber && GlobalVariables.Instance.GameState != GameStateEnum.Paused)

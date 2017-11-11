@@ -136,10 +136,16 @@ namespace Replay
                 text.text = timer.Get(t).ToString();
             }
 
+            if (deadlyData.Count == 0)
+                return;
+
             bool enable = false;
 
             if (deadlyData.Count > 0 && t < deadlyData[0].time)
+            {
                 DeadlyEnable(false);
+                return;
+            }
 
             foreach (var d in deadlyData)
             {
