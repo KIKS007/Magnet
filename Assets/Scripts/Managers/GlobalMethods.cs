@@ -66,7 +66,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
     {
         Vector3 position = new Vector3(player.transform.position.x, deathTextPositions.x, player.transform.position.z);
 
-        GameObject text = Instantiate(deathTextPrefab, position, deathTextPrefab.transform.rotation);
+        GameObject text = Instantiate(deathTextPrefab, position, deathTextPrefab.transform.rotation, GlobalVariables.Instance.lastManManager.transform);
         //text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
         text.transform.GetChild(0).GetComponent<Outline>().effectColor = GlobalVariables.Instance.playersColors[(int)playerName];
         text.transform.GetChild(0).GetComponent<Text>().color = GlobalVariables.Instance.playersColors[(int)playerName];
@@ -323,7 +323,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
         string tagTemp = movable.tag;
         int loopCount = 0;
 
-        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent) as GameObject;
+        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
         clone.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(delay);
@@ -359,7 +359,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
         string tagTemp = movable.tag;
         int loopCount = 0;
 
-        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent) as GameObject;
+        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
         clone.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(delay);
