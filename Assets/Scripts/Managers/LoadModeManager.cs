@@ -203,14 +203,6 @@ public class LoadModeManager : Singleton<LoadModeManager>
 
     public void DestroyParticules()
     {
-        if (GlobalVariables.Instance.ParticulesClonesParent.childCount != 0)
-        {
-            for (int i = 0; i < GlobalVariables.Instance.ParticulesClonesParent.childCount; i++)
-            {
-                Destroy(GlobalVariables.Instance.ParticulesClonesParent.GetChild(i).gameObject);
-            }
-        }
-
         GameObject[] particlesFX = GameObject.FindGameObjectsWithTag("Particles_FX");
 
         for (int i = 0; i < particlesFX.Length; i++)

@@ -189,7 +189,6 @@ public class GlobalVariables : Singleton<GlobalVariables>
     public GameObject DeadParticles;
     public GameObject MovableExplosion;
     public GameObject PlayerSpawnParticles;
-    public Transform ParticulesClonesParent;
 
     [Header("Buttons Color")]
     public Color mainButtonIdleColorText;
