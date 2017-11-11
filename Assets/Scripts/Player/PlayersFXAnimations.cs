@@ -171,7 +171,7 @@ public class PlayersFXAnimations : MonoBehaviour
         if (ReplayManager.Instance.isReplaying)
             return;
 
-        if (dashAvailableFX.isPlaying)
+        if (dashAvailableFX != null && dashAvailableFX.isPlaying)
         {
             ParticleSystem.Particle[] particlesList = new ParticleSystem.Particle[dashAvailableFX.particleCount];
             dashAvailableFX.GetParticles(particlesList);
@@ -417,6 +417,9 @@ public class PlayersFXAnimations : MonoBehaviour
     {
         GameObject fx = Instantiate(GlobalVariables.Instance.attractFX[playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
         attractionRepulsionFX.Add(fx);
+
+        ReplayManager.Instance._attractionParticles.Add(fx.GetComponent<ReplayParticles>());
+
         ParticleSystem ps = fx.GetComponent<ParticleSystem>();
         fx.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
 
@@ -480,6 +483,9 @@ public class PlayersFXAnimations : MonoBehaviour
     {
         GameObject fx = Instantiate(GlobalVariables.Instance.repulseFX[playerNumber], whichCube.transform.position, transform.rotation) as GameObject;
         attractionRepulsionFX.Add(fx);
+
+        ReplayManager.Instance._attractionParticles.Add(fx.GetComponent<ReplayParticles>());
+
         ParticleSystem ps = fx.GetComponent<ParticleSystem>();
         fx.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
 
@@ -574,19 +580,21 @@ public class PlayersFXAnimations : MonoBehaviour
         {
             DOVirtual.DelayedCall(GlobalVariables.Instance.delayBetweenWavesFX * i, () =>
                 {
-                    int playerNumber = (int)playerName;
-                    Quaternion rotation = Quaternion.Euler(new Vector3(90, 0, 0));
-
-                    Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform);
-                    //instance.transform.parent = GlobalVariables.Instance.ParticulesClonesParent.transform;
-
-                    if (GetComponent<PlayersVibration>() != null)
-                        GetComponent<PlayersVibration>().Wave();
+                    SpawnWave();                   
                 });
         }
-
-
     }
+
+    void SpawnWave()
+    {
+        Quaternion rotation = Quaternion.Euler(new Vector3(90, 0, 0));
+
+        GameObject wave = Instantiate(GlobalVariables.Instance.waveFX[playerNumber], transform.position, rotation, transform) as GameObject;
+
+        if (GetComponent<PlayersVibration>() != null)
+            GetComponent<PlayersVibration>().Wave();
+    }
+
 
     public virtual GameObject DeathParticles(Vector3 position)
     {

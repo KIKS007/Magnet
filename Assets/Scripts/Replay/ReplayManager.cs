@@ -104,6 +104,8 @@ namespace Replay
         public List<Particles> particlesReplay = new List<Particles>();
 
         private List<Particles> _particlesReplay = new List<Particles>();
+        [HideInInspector]
+        public List<ReplayParticles> _attractionParticles = new List<ReplayParticles>();
 
         [Header("ArenaDeadzones")]
         public List<ArenaDeadzoneColumn> arenaDeadzoneColumns = new List<ArenaDeadzoneColumn>();
@@ -274,6 +276,8 @@ namespace Replay
 
             if (OnRecordingStart != null)
                 OnRecordingStart();
+
+            StartCoroutine(CleanParticlesInGame());
         }
 
         public void StopRecording()
@@ -363,13 +367,43 @@ namespace Replay
 
             foreach (var p in particlesReplay)
                 if (p.time < thresholdTime)
-                    Destroy(p.particles);
+                    Destroy(p.particles.gameObject);
 
             yield return new WaitForEndOfFrame();
 
             particlesReplay.RemoveAll(item => item.particles == null);
 
             isPaused = true;
+        }
+
+        IEnumerator CleanParticlesInGame()
+        {
+            yield return new WaitForSeconds(recordLength);
+
+            while (isRecording && !isReplaying)
+            {
+                yield return new WaitForSeconds(2f);
+
+                CleanParticlesEditor();
+
+                yield return new WaitForEndOfFrame();
+
+                particlesReplay.RemoveAll(item => item.particles == null);
+                _attractionParticles.RemoveAll(item => item == null);
+            }
+        }
+
+        void CleanParticlesEditor()
+        {
+            float thresholdTime = (Time.time - _startTime - recordLength);
+
+            foreach (var p in particlesReplay)
+                if (p.time < thresholdTime && p.particles != null)
+                    Destroy(p.particles.gameObject);
+
+            foreach (var p in _attractionParticles)
+                if (p != null && p.particles[p.particles.Count - 1].time < thresholdTime)
+                    Destroy(p.gameObject);
         }
 
         public void StopReplay(bool reset = false)
@@ -392,6 +426,15 @@ namespace Replay
         {
             ClearAll();
 
+            foreach (var p in particlesReplay)
+                if (p.particles != null)
+                    Destroy(p.particles.gameObject);
+
+            foreach (var p in _attractionParticles)
+                if (p.particles != null)
+                    Destroy(p.gameObject);
+
+            _attractionParticles.Clear();
             particlesReplay.Clear();
             arenaDeadzoneColumns.Clear();
 

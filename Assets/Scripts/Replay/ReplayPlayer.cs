@@ -66,8 +66,6 @@ namespace Replay
 
         void DashDispo()
         {
-            if (ReplayManager.Instance.isRecording)
-                ReplayManager.Instance.particlesReplay.Add(new ReplayManager.Particles(playerFXScript.dashAvailableFX));
         }
 
         void StunON()
