@@ -323,7 +323,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
         string tagTemp = movable.tag;
         int loopCount = 0;
 
-        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
+        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
         clone.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(delay);
@@ -359,7 +359,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
         string tagTemp = movable.tag;
         int loopCount = 0;
 
-        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), movable.transform.parent, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
+        GameObject clone = Instantiate(movable, newPos, Quaternion.Euler(Vector3.zero), GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
         clone.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(delay);
