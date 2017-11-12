@@ -89,6 +89,8 @@ namespace Replay
 
             ReplayManager.Instance.OnReplayStart -= OnReplayStart;
             ReplayManager.Instance.OnReplayStop -= OnReplayStop;
+
+            ReplayManager.Instance.OnClear -= OnClear;
         }
     }
 }

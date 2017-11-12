@@ -41,7 +41,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     public Toggle slowMoVignettingToggle;
 
     [Header("Apply")]
-    public bool apply = false;
+    public bool changes = false;
     public GameObject applyButton;
 
     private SlowMotionCamera slowmoScript;
@@ -145,7 +145,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         SaveData();
 
         applyButton.SetActive(false);
-        apply = true;
+        changes = false;
     }
 
     void LoadData()
@@ -269,22 +269,23 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void OnShow()
     {
-        applyButton.SetActive(false);
-        apply = false;
+        //applyButton.SetActive(false);
+        changes = false;
+        LoadData();
     }
 
     public void OnHide()
     {
-        if (!apply)
+        /* if (!apply)
             LoadData();
         else
-            SaveData();
+            SaveData();*/
     }
 
     public void EnableApplyButton()
     {
-        apply = false;
-        applyButton.SetActive(true);
+        changes = true;
+        //applyButton.SetActive(true);
     }
 
     public void HighQuality()
@@ -337,13 +338,13 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     void Brightness(float value)
     {
-        bcgScript.Brightness = (float)brightnessSlider.value;
+        bcgScript.Brightness = (float)brightnessSlider.value * 10;
         EnableApplyButton();
     }
 
     void Contrast(float value)
     {
-        bcgScript.Contrast = (float)contrastSlider.value;
+        bcgScript.Contrast = (float)contrastSlider.value * 10;
         EnableApplyButton();
     }
 
@@ -369,7 +370,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         HighQuality();
 
         applyButton.SetActive(false);
-        apply = true;
+        changes = false;
 
         SaveData();
     }
@@ -393,16 +394,22 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         slowMoVignettingToggle.isOn = true;
 
         applyButton.SetActive(false);
-        apply = true;
+        changes = false;
 
         SaveData();
     }
 
     public void Apply()
     {
-        apply = true;
+        changes = false;
         SaveData();
-        applyButton.SetActive(false);
+        //applyButton.SetActive(false);
+    }
+
+    public void Revert()
+    {
+        changes = false;
+        LoadData();
     }
 
     public void AntiAliasing(float value)

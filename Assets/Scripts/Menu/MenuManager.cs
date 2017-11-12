@@ -83,6 +83,9 @@ public class MenuManager : Singleton <MenuManager>
     [Header("Modes Selection Menu")]
     public MenuComponent modesSelectionMenu;
 
+    [Header("Confirm Changes Menu")]
+    public MenuComponent confirmChanges;
+
     [Header("REPULSE Logos")]
     public Transform logosParent;
 
@@ -623,6 +626,16 @@ public class MenuManager : Singleton <MenuManager>
         StartCoroutine(ShowMenuCoroutine(whichMenu));
     }
 
+    public void ShowMenuWithDelay(MenuComponent whichMenu)
+    {
+        DOVirtual.DelayedCall(animationDuration + 0.05f, () =>
+            {
+                menuAnimationType = MenuAnimationType.Show;
+
+                StartCoroutine(ShowMenuCoroutine(whichMenu));
+            });
+    }
+
     public void SubmitMenu(MenuComponent whichMenu, int submitButton)
     {
         menuAnimationType = MenuAnimationType.Submit;
@@ -794,6 +807,17 @@ public class MenuManager : Singleton <MenuManager>
 
         StartCoroutine(HideMenuCoroutine(whichMenu, -1));
     }
+
+    public void HideMenuDelay(MenuComponent whichMenu)
+    {
+        DOVirtual.DelayedCall(animationDuration, () =>
+            {
+                menuAnimationType = MenuAnimationType.Hide;
+
+                StartCoroutine(HideMenuCoroutine(whichMenu, -1));
+            });
+    }
+
 
     public void CancelMenu(MenuComponent whichMenu, int cancelButton)
     {

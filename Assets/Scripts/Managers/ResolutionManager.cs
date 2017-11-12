@@ -223,6 +223,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         Screen.SetResolution((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
 
         PlayerPrefs.SetInt("Fullscreen", fullScreen ? 1 : 0);
+
+        GraphicsQualityManager.Instance.EnableApplyButton();
     }
 
     public void ToggleVsync()
@@ -238,6 +240,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         }
 
         PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
+
+        GraphicsQualityManager.Instance.EnableApplyButton();
     }
 
     public void Reset()

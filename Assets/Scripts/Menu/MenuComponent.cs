@@ -272,8 +272,15 @@ public class MenuComponent : MonoBehaviour
 
     public void Cancel()
     {
-        if (menuComponentType == MenuComponentType.BasicMenu)
-            MenuManager.Instance.CancelMenu(this, menuButton.GetComponent<MenuButtonComponent>().buttonIndex);
+        if (name == "GraphicsMenu" && GraphicsQualityManager.Instance.changes)
+        {
+            MenuManager.Instance.SubmitMenu(MenuManager.Instance.confirmChanges);
+        }
+        else
+        {
+            if (menuComponentType == MenuComponentType.BasicMenu)
+                MenuManager.Instance.CancelMenu(this, menuButton.GetComponent<MenuButtonComponent>().buttonIndex);
+        }
     }
 
     [ButtonGroupAttribute("Group B")]	
