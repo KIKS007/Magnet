@@ -178,8 +178,7 @@ namespace Replay
         {
             base.OnDestroy();
 
-            if (cubeMaterial)
-                Destroy(cubeMaterial);
+            DestroyImmediate(cubeMaterial);
         }
     }
 

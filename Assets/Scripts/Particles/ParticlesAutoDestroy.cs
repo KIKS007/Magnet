@@ -22,4 +22,14 @@ public class ParticlesAutoDestroy : MonoBehaviour
         else
             gameObject.SetActive(false);
     }
+
+    void OnDestroy()
+    {
+        var p = GetComponent<ParticleSystemRenderer>();
+
+        foreach (var m in p.materials)
+            DestroyImmediate(m);
+        
+        DestroyImmediate(p.material);
+    }
 }

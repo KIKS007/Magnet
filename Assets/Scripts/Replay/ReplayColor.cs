@@ -96,8 +96,7 @@ namespace Replay
         {
             base.OnDestroy();
 
-            if (material)
-                Destroy(material);
+            DestroyImmediate(material);
         }
     }
      

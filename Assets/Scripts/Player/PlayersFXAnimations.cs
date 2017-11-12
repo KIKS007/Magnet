@@ -598,8 +598,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        if (dashOngleMaterial)
-            Destroy(dashOngleMaterial);
+        DestroyImmediate(dashOngleMaterial);
     }
 
     public virtual GameObject DeathParticles(Vector3 position)

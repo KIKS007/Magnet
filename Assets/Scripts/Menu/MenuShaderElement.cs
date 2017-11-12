@@ -137,11 +137,11 @@ public class MenuShaderElement : MonoBehaviour
             GlobalVariables.Instance.OnEnvironementChromaChange -= ShaderColorChange;
 	
         if (material)
-            Destroy(material);
+            DestroyImmediate(material);
 
         foreach (var m in materials)
             if (m)
-                Destroy(m);
+                DestroyImmediate(m);
     }
 
     protected virtual void Start()

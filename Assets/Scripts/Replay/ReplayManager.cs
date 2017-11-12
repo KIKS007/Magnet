@@ -391,7 +391,7 @@ namespace Replay
                 particlesReplay.RemoveAll(item => item.particles == null);
                 _attractionParticles.RemoveAll(item => item == null);
 
-                Resources.UnloadUnusedAssets();
+                //Resources.UnloadUnusedAssets();
             }
         }
 

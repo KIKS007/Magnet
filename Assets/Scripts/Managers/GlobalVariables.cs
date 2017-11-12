@@ -248,6 +248,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
         OnEndMode += () => Startup = StartupType.Delayed;
         OnEnvironementChromaChange += SetPlayerMouseCursor;
 
+        OnMenu += () => Resources.UnloadUnusedAssets();
+        OnEndMode += () => Resources.UnloadUnusedAssets();
+
         MenuManager.Instance.OnStartModeClick += UpdateGamepadList;
         MenuManager.Instance.OnStartModeClick += CreateAIs;
 

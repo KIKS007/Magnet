@@ -500,8 +500,7 @@ public class MovableScript : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        if (cubeMaterial)
-            Destroy(cubeMaterial);
+        DestroyImmediate(cubeMaterial);
     }
 
     #endregion
