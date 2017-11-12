@@ -861,6 +861,8 @@ public class PlayersGameplay : MonoBehaviour
             yield return new WaitWhile(() => GlobalVariables.Instance.GameState != GameStateEnum.Playing);
 
             lifeDuration += Time.unscaledDeltaTime;
+
+            yield return new WaitForEndOfFrame();
         }
     }
 

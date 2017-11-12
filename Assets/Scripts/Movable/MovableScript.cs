@@ -501,6 +501,25 @@ public class MovableScript : MonoBehaviour
     protected virtual void OnDestroy()
     {
         DestroyImmediate(cubeMaterial);
+
+        foreach (var m in GetComponent<Renderer>().materials)
+            DestroyImmediate(m);
+
+        if (deadlyParticle)
+        {
+            var p = deadlyParticle.GetComponent<ParticleSystemRenderer>();
+            
+            foreach (var m in p.materials)
+                DestroyImmediate(m);
+        }
+
+        if (deadlyParticle)
+        {
+            var p = deadlyParticle2.GetComponent<ParticleSystemRenderer>();
+
+            foreach (var m in p.materials)
+                DestroyImmediate(m);
+        }
     }
 
     #endregion

@@ -243,13 +243,23 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
         OnPlaying += () => SetMouseGameplayVisibility();
         OnRestartMode += () => SetMouseGameplayVisibility();
-        OnPlaying += UpdatePlayedModes;
         OnMenu += () => Startup = StartupType.Wave;
         OnEndMode += () => Startup = StartupType.Delayed;
         OnEnvironementChromaChange += SetPlayerMouseCursor;
 
-        OnMenu += () => Resources.UnloadUnusedAssets();
-        OnEndMode += () => Resources.UnloadUnusedAssets();
+        OnStartMode += UpdatePlayedModes;
+        OnRestartMode += UpdatePlayedModes;
+
+        OnMenu += () =>
+        {
+            System.GC.Collect();
+            Resources.UnloadUnusedAssets();
+        };
+        OnEndMode += () =>
+        {
+            System.GC.Collect();
+            Resources.UnloadUnusedAssets();
+        };
 
         MenuManager.Instance.OnStartModeClick += UpdateGamepadList;
         MenuManager.Instance.OnStartModeClick += CreateAIs;
@@ -293,11 +303,42 @@ public class GlobalVariables : Singleton<GlobalVariables>
     {
         Vector2 mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-        if (GameState != GameStateEnum.Playing && Cursor.visible == false && mouseMovement.magnitude > 1)
+        if (Cursor.visible == false && mouseMovement.magnitude > 1)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (GameState != GameStateEnum.Playing)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                bool mouseController = false;
+
+                for (int i = 0; i < 4; i++)
+                    if (PlayersControllerNumber[i] == 0)
+                    {
+                        mouseController = true;
+                        break;
+                    }
+
+                StopCoroutine(WaitToHideMouse());
+
+                if (mouseController)
+                    SetMouseGameplayVisibility();
+                else
+                {
+                    SetMouseVisibility(true);
+                    StartCoroutine(WaitToHideMouse());
+                }
+            }
         }
+    }
+
+    IEnumerator WaitToHideMouse()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+
+        SetMouseGameplayVisibility(true);
     }
 
     public void LevelWasLoaded(WhichMode levelLoaded, GameStateEnum gameState)
@@ -493,6 +534,9 @@ public class GlobalVariables : Singleton<GlobalVariables>
         }
 
         environementLoading = false;
+
+        Resources.UnloadUnusedAssets();
+        System.GC.Collect();
     }
 
     void GetMovables()

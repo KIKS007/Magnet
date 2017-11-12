@@ -179,6 +179,9 @@ namespace Replay
             base.OnDestroy();
 
             DestroyImmediate(cubeMaterial);
+
+            foreach (var m in GetComponent<Renderer>().materials)
+                DestroyImmediate(m);
         }
     }
 

@@ -183,9 +183,15 @@ public class ArenaDeadzones : MonoBehaviour
             yield return new WaitWhile(() => ReplayManager.Instance.isReplaying);
 
             Transform column = null;
+            int loopCount = 0;
 
             do
             {
+                if (loopCount > 300)
+                    yield break;
+
+                loopCount++;
+
                 column = allColumns[Random.Range(0, allColumns.Count)];
             }
             while(column.GetChild(0).tag == "DeadZone");

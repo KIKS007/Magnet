@@ -152,6 +152,9 @@ public class MovableBomb : MovableScript
         MasterAudio.StopAllOfSound(SoundsManager.Instance.lastSecondsSound);
         MasterAudio.StopAllOfSound(SoundsManager.Instance.cubeTrackingSound);
 
+        if (playerHolding == null)
+            yield break;
+
         Vector3 explosionPos = Vector3.Lerp(playerHolding.transform.position, transform.position, 0.5f);
 
         playerHolding.GetComponent<PlayersGameplay>().OnDeath -= PlayerSuicide;
@@ -184,7 +187,7 @@ public class MovableBomb : MovableScript
 
         StartCoroutine(AddSpeed());
 
-        while (playerHolding && Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
+        while (playerHolding != null && Vector3.Distance(playerHolding.transform.position, transform.position) > 0.5f)
         {
             if (!hold)
             {

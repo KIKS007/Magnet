@@ -260,7 +260,7 @@ public class MenuManager : Singleton <MenuManager>
                 }
             }
 
-            yield return 0;
+            yield return new WaitForEndOfFrame();
         }
         while (!startScreenInput);
 
@@ -294,7 +294,7 @@ public class MenuManager : Singleton <MenuManager>
                 break;
             }
 
-            yield return 0;
+            yield return new WaitForEndOfFrame();
         }
         while (!startScreenInput);
 

@@ -404,7 +404,7 @@ namespace Replay
                     Destroy(p.particles.gameObject);
 
             foreach (var p in _attractionParticles)
-                if (p != null && p.particles[p.particles.Count - 1].time < thresholdTime)
+                if (p != null && p.particles != null && p.particles[p.particles.Count - 1].time < thresholdTime)
                     Destroy(p.gameObject);
         }
 

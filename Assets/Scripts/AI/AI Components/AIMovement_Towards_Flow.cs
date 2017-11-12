@@ -3,94 +3,101 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AIMovement_Towards_Flow : AIMovement_Towards 
+public class AIMovement_Towards_Flow : AIMovement_Towards
 {
-	private int randomCubes = 4;
+    private int randomCubes = 4;
 
-	protected override void OnEnable ()
-	{
-		AIScript.holdTarget = null;
+    protected override void OnEnable()
+    {
+        AIScript.holdTarget = null;
 
-		base.OnEnable ();
+        base.OnEnable();
 
-		if (!CanPlay ())
-			return;
-	}
+        if (!CanPlay())
+            return;
+    }
 
-	protected override void Enable ()
-	{
-		if (!AIScript.movementLayerEnabled)
-			return;
+    protected override void Enable()
+    {
+        if (!AIScript.movementLayerEnabled)
+            return;
 
-		if (!CanPlay ())
-			return;
+        if (!CanPlay())
+            return;
 
-		base.Enable ();
+        base.Enable();
 
-		ChooseTarget ();
-	}
+        ChooseTarget();
+    }
 
-	void ChooseTarget ()
-	{
-		List<GameObject> targetsTemp = new List<GameObject> (GlobalVariables.Instance.AllMovables);
+    void ChooseTarget()
+    {
+        List<GameObject> targetsTemp = new List<GameObject>(GlobalVariables.Instance.AllMovables);
 
-		List<GameObject> players = new List<GameObject> (GlobalVariables.Instance.AlivePlayersList);
-		players.Remove (gameObject);
+        List<GameObject> players = new List<GameObject>(GlobalVariables.Instance.AlivePlayersList);
+        players.Remove(gameObject);
 
-		GameObject player = players [Random.Range (0, players.Count)];
+        GameObject player = players[Random.Range(0, players.Count)];
 
-		player = gameObject;
+        player = gameObject;
 
-		targetsTemp = targetsTemp.OrderBy (x => Vector3.Distance (player.transform.position, x.transform.position)).ToList ();
+        targetsTemp = targetsTemp.OrderBy(x => Vector3.Distance(player.transform.position, x.transform.position)).ToList();
 
-		if(targetsTemp.Count >= randomCubes)
-		{
-			do
-			{
-				AIScript.shootTarget = target = targetsTemp [Random.Range (0, randomCubes)].transform;
-			}
-			while(!AIScript.shootTarget.gameObject.activeSelf);
-		}
-		else
-		{
-			if(targetsTemp [0].activeSelf)
-				AIScript.shootTarget = target = targetsTemp [0].transform;
-		}
-	}
+        int loopCount = 0;
 
-	protected override void Update ()
-	{
-		if (!AIScript.movementLayerEnabled)
-			return;
+        if (targetsTemp.Count >= randomCubes)
+        {
+            do
+            {
+                if (loopCount > 300)
+                    return;
 
-		if (!CanPlay ())
-			return;
+                loopCount++;
 
-		base.Update ();
+                AIScript.shootTarget = target = targetsTemp[Random.Range(0, randomCubes)].transform;
+            }
+            while(!AIScript.shootTarget.gameObject.activeSelf);
+        }
+        else
+        {
+            if (targetsTemp[0].activeSelf)
+                AIScript.shootTarget = target = targetsTemp[0].transform;
+        }
+    }
 
-		if(AIScript.shootTarget != null && !AIScript.shootTarget.gameObject.activeSelf)
-		{
-			AIScript.shootTarget = null;
-			target = null;
-		}
+    protected override void Update()
+    {
+        if (!AIScript.movementLayerEnabled)
+            return;
 
-		if (AIScript.closerPlayers.Count == 0)
-			return;
+        if (!CanPlay())
+            return;
 
-		if(target == null)
-			ChooseTarget ();
+        base.Update();
 
-		if (AIScript.shootTarget)
-			AIScript.aiAnimator.SetFloat ("cubeDistanceFromCenter", Vector3.Distance (AIScript.shootTarget.position, Vector3.zero));
-		else
-			AIScript.aiAnimator.SetFloat ("cubeDistanceFromCenter", 666);
-	}
+        if (AIScript.shootTarget != null && !AIScript.shootTarget.gameObject.activeSelf)
+        {
+            AIScript.shootTarget = null;
+            target = null;
+        }
 
-	protected override void OnDisable ()
-	{
-		//AIScript.playerTarget = null;
-		target = null;
+        if (AIScript.closerPlayers.Count == 0)
+            return;
 
-		base.OnDisable ();
-	}
+        if (target == null)
+            ChooseTarget();
+
+        if (AIScript.shootTarget)
+            AIScript.aiAnimator.SetFloat("cubeDistanceFromCenter", Vector3.Distance(AIScript.shootTarget.position, Vector3.zero));
+        else
+            AIScript.aiAnimator.SetFloat("cubeDistanceFromCenter", 666);
+    }
+
+    protected override void OnDisable()
+    {
+        //AIScript.playerTarget = null;
+        target = null;
+
+        base.OnDisable();
+    }
 }

@@ -100,11 +100,17 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         do
         {
+            if (loopCount > maxWhileLoop)
+                yield break;
+
+            if (player == null)
+                yield break;
+
             loopCount++;
             newPos = new Vector3(Random.Range(xLimits.x + playerLimitReduction, xLimits.y - playerLimitReduction), player.transform.position.y, Random.Range(zLimits.x + playerLimitReduction, zLimits.y - playerLimitReduction));
             yield return null;	
         }
-        while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+        while(player != null && Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
         player.layer = LayerMask.NameToLayer("Safe");
         player.GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -154,11 +160,14 @@ public class GlobalMethods : Singleton<GlobalMethods>
 			
             do
             {
+                if (loopCount > maxWhileLoop)
+                    yield break;
+                
                 loopCount++;
                 newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
                 yield return null;	
             }
-            while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);			
+            while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));			
 
             newPos.y = cubeYPosition;
             GameObject deadCube = Instantiate(GlobalVariables.Instance.deadCubesPrefabs[randomCube], newPos, GlobalVariables.Instance.deadCubesPrefabs[randomCube].transform.rotation, GameObject.FindGameObjectWithTag("MovableParent").transform) as GameObject;
@@ -229,10 +238,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
             do
             {
+                if (loopCount > maxWhileLoop)
+                    yield break;
+                
                 loopCount++;
                 newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
             }
-            while(Physics.CheckSphere(newPos, sphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+            while(Physics.CheckSphere(newPos, sphereRadius, gameplayLayer));
 
             yield return new WaitForSeconds(durationBetweenSpawn);
 
@@ -276,10 +288,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         do
         {
+            if (loopCount > maxWhileLoop)
+                return;
+            
             loopCount++;
             newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
         }
-        while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+        while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
         newPos.y = cubeYPosition;
 
@@ -297,10 +312,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         do
         {
+            if (loopCount > maxWhileLoop)
+                return;
+           
             loopCount++;
             newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
         }
-        while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer) && loopCount < maxWhileLoop);
+        while(Physics.CheckSphere(newPos, checkSphereRadius, gameplayLayer));
 
         newPos.y = cubeYPosition;
 
@@ -330,10 +348,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         do
         {
+            if (loopCount > maxWhileLoop)
+                yield break;
+            
             newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
             loopCount++;
         }
-        while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer) && loopCount < maxWhileLoop);
+        while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer));
 
         newPos.y = cubeYPosition;
         clone.tag = "Untagged";
@@ -366,10 +387,13 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
         do
         {
+            if (loopCount > maxWhileLoop)
+                yield break;
+            
             newPos = new Vector3(Random.Range(xLimits.x, xLimits.y), 1, Random.Range(zLimits.x, zLimits.y));
             loopCount++;
         }
-        while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer) && loopCount < maxWhileLoop);
+        while(Physics.CheckSphere(newPos, checkSphere, gameplayLayer));
 
         newPos.y = cubeYPosition;
         clone.tag = "Untagged";

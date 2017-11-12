@@ -97,6 +97,9 @@ namespace Replay
             base.OnDestroy();
 
             DestroyImmediate(material);
+
+            foreach (var m in GetComponent<Renderer>().materials)
+                DestroyImmediate(m);
         }
     }
      

@@ -599,6 +599,12 @@ public class PlayersFXAnimations : MonoBehaviour
     protected virtual void OnDestroy()
     {
         DestroyImmediate(dashOngleMaterial);
+
+        foreach (var r in playerMaterials)
+        {
+            foreach (var m in r.materials)
+                DestroyImmediate(m);
+        }
     }
 
     public virtual GameObject DeathParticles(Vector3 position)

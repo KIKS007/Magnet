@@ -77,8 +77,15 @@ public class LoadModeManager : Singleton<LoadModeManager>
     WhichMode RandomScene()
     {
         WhichMode randomScene = WhichMode.Bomb;
+        int loopCount = 0;
+
         do
         {
+            if (loopCount > 300)
+                return randomScene;
+            
+            loopCount++;
+
             randomScene = (WhichMode)modesEnum[UnityEngine.Random.Range(0, modesEnum.Count)];
         }
         while (GlobalVariables.Instance.lastPlayedModes.Contains(randomScene));

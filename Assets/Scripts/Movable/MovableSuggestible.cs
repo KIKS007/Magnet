@@ -3,71 +3,87 @@ using System.Collections;
 using DG.Tweening;
 using DarkTonic.MasterAudio;
 
-public class MovableSuggestible : MovableScript 
+public class MovableSuggestible : MovableScript
 {
-	public static MovableSuggestible testingMovable = null;
+    public static MovableSuggestible testingMovable = null;
 
-	public override void Start ()
-	{
-		if (testingMovable == null)
-		{
-			testingMovable = this;
+    public override void Start()
+    {
+        if (testingMovable == null)
+        {
+            testingMovable = this;
 
-			if (!SteamAchievements.Instance.Achieved (AchievementID.ACH_FLOW))
-				StartCoroutine (CheckFlowAchievement ());
-		}
+            if (!SteamAchievements.Instance.Achieved(AchievementID.ACH_FLOW))
+                StartCoroutine(CheckFlowAchievement());
+        }
 
 
-		gameObject.tag = "Suggestible";
-		slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript> ();
-		ToDeadlyColor ();
-	}
+        gameObject.tag = "Suggestible";
+        slowMoTrigger = transform.GetComponentInChildren<SlowMotionTriggerScript>();
+        ToDeadlyColor();
+    }
 
-	protected override void HitPlayer (Collision other)
-	{
-		if(other.collider.tag == "Player")
-		{
-			PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay> ();
+    protected override void HitPlayer(Collision other)
+    {
+        if (other.collider.tag == "Player")
+        {
+            PlayersGameplay playerScript = other.collider.GetComponent<PlayersGameplay>();
 
-			if (playerScript.playerState == PlayerState.Dead)
-				return;
+            if (playerScript.playerState == PlayerState.Dead)
+                return;
 
-			playerScript.Death (DeathFX.All, other.contacts [0].point);
+            playerScript.Death(DeathFX.All, other.contacts[0].point);
 
-			PlayerKilled ();
+            PlayerKilled();
 
-			foreach (GameObject g in attracedBy)
-				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+            foreach (GameObject g in attracedBy)
+                StatsManager.Instance.PlayerKills(g.GetComponent<PlayersGameplay>());
 
-			foreach (GameObject g in repulsedBy)
-				StatsManager.Instance.PlayerKills (g.GetComponent<PlayersGameplay> ());
+            foreach (GameObject g in repulsedBy)
+                StatsManager.Instance.PlayerKills(g.GetComponent<PlayersGameplay>());
 
-			InstantiateParticles (other.contacts [0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors [(int)playerScript.playerName]);
+            InstantiateParticles(other.contacts[0], GlobalVariables.Instance.HitParticles, GlobalVariables.Instance.playersColors[(int)playerScript.playerName]);
 
-			GlobalMethods.Instance.Explosion (transform.position);
-		}
-	}
+            GlobalMethods.Instance.Explosion(transform.position);
+        }
+    }
 
-	IEnumerator CheckFlowAchievement ()
-	{
-		while (true)
-		{
-			int right = 0;
-			int left = 0;
+    IEnumerator CheckFlowAchievement()
+    {
+        while (true)
+        {
+            if (GlobalVariables.Instance.GameState == GameStateEnum.EndMode)
+                yield break;
 
-			foreach (var m in GlobalVariables.Instance.AllMovables)
-				if (m.transform.position.x > 0)
-					right++;
-				else
-					left++;
+            if (GlobalVariables.Instance.GameState != GameStateEnum.Playing)
+                yield return new WaitUntil(() => GlobalVariables.Instance.GameState == GameStateEnum.Playing);
 
-			if (right == GlobalVariables.Instance.AllMovables.Count || left == GlobalVariables.Instance.AllMovables.Count)
-			{
-				SteamAchievements.Instance.UnlockAchievement (AchievementID.ACH_FLOW);
-				yield break;
-			}
+            int right = 0;
+            int left = 0;
 
-			yield return new WaitForSecondsRealtime (1);
-		}
-	}
+            foreach (var m in GlobalVariables.Instance.AllMovables)
+                if (m.transform.position.x > 0)
+                    right++;
+                else
+                    left++;
+
+            if (right == GlobalVariables.Instance.AllMovables.Count || left == GlobalVariables.Instance.AllMovables.Count)
+            {
+                SteamAchievements.Instance.UnlockAchievement(AchievementID.ACH_FLOW);
+                yield break;
+            }
+
+            yield return new WaitForSecondsRealtime(1);
+        }
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        StopAllCoroutines();
+
+        if (testingMovable && testingMovable == this)
+            testingMovable = null;
+    }
 }
