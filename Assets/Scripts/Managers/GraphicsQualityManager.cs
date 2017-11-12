@@ -270,8 +270,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     public void OnShow()
     {
         //applyButton.SetActive(false);
+        Revert();
         changes = false;
-        LoadData();
     }
 
     public void OnHide()
@@ -408,8 +408,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void Revert()
     {
-        changes = false;
         LoadData();
+        changes = false;
     }
 
     public void AntiAliasing(float value)
