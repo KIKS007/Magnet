@@ -26,8 +26,8 @@ namespace Replay
         public override void OnClear()
         {
             base.OnClear();
-            color = new TimelinedColor();
-            emissionColor = new TimelinedColor();
+            //color = new TimelinedColor();
+            //emissionColor = new TimelinedColor();
         }
 
         protected override void Recording()

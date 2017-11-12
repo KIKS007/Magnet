@@ -2,66 +2,66 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIRepel_Flow : AIAim 
+public class AIRepel_Flow : AIAim
 {
-	protected override void Enable ()
-	{
-		if (!AIScript.shootLayerEnabled)
-			return;
+    protected override void Enable()
+    {
+        if (!AIScript.shootLayerEnabled)
+            return;
 
-		if (!CanPlay ())
-			return;
+        if (!CanPlay())
+            return;
 
-		base.Enable ();
+        base.Enable();
 
-	//	StartCoroutine (SetTargetCoroutine ());
+        //	StartCoroutine (SetTargetCoroutine ());
 
-		SetTarget ();
+        SetTarget();
 
-		AIScript.isRepelling = true;
-	}
+        AIScript.isRepelling = true;
+    }
 
-	protected override void Update ()
-	{
-		base.Update ();
+    protected override void Update()
+    {
+        base.Update();
 
-		if (!AIScript.shootLayerEnabled)
-			return;
+        if (!AIScript.shootLayerEnabled)
+            return;
 
-		if(!AIScript.isRepelling)
-			AIScript.isRepelling = true;
+        if (!AIScript.isRepelling)
+            AIScript.isRepelling = true;
 
-	//	SetTarget ();
-	}
+        //	SetTarget ();
+    }
 
-	void SetTarget ()
-	{
-		if (AIScript.dangerousCubes.Count == 0)
-			return;
+    void SetTarget()
+    {
+        if (AIScript.dangerousCubes.Count == 0)
+            return;
 
-		target = AIScript.holdTarget = AIScript.dangerousCubes [0].transform;
-	}
+        target = AIScript.holdTarget = AIScript.dangerousCubes[0].transform;
+    }
 
-	IEnumerator SetTargetCoroutine ()
-	{
-		if (AIScript.dangerousCubes.Count == 0)
-			target = AIScript.holdTarget = AIScript.dangerousCubes [0].transform;
+    IEnumerator SetTargetCoroutine()
+    {
+        if (AIScript.dangerousCubes.Count != 0)
+            target = AIScript.holdTarget = AIScript.dangerousCubes[0].transform;
 
-		yield return new WaitForSecondsRealtime (1f);
+        yield return new WaitForSecondsRealtime(1f);
 
-		StartCoroutine (SetTargetCoroutine ());
-	}
+        StartCoroutine(SetTargetCoroutine());
+    }
 
-	protected override void OnDisable ()
-	{
-		if (!AIScript.shootLayerEnabled)
-			return;
+    protected override void OnDisable()
+    {
+        if (!AIScript.shootLayerEnabled)
+            return;
 
-		StopAllCoroutines ();
+        StopAllCoroutines();
 
-		base.OnDisable ();
+        base.OnDisable();
 
-		target = null;
-		AIScript.isRepelling = false;
-	}
+        target = null;
+        AIScript.isRepelling = false;
+    }
 }

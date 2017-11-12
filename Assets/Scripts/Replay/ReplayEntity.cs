@@ -67,7 +67,7 @@ namespace Replay
         public override void OnClear()
         {
             base.OnClear();
-            data = new RecordData();
+            //data = new RecordData();
             enableData = new List<EnableData>();
         }
 

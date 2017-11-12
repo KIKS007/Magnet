@@ -78,8 +78,8 @@ namespace Replay
         public override void OnClear()
         {
             base.OnClear();
-            colors = new TimelinedMovableColor();
-            timer = new TimelinedBombTimer();
+            // colors = new TimelinedMovableColor();
+            // timer = new TimelinedBombTimer();
             deadlyData = new List<DeadlyData>();
         }
 

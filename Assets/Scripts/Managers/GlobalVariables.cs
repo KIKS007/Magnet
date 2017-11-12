@@ -456,9 +456,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
     public IEnumerator LoadRandomEnvironment()
     {
         int randomChroma = Random.Range(0, System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1);
+        int loopCount = 0;
 
         do
         {
+            if (loopCount > 300)
+                break;
+            
+            loopCount++;
+
             randomChroma = Random.Range(0, System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1);
         }
         while (randomChroma == (int)environementChroma);
