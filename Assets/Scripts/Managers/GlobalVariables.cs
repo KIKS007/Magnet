@@ -336,9 +336,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     IEnumerator WaitToHideMouse()
     {
-        yield return new WaitForSecondsRealtime(3f);
+        yield return new WaitForSecondsRealtime(10f);
 
-        SetMouseGameplayVisibility(true);
+        if (GameState == GameStateEnum.Playing)
+            SetMouseGameplayVisibility(true);
     }
 
     public void LevelWasLoaded(WhichMode levelLoaded, GameStateEnum gameState)
@@ -724,7 +725,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
         if (mouseController && !forcedHide)
         {
-            if (Cursor.lockState != CursorLockMode.None)
+            if (!Cursor.visible)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -732,10 +733,10 @@ public class GlobalVariables : Singleton<GlobalVariables>
         }
         else
         {
-            if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
+            if (Cursor.visible && !ReplayManager.Instance.isReplaying)
             {
                 Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.lockState = CursorLockMode.Locked;
             }
         }
 
@@ -746,15 +747,15 @@ public class GlobalVariables : Singleton<GlobalVariables>
     {
         if (!visible)
         {
-            if (Cursor.lockState != CursorLockMode.Locked && !ReplayManager.Instance.isReplaying)
+            if (Cursor.visible && !ReplayManager.Instance.isReplaying)
             {
                 Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.lockState = CursorLockMode.Locked;
             }
         }
         else
         {
-            if (Cursor.lockState != CursorLockMode.None)
+            if (!Cursor.visible)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
