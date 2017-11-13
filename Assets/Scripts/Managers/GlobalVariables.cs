@@ -225,6 +225,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     void Awake()
     {
+        if (PlayerPrefs.HasKey("BuildVersion"))
+        {
+            if (PlayerPrefs.GetString("BuildVersion") != Application.version)
+            {
+                DeletePlayersPrefs();
+                Debug.LogWarning("Build Version Different");
+            }
+        }
+
+        PlayerPrefs.SetString("BuildVersion", Application.version);
+
         StartCoroutine(OnGameStateChange(GameState));
         StartCoroutine(OnStartupDoneEvent());
         StartCoroutine(OnCocktailModes(selectedCocktailModes.Count));

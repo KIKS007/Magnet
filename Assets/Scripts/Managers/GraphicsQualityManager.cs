@@ -36,23 +36,21 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     public Toggle analogTVToggle;
     public Toggle vignettingToggle;
     public Toggle cameraMotionToggle;
-    public Toggle rgbToggle;
     public Toggle distorsionToggle;
-    public Toggle slowMoVignettingToggle;
 
     [Header("Apply")]
     public bool changes = false;
     public GameObject applyButton;
 
     private SlowMotionCamera slowmoScript;
-    private BrightnessContrastGamma bcgScript;
+    private BrownianMotion browianMotion;
     private PostProcessingProfile postProcessProfile;
     private Bloom bloom;
     private LensDistortionBlur distorsion;
-    private RGBSplit rgbSplit;
-    private ContrastVignette slowMoVignetting;
-    private BrownianMotion browianMotion;
+    private BrightnessContrastGamma bcgScript;
     private AnalogTV analogTV;
+
+    private bool setup = true;
 
     [HideInInspector]
     public bool browianMotionEnabled = true;
@@ -65,8 +63,6 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         postProcessProfile = camera.GetComponent<PostProcessingBehaviour>().profile;
         bloom = camera.GetComponent<Bloom>();
         distorsion = camera.GetComponent<LensDistortionBlur>();
-        rgbSplit = camera.GetComponent<RGBSplit>();
-        slowMoVignetting = camera.GetComponent<ContrastVignette>();
         bcgScript = FindObjectOfType<BrightnessContrastGamma>();
         slowmoScript = camera.GetComponent<SlowMotionCamera>();
         browianMotion = camera.GetComponent<BrownianMotion>();
@@ -117,35 +113,24 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
                 
                 EnableApplyButton();
             });
-        rgbToggle.onValueChanged.AddListener((bool arg0) =>
-            {
-                rgbSplit.enabled = arg0;
-                EnableApplyButton();
-            });
         distorsionToggle.onValueChanged.AddListener((bool arg0) =>
             {
                 distorsion.enabled = arg0;
                 EnableApplyButton();
             });
-        slowMoVignettingToggle.onValueChanged.AddListener((bool arg0) =>
-            {
-                slowMoVignetting.enabled = arg0;
-                EnableApplyButton();
-            });
 
+
+        Reset();
+        ResetAdvanced();
 
         if (PlayerPrefs.HasKey("QualityLevel"))
             LoadData();
-        else
-        {
-            Reset();
-            ResetAdvanced();
-        }
 
         SaveData();
 
         applyButton.SetActive(false);
         changes = false;
+        setup = false;
     }
 
     void LoadData()
@@ -224,14 +209,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         if (PlayerPrefs.HasKey("CameraMotion"))
             cameraMotionToggle.isOn = PlayerPrefs.GetInt("CameraMotion") == 1 ? true : false;
 
-        if (PlayerPrefs.HasKey("RGBSplit"))
-            rgbToggle.isOn = PlayerPrefs.GetInt("RGBSplit") == 1 ? true : false;
-
         if (PlayerPrefs.HasKey("Distorsion"))
             distorsionToggle.isOn = PlayerPrefs.GetInt("Distorsion") == 1 ? true : false;
-
-        if (PlayerPrefs.HasKey("SlowMoVignetting"))
-            slowMoVignettingToggle.isOn = PlayerPrefs.GetInt("SlowMoVignetting") == 1 ? true : false;
     }
 
     void SaveData()
@@ -244,9 +223,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         PlayerPrefs.SetInt("Vignetting", vignettingToggle.isOn == true ? 1 : 0);
 
         PlayerPrefs.SetInt("CameraMotion", cameraMotionToggle.isOn == true ? 1 : 0);
-        PlayerPrefs.SetInt("RGBSplit", rgbToggle.isOn == true ? 1 : 0);
         PlayerPrefs.SetInt("Distorsion", distorsionToggle.isOn == true ? 1 : 0);
-        PlayerPrefs.SetInt("SlowMoVignetting", slowMoVignettingToggle.isOn == true ? 1 : 0);
 
         PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
 
@@ -372,31 +349,47 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         applyButton.SetActive(false);
         changes = false;
 
-        SaveData();
+        if (!setup)
+            SaveData();
     }
 
     //Advanced Settings
     public void ResetAdvanced()
     {
-        brightnessSlider.value = 0;
-        contrastSlider.value = 0;
-        gammaSlider.value = 1;
+        //Reset Settings
+        brightnessSlider.value = 0f;
+        contrastSlider.value = 0f;
+        gammaSlider.value = 1f;
         bloomSlider.value = 1f;
         shakeSlider.value = 20f;
 
+        //Invoke Changes
+        brightnessSlider.onValueChanged.Invoke(0f);
+        contrastSlider.onValueChanged.Invoke(0f);
+        gammaSlider.onValueChanged.Invoke(1f);
+        shakeSlider.onValueChanged.Invoke(20f);
+
+        //Reset Settings
         ambiantOcclusionToggle.isOn = true;
         blurToggle.isOn = true;
         analogTVToggle.isOn = true;
         vignettingToggle.isOn = true;
         cameraMotionToggle.isOn = true;
-        rgbToggle.isOn = true;
         distorsionToggle.isOn = true;
-        slowMoVignettingToggle.isOn = true;
+
+        //Invoke Changes
+        ambiantOcclusionToggle.onValueChanged.Invoke(true);
+        blurToggle.onValueChanged.Invoke(true);
+        analogTVToggle.onValueChanged.Invoke(true);
+        vignettingToggle.onValueChanged.Invoke(true);
+        //cameraMotionToggle.onValueChanged.Invoke(true);
+        distorsionToggle.onValueChanged.Invoke(true);
 
         applyButton.SetActive(false);
         changes = false;
 
-        SaveData();
+        if (!setup)
+            SaveData();
     }
 
     public void Apply()
