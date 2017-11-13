@@ -317,7 +317,7 @@ namespace Replay
 
             _slide.maxValue = _endTime - _startTime;
 
-            foreach (Transform p in GlobalVariables.Instance.lastManManager.transform)
+            foreach (Transform p in GlobalVariables.Instance.particlesParent)
             {
                 if (p.GetComponent<ParticleSystem>() != null)
                     p.GetComponent<ParticleSystem>().Clear();

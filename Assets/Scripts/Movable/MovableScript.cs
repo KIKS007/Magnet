@@ -421,7 +421,7 @@ public class MovableScript : MonoBehaviour
         Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
         GameObject instance = Instantiate(prefab, pos, rot) as GameObject;
 
-        instance.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        instance.transform.SetParent(GlobalVariables.Instance.particlesParent);
 
         return instance;
     }
@@ -432,7 +432,7 @@ public class MovableScript : MonoBehaviour
         Quaternion rot = Quaternion.FromToRotation(Vector3.forward, contact.normal);
         GameObject instance = Instantiate(prefab, pos, rot) as GameObject;
 
-        instance.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        instance.transform.SetParent(GlobalVariables.Instance.particlesParent);
         instance.GetComponent<ParticleSystemRenderer>().material.color = color;
 
         return instance;

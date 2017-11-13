@@ -80,7 +80,7 @@ public class PlayersManikin : PlayersGameplay
         Vector3 pos = contact.point;
 
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[4], pos, GlobalVariables.Instance.explosionFX[4].transform.rotation) as GameObject;
-        instance.transform.parent = GlobalVariables.Instance.lastManManager.transform;
+        instance.transform.parent = GlobalVariables.Instance.particlesParent;
     }
 
     public GameObject DeathParticles(ContactPoint contact, GameObject prefab, Color color)
@@ -89,7 +89,7 @@ public class PlayersManikin : PlayersGameplay
         Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
         GameObject instantiatedParticles = Instantiate(prefab, pos, rot) as GameObject;
 
-        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.particlesParent);
         instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = color;
 
         return instantiatedParticles;

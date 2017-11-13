@@ -66,7 +66,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
     {
         Vector3 position = new Vector3(player.transform.position.x, deathTextPositions.x, player.transform.position.z);
 
-        GameObject text = Instantiate(deathTextPrefab, position, deathTextPrefab.transform.rotation, GlobalVariables.Instance.lastManManager.transform);
+        GameObject text = Instantiate(deathTextPrefab, position, deathTextPrefab.transform.rotation, GlobalVariables.Instance.particlesParent);
         //text.transform.LookAt (GameObject.FindGameObjectWithTag ("MainCamera").transform);
         text.transform.GetChild(0).GetComponent<Outline>().effectColor = GlobalVariables.Instance.playersColors[(int)playerName];
         text.transform.GetChild(0).GetComponent<Text>().color = GlobalVariables.Instance.playersColors[(int)playerName];
@@ -139,7 +139,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
     {
         GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, player.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 	
-        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.particlesParent);
         instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors[(int)player.gameObject.GetComponent<PlayersGameplay>().playerName];
     }
 
@@ -194,7 +194,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
 
             GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.PlayerSpawnParticles, deadCube.transform.position, GlobalVariables.Instance.PlayerSpawnParticles.transform.rotation) as GameObject;
 
-            instantiatedParticles.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+            instantiatedParticles.transform.SetParent(GlobalVariables.Instance.particlesParent);
             instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors[(int)playerName];
 
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DynamicCamera>().otherTargetsList.Add(deadCube);
@@ -493,7 +493,7 @@ public class GlobalMethods : Singleton<GlobalMethods>
         int playerNumber = (int)player.GetComponent<PlayersGameplay>().playerName;
 
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
-        instance.transform.parent = GlobalVariables.Instance.lastManManager.transform;
+        instance.transform.parent = GlobalVariables.Instance.particlesParent;
 
         MasterAudio.PlaySound3DAtVector3AndForget(SoundsManager.Instance.explosionSound, position);
 

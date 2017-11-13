@@ -273,7 +273,7 @@ public class PlayersFXAnimations : MonoBehaviour
 
     protected virtual void ShootFX()
     {
-        Instantiate(GlobalVariables.Instance.shootFX[playerNumber], transform.position + shootPosOffset, transform.rotation, GlobalVariables.Instance.lastManManager.transform);
+        Instantiate(GlobalVariables.Instance.shootFX[playerNumber], transform.position + shootPosOffset, transform.rotation, GlobalVariables.Instance.particlesParent);
     }
 
     protected virtual IEnumerator StunFX()
@@ -421,7 +421,7 @@ public class PlayersFXAnimations : MonoBehaviour
         ReplayManager.Instance._attractionParticles.Add(fx.GetComponent<ReplayParticles>());
 
         ParticleSystem ps = fx.GetComponent<ParticleSystem>();
-        fx.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        fx.transform.SetParent(GlobalVariables.Instance.particlesParent);
 
         ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
@@ -487,7 +487,7 @@ public class PlayersFXAnimations : MonoBehaviour
         ReplayManager.Instance._attractionParticles.Add(fx.GetComponent<ReplayParticles>());
 
         ParticleSystem ps = fx.GetComponent<ParticleSystem>();
-        fx.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        fx.transform.SetParent(GlobalVariables.Instance.particlesParent);
 
         ps.startSize = 3 + whichCube.transform.lossyScale.x;
 
@@ -557,7 +557,7 @@ public class PlayersFXAnimations : MonoBehaviour
         int playerNumber = (int)playerName;
 
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
-        instance.transform.parent = GlobalVariables.Instance.lastManManager.transform;
+        instance.transform.parent = GlobalVariables.Instance.particlesParent;
 
         MasterAudio.PlaySound3DAtTransformAndForget(SoundsManager.Instance.explosionSound, transform);
     }
@@ -567,7 +567,7 @@ public class PlayersFXAnimations : MonoBehaviour
         int playerNumber = (int)playerName;
 
         GameObject instance = Instantiate(GlobalVariables.Instance.explosionFX[playerNumber], transform.position, GlobalVariables.Instance.explosionFX[playerNumber].transform.rotation) as GameObject;
-        instance.transform.parent = GlobalVariables.Instance.lastManManager.transform;
+        instance.transform.parent = GlobalVariables.Instance.particlesParent;
 
         MasterAudio.PlaySound3DAtTransformAndForget(SoundsManager.Instance.explosionSound, transform);
     }
@@ -612,7 +612,7 @@ public class PlayersFXAnimations : MonoBehaviour
         Quaternion rot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
         GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, position, rot) as GameObject;
 
-        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+        instantiatedParticles.transform.SetParent(GlobalVariables.Instance.particlesParent);
         instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = playerColor;
 
         return instantiatedParticles;

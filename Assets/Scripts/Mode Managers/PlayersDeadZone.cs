@@ -12,7 +12,7 @@ public class PlayersDeadZone : MonoBehaviour
             Quaternion rot = Quaternion.FromToRotation(Vector3.forward, new Vector3(0, 0, 0));
 
             GameObject instantiatedParticles = Instantiate(GlobalVariables.Instance.DeadParticles, pos, rot) as GameObject;
-            instantiatedParticles.transform.SetParent(GlobalVariables.Instance.lastManManager.transform);
+            instantiatedParticles.transform.SetParent(GlobalVariables.Instance.particlesParent);
             instantiatedParticles.transform.position = new Vector3(instantiatedParticles.transform.position.x, 2f, instantiatedParticles.transform.position.z);
             instantiatedParticles.transform.LookAt(new Vector3(0, 0, 0));
             instantiatedParticles.GetComponent<ParticleSystemRenderer>().material.color = GlobalVariables.Instance.playersColors[(int)other.gameObject.GetComponent<PlayersGameplay>().playerName];

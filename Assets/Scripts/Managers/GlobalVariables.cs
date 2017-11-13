@@ -85,6 +85,7 @@ public class GlobalVariables : Singleton<GlobalVariables>
     public List<WhichMode> selectedCocktailModes = new List<WhichMode>();
     public List<WhichMode> currentCocktailModes = new List<WhichMode>();
     public LastManManager lastManManager;
+    public Transform particlesParent;
 
     [Header("Mode Sequence")]
     public ModeSequenceType ModeSequenceType = ModeSequenceType.Selection;
@@ -398,6 +399,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
         if (levelLoaded != WhichMode.Tutorial)
             lastManManager = GameObject.FindGameObjectWithTag("LastManManager").GetComponent<LastManManager>();
+
+        particlesParent = GameObject.FindGameObjectWithTag("LastManManager").transform;
 
         CurrentModeLoaded = levelLoaded;
 
