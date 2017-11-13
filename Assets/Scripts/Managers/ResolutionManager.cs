@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GameAnalyticsSDK;
 using UnityEngine.EventSystems;
+using Sirenix.OdinInspector;
 
 public class ResolutionManager : Singleton<ResolutionManager>
 {
@@ -37,6 +38,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     [Header("Settings")]
     public Vector2 currentScreenRes = new Vector2();
+    public Vector2 currentDynamicScreenRes = new Vector2();
 
     [Header("Toggles")]
     public Toggle fullscreenToggle;
@@ -44,9 +46,25 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     public List<GameObject> allToggles = new List<GameObject>();
 
+    [Header("Framerate")]
+    public float frameRate;
+
+    [Header("Dynamic Resolution")]
+    public bool dynamicResolution = true;
+    public float resolutionFactor = 1;
+    public float frameRateTarget = 200f;
+    public float frameRateTargetVSync = 60f;
+
+    public float frameRateGap = 10f;
+
+    private float frameRateSamplesCount = 10;
+    private float frameRateSamplesTime = 0.2f;
+    public List<float> frameRateSamples = new List<float>();
+    private bool isAnalysingFrameRate = false;
+
     void Start()
     {
-        Setup();
+        LoadData();
 
         StartCoroutine(CheckFullScreenChange(Screen.fullScreen));
 
@@ -54,11 +72,9 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         if (!PlayerPrefs.HasKey("ScreenWidth"))
             FindResolution();
-
-        SelectToggle();
     }
 
-    void Setup()
+    public void LoadData()
     {
         if (PlayerPrefs.HasKey("Fullscreen"))
         {
@@ -73,54 +89,19 @@ public class ResolutionManager : Singleton<ResolutionManager>
         }
 
         if (PlayerPrefs.HasKey("ScreenWidth"))
+        {
             SetResolution(new Vector2(PlayerPrefs.GetInt("ScreenWidth"), PlayerPrefs.GetInt("ScreenHeight")));
-
-        if (PlayerPrefs.HasKey("ScreenWidth"))
             Debug.Log("Resolution Loaded : " + currentScreenRes.x + "x" + currentScreenRes.y);
-
+        }
     }
 
-    void FindResolution()
+    public void SaveData()
     {
-        bool resolutionFound = false;
-        Vector2 currentResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+        PlayerPrefs.SetInt("ScreenWidth", (int)currentScreenRes.x);
+        PlayerPrefs.SetInt("ScreenHeight", (int)currentScreenRes.y);
 
-        foreach (Vector2 v in allScreenRes)
-        {
-            if (Mathf.Approximately(currentResolution.x, v.x) && Mathf.Approximately(currentResolution.y, v.y))
-            {
-                currentScreenRes = v;
-                SetResolution(v);
-                resolutionFound = true;
-                break;
-            }
-        }
-
-        if (!resolutionFound)
-        {
-            currentScreenRes = new Vector2(1920, 1080);
-            SetResolution(currentScreenRes);
-        }
-
-        Debug.Log(Screen.currentResolution);
-        Debug.Log("Res found : " + currentScreenRes.x + "x" + currentScreenRes.y);
-
-//		foreach (Resolution r in Screen.resolutions)
-//			Debug.Log (r.width + " x " + r.height);
-    }
-
-    void SelectToggle()
-    {
-        foreach (GameObject g in allToggles)
-        {
-            Text res = g.transform.GetChild(1).GetComponent<Text>();
-
-            if (res.text == currentScreenRes.x + "x" + currentScreenRes.y)
-            {
-                g.GetComponent<Toggle>().isOn = true;
-                break;
-            }
-        }	
+        PlayerPrefs.SetInt("Fullscreen", fullScreen ? 1 : 0);
+        PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
     }
 
     void CreateResolutionLines()
@@ -162,7 +143,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
             resLine.GetComponent<Toggle>().onValueChanged.AddListener((bool arg0) =>
                 { 
-                    if (arg0)
+                    if (arg0 == true)
                     {
                         SetResolution(new Vector2(smallestRes.x, smallestRes.y));
                         GraphicsQualityManager.Instance.EnableApplyButton();
@@ -183,7 +164,76 @@ public class ResolutionManager : Singleton<ResolutionManager>
         }
     }
 
+    void Update()
+    {
+        if (Time.timeScale == 1)
+        {
+            frameRate = 1f / Time.smoothDeltaTime;
 
+            if (dynamicResolution && !isAnalysingFrameRate)
+                ActivateFramerateAnalyser();
+        }
+        else
+        {
+            frameRate = -1f;
+        }
+    }
+
+    void FindResolution()
+    {
+        bool resolutionFound = false;
+        Vector2 currentResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+
+        foreach (Vector2 v in allScreenRes)
+        {
+            if (Mathf.Approximately(currentResolution.x, v.x) && Mathf.Approximately(currentResolution.y, v.y))
+            {
+                currentScreenRes = v;
+                SetResolution(v);
+                resolutionFound = true;
+                break;
+            }
+        }
+
+        if (!resolutionFound)
+        {
+            currentScreenRes = new Vector2(1920, 1080);
+            SetResolution(currentScreenRes);
+        }
+
+        Debug.Log(Screen.currentResolution);
+        Debug.Log("Res found : " + currentScreenRes.x + "x" + currentScreenRes.y);
+    }
+
+    void SetResolution(Vector2 res)
+    {
+        Debug.Log("New Resolution : " + (int)res.x + " x " + (int)res.y);
+
+        currentScreenRes = res;
+        Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
+
+        currentResText.text = (int)currentScreenRes.x + " x " + (int)currentScreenRes.y;
+
+        currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
+
+        SelectToggle();
+    }
+
+    void SelectToggle()
+    {
+        foreach (GameObject g in allToggles)
+        {
+            Text res = g.transform.GetChild(1).GetComponent<Text>();
+
+            if (res.text == currentScreenRes.x + "x" + currentScreenRes.y)
+            {
+                Debug.Log("Valid Res:" + res.text);
+                g.GetComponent<Toggle>().isOn = true;
+            }
+            else
+                g.GetComponent<Toggle>().isOn = false;
+        }	
+    }
 
     string FindRatio(Vector2 resolution)
     {
@@ -202,36 +252,21 @@ public class ResolutionManager : Singleton<ResolutionManager>
         return ratioText;
     }
 
-    void SetResolution(Vector2 res)
-    {
-        //Debug.Log ("New Resolution : " + (int)res.x + " x " + (int)res.y);
-
-        currentScreenRes = res;
-        Screen.SetResolution((int)res.x, (int)res.y, fullScreen);
-
-        currentResText.text = (int)res.x + " x " + (int)res.y;
-
-        PlayerPrefs.SetInt("ScreenWidth", (int)res.x);
-        PlayerPrefs.SetInt("ScreenHeight", (int)res.y);
-    }
-
-    public void ToggleFullscreen()
+    public void ToggleFullscreen(bool enable)
     {
         Debug.Log("Toggle Full");
 
-        fullScreen = !fullScreen;
+        fullScreen = enable;
         Screen.SetResolution((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
-
-        PlayerPrefs.SetInt("Fullscreen", fullScreen ? 1 : 0);
 
         GraphicsQualityManager.Instance.EnableApplyButton();
     }
 
-    public void ToggleVsync()
+    public void ToggleVsync(bool enable)
     {
         Debug.Log("Toggle Sync");
 
-        if (QualitySettings.vSyncCount == 0)
+        if (enable)
             QualitySettings.vSyncCount = 1;
         else
         {
@@ -239,24 +274,19 @@ public class ResolutionManager : Singleton<ResolutionManager>
             QualitySettings.vSyncCount = 0;
         }
 
-        PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
-
         GraphicsQualityManager.Instance.EnableApplyButton();
     }
 
     public void Reset()
     {
         fullScreen = true;
-        fullscreenToggle.isOn = true;
 
         QualitySettings.vSyncCount = 1;
         vsyncToggle.isOn = true;
 
-        PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
-
         FindResolution();
 
-        SelectToggle();
+        fullscreenToggle.isOn = true;
     }
 
     IEnumerator CheckFullScreenChange(bool fullscreen)
@@ -270,5 +300,85 @@ public class ResolutionManager : Singleton<ResolutionManager>
             fullscreenToggle.isOn = true;
 
         StartCoroutine(CheckFullScreenChange(Screen.fullScreen));
+    }
+
+
+
+    [ButtonAttribute]
+    void ActivateFramerateAnalyser()
+    {
+        if (!dynamicResolution || isAnalysingFrameRate)
+            return;
+
+        StopCoroutine(AnalyseFramerate());
+        StartCoroutine(AnalyseFramerate());
+    }
+
+    IEnumerator AnalyseFramerate()
+    {
+        isAnalysingFrameRate = true;
+
+        frameRateSamples.Clear();
+
+        while (frameRateSamples.Count < frameRateSamplesCount)
+        {
+            yield return new WaitWhile(() => Time.timeScale != 1);
+
+            frameRateSamples.Add(frameRate);
+            yield return new WaitForSeconds(frameRateSamplesTime);
+        }
+
+        float meanFramerate = 0;
+
+        foreach (var f in frameRateSamples)
+            meanFramerate += f;
+
+        meanFramerate /= frameRateSamples.Count;
+
+        Debug.Log(meanFramerate);
+
+        float targetFrameRate = QualitySettings.vSyncCount == 0 ? frameRateTarget : frameRateTargetVSync;
+
+        //INFERIOR
+        if (meanFramerate < targetFrameRate - frameRateGap)
+        {
+            if (resolutionFactor > 0.5f)
+            {
+                Debug.Log(meanFramerate + " is < " + (targetFrameRate - frameRateGap).ToString());
+                resolutionFactor -= 0.1f;
+
+                Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
+
+                currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
+            }
+
+        }
+
+        //INFERIOR
+        else if (meanFramerate > targetFrameRate + frameRateGap)
+        {
+            if (resolutionFactor < 1f)
+            {
+                Debug.Log(meanFramerate + " is > " + (targetFrameRate + frameRateGap).ToString());
+                resolutionFactor += 0.1f;
+
+                Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
+
+                currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
+            }
+        }
+
+        //SAME
+        else
+        {
+            Debug.Log(meanFramerate + " is ~ " + (targetFrameRate).ToString());
+        }
+
+        isAnalysingFrameRate = false;
+    }
+
+    public void ResetDynamicResolution()
+    {
+        
     }
 }

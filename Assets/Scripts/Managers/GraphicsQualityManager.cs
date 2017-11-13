@@ -329,12 +329,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void LowQuality()
     {
-        bool vSync = QualitySettings.vSyncCount == 0;
+        int vSync = QualitySettings.vSyncCount;
 
         QualitySettings.SetQualityLevel(0, true);
         // Shadows(shadowsSlider.value);
 
-        QualitySettings.vSyncCount = vSync ? 0 : 1;
+        QualitySettings.vSyncCount = vSync;
 
         ambiantOcclusionToggle.isOn = false;
         ambiantOcclusionToggle.onValueChanged.Invoke(false);
@@ -429,7 +429,8 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         blurToggle.onValueChanged.Invoke(true);
         analogTVToggle.onValueChanged.Invoke(true);
         vignettingToggle.onValueChanged.Invoke(true);
-        //cameraMotionToggle.onValueChanged.Invoke(true);
+        if (!setup)
+            cameraMotionToggle.onValueChanged.Invoke(true);
         distorsionToggle.onValueChanged.Invoke(true);
 
         applyButton.SetActive(false);
@@ -443,12 +444,14 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
     {
         changes = false;
         SaveData();
+        ResolutionManager.Instance.SaveData();
         //applyButton.SetActive(false);
     }
 
     public void Revert()
     {
         LoadData();
+        ResolutionManager.Instance.LoadData();
         changes = false;
     }
 
