@@ -24,6 +24,9 @@ public class MenuManager : Singleton <MenuManager>
     public MenuAnimationType menuAnimationType = MenuAnimationType.None;
     public bool mouseControl = true;
 
+    [Header("Build Version")]
+    public Text buildVersion;
+
     [Header("Animations Duration")]
     public float animationDuration = 0.15f;
 
@@ -191,6 +194,8 @@ public class MenuManager : Singleton <MenuManager>
             if (resumeButtons.anchoredPosition.x != resumeButtonsPositions.y)
                 resumeButtons.DOAnchorPosX(resumeButtonsPositions.y, animationDuration).SetEase(easeMenu);
         };
+
+        buildVersion.text = "V" + Application.version;
 
         resumeButtons.DOAnchorPosX(resumeButtonsPositions.x, 0).SetEase(easeMenu);
 

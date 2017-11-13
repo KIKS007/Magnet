@@ -325,9 +325,6 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
         if (selectableComponent && selectableComponent.interactable == false)
             return;
 		
-        if (vibration)
-            VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
-		
         SoundsManager.Instance.MenuSubmit();
 		
         OnSelect();
@@ -406,12 +403,11 @@ public class MenuButtonAnimationsAndSounds : MenuShaderElement, IPointerClickHan
     {
         if (!Application.isPlaying)
             return;
-
 		
         if (selectableComponent && selectableComponent.interactable == false)
             return;
 		
-        if (vibration)
+        if (vibration && GlobalVariables.Instance.rewiredPlayers[GlobalVariables.Instance.menuGamepadNumber].GetButton("UI Submit"))
             VibrationManager.Instance.Vibrate(GlobalVariables.Instance.menuGamepadNumber, FeedbackType.ButtonClick);
 		
         SoundsManager.Instance.MenuSubmit();
