@@ -416,11 +416,7 @@ public class MenuManager : Singleton <MenuManager>
 
                 break;
             }
-        }
 
-        for (int i = 0; i < GlobalVariables.Instance.rewiredPlayers.Length; i++)
-        //for (int i = 0; i < 2; i++)
-        {
             if (i != 0 && i != GlobalVariables.Instance.menuGamepadNumber)
                 continue;
 
@@ -436,7 +432,6 @@ public class MenuManager : Singleton <MenuManager>
                 if (currentMenu && currentMenu != mainMenuScript)
                 {
                     currentMenu.Cancel();
-
                     break;
                 }
 
@@ -454,6 +449,15 @@ public class MenuManager : Singleton <MenuManager>
                 //Unpause
                 else if (!cameraMovement.farPosition && GlobalVariables.Instance.GameState == GameStateEnum.Paused)
                     PauseResumeGame();
+            }
+
+            if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start") && GraphicsQualityManager.Instance.changes)
+            {
+                foreach (var b in resumeButtonsScript)
+                    b.Back(i);
+
+                currentMenu.Cancel();
+                break;
             }
         }
     }
@@ -478,14 +482,14 @@ public class MenuManager : Singleton <MenuManager>
                 PauseResumeGame();
             }
 
-            if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start"))
+            if (GlobalVariables.Instance.GameState == GameStateEnum.Paused && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start") && !GraphicsQualityManager.Instance.changes)
             {
                 foreach (var b in resumeButtonsScript)
                     b.Back(i);
 				
                 PauseResumeGame();
             }
-			
+
             if (GlobalVariables.Instance.GameState == GameStateEnum.Playing && GlobalVariables.Instance.rewiredPlayers[i].GetButtonDown("UI Start"))
             {
                 if (!passFightButton.gameObject.activeSelf)

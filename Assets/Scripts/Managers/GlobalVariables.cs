@@ -261,18 +261,32 @@ public class GlobalVariables : Singleton<GlobalVariables>
             if (QualitySettings.GetQualityLevel() == 2)
                 slowMotionCamera.mirrorScript.enabled = true;
             else
-                slowMotionCamera.mirrorScript.enabled = false;
+            {
+                slowMotionCamera.mirrorScript.enabled = true;
+
+                DOVirtual.DelayedCall(0.5f, () =>
+                    {
+                        slowMotionCamera.mirrorScript.enabled = false;
+                    });
+            }
         };
+
+        /*  OnStartMode += () =>
+        {
+            bool en = slowMotionCamera.mirrorScript.enabled;
+            slowMotionCamera.mirrorScript.enabled = true;
+            slowMotionCamera.mirrorScript.enabled = en;
+        };*/
 
         OnStartMode += UpdatePlayedModes;
         OnRestartMode += UpdatePlayedModes;
 
-        OnMenu += () =>
+        OnStartMode += () =>
         {
             System.GC.Collect();
             Resources.UnloadUnusedAssets();
         };
-        OnEndMode += () =>
+        OnRestartMode += () =>
         {
             System.GC.Collect();
             Resources.UnloadUnusedAssets();

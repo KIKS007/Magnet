@@ -283,6 +283,7 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         if (GlobalVariables.Instance.slowMotionCamera.mirrorScript == null)
             GlobalVariables.Instance.slowMotionCamera.mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
 
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = false;
         GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = true;
 
         EnableApplyButton();

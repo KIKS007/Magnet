@@ -54,7 +54,7 @@ public class ArenaColumn : MonoBehaviour
         }
     }
 
-    void OnTriggerStay(Collider other)
+    /*void OnTriggerStay(Collider other)
     {
         if (ReplayManager.Instance.isReplaying)
             return;
@@ -81,7 +81,7 @@ public class ArenaColumn : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 
     void OnTriggerExit(Collider other)
     {
