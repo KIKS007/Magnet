@@ -62,6 +62,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
     public List<float> frameRateSamples = new List<float>();
     private bool isAnalysingFrameRate = false;
 
+    private bool selectingToggle = false;
+
     void Start()
     {
         LoadData();
@@ -72,6 +74,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         if (!PlayerPrefs.HasKey("ScreenWidth"))
             FindResolution();
+
+        SaveData();
     }
 
     public void LoadData()
@@ -143,7 +147,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
             resLine.GetComponent<Toggle>().onValueChanged.AddListener((bool arg0) =>
                 { 
-                    if (arg0 == true)
+                    if (arg0 && !selectingToggle)
                     {
                         SetResolution(new Vector2(smallestRes.x, smallestRes.y));
                         GraphicsQualityManager.Instance.EnableApplyButton();
@@ -182,11 +186,19 @@ public class ResolutionManager : Singleton<ResolutionManager>
     void FindResolution()
     {
         bool resolutionFound = false;
-        Vector2 currentResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+        Vector2 nativeResolution = new Vector2(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height);
+
+        foreach (var r in  Screen.resolutions)
+        {
+            if (r.height > nativeResolution.y)
+                nativeResolution = new Vector2(r.width, r.height);
+        }
+        
+        //Debug.Log(nativeResolution.x + "x" + nativeResolution.y);
 
         foreach (Vector2 v in allScreenRes)
         {
-            if (Mathf.Approximately(currentResolution.x, v.x) && Mathf.Approximately(currentResolution.y, v.y))
+            if (Mathf.Approximately(nativeResolution.x, v.x) && Mathf.Approximately(nativeResolution.y, v.y))
             {
                 currentScreenRes = v;
                 SetResolution(v);
@@ -201,13 +213,13 @@ public class ResolutionManager : Singleton<ResolutionManager>
             SetResolution(currentScreenRes);
         }
 
-        Debug.Log(Screen.currentResolution);
+        //Debug.Log(Screen.currentResolution);
         Debug.Log("Res found : " + currentScreenRes.x + "x" + currentScreenRes.y);
     }
 
     void SetResolution(Vector2 res)
     {
-        Debug.Log("New Resolution : " + (int)res.x + " x " + (int)res.y);
+        //Debug.Log("New Resolution : " + (int)res.x + " x " + (int)res.y);
 
         currentScreenRes = res;
         Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
@@ -221,18 +233,23 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     void SelectToggle()
     {
+        selectingToggle = true;
+
+        foreach (GameObject g in allToggles)
+            g.GetComponent<Toggle>().isOn = false;
+
         foreach (GameObject g in allToggles)
         {
             Text res = g.transform.GetChild(1).GetComponent<Text>();
 
             if (res.text == currentScreenRes.x + "x" + currentScreenRes.y)
             {
-                Debug.Log("Valid Res:" + res.text);
                 g.GetComponent<Toggle>().isOn = true;
+                break;
             }
-            else
-                g.GetComponent<Toggle>().isOn = false;
-        }	
+        }
+
+        selectingToggle = false;
     }
 
     string FindRatio(Vector2 resolution)
