@@ -271,12 +271,27 @@ public class GlobalVariables : Singleton<GlobalVariables>
             }
         };
 
-        /*  OnStartMode += () =>
+        OnStartMode += () =>
         {
             bool en = slowMotionCamera.mirrorScript.enabled;
             slowMotionCamera.mirrorScript.enabled = true;
-            slowMotionCamera.mirrorScript.enabled = en;
-        };*/
+
+            DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    slowMotionCamera.mirrorScript.enabled = en;
+                });
+        };
+
+        OnRestartMode += () =>
+        {
+            bool en = slowMotionCamera.mirrorScript.enabled;
+            slowMotionCamera.mirrorScript.enabled = true;
+
+            DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    slowMotionCamera.mirrorScript.enabled = en;
+                });
+        };
 
         OnStartMode += UpdatePlayedModes;
         OnRestartMode += UpdatePlayedModes;

@@ -31,11 +31,6 @@ public class ArenaVisualizer : MonoBehaviour
     public float normalizedFactor = 100;
     public float normalizedMinimumHeight = 0.2f;
 
-    [Header("Emission")]
-    public bool emissionChange = false;
-    public float minEmission = 0.5f;
-    public float maxEmission = 3f;
-
     [Header("Columns")]
     public Transform[] frontColumns = new Transform[27];
     public Transform[] backColumns = new Transform[27];
@@ -75,13 +70,13 @@ public class ArenaVisualizer : MonoBehaviour
         foreach (ArenaSettings arena in allSettings)
         {
             if (arena.frontIndex.Length != frontColumns.Length ||
-            arena.backIndex.Length != backColumns.Length ||
-            arena.rightIndex.Length != rightColumns.Length ||
-            arena.leftIndex.Length != leftColumns.Length ||
-            frontColumns.Length != 27 ||
-            backColumns.Length != 27 ||
-            rightColumns.Length != 15 ||
-            leftColumns.Length != 15)
+                arena.backIndex.Length != backColumns.Length ||
+                arena.rightIndex.Length != rightColumns.Length ||
+                arena.leftIndex.Length != leftColumns.Length ||
+                frontColumns.Length != 27 ||
+                backColumns.Length != 27 ||
+                rightColumns.Length != 15 ||
+                leftColumns.Length != 15)
             {
                 wrongSettings = true;
                 Debug.LogWarning("Wrong Arena Settings !");
@@ -191,60 +186,54 @@ public class ArenaVisualizer : MonoBehaviour
         if (currentSettings >= allSettings.Count)
             return;
 
-        float currentFactor = normalizedValues ? normalizedFactor : factor;
-        float currentMinimumHeight = normalizedValues ? normalizedMinimumHeight : minimumHeight;
+        //float normalizedFactor = normalizedValues ? normalizedFactor : factor;
+        //float currentMinimumHeight = normalizedValues ? normalizedMinimumHeight : minimumHeight;
 
         for (int i = 0; i < frontColumns.Length; i++)
         {
-            int index = allSettings[currentSettings].frontIndex[i];
+            // int index = allSettings[currentSettings].frontIndex[i];
 
             Vector3 scale = frontColumns[i].localScale;
-            scale.y = NewHeight(currentMinimumHeight, index, currentFactor);
+            //scale.y = NewHeight(normalizedMinimumHeight, index, normalizedFactor);
+            scale.y = normalizedMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[allSettings[currentSettings].frontIndex[i]] * normalizedFactor;
             frontColumns[i].localScale = scale;
-
-            if (emissionChange)
-                ColumnEmission(frontColumns[i], frontMaterials[i], index);
         }
 
         for (int i = 0; i < backColumns.Length; i++)
         {
-            int index = allSettings[currentSettings].backIndex[i];
+            //int index = allSettings[currentSettings].backIndex[i];
 
             Vector3 scale = backColumns[i].localScale;
-            scale.y = NewHeight(currentMinimumHeight, index, currentFactor);
+            //scale.y = NewHeight(normalizedMinimumHeight, index, normalizedFactor);
+            scale.y = normalizedMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[allSettings[currentSettings].backIndex[i]] * normalizedFactor;
             backColumns[i].localScale = scale;
-
-            if (emissionChange)
-                ColumnEmission(backColumns[i], backMaterials[i], index);
         }
 
         for (int i = 0; i < rightColumns.Length; i++)
         {
-            int index = allSettings[currentSettings].rightIndex[i];
+            //int index = allSettings[currentSettings].rightIndex[i];
 
             Vector3 scale = rightColumns[i].localScale;
-            scale.y = NewHeight(currentMinimumHeight, index, currentFactor);
+            // scale.y = NewHeight(normalizedMinimumHeight, index, normalizedFactor);
+            scale.y = normalizedMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[allSettings[currentSettings].rightIndex[i]] * normalizedFactor;
             rightColumns[i].localScale = scale;
-
-            if (emissionChange)
-                ColumnEmission(rightColumns[i], rightMaterials[i], index);
         }
 
         for (int i = 0; i < leftColumns.Length; i++)
         {
-            int index = allSettings[currentSettings].leftIndex[i];
+            //int index = allSettings[currentSettings].leftIndex[i];
 
             Vector3 scale = leftColumns[i].localScale;
-            scale.y = NewHeight(currentMinimumHeight, index, currentFactor);
+            //scale.y = NewHeight(normalizedMinimumHeight, index, normalizedFactor);
+            scale.y = normalizedMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[allSettings[currentSettings].leftIndex[i]] * normalizedFactor;
             leftColumns[i].localScale = scale;
-
-            if (emissionChange)
-                ColumnEmission(leftColumns[i], leftMaterials[i], index);
         }
     }
 
     float NewHeight(float currentMinimumHeight, int index, float currentFactor)
     {
+        //return currentMinimumHeight + AudioSpectrum.Instance.MeanLevelsNormalized[index] * currentFactor;
+
         switch (levelsType)
         {
             case AudioSpectrum.LevelsType.Basic:
@@ -268,40 +257,6 @@ public class ArenaVisualizer : MonoBehaviour
                 else
                     return currentMinimumHeight + AudioSpectrum.Instance.LevelsNormalized[index] * currentFactor;
         }
-    }
-
-    void ColumnEmission(Transform pivot, ColumnMaterial columnMaterial, int index)
-    {
-        float emissionIntensity = 0;
-
-        switch (levelsType)
-        {
-            case AudioSpectrum.LevelsType.Basic:
-                emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.LevelsNormalized[index] + minEmission;
-                break;
-            case AudioSpectrum.LevelsType.Peak:
-                emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.PeakLevelsNormalized[index] + minEmission;
-                break;
-            case AudioSpectrum.LevelsType.Mean:
-                emissionIntensity = (maxEmission - minEmission) * AudioSpectrum.Instance.MeanLevelsNormalized[index] + minEmission;
-                break;
-        }
-
-        foreach (Material m in columnMaterial.materials)
-        {
-            if (pivot.GetChild(0).tag != "DeadZone")
-                m.SetColor("_EmissionColor", columnInitialColor * emissionIntensity);
-            else
-                m.SetColor("_EmissionColor", columnDeadlyColor * emissionIntensity);
-        }
-
-//		foreach(Transform c in column)
-//		{
-//			if(c.tag != "DeadZone")
-//				c.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", columnInitialColor * emissionIntensity);
-//			else
-//				c.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", columnDeadlyColor * emissionIntensity);
-//		}
     }
 
     [PropertyOrder(-1)]

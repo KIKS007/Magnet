@@ -81,8 +81,16 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
         ambiantOcclusionToggle.onValueChanged.AddListener((bool arg0) =>
             {
-                postProcessProfile.ambientOcclusion.enabled = arg0;
-                EnableApplyButton();
+                if (QualitySettings.GetQualityLevel() == 0)
+                {
+                    ambiantOcclusionToggle.isOn = false;
+                    postProcessProfile.ambientOcclusion.enabled = false;
+                }
+                else
+                {
+                    postProcessProfile.ambientOcclusion.enabled = arg0;
+                    EnableApplyButton();
+                }
             });
         blurToggle.onValueChanged.AddListener((bool arg0) =>
             {
@@ -274,6 +282,9 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
         QualitySettings.vSyncCount = vSync ? 0 : 1;
 
+        ambiantOcclusionToggle.isOn = true;
+        ambiantOcclusionToggle.onValueChanged.Invoke(true);
+
         /*Time.fixedDeltaTime = fixedDeltaTimes[2];
         currentFixedDeltaTime = fixedDeltaTimes[2];
 
@@ -298,6 +309,9 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
         QualitySettings.vSyncCount = vSync ? 0 : 1;
 
+        ambiantOcclusionToggle.isOn = true;
+        ambiantOcclusionToggle.onValueChanged.Invoke(true);
+
         /* Time.fixedDeltaTime = fixedDeltaTimes[1];
         currentFixedDeltaTime = fixedDeltaTimes[1];
 
@@ -321,6 +335,9 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         // Shadows(shadowsSlider.value);
 
         QualitySettings.vSyncCount = vSync ? 0 : 1;
+
+        ambiantOcclusionToggle.isOn = false;
+        ambiantOcclusionToggle.onValueChanged.Invoke(false);
 
         /*Time.fixedDeltaTime = fixedDeltaTimes[0];
         currentFixedDeltaTime = fixedDeltaTimes[0];
