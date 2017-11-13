@@ -267,43 +267,72 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void HighQuality()
     {
-        QualitySettings.SetQualityLevel(2, true);
-        Shadows(shadowsSlider.value);
+        bool vSync = QualitySettings.vSyncCount == 0;
 
-        Time.fixedDeltaTime = fixedDeltaTimes[2];
+        QualitySettings.SetQualityLevel(2, true);
+        //Shadows(shadowsSlider.value);
+
+        QualitySettings.vSyncCount = vSync ? 0 : 1;
+
+        /*Time.fixedDeltaTime = fixedDeltaTimes[2];
         currentFixedDeltaTime = fixedDeltaTimes[2];
 
         if (OnFixedDeltaTimeChange != null)
-            OnFixedDeltaTimeChange(currentFixedDeltaTime);
+            OnFixedDeltaTimeChange(currentFixedDeltaTime);*/
+
+        if (GlobalVariables.Instance.slowMotionCamera.mirrorScript == null)
+            GlobalVariables.Instance.slowMotionCamera.mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
+
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = true;
 
         EnableApplyButton();
     }
 
     public void MediumQuality()
     {
-        QualitySettings.SetQualityLevel(1, true);
-        Shadows(shadowsSlider.value);
+        bool vSync = QualitySettings.vSyncCount == 0;
 
-        Time.fixedDeltaTime = fixedDeltaTimes[1];
+        QualitySettings.SetQualityLevel(1, true);
+        //Shadows(shadowsSlider.value);
+
+        QualitySettings.vSyncCount = vSync ? 0 : 1;
+
+        /* Time.fixedDeltaTime = fixedDeltaTimes[1];
         currentFixedDeltaTime = fixedDeltaTimes[1];
 
         if (OnFixedDeltaTimeChange != null)
-            OnFixedDeltaTimeChange(currentFixedDeltaTime);
+            OnFixedDeltaTimeChange(currentFixedDeltaTime);*/
    
+        if (GlobalVariables.Instance.slowMotionCamera.mirrorScript == null)
+            GlobalVariables.Instance.slowMotionCamera.mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
+        
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = true;
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = false;
+
         EnableApplyButton();
     }
 
     public void LowQuality()
     {
-        QualitySettings.SetQualityLevel(0, true);
-        Shadows(shadowsSlider.value);
+        bool vSync = QualitySettings.vSyncCount == 0;
 
-        Time.fixedDeltaTime = fixedDeltaTimes[0];
+        QualitySettings.SetQualityLevel(0, true);
+        // Shadows(shadowsSlider.value);
+
+        QualitySettings.vSyncCount = vSync ? 0 : 1;
+
+        /*Time.fixedDeltaTime = fixedDeltaTimes[0];
         currentFixedDeltaTime = fixedDeltaTimes[0];
 
         if (OnFixedDeltaTimeChange != null)
-            OnFixedDeltaTimeChange(currentFixedDeltaTime);
+            OnFixedDeltaTimeChange(currentFixedDeltaTime);*/
+
+        if (GlobalVariables.Instance.slowMotionCamera.mirrorScript == null)
+            GlobalVariables.Instance.slowMotionCamera.mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
         
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = true;
+        GlobalVariables.Instance.slowMotionCamera.mirrorScript.enabled = false;
+
         EnableApplyButton();
     }
 

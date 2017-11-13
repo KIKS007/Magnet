@@ -258,6 +258,17 @@ public class GlobalVariables : Singleton<GlobalVariables>
         OnEndMode += () => Startup = StartupType.Delayed;
         OnEnvironementChromaChange += SetPlayerMouseCursor;
 
+        OnEnvironementChromaChange += () =>
+        {
+            if (slowMotionCamera.mirrorScript == null)
+                slowMotionCamera.mirrorScript = GameObject.FindGameObjectWithTag("ArenaGround").GetComponent<MirrorReflection>();
+
+            if (QualitySettings.GetQualityLevel() == 2)
+                slowMotionCamera.mirrorScript.enabled = true;
+            else
+                slowMotionCamera.mirrorScript.enabled = false;
+        };
+
         OnStartMode += UpdatePlayedModes;
         OnRestartMode += UpdatePlayedModes;
 
