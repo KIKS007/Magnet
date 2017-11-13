@@ -225,16 +225,11 @@ public class GlobalVariables : Singleton<GlobalVariables>
 
     void Awake()
     {
-        if (PlayerPrefs.HasKey("BuildVersion"))
+        if (PlayerPrefs.HasKey("BuildVersion") && PlayerPrefs.GetString("BuildVersion") != Application.version || !PlayerPrefs.HasKey("BuildVersion"))
         {
-            if (PlayerPrefs.GetString("BuildVersion") != Application.version)
-            {
-                DeletePlayersPrefs();
-                Debug.LogWarning("Build Version Different");
-            }
+            DeletePlayersPrefs();
+            Debug.LogWarning("Build Version Different");
         }
-
-        PlayerPrefs.SetString("BuildVersion", Application.version);
 
         StartCoroutine(OnGameStateChange(GameState));
         StartCoroutine(OnStartupDoneEvent());
@@ -305,6 +300,8 @@ public class GlobalVariables : Singleton<GlobalVariables>
         };
 
         LoadEnvironementChroma();
+
+        PlayerPrefs.SetString("BuildVersion", Application.version);
     }
 
     void Start()
@@ -465,14 +462,29 @@ public class GlobalVariables : Singleton<GlobalVariables>
     {
         int environementChroma = 0;
 
-        if (PlayerPrefs.HasKey("EnvironementChromaIndex"))
-            environementChroma = PlayerPrefs.GetInt("EnvironementChromaIndex");
+        if (PlayerPrefs.HasKey("RandomEnvironment") && PlayerPrefs.GetInt("RandomEnvironment") == 0)
+            randomEnvironment = false;
+        
+        if (randomEnvironment)
+        {
+            environementChroma = Random.Range(0, System.Enum.GetValues(typeof(EnvironementChroma)).Length - 1);
+            environementChromaText.text = "Random";
+        }
+        else
+        {
+            if (PlayerPrefs.HasKey("EnvironementChromaIndex"))
+                environementChroma = PlayerPrefs.GetInt("EnvironementChromaIndex");
+            
+            environementChromaText.text = environementChromaNames[environementChroma];
+        }
 
         StartCoroutine(NewEnvironementChroma(environementChroma, true));
     }
 
     void SaveEnvironementChroma()
     {
+        PlayerPrefs.SetInt("RandomEnvironment", randomEnvironment ? 1 : 0);
+
         PlayerPrefs.SetInt("EnvironementChromaIndex", (int)environementChroma);
     }
 
