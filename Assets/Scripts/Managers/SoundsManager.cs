@@ -216,12 +216,14 @@ public class SoundsManager : Singleton<SoundsManager>
         else
             loadedMusicsPath = Application.dataPath + loadedMusicsPath;
 
+        #if !UNITY_STANDALONE_OSX
         if (!Directory.Exists(loadedMusicsPath))
             Directory.CreateDirectory(loadedMusicsPath);
 
         if (PlayerPrefs.HasKey("LoadedMusicsCount"))
             LoadMusics(true);
-		
+        #endif
+
         SetGamePlaylist();
 
         initialAttractingVolume = MasterAudio.GetGroupVolume(attractingSounds[0]);
@@ -280,6 +282,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     public void LoadMusics(bool firstLoading = false)
     {
+        #if UNITY_STANDALONE_OSX
+        return;
+        #endif
+        
         if (!firstLoading)
             personalMusicButton.onClick.Invoke();
 
@@ -288,6 +294,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     IEnumerator LoadMusicsCoroutine()
     {
+        #if UNITY_STANDALONE_OSX
+        yield break;
+        #endif
+
         loadingMusics = true;
 
         //loadButtonText.text = "Loading...";
@@ -485,6 +495,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     void CreateLoadedMusicsSongTitle()
     {
+        #if UNITY_STANDALONE_OSX
+        return;
+        #endif
+        
         foreach (Transform t in loadedSongTitleContentParent.transform)
             Destroy(t.gameObject);
 
@@ -559,6 +573,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     public void PlayLoadedSong(string song)
     {
+        #if UNITY_STANDALONE_OSX
+        return;
+        #endif
+
         foreach (var m in MasterAudio.GrabPlaylist ("Loaded Musics").MusicSettings)
             if (m.clip.name == song)
             {
@@ -593,6 +611,10 @@ public class SoundsManager : Singleton<SoundsManager>
 
     public void UpdateLoadedMusicsSelection(bool isOn, int index)
     {
+        #if UNITY_STANDALONE_OSX
+        return;
+        #endif
+
         loadedMusicsSelection[index] = isOn;
 
         var songs = new List<MusicSetting>(initialLoadedMusicsClip);
