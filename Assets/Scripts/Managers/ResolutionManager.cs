@@ -306,6 +306,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         QualitySettings.vSyncCount = 1;
         vsyncToggle.isOn = true;
 
+        resolutionFactor = 1f;
+
         FindResolution();
 
         fullscreenToggle.isOn = true;
@@ -377,6 +379,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
                 currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
             }
+            else
+                resolutionFactor = 0.5f;
         }
 
         //INFERIOR
@@ -393,6 +397,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
                 currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
             }
+            else
+                resolutionFactor = 1f;
         }
 
         //SAME
