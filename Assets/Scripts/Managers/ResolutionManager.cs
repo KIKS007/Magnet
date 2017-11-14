@@ -55,12 +55,15 @@ public class ResolutionManager : Singleton<ResolutionManager>
     public float resolutionFactor = 1;
     public float frameRateTarget = 200f;
     public float frameRateTargetVSync = 60f;
-
     public float frameRateGap = 10f;
 
-    private float frameRateSamplesCount = 10;
-    private float frameRateSamplesTime = 0.2f;
-    public List<float> frameRateSamples = new List<float>();
+    [Header("Dynamic Resolution Advanced")]
+    public float frameRateSamplesCount = 10;
+    public float frameRateOffset = 0.05f;
+    public float frameRateSamplesTime = 0.2f;
+    public float frameRatePause = 2f;
+
+    private List<float> frameRateSamples = new List<float>();
     private bool isAnalysingFrameRate = false;
 
     private bool selectingToggle = false;
@@ -78,7 +81,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         SaveData();
 
-        StartCoroutine(AnalyseFramerate());
+        if (dynamicResolution)
+            StartCoroutine(AnalyseFramerate());
     }
 
     public void LoadData()
@@ -274,7 +278,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     public void ToggleFullscreen(bool enable)
     {
-        Debug.Log("Toggle Full");
+        Debug.Log("Toggle Full: " + enable);
 
         fullScreen = enable;
         Screen.SetResolution((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
@@ -284,8 +288,6 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     public void ToggleVsync(bool enable)
     {
-        Debug.Log("Toggle Sync");
-
         if (enable)
             QualitySettings.vSyncCount = 1;
         else
@@ -334,6 +336,9 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     IEnumerator AnalyseFramerate()
     {
+        if (!dynamicResolution)
+            yield break;
+
         isAnalysingFrameRate = true;
 
         frameRateSamples.Clear();
@@ -345,6 +350,9 @@ public class ResolutionManager : Singleton<ResolutionManager>
             frameRateSamples.Add(frameRate);
             yield return new WaitForSecondsRealtime(frameRateSamplesTime);
         }
+
+        if (!Application.isFocused)
+            yield return new WaitWhile(() => !Application.isFocused);
 
         float meanFramerate = 0;
 
@@ -362,13 +370,13 @@ public class ResolutionManager : Singleton<ResolutionManager>
             {
                 if (dynamicResolutionDebug)
                     Debug.Log(meanFramerate + " is < " + (targetFrameRate - frameRateGap).ToString());
-                resolutionFactor -= 0.05f;
+                
+                resolutionFactor -= frameRateOffset;
 
                 Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
 
                 currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
             }
-
         }
 
         //INFERIOR
@@ -378,7 +386,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
             {
                 if (dynamicResolutionDebug)
                     Debug.Log(meanFramerate + " is > " + (targetFrameRate + frameRateGap).ToString());
-                resolutionFactor += 0.05f;
+                
+                resolutionFactor += frameRateOffset;
 
                 Screen.SetResolution((int)(currentScreenRes.x * resolutionFactor), (int)(currentScreenRes.y * resolutionFactor), fullScreen);
 
@@ -395,6 +404,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         if (dynamicResolutionDebug)
             Debug.Log(meanFramerate + " - " + resolutionFactor);
+
+        yield return new WaitForSecondsRealtime(frameRatePause);
 
         isAnalysingFrameRate = false;
 

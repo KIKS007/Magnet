@@ -275,12 +275,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void HighQuality()
     {
-        bool vSync = QualitySettings.vSyncCount == 0;
+        int vSync = QualitySettings.vSyncCount;
 
         QualitySettings.SetQualityLevel(2, true);
         //Shadows(shadowsSlider.value);
 
-        QualitySettings.vSyncCount = vSync ? 0 : 1;
+        QualitySettings.vSyncCount = vSync;
 
         ambiantOcclusionToggle.isOn = true;
         ambiantOcclusionToggle.onValueChanged.Invoke(true);
@@ -302,12 +302,12 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
 
     public void MediumQuality()
     {
-        bool vSync = QualitySettings.vSyncCount == 0;
+        int vSync = QualitySettings.vSyncCount;
 
         QualitySettings.SetQualityLevel(1, true);
         //Shadows(shadowsSlider.value);
 
-        QualitySettings.vSyncCount = vSync ? 0 : 1;
+        QualitySettings.vSyncCount = vSync;
 
         ambiantOcclusionToggle.isOn = true;
         ambiantOcclusionToggle.onValueChanged.Invoke(true);
