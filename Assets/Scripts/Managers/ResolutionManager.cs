@@ -6,6 +6,7 @@ using System.Linq;
 using GameAnalyticsSDK;
 using UnityEngine.EventSystems;
 using Sirenix.OdinInspector;
+using DG.Tweening;
 
 public class ResolutionManager : Singleton<ResolutionManager>
 {
@@ -52,6 +53,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
     [Header("Dynamic Resolution")]
     public bool dynamicResolution = true;
     public bool dynamicResolutionDebug = false;
+    public float dynamicResolutionTime = 60f;
     public float resolutionFactor = 1;
     public float frameRateTarget = 200f;
     public float frameRateTargetVSync = 60f;
@@ -63,8 +65,13 @@ public class ResolutionManager : Singleton<ResolutionManager>
     public float frameRateSamplesTime = 0.2f;
     public float frameRatePause = 2f;
 
+    private float qualityChangeDelay = 5f;
+    private bool qualityChange = true;
+    private float dynamicResolutionLifeTime = 0;
+
     private List<float> frameRateSamples = new List<float>();
     private bool isAnalysingFrameRate = false;
+    private float realtimeSinceStartup = 0;
 
     private bool selectingToggle = false;
 
@@ -81,8 +88,16 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         SaveData();
 
+        if (PlayerPrefs.HasKey("ResolutionFactor"))
+            resolutionFactor = PlayerPrefs.GetFloat("ResolutionFactor");
+
         if (dynamicResolution)
-            StartCoroutine(AnalyseFramerate());
+        {
+            DOVirtual.DelayedCall(4f, () =>
+                {
+                    StartCoroutine(AnalyseFramerate());
+                });
+        }
     }
 
     public void LoadData()
@@ -113,6 +128,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         PlayerPrefs.SetInt("Fullscreen", fullScreen ? 1 : 0);
         PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
+
+        PlayerPrefs.SetFloat("ResolutionFactor", resolutionFactor);
     }
 
     void CreateResolutionLines()
@@ -177,17 +194,20 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     void Update()
     {
-        if (Time.timeScale == 1)
-        {
-            frameRate = 1f / Time.smoothDeltaTime;
+        if (dynamicResolution)
+            FPS();
+    }
 
-            /*if (dynamicResolution && !isAnalysingFrameRate)
-                ActivateFramerateAnalyser();*/
-        }
+    void FPS()
+    {
+        frameRate = 1f / (Time.realtimeSinceStartup - realtimeSinceStartup);
+
+        realtimeSinceStartup = Time.realtimeSinceStartup;
+
+        if (dynamicResolutionLifeTime < dynamicResolutionTime)
+            dynamicResolutionLifeTime += Time.unscaledDeltaTime;
         else
-        {
-            frameRate = -1f;
-        }
+            dynamicResolution = false;
     }
 
     void FindResolution()
@@ -311,6 +331,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         FindResolution();
 
         fullscreenToggle.isOn = true;
+
+        EnableAnalyseFramerate();
     }
 
     IEnumerator CheckFullScreenChange(bool fullscreen)
@@ -327,13 +349,15 @@ public class ResolutionManager : Singleton<ResolutionManager>
     }
 
 
-    void ActivateFramerateAnalyser()
+    public void EnableAnalyseFramerate()
     {
-        if (!dynamicResolution || isAnalysingFrameRate)
-            return;
+        dynamicResolutionLifeTime = 0;
 
-        StopCoroutine(AnalyseFramerate());
-        StartCoroutine(AnalyseFramerate());
+        if (!dynamicResolution)
+        {
+            dynamicResolution = true;
+            StartCoroutine(AnalyseFramerate());
+        }
     }
 
     IEnumerator AnalyseFramerate()
@@ -347,7 +371,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         while (frameRateSamples.Count < frameRateSamplesCount)
         {
-            yield return new WaitWhile(() => Time.timeScale != 1);
+            //yield return new WaitWhile(() => Time.timeScale != 1);
 
             frameRateSamples.Add(frameRate);
             yield return new WaitForSecondsRealtime(frameRateSamplesTime);
@@ -365,6 +389,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         float targetFrameRate = QualitySettings.vSyncCount == 0 ? frameRateTarget : frameRateTargetVSync;
 
+        bool superior = QualitySettings.vSyncCount == 0 ? meanFramerate > targetFrameRate + frameRateGap : meanFramerate > 58;
+
         //INFERIOR
         if (meanFramerate < targetFrameRate - frameRateGap)
         {
@@ -380,11 +406,15 @@ public class ResolutionManager : Singleton<ResolutionManager>
                 currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
             }
             else
+            {
                 resolutionFactor = 0.5f;
-        }
 
-        //INFERIOR
-        else if (meanFramerate > targetFrameRate + frameRateGap)
+                if (qualityChange)
+                    StartCoroutine(QualityChange(true));
+            }
+        }
+        //SUPERIOR
+        else if (superior)
         {
             if (resolutionFactor < 1f)
             {
@@ -398,7 +428,12 @@ public class ResolutionManager : Singleton<ResolutionManager>
                 currentDynamicScreenRes = new Vector2(currentScreenRes.x * resolutionFactor, currentScreenRes.y * resolutionFactor);
             }
             else
+            {
                 resolutionFactor = 1f;
+
+                if (qualityChange)
+                    StartCoroutine(QualityChange(false));
+            }
         }
 
         //SAME
@@ -418,8 +453,56 @@ public class ResolutionManager : Singleton<ResolutionManager>
         StartCoroutine(AnalyseFramerate());
     }
 
-    public void ResetDynamicResolution()
+    IEnumerator QualityChange(bool inferior)
     {
-        
+        qualityChange = false;
+
+        if (inferior)
+        {
+            switch (QualitySettings.GetQualityLevel())
+            {
+                case 2:
+                    if (dynamicResolutionDebug)
+                        Debug.Log("Medium");
+                    GraphicsQualityManager.Instance.MediumQuality();
+                    PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
+                    GraphicsQualityManager.Instance.SelectQualityToggle();
+
+                    break;
+                case 1:
+                    if (dynamicResolutionDebug)
+                        Debug.Log("LowQuality");
+                    GraphicsQualityManager.Instance.LowQuality();
+                    PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
+                    GraphicsQualityManager.Instance.SelectQualityToggle();
+                    break;
+            }
+        }
+        else
+        {
+            switch (QualitySettings.GetQualityLevel())
+            {
+                case 0:
+                    if (dynamicResolutionDebug)
+                        Debug.Log("Medium");
+
+                    GraphicsQualityManager.Instance.MediumQuality();
+
+                    PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
+
+                    break;
+                case 1:
+                    if (dynamicResolutionDebug)
+                        Debug.Log("High");
+                    GraphicsQualityManager.Instance.HighQuality();
+
+                    PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
+                    break;
+            }
+        }
+
+        yield return new WaitForSecondsRealtime(qualityChangeDelay);
+
+        qualityChange = true;
     }
 }

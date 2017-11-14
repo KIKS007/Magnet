@@ -354,6 +354,26 @@ public class GraphicsQualityManager : Singleton<GraphicsQualityManager>
         EnableApplyButton();
     }
 
+    public void SelectQualityToggle()
+    {
+        qualityToggles[0].isOn = false;
+        qualityToggles[1].isOn = false;
+        qualityToggles[2].isOn = false;
+
+        switch (PlayerPrefs.GetInt("QualityLevel"))
+        {
+            case 2:
+                qualityToggles[2].isOn = true;
+                break;
+            case 1:
+                qualityToggles[1].isOn = true;
+                break;
+            case 0:
+                qualityToggles[0].isOn = true;
+                break;
+        }
+    }
+
     void Shake(float value)
     {
         GlobalVariables.Instance.screenShakeCamera.screenShakeFactor = (int)value * 10;
