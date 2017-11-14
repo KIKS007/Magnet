@@ -51,6 +51,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
     public float frameRate;
 
     [Header("Dynamic Resolution")]
+    public bool userDynamicResolution = false;
     public bool dynamicResolution = true;
     public bool dynamicResolutionDebug = false;
     public float dynamicResolutionTime = 60f;
@@ -91,7 +92,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
         if (PlayerPrefs.HasKey("ResolutionFactor"))
             resolutionFactor = PlayerPrefs.GetFloat("ResolutionFactor");
 
-        if (dynamicResolution)
+        if (userDynamicResolution)
         {
             DOVirtual.DelayedCall(4f, () =>
                 {
@@ -194,7 +195,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     void Update()
     {
-        if (dynamicResolution)
+        if (userDynamicResolution && dynamicResolution)
             FPS();
     }
 
@@ -351,6 +352,9 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     public void EnableAnalyseFramerate()
     {
+        if (!userDynamicResolution)
+            return;
+
         dynamicResolutionLifeTime = 0;
 
         if (!dynamicResolution)
@@ -362,7 +366,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
     IEnumerator AnalyseFramerate()
     {
-        if (!dynamicResolution)
+        if (!dynamicResolution || !userDynamicResolution)
             yield break;
 
         isAnalysingFrameRate = true;
