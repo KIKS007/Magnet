@@ -50,6 +50,10 @@ public class ResolutionManager : Singleton<ResolutionManager>
     [Header("Framerate")]
     public float frameRate;
 
+    [Header("Dynamic UI")]
+    public Toggle dynamicResolutionToggle;
+    public Text dynamicResolutionText;
+
     [Header("Dynamic Resolution")]
     public bool userDynamicResolution = false;
     public bool dynamicResolution = true;
@@ -87,10 +91,13 @@ public class ResolutionManager : Singleton<ResolutionManager>
         if (!PlayerPrefs.HasKey("ScreenWidth"))
             FindResolution();
 
-        SaveData();
-
         if (PlayerPrefs.HasKey("ResolutionFactor"))
+        {
             resolutionFactor = PlayerPrefs.GetFloat("ResolutionFactor");
+            dynamicResolutionText.text = resolutionFactor.ToString("0.##");
+        }
+
+        SaveData();
 
         if (userDynamicResolution)
         {
@@ -120,6 +127,14 @@ public class ResolutionManager : Singleton<ResolutionManager>
             SetResolution(new Vector2(PlayerPrefs.GetInt("ScreenWidth"), PlayerPrefs.GetInt("ScreenHeight")));
             Debug.Log("Resolution Loaded : " + currentScreenRes.x + "x" + currentScreenRes.y);
         }
+
+        if (PlayerPrefs.HasKey("UserDynamic"))
+        {
+            dynamicResolutionToggle.isOn = PlayerPrefs.GetInt("UserDynamic") == 0 ? false : true;
+            userDynamicResolution = dynamicResolutionToggle.isOn;
+        }
+
+        dynamicResolutionText.text = resolutionFactor.ToString("0.##");
     }
 
     public void SaveData()
@@ -131,6 +146,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
 
         PlayerPrefs.SetFloat("ResolutionFactor", resolutionFactor);
+
+        PlayerPrefs.SetInt("UserDynamic", userDynamicResolution ? 1 : 0);
     }
 
     void CreateResolutionLines()
@@ -304,7 +321,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
         fullScreen = enable;
         Screen.SetResolution((int)currentScreenRes.x, (int)currentScreenRes.y, fullScreen);
 
-        GraphicsQualityManager.Instance.EnableApplyButton();
+        //GraphicsQualityManager.Instance.EnableApplyButton();
+        PlayerPrefs.SetInt("Fullscreen", fullScreen ? 1 : 0);
     }
 
     public void ToggleVsync(bool enable)
@@ -317,7 +335,8 @@ public class ResolutionManager : Singleton<ResolutionManager>
             QualitySettings.vSyncCount = 0;
         }
 
-        GraphicsQualityManager.Instance.EnableApplyButton();
+        //GraphicsQualityManager.Instance.EnableApplyButton();
+        PlayerPrefs.SetInt("Vsync", QualitySettings.vSyncCount);
     }
 
     public void Reset()
@@ -333,7 +352,7 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         fullscreenToggle.isOn = true;
 
-        EnableAnalyseFramerate();
+        LaunchAnalyseFramerate();
     }
 
     IEnumerator CheckFullScreenChange(bool fullscreen)
@@ -350,7 +369,28 @@ public class ResolutionManager : Singleton<ResolutionManager>
     }
 
 
-    public void EnableAnalyseFramerate()
+    public void EnableDynamicResolution(bool enable)
+    {
+        if (enable)
+        {
+            if (!userDynamicResolution)
+            {
+                dynamicResolution = true;
+                userDynamicResolution = enable;
+                StartCoroutine(AnalyseFramerate());
+            }
+        }
+        else
+        {
+            dynamicResolution = false;
+            userDynamicResolution = enable;
+            StopCoroutine(AnalyseFramerate());
+        }
+
+        PlayerPrefs.SetInt("UserDynamic", userDynamicResolution ? 1 : 0);
+    }
+
+    public void LaunchAnalyseFramerate()
     {
         if (!userDynamicResolution)
             return;
@@ -449,6 +489,9 @@ public class ResolutionManager : Singleton<ResolutionManager>
 
         if (dynamicResolutionDebug)
             Debug.Log(meanFramerate + " - " + resolutionFactor);
+
+        dynamicResolutionText.text = resolutionFactor.ToString("0.##");
+        PlayerPrefs.SetFloat("ResolutionFactor", resolutionFactor);
 
         yield return new WaitForSecondsRealtime(frameRatePause);
 
